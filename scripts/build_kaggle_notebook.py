@@ -43,6 +43,9 @@ SRC_FILES = [
     "src/vibration_ad/evaluate.py",
     "src/vibration_ad/infer.py",
     "src/vibration_ad/viz.py",
+    "src/vibration_ad/analysis.py",
+    "src/vibration_ad/analyze.py",
+    "src/vibration_ad/sweep.py",
 ]
 CONFIG_FILES = [
     "configs/default.yaml",
@@ -265,13 +268,38 @@ def build_notebook() -> dict:
         "run('-m', 'vibration_ad.infer', '--config', 'configs/default.yaml', '--input', 'data/raw/1797_Normal.npz')",
     ))
 
-    cells.append(md("## 7. Look at the results"))
+    cells.append(md(
+        "## 7. Deeper analysis",
+        "Latent-space separation (PCA on the bottleneck vectors, not just "
+        "the reconstruction-error scalar), confusion matrix, detection "
+        "rate broken down by RPM/load condition (generalization check --  "
+        "healthy TRAINING data never included 1797 RPM directly, see "
+        "notes/01_dataset_notes.md), and threshold sensitivity across a "
+        "range of percentiles (all still chosen unsupervised, never "
+        "peeking at test labels -- see notes/04_evaluation_notes.md).",
+    ))
+    cells.append(code("run('-m', 'vibration_ad.analyze', '--config', 'configs/default.yaml')"))
+
+    cells.append(md(
+        "## 8. Bottleneck-size sweep",
+        "Empirical version of the tradeoff notes/03_model_notes.md reasons "
+        "through: too small a latent_dim can't reconstruct even healthy "
+        "signal well (uniformly high error, poor separation); too large "
+        "starts reconstructing faults too (uniformly low error, poor "
+        "separation). Trains+evaluates 8 variants (fewer epochs/tighter "
+        "early stopping than the main run, for speed) and plots "
+        "ROC-AUC/PR-AUC/F1 vs. latent_dim -- takes several minutes.",
+    ))
+    cells.append(code("run('-m', 'vibration_ad.sweep', '--config', 'configs/default.yaml')"))
+
+    cells.append(md("## 9. Look at the results"))
     cells.append(code(
         "from IPython.display import Image, display",
         "figdir = WORKDIR / 'outputs' / 'figures'",
         "for name in ['error_histogram.png', 'roc_curve.png', 'detection_rate_by_severity.png',",
         "             'reconstruction_examples.png', 'infer_1797_IR_21_DE12_timeline.png',",
-        "             'infer_1797_Normal_timeline.png']:",
+        "             'infer_1797_Normal_timeline.png', 'latent_space_pca.png', 'confusion_matrix.png',",
+        "             'detection_rate_by_rpm.png', 'threshold_sensitivity.png', 'latent_dim_sweep.png']:",
         "    path = figdir / name",
         "    if path.exists():",
         "        print(name)",

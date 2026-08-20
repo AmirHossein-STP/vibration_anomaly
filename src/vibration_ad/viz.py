@@ -111,3 +111,117 @@ def plot_error_timeline(
     fig.savefig(save_path, dpi=150)
     plt.close(fig)
     return save_path
+
+
+def plot_latent_space_pca(latents: np.ndarray, labels: np.ndarray, save_path: Path) -> Path:
+    """2D PCA projection of the autoencoder's bottleneck vectors, colored by
+    true healthy/faulty label. The model never saw these labels during
+    training -- if healthy and faulty form visibly separate clusters here,
+    that's the compression itself learning a "normal machine" concept, not
+    just the reconstruction-error scalar downstream of it.
+    """
+    from sklearn.decomposition import PCA
+
+    pca = PCA(n_components=2)
+    coords = pca.fit_transform(latents)
+
+    fig, ax = plt.subplots(figsize=(7, 6))
+    for lbl, color, name in [(0, "#3b82f6", "healthy"), (1, "#ef4444", "faulty")]:
+        mask = labels == lbl
+        ax.scatter(coords[mask, 0], coords[mask, 1], s=10, alpha=0.6, color=color, label=f"{name} (n={mask.sum()})")
+    var = pca.explained_variance_ratio_
+    ax.set_xlabel(f"PC1 ({var[0] * 100:.1f}% variance)")
+    ax.set_ylabel(f"PC2 ({var[1] * 100:.1f}% variance)")
+    ax.set_title("Autoencoder latent space (PCA projection)")
+    ax.legend()
+    fig.tight_layout()
+    fig.savefig(save_path, dpi=150)
+    plt.close(fig)
+    return save_path
+
+
+def plot_confusion_matrix(cm: dict, save_path: Path) -> Path:
+    """cm: {'tn':..,'fp':..,'fn':..,'tp':..} as produced by evaluate.py."""
+    mat = np.array([[cm["tn"], cm["fp"]], [cm["fn"], cm["tp"]]])
+    fig, ax = plt.subplots(figsize=(5, 5))
+    im = ax.imshow(mat, cmap="Blues")
+    for i in range(2):
+        for j in range(2):
+            ax.text(
+                j, i, str(mat[i, j]), ha="center", va="center", fontsize=16,
+                color="white" if mat[i, j] > mat.max() / 2 else "black",
+            )
+    ax.set_xticks([0, 1])
+    ax.set_xticklabels(["pred: healthy", "pred: faulty"])
+    ax.set_yticks([0, 1])
+    ax.set_yticklabels(["true: healthy", "true: faulty"])
+    ax.set_title("Confusion matrix (at deployed threshold)")
+    fig.colorbar(im, ax=ax, fraction=0.046, pad=0.04)
+    fig.tight_layout()
+    fig.savefig(save_path, dpi=150)
+    plt.close(fig)
+    return save_path
+
+
+def plot_detection_by_rpm(test_predictions: "pd.DataFrame", save_path: Path) -> Path:
+    """Detection rate among faulty windows, grouped by RPM/load condition --
+    a generalization check: healthy TRAINING data came from 1730/1750/1772
+    RPM only (see notes/01_dataset_notes.md), so faulty windows from 1797
+    RPM are being detected under a load condition the model never even saw
+    a healthy example of directly.
+    """
+    faulty = test_predictions[test_predictions.label == 1]
+    summary = (
+        faulty.groupby("rpm")
+        .agg(detection_rate=("predicted_anomaly", "mean"), n=("predicted_anomaly", "size"))
+        .reset_index()
+    )
+    fig, ax = plt.subplots(figsize=(6, 4))
+    ax.bar(summary["rpm"].astype(str), summary["detection_rate"], color="#22c55e")
+    ax.set_ylim(0, 1.05)
+    ax.set_xlabel("RPM (load condition)")
+    ax.set_ylabel("Detection rate")
+    ax.set_title("Detection rate by load condition")
+    for i, row in summary.iterrows():
+        ax.text(i, row["detection_rate"] + 0.02, f"n={row['n']}", ha="center", fontsize=8)
+    fig.tight_layout()
+    fig.savefig(save_path, dpi=150)
+    plt.close(fig)
+    return save_path
+
+
+def plot_threshold_sensitivity(sensitivity_df: "pd.DataFrame", save_path: Path, deployed_percentile: float = 99.0) -> Path:
+    fig, ax = plt.subplots(figsize=(7, 5))
+    ax.plot(sensitivity_df["percentile"], sensitivity_df["precision"], marker="o", markersize=3, label="precision")
+    ax.plot(sensitivity_df["percentile"], sensitivity_df["recall"], marker="o", markersize=3, label="recall")
+    ax.plot(sensitivity_df["percentile"], sensitivity_df["f1"], marker="o", markersize=3, label="F1")
+    ax.axvline(deployed_percentile, color="gray", linestyle="--", alpha=0.7, label=f"deployed ({deployed_percentile:.0f}th pct)")
+    ax.set_ylim(0, 1.05)
+    ax.set_xlabel("Threshold percentile (of validation healthy error)")
+    ax.set_ylabel("Score")
+    ax.set_title("Threshold sensitivity")
+    ax.legend()
+    fig.tight_layout()
+    fig.savefig(save_path, dpi=150)
+    plt.close(fig)
+    return save_path
+
+
+def plot_latent_dim_sweep(sweep_df: "pd.DataFrame", save_path: Path, default_value: int = 128) -> Path:
+    fig, ax = plt.subplots(figsize=(8, 5))
+    ax.plot(sweep_df["latent_dim"], sweep_df["roc_auc"], marker="o", label="ROC-AUC")
+    ax.plot(sweep_df["latent_dim"], sweep_df["pr_auc"], marker="o", label="PR-AUC")
+    ax.plot(sweep_df["latent_dim"], sweep_df["f1"], marker="o", label="F1 (at 99th pct threshold)")
+    ax.set_xscale("log", base=2)
+    ax.set_xticks(sweep_df["latent_dim"])
+    ax.set_xticklabels(sweep_df["latent_dim"])
+    ax.set_ylim(0, 1.05)
+    ax.set_xlabel("Bottleneck size (latent_dim)")
+    ax.set_ylabel("Score")
+    ax.set_title("Detection performance vs. autoencoder bottleneck size")
+    ax.axvline(default_value, color="gray", linestyle="--", alpha=0.6, label=f"default ({default_value})")
+    ax.legend()
+    fig.tight_layout()
+    fig.savefig(save_path, dpi=150)
+    plt.close(fig)
+    return save_path

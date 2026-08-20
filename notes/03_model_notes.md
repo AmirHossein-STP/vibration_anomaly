@@ -54,6 +54,25 @@ histogram (`outputs/figures/error_histogram.png`) is the diagnostic: if the
 healthy and faulty error distributions overlap heavily, try adjusting
 `latent_dim` (and/or `base_channels`) before touching anything else.
 
+**Update, tested empirically (2026-08-20, `src/vibration_ad/sweep.py`)**:
+the above was reasoning, and reasoning turned out to be an incomplete
+predictor here. Trained + evaluated 8 otherwise-identical models with
+`latent_dim` from 4 to 512 (a 4,096x to 32x compression ratio) — ROC-AUC
+stayed at 1.000 and F1 stayed ≥ 0.999 at *every single value*. On CWRU, the
+healthy/faulty gap is wide enough that even a 4-number bottleneck captures
+it fully; the predicted tradeoff never bit within the range tested. It
+shows up only in a more sensitive number: raw false-positive count on the
+57 held-out healthy windows (3 at latent_dim=4, climbing to 6 at 8, falling
+back to 1 at 128–256, rising to 5 at 512) — a faint version of the expected
+U-shape, present but too small to move the headline metrics. Read this as
+a property of *this dataset's* difficulty, not a refutation of the
+reasoning — a noisier, harder separation task would very plausibly make
+this knob matter the way originally predicted. Don't skip tuning
+`latent_dim` on a new dataset just because it didn't matter on this one;
+do re-run the sweep (`scripts/10_sweep.sh`) and look at the raw
+false-positive/false-negative counts, not just the aggregate AUC/F1, since
+those saturate before the underlying behavior does.
+
 ## Training details worth knowing
 
 - **Loss = reconstruction MSE**, averaged per-sample then over the batch

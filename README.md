@@ -44,6 +44,8 @@ see `data/README.md`). Once the venv is ready:
 bash scripts/02_train.sh      # train the autoencoder on healthy-only data
 bash scripts/03_evaluate.sh   # ROC-AUC/PR-AUC/confusion matrix + plots
 bash scripts/04_infer_demo.sh # reconstruction-error timeline for one healthy + one faulty file
+bash scripts/09_analyze.sh    # latent-space PCA, threshold sensitivity, detection by RPM
+bash scripts/10_sweep.sh      # optional, slow: empirical bottleneck-size (latent_dim) sweep
 ```
 
 Or all at once (re-downloads data too, harmless if already present):
@@ -63,7 +65,21 @@ the default.
   `detection_rate_by_severity.csv`.
 - `outputs/figures/` — `error_histogram.png`, `roc_curve.png`,
   `detection_rate_by_severity.png`, `reconstruction_examples.png`, and
-  per-file `infer_*_timeline.png` from `infer.py`.
+  per-file `infer_*_timeline.png` from `infer.py`; plus, from
+  `analyze.py`/`sweep.py`: `latent_space_pca.png`, `confusion_matrix.png`,
+  `detection_rate_by_rpm.png`, `threshold_sensitivity.png`,
+  `latent_dim_sweep.png`.
+- `outputs/sweep/latent_<N>/` — one full model/report/figure set per
+  bottleneck size tested by `sweep.py`, plus `outputs/sweep/summary.csv`.
+
+### Presentation report
+
+`bash scripts/11_build_presentation.sh` renders
+`reports/presentation_template.html` + the real results in
+`outputs/kaggle_run/` (or `--run-dir outputs` for a local run) into one
+self-contained `outputs/reports/presentation.html` — architecture
+explanation, methodology, every figure above, and honest limitations, no
+external dependencies. See `notes/08_deeper_analysis_and_presentation.md`.
 
 ### Inference on other files
 
@@ -101,8 +117,11 @@ Read in order for the full picture, or jump to whichever's relevant:
 6. `notes/05_glossary.md` — every technical term used above, defined.
 7. `notes/06_extension_ideas.md` — menu of follow-up work, roughly ordered
    by effort.
-8. `notes/07_dvc_and_kaggle.md` — data version control setup, and how to
-   test the PyTorch pipeline on Kaggle's free GPU without a local install.
+8. `notes/07_dvc_and_kaggle.md` — data version control setup, and how the
+   pipeline actually runs on Kaggle (CPU, offline, no local install).
+9. `notes/08_deeper_analysis_and_presentation.md` — the analyze/sweep
+   stages, what the bottleneck sweep actually found, and the presentation
+   report.
 
 ## Data versioning (DVC) and testing on Kaggle
 
@@ -129,9 +148,13 @@ needs no internet at all. Live view:
 https://www.kaggle.com/code/aghzuzu/vibration-anomaly-detection-mvp.
 
 **First successful run (2026-08-20)**: ROC-AUC 1.0, 100% detection across
-every fault type/severity, full results in `outputs/kaggle_run/`. Full
-narrative — three real bugs found and fixed, two dead-end workarounds, and
-why the numbers are this clean — in `notes/07_dvc_and_kaggle.md`.
+every fault type/severity and every load condition, full results in
+`outputs/kaggle_run/`. Full narrative — three real bugs found and fixed,
+two dead-end workarounds, and why the numbers are this clean — in
+`notes/07_dvc_and_kaggle.md`. Deeper evidence (latent-space separation,
+threshold sensitivity, an empirical bottleneck-size sweep) in
+`notes/08_deeper_analysis_and_presentation.md`, or as one shareable report:
+`bash scripts/11_build_presentation.sh`.
 
 ## Tests
 

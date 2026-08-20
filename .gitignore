@@ -15,6 +15,7 @@ outputs/models/*
 outputs/reports/*
 outputs/figures/*
 outputs/kaggle_run/*
+outputs/sweep/*
 
 # ...but keep the empty directories themselves tracked
 !data/processed/.gitkeep
