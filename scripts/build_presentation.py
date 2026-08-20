@@ -34,6 +34,9 @@ IMG_FILES = {
     "detection_rate_by_severity": "detection_rate_by_severity.png",
     "detection_rate_by_rpm": "detection_rate_by_rpm.png",
     "latent_space_pca": "latent_space_pca.png",
+    "latent_space_by_fault_type": "latent_space_by_fault_type.png",
+    "latent_space_by_rpm": "latent_space_by_rpm.png",
+    "latent_space_by_fault_and_severity": "latent_space_by_fault_and_severity.png",
     "reconstruction_examples": "reconstruction_examples.png",
     "infer_faulty_timeline": "infer_1797_IR_21_DE12_timeline.png",
     "infer_normal_timeline": "infer_1797_Normal_timeline.png",
@@ -94,6 +97,13 @@ def build(run_dir: Path) -> None:
         "sens_precision_lo": pct(sens["precision"].iloc[0]),
         "sens_precision_hi": pct(sens["precision"].iloc[-1]),
         "infer_normal_caption": "A handful of windows cross the threshold -- consistent with the false-alarm rate the deployed percentile threshold implies.",
+        "fault_severity_caption": (
+            "Facet by the combination instead of either factor alone, and 14 of the 15 fault-type/severity "
+            "pairs actually present in the data each collapse into their own tight, separate island -- one "
+            "outer-race fault at one severity looks nothing like the same fault at a different severity, or a "
+            "different fault at the same severity, in this space. The one exception (ball fault, 14mil) spreads "
+            "across a wider region instead of one tight cluster."
+        ),
     }
 
     html = TEMPLATE.read_text()

@@ -333,6 +333,16 @@
       <figure class="evidence"><div class="screen"><img src="{{IMG:reconstruction_examples}}" alt="Input, reconstruction, and difference for a healthy and a faulty window"></div><figcaption><strong>Input vs. reconstruction.</strong> Top: a healthy window, reconstructed closely. Bottom: a faulty window — the autoencoder was never shown anything like it, and it shows.</figcaption></figure>
     </div>
 
+    <p>The faulty points above aren't one undifferentiated blob — they visibly separate into distinct islands. Three candidate explanations, tested directly by highlighting one subset at a time against the full point cloud:</p>
+    <div class="figure-grid">
+      <figure class="evidence"><div class="screen"><img src="{{IMG:latent_space_by_fault_type}}" alt="Latent space faceted by fault type"></div><figcaption><strong>By fault type alone: doesn't explain it.</strong> Most fault types (B, IR, OR@6 especially) each span <em>several</em> separate islands, not one.</figcaption></figure>
+      <figure class="evidence"><div class="screen"><img src="{{IMG:latent_space_by_rpm}}" alt="Latent space faceted by RPM"></div><figcaption><strong>By load condition: doesn't explain it either.</strong> Each RPM's points scatter across nearly every island rather than owning one.</figcaption></figure>
+    </div>
+    <div class="figure-grid single">
+      <figure class="evidence"><div class="screen"><img src="{{IMG:latent_space_by_fault_and_severity}}" alt="Latent space faceted by fault type and severity combined"></div><figcaption><strong>Fault type + severity together: this is it.</strong> {{TXT:fault_severity_caption}}</figcaption></figure>
+    </div>
+    <p style="font-size:13.5px;color:var(--ink-muted);">Nothing here was fit to know this — <code>fault_type</code>/<code>fault_size_mils</code> are ground-truth columns used only to color points after the fact, exactly like the healthy/faulty label everywhere else in this report. The compression learned a representation detailed enough to separate not just "healthy vs. faulty" but essentially the dataset's whole fault taxonomy, unsupervised.</p>
+
     <h3>Is the threshold a lucky pick?</h3>
     <p>Precision/recall/F1 recomputed at every percentile from 80 to 99, each still chosen unsupervised (a percentile of validation-healthy error) — never tuned against test labels. If the deployed 99th-percentile choice were a fragile pick perched on a cliff edge, this range would show it.</p>
     <div class="stat-row" style="grid-template-columns:repeat(3,1fr);margin-bottom:8px;">

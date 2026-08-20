@@ -14,6 +14,27 @@ work" became "show me more evidence, and let me present it":
     model). Answers "is the *compression* learning something about
     healthy-vs-faulty, or is separation only happening in the final error
     scalar downstream of it?"
+  - `latent_space_by_{fault_type,rpm,severity,fault_and_severity}.png` —
+    the faulty side of that PCA plot visibly splits into many separate
+    islands; these test *why*, by highlighting one subset (fault type /
+    RPM / severity / the combination) at a time against the full point
+    cloud in gray. **Finding**: neither fault type alone nor RPM alone
+    explains the islands (each fault type spans several islands; each RPM
+    scatters across nearly all of them) — the combination of fault type
+    *and* severity does: 14 of the 15 combinations present in the data
+    each collapse into their own tight, separate island (the one
+    exception, ball fault at 14mil, spreads more broadly). The model's
+    compression learned a representation detailed enough to separate
+    essentially the whole fault taxonomy, not just healthy-vs-faulty —
+    unsupervised, never trained on a single fault label. Uses small
+    multiples rather than one scatter with 6+ colors deliberately: a
+    categorical palette only holds ~3 simultaneously distinguishable hues
+    on a scatter before colorblind-safety and plain legibility break down
+    (see the dataviz skill's palette notes) — faceting one highlighted
+    category per panel sidesteps that limit rather than picking colors
+    that don't actually separate. `analysis.pca_2d()` fits the projection
+    once and every one of these plots reuses the identical `coords`, so
+    they're directly comparable panel to panel.
   - `confusion_matrix.png`, `detection_rate_by_rpm.png` — generalization
     check across load conditions (the RPM the model's training data never
     included, see `notes/01_dataset_notes.md`).

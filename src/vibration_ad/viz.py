@@ -113,27 +113,84 @@ def plot_error_timeline(
     return save_path
 
 
-def plot_latent_space_pca(latents: np.ndarray, labels: np.ndarray, save_path: Path) -> Path:
+def plot_latent_space_pca(coords: np.ndarray, explained_variance: np.ndarray, labels: np.ndarray, save_path: Path) -> Path:
     """2D PCA projection of the autoencoder's bottleneck vectors, colored by
     true healthy/faulty label. The model never saw these labels during
     training -- if healthy and faulty form visibly separate clusters here,
     that's the compression itself learning a "normal machine" concept, not
     just the reconstruction-error scalar downstream of it.
+
+    coords/explained_variance come from analysis.pca_2d() -- computed once
+    and shared with plot_latent_space_faceted() so every latent-space plot
+    uses the identical projection, not a separately-refit one.
     """
-    from sklearn.decomposition import PCA
-
-    pca = PCA(n_components=2)
-    coords = pca.fit_transform(latents)
-
     fig, ax = plt.subplots(figsize=(7, 6))
     for lbl, color, name in [(0, "#3b82f6", "healthy"), (1, "#ef4444", "faulty")]:
         mask = labels == lbl
         ax.scatter(coords[mask, 0], coords[mask, 1], s=10, alpha=0.6, color=color, label=f"{name} (n={mask.sum()})")
-    var = pca.explained_variance_ratio_
-    ax.set_xlabel(f"PC1 ({var[0] * 100:.1f}% variance)")
-    ax.set_ylabel(f"PC2 ({var[1] * 100:.1f}% variance)")
+    ax.set_xlabel(f"PC1 ({explained_variance[0] * 100:.1f}% variance)")
+    ax.set_ylabel(f"PC2 ({explained_variance[1] * 100:.1f}% variance)")
     ax.set_title("Autoencoder latent space (PCA projection)")
     ax.legend()
+    fig.tight_layout()
+    fig.savefig(save_path, dpi=150)
+    plt.close(fig)
+    return save_path
+
+
+def plot_latent_space_faceted(
+    coords: np.ndarray,
+    labels: np.ndarray,
+    category_values: np.ndarray,
+    category_name: str,
+    save_path: Path,
+    category_order: list | None = None,
+    ncols: int = 3,
+) -> Path:
+    """Small-multiples version of plot_latent_space_pca: one panel per
+    category value, every point shown faint gray as context, that panel's
+    subset highlighted (still split healthy/faulty within the highlight,
+    same two colors as everywhere else in this project).
+
+    Why small multiples and not one scatter with 6+ hues: a single
+    categorical palette only holds up to about 3 simultaneously
+    distinguishable colors on a scatter plot (unlike bars/lines) before
+    colorblind-safety and plain legibility break down -- see the dataviz
+    skill's palette notes. Faceting one highlighted category per panel
+    sidesteps that limit entirely rather than picking 6 colors that don't
+    actually separate.
+    """
+    import pandas as pd  # local import: keep top-level module numpy/sklearn only
+
+    categories = category_order if category_order is not None else sorted(pd.unique(category_values))
+    n = len(categories)
+    nrows = -(-n // ncols)  # ceil
+    fig, axes = plt.subplots(nrows, ncols, figsize=(3.4 * ncols, 3.4 * nrows), squeeze=False)
+    axes = axes.reshape(-1)
+
+    pad_x = (coords[:, 0].max() - coords[:, 0].min()) * 0.05
+    pad_y = (coords[:, 1].max() - coords[:, 1].min()) * 0.05
+    xlim = (coords[:, 0].min() - pad_x, coords[:, 0].max() + pad_x)
+    ylim = (coords[:, 1].min() - pad_y, coords[:, 1].max() + pad_y)
+
+    for i, cat in enumerate(categories):
+        ax = axes[i]
+        mask = category_values == cat
+        ax.scatter(coords[~mask, 0], coords[~mask, 1], s=5, alpha=0.08, color="#9ca3af", linewidths=0)
+        for lbl, color in [(0, "#3b82f6"), (1, "#ef4444")]:
+            sub = mask & (labels == lbl)
+            if sub.any():
+                ax.scatter(coords[sub, 0], coords[sub, 1], s=9, alpha=0.75, color=color, linewidths=0)
+        ax.set_title(f"{cat}  (n={int(mask.sum())})", fontsize=10)
+        ax.set_xlim(*xlim)
+        ax.set_ylim(*ylim)
+        ax.set_xticks([])
+        ax.set_yticks([])
+
+    for j in range(n, len(axes)):
+        axes[j].axis("off")
+
+    fig.suptitle(f"Latent space PCA, faceted by {category_name}", y=1.0)
     fig.tight_layout()
     fig.savefig(save_path, dpi=150)
     plt.close(fig)

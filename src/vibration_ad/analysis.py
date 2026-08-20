@@ -28,6 +28,19 @@ def extract_latents(model, X_norm: np.ndarray, device, batch_size: int = 64) -> 
     return np.concatenate(latents, axis=0)
 
 
+def pca_2d(latents: np.ndarray) -> tuple[np.ndarray, np.ndarray]:
+    """Fit PCA once on the latent vectors. Callers should reuse the same
+    (coords, explained_variance) for every latent-space plot of the same
+    run (see viz.plot_latent_space_pca / plot_latent_space_faceted) rather
+    than refitting per-plot, so every view is the identical projection.
+    """
+    from sklearn.decomposition import PCA
+
+    pca = PCA(n_components=2)
+    coords = pca.fit_transform(latents)
+    return coords, pca.explained_variance_ratio_
+
+
 def threshold_sensitivity(
     val_errors: np.ndarray,
     test_errors: np.ndarray,

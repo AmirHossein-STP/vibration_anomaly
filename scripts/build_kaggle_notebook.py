@@ -76,7 +76,7 @@ def encode_files(relpaths: list[str]) -> str:
     return "\n".join(entries)
 
 
-def build_notebook() -> dict:
+def build_notebook(include_sweep: bool = True) -> dict:
     cells = []
 
     cells.append(md(
@@ -280,17 +280,18 @@ def build_notebook() -> dict:
     ))
     cells.append(code("run('-m', 'vibration_ad.analyze', '--config', 'configs/default.yaml')"))
 
-    cells.append(md(
-        "## 8. Bottleneck-size sweep",
-        "Empirical version of the tradeoff notes/03_model_notes.md reasons "
-        "through: too small a latent_dim can't reconstruct even healthy "
-        "signal well (uniformly high error, poor separation); too large "
-        "starts reconstructing faults too (uniformly low error, poor "
-        "separation). Trains+evaluates 8 variants (fewer epochs/tighter "
-        "early stopping than the main run, for speed) and plots "
-        "ROC-AUC/PR-AUC/F1 vs. latent_dim -- takes several minutes.",
-    ))
-    cells.append(code("run('-m', 'vibration_ad.sweep', '--config', 'configs/default.yaml')"))
+    if include_sweep:
+        cells.append(md(
+            "## 8. Bottleneck-size sweep",
+            "Empirical version of the tradeoff notes/03_model_notes.md reasons "
+            "through: too small a latent_dim can't reconstruct even healthy "
+            "signal well (uniformly high error, poor separation); too large "
+            "starts reconstructing faults too (uniformly low error, poor "
+            "separation). Trains+evaluates 8 variants (fewer epochs/tighter "
+            "early stopping than the main run, for speed) and plots "
+            "ROC-AUC/PR-AUC/F1 vs. latent_dim -- takes several minutes.",
+        ))
+        cells.append(code("run('-m', 'vibration_ad.sweep', '--config', 'configs/default.yaml')"))
 
     cells.append(md("## 9. Look at the results"))
     cells.append(code(
@@ -298,8 +299,11 @@ def build_notebook() -> dict:
         "figdir = WORKDIR / 'outputs' / 'figures'",
         "for name in ['error_histogram.png', 'roc_curve.png', 'detection_rate_by_severity.png',",
         "             'reconstruction_examples.png', 'infer_1797_IR_21_DE12_timeline.png',",
-        "             'infer_1797_Normal_timeline.png', 'latent_space_pca.png', 'confusion_matrix.png',",
-        "             'detection_rate_by_rpm.png', 'threshold_sensitivity.png', 'latent_dim_sweep.png']:",
+        "             'infer_1797_Normal_timeline.png', 'latent_space_pca.png',",
+        "             'latent_space_by_fault_type.png', 'latent_space_by_rpm.png', 'latent_space_by_severity.png',",
+        "             'latent_space_by_fault_and_severity.png',",
+        "             'confusion_matrix.png', 'detection_rate_by_rpm.png', 'threshold_sensitivity.png',",
+        "             'latent_dim_sweep.png']:",
         "    path = figdir / name",
         "    if path.exists():",
         "        print(name)",
@@ -319,6 +323,15 @@ def build_notebook() -> dict:
 
 
 if __name__ == "__main__":
-    notebook = build_notebook()
+    import argparse
+
+    parser = argparse.ArgumentParser(description=__doc__)
+    parser.add_argument(
+        "--skip-sweep", action="store_true",
+        help="Omit the bottleneck-size sweep step (saves ~35min when only iterating on something else).",
+    )
+    args = parser.parse_args()
+
+    notebook = build_notebook(include_sweep=not args.skip_sweep)
     OUT.write_text(json.dumps(notebook, indent=1))
     print(f"wrote {OUT} ({OUT.stat().st_size} bytes, {len(notebook['cells'])} cells)")
