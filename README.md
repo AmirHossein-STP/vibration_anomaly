@@ -1,0 +1,141 @@
+# Vibration Anomaly Detection (MVP)
+
+Unsupervised, vibration-based anomaly detection: an autoencoder is trained
+only on healthy vibration signal and flags anything it reconstructs poorly
+as a potential fault. Built as a learning project and architecture proof
+for turbo pump predictive maintenance, using the CWRU bearing dataset as a
+labeled stand-in (see `notes/00_project_overview.md` for the full framing,
+and `PLAN.md` for how this plan differs from the original draft and why).
+
+## Pipeline
+
+```
+raw signal (.npz)
+  -> windowing (fixed-length overlapping chunks)
+  -> STFT -> log-magnitude spectrogram (128 x 128 image)
+  -> per-frequency-bin normalization
+  -> conv autoencoder, trained on HEALTHY windows only
+  -> reconstruction error = anomaly score
+  -> threshold (percentile of validation healthy error)
+  -> flagged anomaly
+```
+
+## Setup
+
+This project needs its own venv with PyTorch — **you're setting this up
+via pyenv (Python 3.12)**; once `.venv/` exists at the project root:
+
+```bash
+.venv/bin/python -m pip install -r requirements.txt
+.venv/bin/python -m pip install -e .   # makes `vibration_ad` importable
+.venv/bin/python -m pytest             # smoke tests, no dataset needed
+```
+
+Every script in `scripts/` calls `.venv/bin/python` explicitly (no `source
+activate` needed) — that also means they won't work until `.venv/` exists
+at the project root with the above installed.
+
+## Running the pipeline
+
+The raw dataset is **already downloaded** (`data/raw/`, 64 files, ~200MB —
+see `data/README.md`). Once the venv is ready:
+
+```bash
+bash scripts/02_train.sh      # train the autoencoder on healthy-only data
+bash scripts/03_evaluate.sh   # ROC-AUC/PR-AUC/confusion matrix + plots
+bash scripts/04_infer_demo.sh # reconstruction-error timeline for one healthy + one faulty file
+```
+
+Or all at once (re-downloads data too, harmless if already present):
+`bash scripts/run_all.sh`
+
+Every stage reads `configs/default.yaml` — that one file is the single
+source of truth for paths and every hyperparameter. Copy it and pass
+`--config path/to/your.yaml` to any stage to run a variant without editing
+the default.
+
+### Outputs
+
+- `outputs/models/` — `autoencoder_best.pt` (checkpoint), `normalizer.npz`
+  (fit-on-train z-score stats), `run_config.yaml` (exact config used).
+- `outputs/reports/` — `training_log.csv`, `evaluation_metrics.json`,
+  `test_predictions.csv` (per-window error + prediction + true label),
+  `detection_rate_by_severity.csv`.
+- `outputs/figures/` — `error_histogram.png`, `roc_curve.png`,
+  `detection_rate_by_severity.png`, `reconstruction_examples.png`, and
+  per-file `infer_*_timeline.png` from `infer.py`.
+
+### Inference on other files
+
+```bash
+.venv/bin/python -m vibration_ad.infer --config configs/default.yaml \
+    --input data/raw/1772_OR@6_14_DE12.npz
+```
+
+Works on any `data/raw/*.npz` file (or any signal with the right sensor
+key); `evaluate.py` must be run at least once first, since `infer.py`
+reuses the threshold it calibrates.
+
+## Project layout
+
+See `notes/00_project_overview.md` for the full directory map and
+module-by-module description. Short version: `src/vibration_ad/` is the
+package (`data/`, `features/`, `models/`, plus `train.py`/`evaluate.py`/
+`infer.py`/`viz.py`), `configs/default.yaml` drives everything, `scripts/`
+are thin CLI wrappers, `notes/` is the project's design documentation.
+
+## Notes / documentation
+
+Read in order for the full picture, or jump to whichever's relevant:
+
+1. `notes/00_project_overview.md` — framing, what changed from the original
+   plan and why, directory map.
+2. `notes/01_dataset_notes.md` — CWRU specifics, why this file subset, the
+   train/val/test split strategy and why it's split the way it is.
+3. `notes/02_signal_processing_notes.md` — STFT vs. Mel, window-length
+   derivation, frequency resolution tradeoffs, normalization.
+4. `notes/03_model_notes.md` — autoencoder architecture, why the bottleneck
+   size is the key knob, training details.
+5. `notes/04_evaluation_notes.md` — threshold selection, metric meanings,
+   honest limitations.
+6. `notes/05_glossary.md` — every technical term used above, defined.
+7. `notes/06_extension_ideas.md` — menu of follow-up work, roughly ordered
+   by effort.
+8. `notes/07_dvc_and_kaggle.md` — data version control setup, and how to
+   test the PyTorch pipeline on Kaggle's free GPU without a local install.
+
+## Data versioning (DVC) and testing on Kaggle
+
+`data/raw/` is DVC-tracked (`.venv/bin/dvc status`) rather than git-tracked
+directly — see `notes/07_dvc_and_kaggle.md` for what that means and the one
+thing still missing (a configured remote for `dvc push`/`pull`).
+
+Local `.venv` has no PyTorch installed yet. Until it does, this project
+runs `notebooks/kaggle_train.ipynb` on Kaggle via their API (already
+authenticated on this machine) as the way to actually execute the
+train/evaluate/infer pipeline:
+
+```bash
+bash scripts/05_kaggle_push.sh    # regenerate notebook from current source + push
+bash scripts/06_kaggle_status.sh  # check run status (repeat until COMPLETE/ERROR)
+bash scripts/07_kaggle_pull.sh    # download logs + output files to outputs/kaggle_run/
+```
+
+Data comes from the public `esraakhaled299/cwru-data` Kaggle dataset
+(converted from `.mat` to our `.npz` convention in-notebook), not a
+runtime download — this account isn't phone-verified, which disables both
+internet access and GPU in kernels, so the pipeline runs CPU-only and
+needs no internet at all. Live view:
+https://www.kaggle.com/code/aghzuzu/vibration-anomaly-detection-mvp.
+
+**First successful run (2026-08-20)**: ROC-AUC 1.0, 100% detection across
+every fault type/severity, full results in `outputs/kaggle_run/`. Full
+narrative — three real bugs found and fixed, two dead-end workarounds, and
+why the numbers are this clean — in `notes/07_dvc_and_kaggle.md`.
+
+## Tests
+
+`tests/test_smoke.py` uses synthetic data (no dataset download required) to
+check the plumbing end to end: window shapes, STFT output shape,
+normalizer round-trip, model forward pass, one real gradient step. Run with
+`.venv/bin/python -m pytest`.

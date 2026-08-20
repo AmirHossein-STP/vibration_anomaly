@@ -1,0 +1,16 @@
+{
+  "id": "aghzuzu/cwru-mat-inspect",
+  "title": "CWRU mat inspect",
+  "code_file": "inspect.ipynb",
+  "language": "python",
+  "kernel_type": "notebook",
+  "is_private": "true",
+  "enable_gpu": "false",
+  "enable_tpu": "false",
+  "enable_internet": "false",
+  "machine_shape": "",
+  "dataset_sources": ["esraakhaled299/cwru-data"],
+  "competition_sources": [],
+  "kernel_sources": [],
+  "model_sources": []
+}

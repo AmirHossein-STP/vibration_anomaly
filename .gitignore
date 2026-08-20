@@ -1,0 +1,28 @@
+# Environments
+.venv/
+__pycache__/
+*.pyc
+.pytest_cache/
+*.egg-info/
+
+# data/raw/ is DVC-tracked (see data/raw.dvc) -- DVC auto-manages its ignore
+# rule in data/.gitignore, nothing needed here for it.
+# data/processed/ is a regenerable cache (not DVC-tracked, not git-tracked).
+data/processed/*
+
+# Trained artifacts / generated reports & figures
+outputs/models/*
+outputs/reports/*
+outputs/figures/*
+outputs/kaggle_run/*
+
+# ...but keep the empty directories themselves tracked
+!data/processed/.gitkeep
+!outputs/**/.gitkeep
+
+# Jupyter
+.ipynb_checkpoints/
+
+# OS / editor
+.DS_Store
+.vscode/

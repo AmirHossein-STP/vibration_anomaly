@@ -1,0 +1,73 @@
+# Default configuration for the vibration anomaly detection MVP.
+# Every stage (data prep, training, evaluation, inference) reads this
+# one file so a full run is reproducible from a single source of truth.
+# Override by copying this file and pointing scripts at the copy, e.g.:
+#   python -m vibration_ad.train --config configs/my_experiment.yaml
+
+seed: 42
+
+paths:
+  raw_dir: data/raw
+  processed_dir: data/processed
+  models_dir: outputs/models
+  figures_dir: outputs/figures
+  reports_dir: outputs/reports
+
+# --- Data selection ------------------------------------------------------
+# CWRU Drive-End accelerometer signals, 12 kHz sampling rate (DE12 files),
+# paired with the 12 kHz Normal-baseline file for the same RPM/load family.
+# See notes/01_dataset_notes.md for why this subset was chosen.
+data:
+  sensor: DE            # array key inside each .npz file: DE, FE, or BA
+  fs_hz: 12000           # sampling rate of the DE12 / Normal files
+  # RPM families used as HEALTHY TRAINING data (never see a fault label).
+  train_rpms: [1730, 1750, 1772]
+  # RPM family held out entirely from training: its Normal file supplies
+  # held-out healthy val/test windows, and its fault files are pure test data.
+  holdout_rpm: 1797
+  # Fault families to include when building the (eval-only) faulty set.
+  # OR@3/OR@6/OR@12 = outer-race fault at 3/6/12 o'clock relative to load zone.
+  fault_types: [IR, B, "OR@3", "OR@6", "OR@12"]
+  # RPM families to pull FAULTY files from. Faulty files are never used for
+  # training regardless of RPM, so all four are fair game for evaluation
+  # (this also tests whether the detector generalizes across load conditions).
+  fault_rpms: [1730, 1750, 1772, 1797]
+
+# --- Windowing -------------------------------------------------------------
+# Long raw signals are cut into fixed-length overlapping windows before
+# any spectrogram is computed. Stride controls window density / overlap.
+windowing:
+  segment_length: 8384    # samples per window (~0.70s @ 12kHz, ~21 shaft revs @1797rpm)
+  train_stride: 512        # dense overlap for healthy TRAIN windows (more training data)
+  eval_stride: 2096         # sparser overlap for val/test windows (less redundancy)
+
+# --- STFT feature extraction ------------------------------------------------
+# Chosen to make each window map to EXACTLY a 128x128 log-magnitude image
+# (see features/spectrogram.py:expected_shape for the derivation), so the
+# conv autoencoder architecture below can assume a fixed input size.
+stft:
+  nperseg: 256
+  hop_length: 64          # noverlap = nperseg - hop_length = 192
+  log_epsilon: 1.0e-10     # added before log to avoid log(0)
+
+# --- Model -------------------------------------------------------------
+model:
+  latent_dim: 128
+  base_channels: 16        # channel count of first conv layer; doubles each layer
+
+# --- Training -------------------------------------------------------------
+train:
+  batch_size: 32
+  epochs: 60
+  learning_rate: 1.0e-3
+  weight_decay: 1.0e-5
+  early_stopping_patience: 10
+  val_fraction_of_holdout: 0.5   # fraction of holdout-RPM healthy windows used for val (rest -> test)
+  device: auto              # auto | cpu | mps | cuda
+
+# --- Evaluation / thresholding ---------------------------------------------
+evaluation:
+  # Unsupervised threshold: percentile of reconstruction error on the
+  # VALIDATION healthy set (labels are NOT used to pick this). See
+  # notes/04_evaluation_notes.md for why this is the deployment-honest choice.
+  threshold_percentile: 99.0

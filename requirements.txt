@@ -1,0 +1,35 @@
+# Core numerics / classic ML
+numpy
+scipy
+scikit-learn
+pandas
+
+# Deep learning (autoencoder). CPU build is fine; on Apple Silicon,
+# torch will auto-detect the MPS backend for GPU acceleration.
+torch
+
+# Config, progress bars, plotting
+pyyaml
+tqdm
+matplotlib
+
+# Tests
+pytest
+
+# Data version control (data/raw/ is DVC-tracked -- see data/raw.dvc and
+# notes/07_dvc_and_kaggle.md). Installs as prebuilt wheels, no compiler
+# needed -- if you ever reach for `brew install dvc` instead, don't: on
+# this machine's Homebrew setup that triggers building rustc/gcc/boost/grpc
+# from source (hours). pip is the fast path.
+dvc
+
+# Kaggle API CLI -- pushes/monitors notebooks/kaggle_train.ipynb as a Kaggle
+# kernel for GPU test runs (see notes/07_dvc_and_kaggle.md). Needs Kaggle
+# credentials at ~/.kaggle/kaggle.json (or an existing ~/.kaggle/access_token)
+# to authenticate -- not something pip install sets up for you.
+kaggle
+
+# Optional, uncomment if you want notebooks driven from THIS venv
+# instead of registering it as a kernel in your other jupyter install:
+# jupyterlab
+# ipykernel
