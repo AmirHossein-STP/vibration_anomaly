@@ -125,11 +125,45 @@ partitioning, instead of taking chronological slices) — spreads
 train/val/test across the full campaign, still keeps short-range
 adjacent-cycle structure intact within a block.
 
-**Kernel v3: not yet pushed.** Local `.venv` still has no PyTorch installed
-(`config.py` and the block-shuffle split's partition arithmetic were both
-verified locally without it — see `notes/09_hydraulic_notes.md`). Next:
-`bash scripts/14_hydraulic_kaggle_push.sh`, poll with
-`scripts/15_hydraulic_kaggle_status.sh`, pull with
-`scripts/16_hydraulic_kaggle_pull.sh`. Even a good-looking result from this
-run should be read against section 5's still-open "second-order confound"
-note in `notes/09_hydraulic_notes.md` before treating it as final.
+**Kernel v3 (2026-08-27): ran to completion, results are now coherent.**
+(One operational gotcha along the way: the first pull of v3's output
+silently returned v2's stale reports — `kaggle kernels output` skips any
+file it thinks has a newer local copy, which is every source file we'd
+just edited. `scripts/16_hydraulic_kaggle_pull.sh` now always passes
+`--force`; re-pulling with it gave the real numbers below.)
+
+| Component | ROC-AUC | PR-AUC | Recall @ 99th-pct threshold |
+|---|---|---|---|
+| cooler | 1.000 | 1.000 | 1.000 |
+| valve | 0.889 | 0.976 | 0.000 |
+| pump | 0.656 | 0.895 | 0.002 |
+| accumulator | 0.867 | 0.990 | 0.375 |
+
+All four ROC-AUCs are now above random (previously 3 of 4 were *below*
+random — the time confound was actively inverting the signal), and PR-AUC
+is high across the board (0.89–1.0) — genuine evidence the reconstruction
+error DOES rank degraded cycles higher than healthy ones for every
+component, cooler most cleanly. But recall at the actual deployed
+threshold (99th percentile of validation-healthy error) is near zero for
+valve and pump: the score separates the classes well, the fixed 99th-pct
+cutoff just doesn't transfer from CWRU's much cleaner separation to these
+noisier distributions. That's a threshold-calibration problem, not a
+broken detector — worth a threshold-sensitivity sweep (CWRU has one in
+`analyze.py`; hydraulic doesn't yet, see `notes/09_hydraulic_notes.md`
+section 5) before concluding valve/pump "don't work."
+
+**Cooler's 1.0 still deserves a grain of salt.** Re-checking
+`corr(cycle_idx, recon_error)` after block-shuffling: it dropped from
+0.78–0.84 to 0.13–0.43 for valve/pump/accumulator (block-shuffling clearly
+helped), but stayed at -0.77 for cooler (barely moved from -0.82). That
+suggests `cooler_condition` may be genuinely correlated with campaign time
+in the raw data itself — plausible if the physical cooler's wear
+progressed roughly monotonically over the test period — rather than being
+a split artifact block-shuffling can fix. Unresolved; worth investigating
+before treating cooler's near-perfect score as clean evidence the fusion
+architecture "solved" that component.
+
+Not yet investigated: section 5's "second-order confound" note (each
+detector's healthy population is selected on one column while the other
+three vary freely) — worth checking, especially for pump and valve, before
+trusting these numbers as clean single-component detection.
