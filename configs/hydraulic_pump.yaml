@@ -1,0 +1,107 @@
+# Config for the hydraulic sensor-fusion experiment (ZeMA dataset) --
+# pump component detector.
+#
+# One of FOUR sibling configs (configs/hydraulic_{cooler,valve,pump,
+# accumulator}.yaml) -- each trains its OWN fusion autoencoder, "healthy"
+# meaning data.target_component alone is at its healthy value (the other
+# three components' state is read into metadata but ignored). See
+# notes/09_hydraulic_notes.md's "Per-component redesign" section for why:
+# requiring all four healthy at once left only 20 of 2205 cycles usable.
+# `pump_leakage` is healthy in 1221 of 2205 cycles by this definition.
+
+seed: 42
+
+paths:
+  raw_dir: data/hydraulic_raw                        # shared raw files across all 4 components
+  processed_dir: data/hydraulic_processed/pump      # split differs per component -- NOT shared
+  models_dir: outputs/hydraulic_models/pump
+  figures_dir: outputs/hydraulic_figures/pump
+  reports_dir: outputs/hydraulic_reports/pump
+
+# --- Data selection --------------------------------------------------------
+# profile.txt column order and healthy values -- see notes/09_hydraulic_notes.md
+# section 1 for the full value tables and the verification caveat (now
+# confirmed correct against the real dataset -- see HYDRAULIC_PLAN.md).
+data:
+  n_cycles_expected: 2205  # sanity check against the documented dataset size
+  target_component: pump_leakage
+  profile_columns: [cooler_condition, valve_condition, pump_leakage, accumulator_pressure, stable_flag]
+  healthy_values:
+    cooler_condition: 100
+    valve_condition: 100
+    pump_leakage: 0
+    accumulator_pressure: 130
+  valid_values:  # every value catalog.py will accept for that column; anything else raises
+    cooler_condition: [3, 20, 100]
+    valve_condition: [73, 80, 90, 100]
+    pump_leakage: [0, 1, 2]
+    accumulator_pressure: [90, 100, 115, 130]
+    stable_flag: [0, 1]
+  # Sensor -> (rate group, filename, samples/cycle). Order within a group
+  # is the channel order fed to that branch's encoder.
+  sensor_groups:
+    slow:
+      rate_hz: 1
+      samples_per_cycle: 60
+      sensors: [TS1, TS2, TS3, TS4, VS1, CE, CP, SE]
+    medium:
+      rate_hz: 10
+      samples_per_cycle: 600
+      sensors: [FS1, FS2]
+    fast:
+      rate_hz: 100
+      samples_per_cycle: 6000
+      sensors: [PS1, PS2, PS3, PS4, PS5, PS6, EPS1]
+
+# --- Split -------------------------------------------------------------
+# Block-shuffled split of target_component-healthy cycles: chop into
+# block_size-cycle contiguous chunks, shuffle the CHUNKS (seeded), then
+# train_fraction/val_fraction of chunks go to train/val, the rest to test.
+# NOT a straight chronological split (tried first, reverted) -- the test
+# rig runs each component's conditions in long uninterrupted stretches, so
+# a chronological split confines train/val to one narrow time window and
+# lets calendar-time drift dominate the anomaly score instead of the
+# actual component condition. NOT a per-cycle random shuffle either --
+# adjacent cycles are still autocorrelated (thermal/wear carries over), so
+# blocks keep short-range structure intact while still spreading
+# train/val/test across the full campaign. See notes/09_hydraulic_notes.md's
+# "Block-shuffled split" section for the full story.
+split:
+  train_fraction: 0.70
+  val_fraction: 0.15
+  block_size: 20  # ~20 consecutive cycles per shuffled chunk
+  # remaining target-healthy cycles + every cycle where target_component
+  # isn't healthy -> TEST
+
+# --- Model ---------------------------------------------------------------
+# One encoder branch per sensor_groups entry, fused at a shared bottleneck.
+# See notes/09_hydraulic_notes.md section 3 for the architecture diagram
+# and the conv kernel/stride/padding choice. Same architecture across all
+# four components (only the data differs) so results are comparable.
+model:
+  slow_hidden_dim: 128       # MLP hidden width for the slow (1Hz) branch
+  slow_branch_latent: 16
+  medium_base_channels: 16   # first Conv1d layer width for the medium (10Hz) branch; doubles each layer
+  medium_branch_latent: 32
+  fast_base_channels: 16     # first Conv1d layer width for the fast (100Hz) branch; doubles each layer
+  fast_branch_latent: 64
+  fused_latent_dim: 32       # the true bottleneck -- analogue of default.yaml's model.latent_dim
+  # Combined loss = weighted mean of each branch's own per-sample MSE (each
+  # branch normalized by its own size first -- see notes/09_hydraulic_notes.md
+  # section 3, "Loss"). Equal weights by default.
+  branch_weights: {slow: 1.0, medium: 1.0, fast: 1.0}
+
+# --- Training --------------------------------------------------------------
+train:
+  batch_size: 32
+  epochs: 60
+  learning_rate: 1.0e-3
+  weight_decay: 1.0e-5
+  early_stopping_patience: 10
+  device: auto              # auto | cpu | mps | cuda
+
+# --- Evaluation / thresholding ----------------------------------------------
+evaluation:
+  # Unsupervised threshold: percentile of combined reconstruction error on
+  # the VALIDATION healthy set. Same reasoning as configs/default.yaml.
+  threshold_percentile: 99.0

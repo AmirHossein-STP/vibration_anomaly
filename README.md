@@ -7,6 +7,15 @@ for turbo pump predictive maintenance, using the CWRU bearing dataset as a
 labeled stand-in (see `notes/00_project_overview.md` for the full framing,
 and `PLAN.md` for how this plan differs from the original draft and why).
 
+**Two experiments live in this repo now.** Everything below this point is
+the original single-sensor CWRU vibration MVP (`src/vibration_ad/`). A
+second, independent experiment -- multi-sensor **fusion** anomaly
+detection on the ZeMA hydraulic systems dataset (17 sensors at 3 different
+sampling rates) -- lives in `src/hydraulic_fusion_ad/`; see
+`HYDRAULIC_PLAN.md` and `notes/09_hydraulic_notes.md` for its own plan and
+design notes, and the "Hydraulic sensor-fusion experiment" section near the
+bottom of this file for how to run it.
+
 ## Pipeline
 
 ```
@@ -156,9 +165,47 @@ threshold sensitivity, an empirical bottleneck-size sweep) in
 `notes/08_deeper_analysis_and_presentation.md`, or as one shareable report:
 `bash scripts/11_build_presentation.sh`.
 
+## Hydraulic sensor-fusion experiment
+
+A second, independent experiment (`src/hydraulic_fusion_ad/`): multi-branch
+sensor fusion on the [ZeMA hydraulic systems dataset](https://www.kaggle.com/datasets/jjacostupa/condition-monitoring-of-hydraulic-systems)
+(17 sensors at 1Hz/10Hz/100Hz). **Four separate healthy-only fusion
+autoencoders**, one per monitored component (cooler/valve/pump/
+accumulator) -- not one combined detector; see `HYDRAULIC_PLAN.md` decision
+1 for why (the first real run found only 20 of 2205 cycles are healthy on
+all four components at once, nowhere near enough to train on). Full design
+in `HYDRAULIC_PLAN.md` and `notes/09_hydraulic_notes.md`. Same
+config-driven, Kaggle-first pattern as the CWRU pipeline above, entirely
+separate paths per component (`configs/hydraulic_{cooler,valve,pump,
+accumulator}.yaml`, `outputs/hydraulic_*/<component>/`) so the four
+detectors and the CWRU pipeline never collide:
+
+```bash
+.venv/bin/python -m pytest tests/test_hydraulic_smoke.py   # plumbing only, synthetic data
+
+bash scripts/14_hydraulic_kaggle_push.sh    # regenerate notebook + push (trains + evaluates all 4)
+bash scripts/15_hydraulic_kaggle_status.sh  # poll until COMPLETE/ERROR
+bash scripts/16_hydraulic_kaggle_pull.sh    # download results to outputs/hydraulic_kaggle_run/
+```
+
+Once real data exists locally (`data/hydraulic_raw/`, see its `README.md`),
+`scripts/12_hydraulic_train.sh <component>` / `13_hydraulic_evaluate.sh
+<component>` (component = `cooler`/`valve`/`pump`/`accumulator`) mirror
+`02_train.sh` / `03_evaluate.sh` above, one component at a time.
+
+**Status**: first Kaggle run (2026-08-27) failed on the all-four-healthy
+design above; fixed by the per-component redesign, not yet re-run -- see
+`HYDRAULIC_PLAN.md`'s "Status" section before trusting any numbers from
+this experiment.
+
 ## Tests
 
 `tests/test_smoke.py` uses synthetic data (no dataset download required) to
 check the plumbing end to end: window shapes, STFT output shape,
 normalizer round-trip, model forward pass, one real gradient step. Run with
 `.venv/bin/python -m pytest`.
+
+`tests/test_hydraulic_smoke.py` does the same for the hydraulic fusion
+experiment: catalog parsing/validation, chronological split correctness,
+per-sensor normalizer round-trip, multi-branch model forward pass, one real
+gradient step -- all against small synthetic data, no download needed.

@@ -17,8 +17,22 @@ outputs/figures/*
 outputs/kaggle_run/*
 outputs/sweep/*
 
+# Hydraulic sensor-fusion experiment (see HYDRAULIC_PLAN.md): raw data is
+# Kaggle-only (not DVC-tracked, unlike CWRU's data/raw/ -- no local copy
+# exists this session), processed cache + generated artifacts are
+# regenerable, same as the CWRU paths above.
+data/hydraulic_raw/*
+data/hydraulic_processed/*
+outputs/hydraulic_models/*
+outputs/hydraulic_reports/*
+outputs/hydraulic_figures/*
+outputs/hydraulic_kaggle_run/*
+
 # ...but keep the empty directories themselves tracked
 !data/processed/.gitkeep
+!data/hydraulic_raw/.gitkeep
+!data/hydraulic_raw/README.md
+!data/hydraulic_processed/.gitkeep
 !outputs/**/.gitkeep
 
 # Jupyter

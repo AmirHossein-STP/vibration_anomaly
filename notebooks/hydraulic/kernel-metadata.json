@@ -1,0 +1,16 @@
+{
+  "id": "aghzuzu/hydraulic-sensor-fusion-anomaly-detection",
+  "title": "Hydraulic Sensor Fusion Anomaly Detection",
+  "code_file": "kaggle_train_hydraulic.ipynb",
+  "language": "python",
+  "kernel_type": "notebook",
+  "is_private": "true",
+  "enable_gpu": "false",
+  "enable_tpu": "false",
+  "enable_internet": "false",
+  "machine_shape": "",
+  "dataset_sources": ["jjacostupa/condition-monitoring-of-hydraulic-systems"],
+  "competition_sources": [],
+  "kernel_sources": [],
+  "model_sources": []
+}
