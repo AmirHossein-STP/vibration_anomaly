@@ -183,40 +183,139 @@ reconstruction error, broken down by the target component's value
 pressure sensors (fast) or the temperature sensors (slow)?", which CWRU's
 single-stream architecture has no equivalent question for.
 
-## 5. Scope of this first pass, and what's deliberately deferred
+## 4b. Threshold-calibration finding, and the two open questions it resolved (2026-08-27)
+
+After block-shuffling fixed the time confound (section 2), a real run's
+numbers were finally coherent enough to investigate the two things left
+open from the redesign. `analyze.py` (`hydraulic_fusion_ad/analysis.py`)
+was built specifically to answer them with saved, reproducible reports
+instead of one-off scripts:
+
+**1. Second-order confound (`confound_check`) — checked, found to be
+minor.** Among each detector's target-healthy TEST cycles, correlating
+"how many OTHER components are also degraded" against reconstruction error
+gave |r| ≤ 0.29 for all four detectors, and false-positive rate among
+those cycles stayed at 0–4% regardless of how many other things were
+wrong. A detector reacting substantially to some other component's fault
+would show a much stronger effect than this — the concern raised in the
+previous version of this section is resolved, not just deferred.
+
+**2. Threshold miscalibration (`threshold_sensitivity`) — real, but NOT a
+simple "use a lower percentile" fix.** First pass: sweeping percentiles
+and taking whichever maximizes test F1 (`f1_optimal_threshold`) looked
+dramatic —
+
+| Component | F1 @ deployed (99th pct) | Raw F1-optimal | at percentile |
+|---|---|---|---|
+| cooler | 0.999 | 0.998 | 96th (no real gain — already saturated) |
+| valve | 0.000 | 0.966 | 68th |
+| pump | 0.004 | 0.905 | 50th |
+| accumulator | 0.636 | 0.932 | 50th |
+
+**...until checking the false-positive rate those "best" percentiles
+actually carry.** This dataset's per-component TEST sets are heavily
+skewed toward the degraded class (e.g. pump: 984 degraded vs. only 200
+healthy) — the *opposite* skew from a real deployment, where healthy
+operation dominates. A percentile can score a great F1 on a
+degraded-heavy test set simply by flagging almost everything. Recomputing
+with `false_positive_rate` tracked explicitly (fraction of TARGET-HEALTHY
+test cycles wrongly flagged):
+
+| Component | Raw F1-optimal pct | F1 | **false_positive_rate** |
+|---|---|---|---|
+| cooler | 96th | 0.998 | 5% |
+| valve | 68th | 0.966 | **47%** |
+| pump | 50th | 0.905 | **75%** |
+| accumulator | 50th | 0.932 | **40%** |
+
+A 40-75% false-positive rate on healthy operation is useless in any real
+deployment, no matter how good the F1 looks on this test set's skewed
+class balance. So `best_deployable_threshold(sensitivity_df, max_fpr=0.10)`
+was added: same F1-maximization, but constrained to percentiles that keep
+false_positive_rate at or below a stated tolerance (10% by default) —
+returns `None` if nothing in the sweep qualifies, which is itself a real,
+informative result (see the actual numbers once kernel v6 pulls, referenced
+from `HYDRAULIC_PLAN.md`'s Status section — this note was written to
+explain the corrected methodology, not to re-embed numbers that change
+per run).
+
+**What this actually means**: cooler is the only component with a
+genuinely good, deployment-realistic operating point (high recall at ~5%
+FPR). For the other three, the honest picture is more sobering than "just
+pick a better percentile" — their reconstruction-error distributions for
+healthy vs. degraded cycles overlap enough that *no* single percentile
+threshold delivers both good recall and an acceptable false-positive rate
+simultaneously. Good ROC-AUC (0.66–0.89) still means the score ranks
+degraded cycles higher on average — the model isn't producing noise — but
+turning that ranking into a usable point detector may need real
+improvements (better features for the fast/pressure branch, a larger
+distinguishing signal, or accepting a different anomaly-scoring approach
+entirely), not just a threshold tweak. Section 5 reflects this.
+
+**Methodological line held throughout**: nothing here EVER uses
+test-set-informed percentiles to set `configs/hydraulic_*.yaml`'s deployed
+`threshold_percentile: 99.0` — both `f1_optimal_threshold` and
+`best_deployable_threshold` are saved to `threshold_cheat_comparison.json`,
+explicitly labeled as comparisons, never as a valid selection procedure
+(see `notes/04_evaluation_notes.md`'s original reasoning for CWRU, held to
+the same standard here). This is the CWRU-extension-ideas.md "F1-optimal
+threshold as a reported, clearly-labeled second number" idea, never built
+there (every percentile scored about the same, so it wasn't informative)
+— genuinely informative here, in both its raw and FPR-corrected forms.
+
+## 5. Scope, what's resolved, and what's still open
 
 Mirrors the original MVP's phased history (see `notes/06_extension_ideas.md`
-in the CWRU pipeline) — built now: data loader, model, `train.py`,
-`evaluate.py`, smoke tests, Kaggle notebook + push/pull scripts, and (after
-two real runs forced them) the per-component redesign and block-shuffled
-split in section 2. Deferred, in rough priority order for a next session:
+in the CWRU pipeline). Built across four Kaggle runs: data loader, model,
+`train.py`, `evaluate.py`, the per-component redesign, the block-shuffled
+split, and (this pass) `analyze.py` with the three diagnostics in section
+4b. **Resolved**: the second-order confound (checked, minor). **Root-caused
+but NOT fixed**: threshold miscalibration turned out to be a symptom of a
+deeper issue (real distribution overlap for 3 of 4 components, not a bad
+percentile choice — see section 4b's FPR correction). **Still open, in
+rough priority order**:
 
-- **Second-order confound, not yet addressed**: block-shuffling fixes the
-  TIME confound, but each detector's "healthy" population is still
-  selected on ONE column (e.g. `valve_condition==100`) while the other
-  three components vary freely underneath it — if, say, cycles with a
-  healthy valve also happen to have a healthier-than-average cooler more
-  often than chance (a property of how the test campaign was actually run,
-  not something the split controls), the model could partly be learning
-  "cooler is fine" and mislabeling it as "valve is fine." `degraded_component`
-  is already recorded per cycle specifically to let you check this (e.g.
-  cross-tabulate it against predictions), but the check itself hasn't been
-  done — worth doing before trusting any one detector's number in
-  isolation.
-- **`analyze.py`/`sweep.py` equivalents** (latent-space PCA per component,
-  fused-latent-dim sweep) — CWRU added these as a second pass after the
-  first real run showed the baseline worked; same plan here, once these
-  four detectors have real, trustworthy results.
+- **Pick a legitimate (non-test-informed) lower default `threshold_percentile`
+  for valve and accumulator.** With the FPR constraint applied honestly,
+  these two are NOT stuck — a percentile around 88–96 gets F1 to
+  0.68–0.70 at only 6–9% false-positive rate (see `HYDRAULIC_PLAN.md`'s
+  Status section for the exact numbers), a real, usable improvement over
+  the 99th-percentile default. The remaining problem is procedural, not
+  architectural: today's number was found by looking at test performance,
+  which can't become the deployed default as-is. Needs either (a) a
+  nested threshold-selection split (hold out a labeled slice purely for
+  calibration, distinct from train/val/final-test), (b) a criterion based
+  only on the validation-healthy distribution's own shape, or (c) an
+  explicit business decision about acceptable false-alarm rate, made
+  independently of having seen this result.
+- **Pump needs real model/feature improvement, not threshold tuning** —
+  even at its best FPR-constrained operating point it only reaches
+  F1≈0.39 (recall 24%). Concrete candidates, roughly in order of effort:
+  (a) spectrogram features for the fast pressure branch (already listed
+  below, now with a stronger motivation specific to pump), (b) per-branch
+  loss reweighting if one branch is drowning out a more diagnostic one
+  (`branch_error_by_component.csv` already has the data to check this),
+  (c) a larger/differently-shaped model if `training_log.csv` shows
+  underfitting rather than overfitting.
+- **`cooler_condition`'s raw time-correlation (r=+0.88, see section 2)
+  remains unresolved** — `analyze.py`'s `raw_time_correlation` now reports
+  this number every run, but nothing yet distinguishes "genuine wear
+  progressing over the campaign" from "an artifact of how conditions were
+  scheduled." Would need either domain knowledge about this specific test
+  rig's protocol, or a dataset with less time/condition entanglement, to
+  resolve further.
+- **Latent-space PCA / fused-latent-dim sweep** (CWRU's `analyze.py`
+  section this one doesn't yet cover) — worth adding once the threshold
+  question above is settled, so the "what is the model learning" story
+  isn't built on top of a known-bad operating point.
 - **Overfitting check**: each detector still has a 6.7M-parameter model
-  against a few hundred to ~1200 training cycles — meaningfully more data
-  than the 20-cycle crash, but still modest relative to CWRU's ~2800
-  training windows for a similarly-sized model. Watch `training_log.csv`
-  (train vs. val error diverging) on the first real run per component;
-  shrinking `model.*_branch_latent`/`*_base_channels` is the fix if so, not
-  yet applied pre-emptively since it wasn't yet confirmed as a problem.
+  against a few hundred to ~1200 training cycles. `training_log.csv` (not
+  yet inspected for train/val divergence) is the place to check; shrinking
+  `model.*_branch_latent`/`*_base_channels` is the fix if it shows up.
 - **Spectrogram features for the fast pressure branch** — the fast sensors
   do have oscillatory structure a frequency-domain view could exploit;
   left out of this first pass to avoid conflating two architecture changes
   (fusion + feature representation) in one untested result.
-- **A presentation report** (`build_presentation.py` equivalent) — after a
-  real run exists to report on, same as CWRU.
+- **A presentation report** (`build_presentation.py` equivalent) — worth
+  building once the threshold question is settled and the numbers it would
+  report are the real, deployed-default numbers.

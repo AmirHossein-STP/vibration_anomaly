@@ -163,7 +163,78 @@ a split artifact block-shuffling can fix. Unresolved; worth investigating
 before treating cooler's near-perfect score as clean evidence the fusion
 architecture "solved" that component.
 
-Not yet investigated: section 5's "second-order confound" note (each
-detector's healthy population is selected on one column while the other
-three vary freely) — worth checking, especially for pump and valve, before
-trusting these numbers as clean single-component detection.
+**Kernels v4/v5 (2026-08-27): built and ran `analyze.py`, both open
+questions investigated — but v4/v5's headline number was itself
+misleading, corrected in v6 (below) before it got reported as a finding.**
+
+- **Second-order confound: checked, minor.** Among each detector's
+  target-healthy test cycles, error/false-positive-rate barely moves with
+  how many OTHER components are also degraded (|r| ≤ 0.29, FP rate 0–4%
+  regardless). Not the explanation for anything unusual in these results.
+- **Threshold miscalibration: real, but the first fix I nearly shipped was
+  wrong.** Raw F1-optimal percentiles looked like a dramatic win (valve
+  0.000→0.966 F1, pump 0.004→0.905, accumulator 0.636→0.932) — until
+  checking what false-positive rate those percentiles actually carry on
+  healthy data: **47%, 75%, and 40%** respectively. Those percentiles score
+  well on F1 only because each component's TEST set is dominated by
+  degraded cycles (e.g. pump: 984 degraded vs. 200 healthy) — the opposite
+  skew from a real deployment. A threshold that flags 75% of genuinely
+  healthy operation as anomalous is not a fix, however good its test-set F1
+  looks. Caught this before recommending "just lower the percentile" as
+  the next step, which would have been actively wrong advice.
+
+**Kernel v6 (2026-08-27): corrected methodology, pulled and read.**
+`threshold_sensitivity` now tracks `false_positive_rate` explicitly, and
+`best_deployable_threshold(sensitivity_df, max_fpr=0.10)` finds the best
+F1 subject to that FPR ceiling. (One more operational note: the pull
+stalled twice via `16_hydraulic_kaggle_pull.sh` — a known intermittent
+issue with this kernel's larger files, not a new bug — fixed by
+`scripts/18_hydraulic_kaggle_pull_reports_only.sh`, which uses `kaggle
+kernels output --file-pattern` to skip the raw data/model
+checkpoints/figures and pull only the &lt;1MB of JSON/CSV reports; use it
+for a fast check, `16_hydraulic_kaggle_pull.sh` when you actually need the
+figures/models.) Real, FPR-aware numbers:
+
+| Component | Deployed (99th pct) F1 | Best F1 at FPR ≤ 10% | at percentile | FPR there |
+|---|---|---|---|---|
+| cooler | 0.999 | 0.998 | 96th | 5% |
+| valve | 0.000 | **0.705** (P=0.98, R=0.55) | 88th | 6.3% |
+| pump | 0.004 | 0.385 (P=0.95, R=0.24) | 88th | 6.5% |
+| accumulator | 0.546 | **0.683** (P=0.99, R=0.52) | 96th | 9.0% |
+
+So the "just lower the percentile" instinct wasn't entirely wrong — it
+just needed the FPR constraint to be honest. Real, deployment-realistic
+takeaways:
+
+- **cooler**: already good at the deployed threshold; unaffected.
+- **valve and accumulator**: genuinely, substantially improvable by
+  choosing a different (still high, 88th/96th) percentile — F1 goes from
+  ~0 and 0.55 to 0.70 and 0.68 respectively, at an acceptable ~6–9% false
+  alarm rate. This is the strongest actionable finding of the whole
+  exercise.
+- **pump**: still weak even at its best FPR-constrained operating point
+  (F1 0.385, recall only 24%) — this one likely needs real model/feature
+  improvement (spectrogram features for the fast pressure branch, in
+  section 5's deferred list, is the natural next try), not just threshold
+  tuning.
+
+**Deliberately NOT done**: changing `configs/hydraulic_*.yaml`'s deployed
+`threshold_percentile: 99.0` to 88/96/etc. Both comparison numbers above
+were chosen by looking at test labels (picking `max_fpr=0.10` itself was
+also somewhat informed by wanting round, sensible numbers) — a legitimate
+fix needs a threshold chosen without that, or a business/deployment
+decision about acceptable false-alarm rate made independently of this
+result (see `notes/09_hydraulic_notes.md` section 5's options). Recommend
+this as your call, not mine to make silently. `cooler_condition`'s raw
+time-correlation (r=+0.88, section 2) remains a separate, unresolved
+caveat on that component's score specifically.
+
+**Kaggle oddity noticed while debugging v6, not investigated further**:
+the kernel log shows train/evaluate/analyze each running twice per
+component, back to back, with byte-identical output both times (train.py
+is fully deterministic given the fixed seed, so this is verifiable, not
+just "looks similar"). Every file we actually need ended up correct either
+way. Best guess is a Kaggle infra-level retry or a "commit" execution
+quirk, not a bug in this project's code — not worth chasing further unless
+it starts producing genuinely divergent output, same "just retry" posture
+as the known intermittent `kernels output` stalls above.

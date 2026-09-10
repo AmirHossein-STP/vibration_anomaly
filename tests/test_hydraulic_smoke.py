@@ -11,9 +11,17 @@ from __future__ import annotations
 from pathlib import Path
 
 import numpy as np
+import pandas as pd
 import pytest
 import torch
 
+from hydraulic_fusion_ad.analysis import (
+    best_deployable_threshold,
+    confound_check,
+    f1_optimal_threshold,
+    raw_time_correlation,
+    threshold_sensitivity,
+)
 from hydraulic_fusion_ad.config import (
     Config,
     DataConfig,
@@ -253,3 +261,100 @@ def test_tiny_training_step_reduces_loss(tmp_path):
 
     assert all(np.isfinite(losses))
     assert losses[-1] < losses[0]
+
+
+def test_threshold_sensitivity_recall_is_monotonic_nonincreasing():
+    """As the threshold percentile rises, the predicted-positive set can
+    only shrink (or stay the same) -- so recall must be monotonically
+    non-increasing in percentile, for ANY data (this is a property of
+    thresholding, not of these specific numbers).
+    """
+    rng = np.random.default_rng(0)
+    val_errors = rng.normal(0, 1, size=200)
+    test_errors = np.concatenate([rng.normal(0, 1, size=100), rng.normal(3, 1, size=100)])
+    y_true = np.concatenate([np.zeros(100), np.ones(100)])
+
+    df = threshold_sensitivity(val_errors, test_errors, y_true, percentiles=np.arange(50.0, 100.0, 5.0))
+    assert list(df.columns) == ["percentile", "threshold", "precision", "recall", "f1", "false_positive_rate"]
+    assert (df["recall"].diff().dropna() <= 1e-9).all()  # non-increasing (allow float noise)
+    assert (df["false_positive_rate"].diff().dropna() <= 1e-9).all()  # also non-increasing, same reasoning
+    # clearly-separated synthetic data: low percentile should catch nearly everyone
+    assert df.iloc[0]["recall"] > 0.9
+
+
+def _sensitivity_df(**cols) -> pd.DataFrame:
+    """Helper: build a minimal threshold_sensitivity()-shaped DataFrame for
+    testing f1_optimal_threshold/best_deployable_threshold in isolation.
+    """
+    return pd.DataFrame(cols)
+
+
+def test_f1_optimal_threshold_picks_the_max_row_ignoring_fpr():
+    sensitivity_df = _sensitivity_df(
+        percentile=[50.0, 60.0, 70.0],
+        threshold=[1.0, 2.0, 3.0],
+        precision=[0.5, 0.9, 0.6],
+        recall=[0.9, 0.9, 0.5],
+        f1=[0.64, 0.90, 0.55],  # row index 1 (pct=60) is the max, despite its high FPR
+        false_positive_rate=[0.05, 0.80, 0.02],
+    )
+    best = f1_optimal_threshold(sensitivity_df)
+    assert best == {
+        "percentile": 60.0, "threshold": 2.0, "precision": 0.9, "recall": 0.9, "f1": 0.90, "false_positive_rate": 0.80,
+    }
+
+
+def test_best_deployable_threshold_respects_fpr_cap():
+    sensitivity_df = _sensitivity_df(
+        percentile=[50.0, 60.0, 70.0],
+        threshold=[1.0, 2.0, 3.0],
+        precision=[0.5, 0.9, 0.6],
+        recall=[0.9, 0.9, 0.5],
+        f1=[0.64, 0.90, 0.55],
+        false_positive_rate=[0.05, 0.80, 0.02],  # only rows 0 and 2 satisfy max_fpr=0.10
+    )
+    best = best_deployable_threshold(sensitivity_df, max_fpr=0.10)
+    assert best["percentile"] == 50.0  # the higher-F1 of the two FPR-eligible rows (0.64 > 0.55)
+
+
+def test_best_deployable_threshold_returns_none_when_nothing_qualifies():
+    sensitivity_df = _sensitivity_df(
+        percentile=[50.0], threshold=[1.0], precision=[0.5], recall=[0.9], f1=[0.64], false_positive_rate=[0.99],
+    )
+    assert best_deployable_threshold(sensitivity_df, max_fpr=0.10) is None
+
+
+def test_confound_check_computes_group_means_and_fp_rate():
+    test_predictions = pd.DataFrame(
+        {
+            "label": [0, 0, 0, 0],
+            "degraded_component": ["none", "none", "valve_condition", "valve_condition,pump_leakage"],
+            "recon_error": [1.0, 3.0, 5.0, 7.0],
+            "predicted_anomaly": [0, 1, 0, 1],
+        }
+    )
+    summary = confound_check(test_predictions)
+    summary = summary.set_index("n_other_degraded")
+    assert summary.loc[0, "mean_recon_error"] == 2.0  # mean of 1.0, 3.0
+    assert summary.loc[0, "false_positive_rate"] == 0.5  # 1 of 2 flagged
+    assert summary.loc[1, "mean_recon_error"] == 5.0
+    assert summary.loc[2, "mean_recon_error"] == 7.0
+    assert summary.loc[0, "n"] == 2
+
+
+def test_raw_time_correlation_detects_perfect_correlation():
+    n = 50
+    catalog = pd.DataFrame(
+        {
+            "cycle_idx": np.arange(n),
+            "cooler_condition": np.arange(n),  # perfectly correlated with cycle_idx
+            "valve_condition": np.full(n, 100),  # constant -> undefined/NaN correlation
+            "pump_leakage": np.zeros(n),
+            "accumulator_pressure": np.arange(n)[::-1],  # perfectly anti-correlated
+            "stable_flag": np.zeros(n),
+        }
+    )
+    result = raw_time_correlation(catalog, ["cooler_condition", "valve_condition", "pump_leakage", "accumulator_pressure", "stable_flag"])
+    assert set(result.keys()) == {"cooler_condition", "valve_condition", "pump_leakage", "accumulator_pressure"}
+    assert result["cooler_condition"] == pytest.approx(1.0)
+    assert result["accumulator_pressure"] == pytest.approx(-1.0)

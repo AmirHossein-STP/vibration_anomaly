@@ -114,3 +114,60 @@ def plot_branch_error_by_component(summary: "pd.DataFrame", save_path: Path) -> 
     fig.savefig(save_path, dpi=150)
     plt.close(fig)
     return save_path
+
+
+def plot_threshold_sensitivity(
+    sensitivity_df: "pd.DataFrame", save_path: Path, deployed_percentile: float = 99.0
+) -> Path:
+    """Includes false_positive_rate alongside precision/recall/F1 --
+    critical here, not just extra detail: this dataset's per-component
+    test sets skew heavily toward the degraded class, so a percentile can
+    post a great F1 purely by flagging most of the test set, including
+    most genuinely healthy cycles (see notes/09_hydraulic_notes.md section
+    4b) -- a good-looking F1 curve alone would be misleading without it.
+    """
+    fig, ax = plt.subplots(figsize=(7, 5))
+    ax.plot(sensitivity_df["percentile"], sensitivity_df["precision"], marker="o", markersize=3, label="precision")
+    ax.plot(sensitivity_df["percentile"], sensitivity_df["recall"], marker="o", markersize=3, label="recall")
+    ax.plot(sensitivity_df["percentile"], sensitivity_df["f1"], marker="o", markersize=3, label="F1")
+    ax.plot(
+        sensitivity_df["percentile"], sensitivity_df["false_positive_rate"],
+        marker="o", markersize=3, linestyle="--", color="#ef4444", label="false positive rate",
+    )
+    ax.axvline(deployed_percentile, color="gray", linestyle="--", alpha=0.7, label=f"deployed ({deployed_percentile:.0f}th pct)")
+    ax.set_ylim(0, 1.05)
+    ax.set_xlabel("Threshold percentile (of validation healthy error)")
+    ax.set_ylabel("Score")
+    ax.set_title("Threshold sensitivity (watch false positive rate, not just F1)")
+    ax.legend()
+    fig.tight_layout()
+    fig.savefig(save_path, dpi=150)
+    plt.close(fig)
+    return save_path
+
+
+def plot_confound_check(summary: "pd.DataFrame", save_path: Path) -> Path:
+    """summary: columns n_other_degraded, mean_recon_error,
+    false_positive_rate, n -- among TARGET-HEALTHY test cycles, does error
+    or the false-positive rate climb with how many OTHER components are
+    also degraded? A flat line across n_other_degraded is the reassuring
+    result (see notes/09_hydraulic_notes.md's "second-order confound" note).
+    """
+    fig, (ax1, ax2) = plt.subplots(1, 2, figsize=(10, 4.5))
+    x = summary["n_other_degraded"]
+    ax1.bar(x, summary["mean_recon_error"], color="#3b82f6")
+    ax1.set_xlabel("# other components also degraded")
+    ax1.set_ylabel("Mean reconstruction error")
+    ax1.set_title("Error vs. other-component confound")
+    ax2.bar(x, summary["false_positive_rate"], color="#ef4444")
+    ax2.set_ylim(0, 1.05)
+    ax2.set_xlabel("# other components also degraded")
+    ax2.set_ylabel("False positive rate")
+    ax2.set_title("FP rate vs. other-component confound")
+    for ax in (ax1, ax2):
+        ax.set_xticks(sorted(x.unique()))
+    fig.suptitle(f"n per group: {dict(zip(summary['n_other_degraded'], summary['n']))}", fontsize=8)
+    fig.tight_layout()
+    fig.savefig(save_path, dpi=150)
+    plt.close(fig)
+    return save_path

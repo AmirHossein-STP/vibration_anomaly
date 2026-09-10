@@ -45,6 +45,8 @@ SRC_FILES = [
     "src/hydraulic_fusion_ad/models/fusion_autoencoder.py",
     "src/hydraulic_fusion_ad/train.py",
     "src/hydraulic_fusion_ad/evaluate.py",
+    "src/hydraulic_fusion_ad/analysis.py",
+    "src/hydraulic_fusion_ad/analyze.py",
     "src/hydraulic_fusion_ad/viz.py",
 ]
 COMPONENTS = ["cooler", "valve", "pump", "accumulator"]
@@ -219,20 +221,30 @@ def build_notebook() -> dict:
         "why: requiring all four healthy at once left only 20 of 2205 "
         "cycles usable). Three encoder branches (slow/medium/fast rate "
         "groups) fused at one bottleneck per detector -- see "
-        "notes/09_hydraulic_notes.md section 3. Runs sequentially, CPU-only "
-        "-- expect this to take a while.",
+        "notes/09_hydraulic_notes.md section 3. Also runs analyze.py per "
+        "component: threshold sensitivity (is the deployed 99th percentile "
+        "actually a good operating point?), a second-order confound check, "
+        "and a raw time-correlation diagnostic (does this component's "
+        "condition itself drift with campaign time in the raw data?) -- "
+        "see analyze.py's docstring and notes/09_hydraulic_notes.md "
+        "sections 2 and 5 for why these three specifically. Runs "
+        "sequentially, CPU-only -- expect this to take a while.",
     ))
     cells.append(code(
         "import json",
         f"COMPONENTS = {COMPONENTS!r}",
         "all_metrics = {}",
+        "all_time_corr = {}",
         "for name in COMPONENTS:",
         "    config_path = f'configs/hydraulic_{name}.yaml'",
         "    print(f'=== {name} ({config_path}) ===')",
         "    run('-m', 'hydraulic_fusion_ad.train', '--config', config_path)",
         "    run('-m', 'hydraulic_fusion_ad.evaluate', '--config', config_path)",
+        "    run('-m', 'hydraulic_fusion_ad.analyze', '--config', config_path)",
         "    metrics_path = WORKDIR / f'outputs/hydraulic_reports/{name}/evaluation_metrics.json'",
         "    all_metrics[name] = json.loads(metrics_path.read_text())",
+        "    time_corr_path = WORKDIR / f'outputs/hydraulic_reports/{name}/time_correlation.json'",
+        "    all_time_corr[name] = json.loads(time_corr_path.read_text())",
     ))
 
     cells.append(md("## 6. Metrics summary, all four detectors"))
@@ -245,6 +257,9 @@ def build_notebook() -> dict:
         "          f\"n_test_degraded={m['n_test_degraded']})\")",
         "print()",
         "print(json.dumps(all_metrics, indent=2))",
+        "print()",
+        "print('Raw time-correlation (corr(cycle_idx, condition value), full dataset):')",
+        "print(json.dumps(all_time_corr, indent=2))",
     ))
 
     cells.append(md("## 7. Look at the results, per component"))
@@ -254,7 +269,8 @@ def build_notebook() -> dict:
         "    print(f'=== {name} ===')",
         "    figdir = WORKDIR / 'outputs' / 'hydraulic_figures' / name",
         "    for fname in ['error_histogram.png', 'roc_curve.png', 'confusion_matrix.png',",
-        "                  'detection_rate_by_component_severity.png', 'branch_error_by_component.png']:",
+        "                  'detection_rate_by_component_severity.png', 'branch_error_by_component.png',",
+        "                  'threshold_sensitivity.png', 'confound_check.png']:",
         "        path = figdir / fname",
         "        if path.exists():",
         "            print(fname)",
