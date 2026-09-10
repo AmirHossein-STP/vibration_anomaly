@@ -70,3 +70,187 @@ During training, the gradient from the Domain Discriminator is multiplied by a n
 ### Phase 5: Deployment Readiness
 *   Wrap the trained Feature Extractor and Classifier into a lightweight inference script.
 *   Document how to feed your physical bearing's normal data into Phase 3 to create a custom-adapted model for your specific machine.
+
+## Revisions & Decisions (implementation pass, 2026-09-10)
+
+Read alongside the original plan above -- same spirit as `PLAN.md`
+(original vs. revised, and why) for the first experiment. Third
+independent experiment in this repo: `src/domain_adaptation/`, alongside
+untouched `vibration_ad/` and `hydraulic_fusion_ad/`.
+
+**Paderborn dataset source, confirmed by direct inspection, not assumed.**
+Searched Kaggle (`kaggle datasets list -s paderborn`), found 11 candidates;
+picked `dippatel03/paderborn-db` (most downloaded/voted, 9.7GB) and
+verified its structure directly rather than trusting the listing: paged
+through the *full* file listing via the API (`kaggle datasets files`,
+14 pages) and confirmed all 32 canonical KAt-DataCenter bearing codes are
+present (`K001-K006` healthy, `KA01/03/05/06/07/08/09` + `KI01/03/05/07/08`
+artificial damage, `KA04/15/16/22/30` + `KI04/14/16/17/18/21` real damage,
+`KB23/24/27` real combined-damage), each with exactly 20 runs under all 4
+operating conditions (`N15_M07_F10`, `N09_M07_F10`, `N15_M01_F10`,
+`N15_M07_F04`) -- full factorial, no gaps to design around. Downloaded 3
+real `.mat` files (K001, KA04, KI04) to a scratch dir and loaded them with
+`scipy.io.loadmat(..., simplify_cells=True)` to confirm the internal
+struct layout empirically: top-level key = filename (minus `.mat`), field
+`Y` = a length-7 list of `{'Name', 'Data'}` channel dicts (`force`,
+`phase_current_1/2`, `speed`, `temp_2_bearing_module`, `torque`,
+`vibration_1`), matching the dataset's own documentation. Only
+`vibration_1` (~64kHz, ~256000 samples/4s run) is used, matching this
+project's single-accelerometer-channel scope everywhere else. Attached via
+`dataset_sources` in the new kernel's `kernel-metadata.json`, exactly like
+CWRU's `esraakhaled299/cwru-data` -- **nothing downloaded into the repo,
+nothing uploaded anywhere**, per your instruction; the 3 inspection files
+were deleted from the scratch dir, never committed.
+
+**Common sample rate: 12kHz (CWRU's native rate), not 48kHz as originally
+proposed.** CWRU's Drive-End signal is already 12kHz; PU's `vibration_1`
+is 64kHz. Downsampling PU to 12kHz (`scipy.signal.resample_poly(up=3,
+down=16)`, exact ratio, proper anti-aliasing) instead of upsampling
+everything to 48kHz: (1) reuses `vibration_ad`'s entire, already-verified
+windowing/STFT/normalization pipeline (`configs/default.yaml`'s
+`segment_length=8384`, `nperseg=256`, `hop_length=64` -> 128x128 spectrogram)
+completely unchanged -- literally imported, not reimplemented; (2) avoids
+inflating PU's data volume 4x for zero informational gain (bearing fault
+harmonics at these rig speeds sit well under 12kHz's 6kHz Nyquist, so
+nothing is lost); (3) keeps training CPU-feasible on Kaggle's unverified
+(no-GPU) account, the same constraint that shaped `hydraulic_fusion_ad`'s
+design. `scipy.signal.stft`'s `fs` argument only labels the returned
+frequency axis, never affects the magnitude values from a fixed
+`nperseg`/`hop_length` -- so resampling both domains to one common rate
+*before* an identical fixed-sample STFT is what actually makes "bin 40"
+mean the same physical frequency in every domain; without that step the
+whole cross-domain premise (a CNN generalizing across datasets) wouldn't
+hold.
+
+**Architecture simplified: a small custom CNN, not ResNet-18.** Same
+4-layer stride-2 conv stack as `vibration_ad.models.autoencoder`'s encoder
+(reused idea, not reused code -- this one ends in a classification/domain
+head, not a decoder), `base_channels=16`. ResNet-18 (~11M params) trained
+across two combined datasets on a CPU-only Kaggle kernel would make even
+one epoch slow enough to hurt iteration speed, for a benefit (ImageNet-style
+residual depth) these 128x128 single-channel spectrograms don't obviously
+need. Revisit if the small CNN turns out to underfit both domains at once.
+
+**C-MMD simplified to a "healthy-anchor" alignment loss.** Full Conditional
+Maximum Mean Discrepancy needs class-conditional kernel estimates across
+domains -- meaningfully more machinery for a first pass. What the plan
+actually wants ("align the healthy baselines") is captured much more
+cheaply by penalizing the squared distance between the mean feature vector
+of labeled healthy examples in the source batch and the mean feature
+vector of the target-normal batch (`models/dann.py::healthy_anchor_loss`).
+This is a real simplification, not a drop-in equivalent -- documented so
+it isn't mistaken for the literature's C-MMD if this gets compared to a
+paper later.
+
+**Ball ("B") faults excluded from the universal label space.** PU's real
+damage bearings are only ever inner- or outer-race (per KAt-DataCenter
+docs, confirmed against the bearing-code table above) -- there's no PU
+counterpart to align a "ball fault" class against, so CWRU's `B` files are
+dropped from this task entirely (universal space: `0=healthy,
+1=inner_race, 2=outer_race`). They remain fully used, unchanged, in the
+original `vibration_ad` experiment.
+
+**One target operating condition held out end-to-end: `N09_M07_F10`.**
+The other three source conditions all keep rotational speed at N15
+(1500rpm) and vary only load torque or radial force; `N09` (900rpm) is the
+one axis that shifts bearing characteristic frequencies (BPFO/BPFI/BSF, all
+proportional to shaft speed) multiplicatively across the whole spectrum --
+the most physically distinct domain gap available among the 4, so the
+most meaningful test of whether adaptation actually transfers. Under this
+condition: `K001-K003`'s healthy runs split into `pu_target_normal`
+(adaptation) vs. held-out healthy test rows; every real-damage bearing's
+runs (`KA04/15/16/22/30`, `KI04/14/16/17/18/21`) are 100% test-only,
+labels never touched before `evaluate.py` -- the actual zero-shot check.
+
+**Bearing-code subset trimmed for a first Kaggle run, not the full
+dataset.** Using every artificial code x all 3 source conditions x all 20
+runs would mean ~700+ `.mat` loads (~9MB each) and tens of thousands of
+128x128 windows -- workable but slow to iterate on for a first pass.
+Defaults in `configs/domain_adaptation.yaml`: 3 healthy codes
+(`K001-K003`), 2 artificial-outer (`KA01, KA05`), 2 artificial-inner (`KI01,
+KI05`) for source training; all 11 real-damage codes for the target test
+set (that's the actual result being measured, not a place to cut corners).
+Trivially widened later by editing those lists -- every downstream module
+reads them from config, nothing is hardcoded.
+
+## Status
+
+**Implementation complete (2026-09-10)**: `src/domain_adaptation/` (data
+loaders for both datasets, DANN model + GRL + healthy-anchor loss,
+train_baseline.py / train_dann.py / evaluate.py), `configs/domain_adaptation.yaml`,
+`tests/test_domain_adaptation_smoke.py` (9 data-layer tests passing locally
+against synthetic data; 7 model/training tests written but only run on
+Kaggle -- this Mac's PyPI wheel index caps torch at 2.2.2, which predates
+numpy 2.x support and crashes on `torch.from_numpy` with the numpy 2.5
+already in this venv; not worth downgrading the whole scientific stack just
+for local unit tests), `notebooks/domain_adaptation/` (Kaggle notebook +
+kernel-metadata.json, both input datasets attached, nothing
+downloaded/uploaded).
+
+**Kernel v1 (2026-09-10): ran end to end (~50 min CPU, most of it the
+now-familiar duplicate-execution quirk from `HYDRAULIC_PLAN.md` re-running
+each stage twice back to back). Real numbers, and a real problem.**
+
+| Model | Accuracy | Macro F1 | n |
+|---|---|---|---|
+| baseline (no adaptation) | 0.282 | 0.269 | 4656 |
+| DANN (adapted) | 0.206 | 0.171 | 4656 |
+
+DANN is *worse* than the no-adaptation baseline, not better. Two things in
+the confusion matrices (rows=true, cols=pred, order
+[healthy, inner_race, outer_race]):
+
+```
+baseline:                      dann:
+[314,  142,    0]              [394,   62,    0]
+[901,  837,  556]              [1731, 563,    0]
+[1605, 137,  164]              [984,  922,    0]
+```
+
+- **Baseline already shows a severe, genuine domain-shift problem** on
+  outer_race specifically: 1605 of 1906 true outer_race target windows get
+  called "healthy" (8.6% recall) -- this is exactly the "domain shift hurts
+  without adaptation" baseline Phase 2 is supposed to establish, and it's a
+  real, large effect, not a rounding error.
+- **DANN doesn't fix that -- it collapses entirely**: column 3
+  (predicted outer_race) is **zero across every true class**. The model
+  never predicts outer_race at all on TARGET_TEST once adapted, despite
+  reaching 99% accuracy on SOURCE_VAL (epoch 12, the checkpoint actually
+  saved) -- so the classifier head can clearly represent all 3 classes on
+  source data; something about adaptation specifically destroys that for
+  the target domain.
+
+**Confirmed by the actual t-SNE plot (pulled and inspected, not guessed
+at): domain alignment did not happen at all -- this is bigger than an
+anchor-loss side effect.** `outputs/da_figures/feature_space_tsne_dann.png`,
+colored by domain: CWRU and PU_Artificial (source) sit in a handful of
+small, tight clusters; PU_Target (the held-out condition, `pu_target`,
+n=4656) sprawls across most of the rest of the plot, including large
+regions where **no source point exists anywhere nearby**. The classifier
+was only ever shaped by source-region data -- in the uncharted regions
+where most of the target lands, its behavior is essentially undefined,
+and it happened to collapse toward never emitting the outer_race logit
+there. My first-pass hypothesis (healthy-anchor loss dragging target
+features toward "healthy" specifically) doesn't survive contact with this
+plot -- it's not that target features got pulled to the wrong specific
+place, it's that they mostly never got pulled anywhere near source at all.
+
+**Likely real cause**: `domain_loss` hovered near chance (ln(3)=1.099) from
+epoch 1 onward rather than starting low and rising under adversarial
+pressure -- the textbook DANN curve shape. Two plausible, non-exclusive
+reasons: (1) the classifier converges on source very fast (`cls_acc=0.812`
+already in epoch 1, while `lambda`=0.165 is still near its floor per the
+warm-up schedule) -- by the time adversarial pressure ramps up, the feature
+extractor may have already committed to source-specific shortcuts the GRL
+can't undo; (2) marginal domain-invariance (what the discriminator/GRL
+actually optimizes) doesn't imply class-conditional alignment -- a
+well-known DANN limitation -- and the single-class, mean-only
+healthy-anchor loss is too weak a constraint to compensate on its own for
+a domain gap this large (different rig, different sensor, resampled 64kHz
+-> 12kHz vs. CWRU's native 12kHz).
+
+**Next step (not yet run)**: push a v2 kernel with adversarial pressure
+strengthened and applied earlier -- raise `train_dann.domain_loss_weight`
+and `grl_gamma` (faster lambda ramp, so it doesn't lag the fast-converging
+classifier) -- rather than re-guessing at the anchor loss specifically.
+Proposed to the user before spending another ~50-minute run on it.

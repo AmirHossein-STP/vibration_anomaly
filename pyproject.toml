@@ -5,7 +5,7 @@ build-backend = "setuptools.build_meta"
 [project]
 name = "vibration-ad"
 version = "0.1.0"
-description = "Unsupervised anomaly detection experiments: CWRU vibration MVP (vibration_ad) + ZeMA hydraulic sensor fusion (hydraulic_fusion_ad)"
+description = "Vibration/condition-monitoring anomaly detection experiments: CWRU vibration MVP (vibration_ad), ZeMA hydraulic sensor fusion (hydraulic_fusion_ad), and CWRU+Paderborn zero-shot domain adaptation (domain_adaptation)"
 requires-python = ">=3.10"
 
 [tool.setuptools.packages.find]

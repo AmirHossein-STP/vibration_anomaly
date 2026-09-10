@@ -1,0 +1,16 @@
+{
+  "id": "aghzuzu/domain-adaptation-zero-shot-fault-diagnosis",
+  "title": "Domain Adaptation Zero-Shot Fault Diagnosis",
+  "code_file": "kaggle_train_domain_adaptation.ipynb",
+  "language": "python",
+  "kernel_type": "notebook",
+  "is_private": "true",
+  "enable_gpu": "false",
+  "enable_tpu": "false",
+  "enable_internet": "false",
+  "machine_shape": "",
+  "dataset_sources": ["esraakhaled299/cwru-data", "dippatel03/paderborn-db"],
+  "competition_sources": [],
+  "kernel_sources": [],
+  "model_sources": []
+}

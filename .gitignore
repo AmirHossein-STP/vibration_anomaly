@@ -28,11 +28,26 @@ outputs/hydraulic_reports/*
 outputs/hydraulic_figures/*
 outputs/hydraulic_kaggle_run/*
 
+# Domain adaptation experiment (see DOMAIN_ADAPTATION_PLAN.md): both raw
+# datasets are Kaggle-only (CWRU already covered above via data/raw/,
+# Paderborn attached as a Kaggle input dataset, never downloaded in full
+# locally), processed cache + generated artifacts are regenerable, same
+# pattern as CWRU/hydraulic above. pu_dev_sample is an optional,
+# never-required local dev fixture (see config's pu_root_local) -- tests
+# use synthetic .mat files instead, so this is normally empty/absent.
+data/da_processed/*
+data/pu_dev_sample/*
+outputs/da_models/*
+outputs/da_reports/*
+outputs/da_figures/*
+outputs/domain_adaptation_kaggle_run/*
+
 # ...but keep the empty directories themselves tracked
 !data/processed/.gitkeep
 !data/hydraulic_raw/.gitkeep
 !data/hydraulic_raw/README.md
 !data/hydraulic_processed/.gitkeep
+!data/da_processed/.gitkeep
 !outputs/**/.gitkeep
 
 # Jupyter

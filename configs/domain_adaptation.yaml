@@ -1,0 +1,102 @@
+# Config for the domain-adaptation / zero-shot fault diagnosis experiment
+# (src/domain_adaptation/). See DOMAIN_ADAPTATION_PLAN.md for the full plan
+# and its "Revisions & Decisions" section for why these specific numbers.
+
+seed: 42
+
+paths:
+  cwru_raw_dir: data/raw                        # reuses the existing CWRU npz files, untouched
+  processed_dir: data/da_processed
+  models_dir: outputs/da_models
+  figures_dir: outputs/da_figures
+  reports_dir: outputs/da_reports
+  # Local-dev-only: point this at a small folder laid out like the real PU
+  # dataset (bearing-code subfolders of .mat files) if you ever want to test
+  # against real files without Kaggle. Not required -- see
+  # data/pu_loader.find_pu_root() and tests/test_domain_adaptation_smoke.py,
+  # which use synthetic .mat files instead so no download is needed to run
+  # the test suite.
+  pu_root_local: data/pu_dev_sample
+
+# --- Common cross-domain alignment -----------------------------------------
+# Every signal (CWRU already native, PU resampled down from 64kHz) is
+# brought to this one rate before windowing/STFT, so "spectrogram bin 40"
+# means the same physical frequency in every domain. segment_length/STFT
+# params below are IDENTICAL to vibration_ad/configs/default.yaml on
+# purpose -- same 128x128 output shape, so vibration_ad's own
+# windowing/spectrogram code is imported directly, not reimplemented.
+common:
+  fs_hz: 12000
+  segment_length: 8384
+  train_stride: 512
+  eval_stride: 2096
+
+stft:
+  nperseg: 256
+  hop_length: 64
+  log_epsilon: 1.0e-10
+
+# --- CWRU (Source A) --------------------------------------------------------
+cwru:
+  sensor: DE
+  train_rpms: [1730, 1750, 1772]
+  val_rpm: 1797
+
+# --- Paderborn / KAt-DataCenter (Source B + Target) -------------------------
+# Bearing-code meanings: src/domain_adaptation/data/pu_bearing_codes.py.
+# Kept deliberately small for a first Kaggle run -- widen these lists to use
+# more of the dataset once the pipeline is proven; nothing downstream is
+# hardcoded to this exact subset.
+pu:
+  dataset_slug: dippatel03/paderborn-db     # attached via notebooks/domain_adaptation/kernel-metadata.json
+  native_fs_hz: 64000
+  vibration_channel: vibration_1
+  healthy_codes: [K001, K002, K003]
+  artificial_outer_codes: [KA01, KA05]
+  artificial_inner_codes: [KI01, KI05]
+  # ALL real-damage codes are used for the target test set -- that's the
+  # actual result being measured, not a place to trim for speed.
+  real_outer_codes: [KA04, KA15, KA16, KA22, KA30]
+  real_inner_codes: [KI04, KI14, KI16, KI17, KI18, KI21]
+  # The other 3 conditions vary load torque / radial force at the SAME
+  # 1500rpm (N15) speed; N09 (900rpm) is held out as the target because
+  # speed shifts every bearing characteristic frequency multiplicatively --
+  # the most physically distinct domain gap available among the 4.
+  source_conditions: [N15_M07_F10, N15_M01_F10, N15_M07_F04]
+  target_condition: N09_M07_F10
+  source_train_fraction: 0.7
+  target_normal_adapt_fraction: 0.6
+
+# --- Model -------------------------------------------------------------
+# Small custom CNN (same 4-layer stride-2 conv shape as vibration_ad's
+# autoencoder encoder), not literally ResNet-18 -- see plan revisions for why.
+model:
+  base_channels: 16
+  feature_dim: 256
+  classifier_hidden: 128
+  domain_hidden: 128
+  dropout: 0.3
+
+# --- Phase 2: supervised source-only baseline (no adaptation) --------------
+train_baseline:
+  batch_size: 64
+  epochs: 30
+  learning_rate: 1.0e-3
+  weight_decay: 1.0e-5
+  early_stopping_patience: 6
+  device: auto
+
+# --- Phase 3: DANN (adds domain discriminator + GRL + healthy-anchor loss) -
+train_dann:
+  batch_size: 64
+  epochs: 30
+  learning_rate: 1.0e-3
+  weight_decay: 1.0e-5
+  early_stopping_patience: 6
+  domain_loss_weight: 1.0
+  anchor_loss_weight: 0.5
+  grl_gamma: 10.0            # steepness of the lambda warm-up schedule, see models/grl.py
+  device: auto
+
+evaluation:
+  tsne_perplexity: 30

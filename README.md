@@ -7,14 +7,18 @@ for turbo pump predictive maintenance, using the CWRU bearing dataset as a
 labeled stand-in (see `notes/00_project_overview.md` for the full framing,
 and `PLAN.md` for how this plan differs from the original draft and why).
 
-**Two experiments live in this repo now.** Everything below this point is
+**Three experiments live in this repo now.** Everything below this point is
 the original single-sensor CWRU vibration MVP (`src/vibration_ad/`). A
 second, independent experiment -- multi-sensor **fusion** anomaly
 detection on the ZeMA hydraulic systems dataset (17 sensors at 3 different
 sampling rates) -- lives in `src/hydraulic_fusion_ad/`; see
 `HYDRAULIC_PLAN.md` and `notes/09_hydraulic_notes.md` for its own plan and
 design notes, and the "Hydraulic sensor-fusion experiment" section near the
-bottom of this file for how to run it.
+bottom of this file for how to run it. A third, independent experiment --
+**zero-shot fault diagnosis via domain adaptation** (DANN), combining CWRU
+with the Paderborn/KAt-DataCenter bearing dataset -- lives in
+`src/domain_adaptation/`; see `DOMAIN_ADAPTATION_PLAN.md` and the "Domain
+adaptation experiment" section near the bottom of this file.
 
 ## Pipeline
 
@@ -194,9 +198,36 @@ Once real data exists locally (`data/hydraulic_raw/`, see its `README.md`),
 `02_train.sh` / `03_evaluate.sh` above, one component at a time.
 
 **Status**: first Kaggle run (2026-08-27) failed on the all-four-healthy
-design above; fixed by the per-component redesign, not yet re-run -- see
-`HYDRAULIC_PLAN.md`'s "Status" section before trusting any numbers from
-this experiment.
+design above; fixed by the per-component redesign -- see
+`HYDRAULIC_PLAN.md`'s "Status" section (now several kernel versions in)
+before trusting any numbers from this experiment.
+
+## Domain adaptation experiment (zero-shot fault diagnosis)
+
+A third, independent experiment (`src/domain_adaptation/`): trains a fault
+classifier on CWRU + Paderborn University's KAt-DataCenter bearing dataset
+(a Domain-Adversarial Neural Network -- feature extractor + classifier +
+domain discriminator behind a Gradient Reversal Layer, plus a
+healthy-anchor alignment loss), adapts it to a held-out Paderborn operating
+condition using ONLY that condition's healthy vibration data, then checks
+whether it can diagnose that condition's real bearing faults it never
+trained on -- the "zero-shot" claim. Full plan, dataset verification, and
+every architecture/scope simplification (and why) in
+`DOMAIN_ADAPTATION_PLAN.md`. Same config-driven, Kaggle-first pattern as
+the other two experiments; the Paderborn dataset (9.7GB) is attached as a
+Kaggle input dataset, never downloaded in full:
+
+```bash
+.venv/bin/python -m pytest tests/test_domain_adaptation_smoke.py   # plumbing only, synthetic data
+
+bash scripts/19_domain_adaptation_kaggle_push.sh    # regenerate notebook + push (baseline -> DANN -> evaluate)
+bash scripts/20_domain_adaptation_kaggle_status.sh  # poll until COMPLETE/ERROR
+bash scripts/21_domain_adaptation_kaggle_pull.sh    # download results to outputs/domain_adaptation_kaggle_run/
+```
+
+**Status**: implementation complete, first Kaggle run in progress -- see
+`DOMAIN_ADAPTATION_PLAN.md`'s "Status" section for results once it
+completes.
 
 ## Tests
 
