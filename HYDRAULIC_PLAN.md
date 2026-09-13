@@ -229,6 +229,19 @@ this as your call, not mine to make silently. `cooler_condition`'s raw
 time-correlation (r=+0.88, section 2) remains a separate, unresolved
 caveat on that component's score specifically.
 
+**CORRECTION (2026-09-14, from the domain-adaptation experiment): the
+"runs twice" oddity below is a LOG-VIEWER artifact, not repeated
+execution.** The third experiment hit the same apparent symptom and it was
+checked properly there, then verified against this experiment's own log
+(`outputs/hydraulic_kaggle_run/*.log`): the duplicated block for `cooler`
+starts at t=320.376s and the identical repeat starts at t=320.586s -- **0.21
+seconds apart**, with byte-identical epoch output. A multi-minute training
+run does not re-execute in 0.21s. The same holds in the domain-adaptation
+logs, where per-epoch timings sum to the wall clock with a ~7s residual,
+leaving no room for a second execution. Kaggle's log stream simply re-emits
+its accumulated buffer. Nothing runs twice, no compute is being wasted, and
+the note below should not be used to explain away future timing surprises.
+
 **Kaggle oddity noticed while debugging v6, not investigated further**:
 the kernel log shows train/evaluate/analyze each running twice per
 component, back to back, with byte-identical output both times (train.py
