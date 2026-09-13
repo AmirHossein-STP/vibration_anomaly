@@ -116,6 +116,11 @@ class DANNTrainConfig:
     domain_loss_weight: float
     anchor_loss_weight: float
     grl_gamma: float  # steepness of the GRL lambda warm-up schedule (see models/grl.py)
+    # Learning-rate multiplier for the domain discriminator's own parameter
+    # group (1.0 = same as everything else). Lets the discriminator stay a
+    # step ahead in the minimax game if it's losing the race -- see
+    # train_dann.py's optimizer setup.
+    discriminator_lr_multiplier: float
     device: str
 
 

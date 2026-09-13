@@ -187,9 +187,24 @@ for local unit tests), `notebooks/domain_adaptation/` (Kaggle notebook +
 kernel-metadata.json, both input datasets attached, nothing
 downloaded/uploaded).
 
-**Kernel v1 (2026-09-10): ran end to end (~50 min CPU, most of it the
-now-familiar duplicate-execution quirk from `HYDRAULIC_PLAN.md` re-running
-each stage twice back to back). Real numbers, and a real problem.**
+**Kernel v1 (2026-09-10): ran end to end (~50 min CPU). Real numbers, and
+a real problem.**
+
+*(Correction, worth recording because it contradicts a note in
+`HYDRAULIC_PLAN.md`: the kernel log appears to print the whole run three
+times over, which looked exactly like that experiment's documented
+"each stage runs twice, byte-identical" Kaggle quirk. It isn't. The
+per-epoch timings add up to the wall clock with nothing left over --
+baseline's 7 epochs sum to 395.4s and that stage reports done at 485.7s
+(the ~72s difference being the one-time data build); DANN's 18 epochs sum
+to 2438.9s and 485.9 + 2438.9 = 2924.8s against a reported 2931.6s, a 6.8s
+residual for process startup. If any stage had genuinely run twice the
+second block's timestamps would continue upward, not restart at 6.1s with
+identical absolute values. So the repeated blocks are the log VIEWER
+re-emitting its buffer; every stage ran exactly once, and there is no
+wasted compute to reclaim. The hydraulic experiment's "Kaggle oddity"
+note has the same signature and is probably the same artifact -- worth
+re-checking there before treating it as a real infra behavior.)*
 
 | Model | Accuracy | Macro F1 | n |
 |---|---|---|---|
@@ -249,8 +264,50 @@ healthy-anchor loss is too weak a constraint to compensate on its own for
 a domain gap this large (different rig, different sensor, resampled 64kHz
 -> 12kHz vs. CWRU's native 12kHz).
 
-**Next step (not yet run)**: push a v2 kernel with adversarial pressure
-strengthened and applied earlier -- raise `train_dann.domain_loss_weight`
-and `grl_gamma` (faster lambda ramp, so it doesn't lag the fast-converging
-classifier) -- rather than re-guessing at the anchor loss specifically.
-Proposed to the user before spending another ~50-minute run on it.
+**Kernel v2 (2026-09-13): adversarial pressure strengthened, applied
+earlier, and -- most importantly -- made falsifiable.** Changes, all one
+coherent fix (make the adversarial signal win a race it was losing) plus
+one new diagnostic:
+
+1. `domain_loss_weight` 1.0 -> 3.0: a louder adversarial signal relative
+   to the classification gradient.
+2. `grl_gamma` 10.0 -> 25.0: lambda reaches ~0.46 by the end of epoch 1
+   instead of ~0.17, so the reversal arrives while the feature extractor
+   is still malleable rather than after it has already committed.
+3. **The GRL lambda is now scheduled per ITERATION, not per epoch** --
+   which is what the original DANN paper does, and which v1 got wrong.
+   This is what makes (2) safe rather than reckless: with a per-epoch
+   lambda, a high gamma would hit the discriminator with strong reversed
+   gradients from the very first batch, before it has learned anything
+   worth reversing, scrambling it into emitting noise. Per-iteration,
+   lambda still starts at ~0 during epoch 1's first batches, so the
+   discriminator gets a clean head start and the reversal ramps in
+   smoothly.
+4. `discriminator_lr_multiplier` (default 1.0, inert for now): wired up so
+   the discriminator can be given a higher learning rate to stay a step
+   ahead in the minimax game, without another code change, if v2's
+   evidence says it's losing the race.
+5. `anchor_loss_weight` deliberately UNCHANGED at 0.5 -- v1's evidence
+   never actually implicated it, and changing two things at once would
+   make the result unreadable.
+
+**The new diagnostic is the part that matters most**
+(`analysis.domain_separability_probe`, reported per model in
+`evaluation_metrics.json`): after training, a FRESH logistic-regression
+probe is fit on each model's frozen features to separate source from
+target, with classes balanced so chance is exactly 0.5. This closes v1's
+blind spot. A domain loss sitting at chance during training has two
+opposite meanings -- features genuinely aligned, or a discriminator that
+simply never learned anything and is being fooled -- and v1 had no way to
+tell them apart, which is why the failure was only caught by eyeballing a
+t-SNE plot at the very end. The probe can't be fooled that way: it sees
+frozen features with no gradient reversal fighting it. Reported for
+baseline AND DANN, so the question "did adaptation move the needle at
+all?" has a number, not a vibe -- and it needs no target labels, so it
+stays legitimate under the zero-shot constraint.
+
+Read the v2 result as: `separability_accuracy` near 0.5 means alignment
+worked; near 1.0 means it didn't. If DANN's probe stays near 1.0 while
+`domain_acc` in the training log sits at chance (~0.33), that is exactly
+the "discriminator is losing the race" signature -- turn up
+`discriminator_lr_multiplier` for v3.

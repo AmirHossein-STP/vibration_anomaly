@@ -93,9 +93,21 @@ train_dann:
   learning_rate: 1.0e-3
   weight_decay: 1.0e-5
   early_stopping_patience: 6
-  domain_loss_weight: 1.0
-  anchor_loss_weight: 0.5
-  grl_gamma: 10.0            # steepness of the lambda warm-up schedule, see models/grl.py
+  # v2 (kernel v1 -> v2): adversarial pressure raised and applied EARLIER.
+  # v1's domain alignment simply never happened -- target features ended up
+  # in regions of feature space no source data occupies (see the plan's
+  # Status section). Root cause: the classifier converges on source almost
+  # immediately (81% accuracy in epoch 1) while lambda was still near its
+  # floor, so by the time the adversarial signal arrived the feature
+  # extractor had already committed to source-only shortcuts.
+  domain_loss_weight: 3.0    # v1: 1.0 -- louder adversarial signal vs. the classification gradient
+  anchor_loss_weight: 0.5    # unchanged, deliberately: isolate ONE change at a time
+  grl_gamma: 25.0            # v1: 10.0 -- lambda hits ~0.46 by end of epoch 1 instead of ~0.17
+  # 1.0 = discriminator learns at the same rate as everything else. Raise
+  # this (e.g. 2-5) if domain_acc sits at chance while evaluate.py's
+  # post-hoc probe still separates domains easily -- that combination means
+  # the discriminator is losing the minimax race, not that alignment worked.
+  discriminator_lr_multiplier: 1.0
   device: auto
 
 evaluation:

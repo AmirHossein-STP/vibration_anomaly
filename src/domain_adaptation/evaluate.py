@@ -32,6 +32,7 @@ from torch.utils.data import DataLoader
 from vibration_ad.features.spectrogram import SpectrogramNormalizer, expected_shape
 
 from domain_adaptation import viz
+from domain_adaptation.analysis import domain_separability_probe
 from domain_adaptation.config import Config, load_config
 from domain_adaptation.data.dataset import build_domain_adaptation_datasets
 from domain_adaptation.data.pu_loader import find_pu_root
@@ -135,13 +136,45 @@ def evaluate(config: Config, pu_root) -> dict:
         )
     viz.plot_baseline_vs_dann_bars(results["baseline"], results.get("dann"), figures_dir / "baseline_vs_dann.png")
 
-    print("Computing feature-space embeddings (SOURCE_VAL + TARGET_TEST) for t-SNE...")
+    print("Computing feature-space embeddings (SOURCE_VAL + TARGET_TEST)...")
     model_name, model = feature_source
     val_domain_ids = val_meta.domain_id.to_numpy()
     val_labels = val_meta.universal_label.to_numpy()
     rng = np.random.default_rng(config.seed)
     val_sample = rng.choice(len(val_X_norm), size=min(2000, len(val_X_norm)), replace=False)
-    val_features, _, _ = run_inference(model, val_X_norm[val_sample], val_domain_ids[val_sample], val_labels[val_sample], device)
+
+    # --- Did adaptation actually align the domains? ---
+    # Train a FRESH probe on each model's frozen features (see
+    # analysis.domain_separability_probe). This is the check v1 lacked: its
+    # domain_loss sat at chance the whole run, which looked like alignment
+    # but -- per the t-SNE plot -- wasn't. The probe can't be fooled that
+    # way, and comparing baseline vs. DANN says whether adaptation moved
+    # the needle AT ALL, independent of any target label.
+    for probe_name, probe_model, probe_test_features in [
+        ("baseline", baseline, baseline_features),
+        ("dann", dann if "dann" in results else None, dann_features if "dann" in results else None),
+    ]:
+        if probe_model is None:
+            continue
+        probe_val_features, _, _ = run_inference(
+            probe_model, val_X_norm[val_sample], val_domain_ids[val_sample], val_labels[val_sample], device
+        )
+        probe_result = domain_separability_probe(probe_val_features, probe_test_features, seed=config.seed)
+        results[probe_name]["domain_separability"] = probe_result
+        print(
+            f"  {probe_name}: a fresh probe separates source from target with "
+            f"{probe_result['separability_accuracy']:.3f} accuracy "
+            f"(0.5 = aligned/indistinguishable, 1.0 = not aligned at all; "
+            f"proxy A-distance {probe_result['proxy_a_distance']:.2f})"
+        )
+        if probe_name == model_name:
+            val_features = probe_val_features
+
+    # Re-save metrics now that the probe results are attached.
+    with open(reports_dir / "evaluation_metrics.json", "w") as f:
+        json.dump(results, f, indent=2)
+
+    print("Fitting t-SNE...")
     test_features = dann_features if model_name == "dann" else baseline_features
 
     combined_features = np.concatenate([val_features, test_features], axis=0)

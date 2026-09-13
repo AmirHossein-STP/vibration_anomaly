@@ -55,14 +55,39 @@ def _cycle(loader: DataLoader) -> Iterator:
         yield from loader
 
 
-def run_train_epoch(model, source_loader, target_loader, optimizer, device, domain_weight, anchor_weight) -> dict:
+def run_train_epoch(
+    model, source_loader, target_loader, optimizer, device,
+    domain_weight, anchor_weight, epoch, total_epochs, grl_gamma,
+) -> dict:
+    """One pass over SOURCE_TRAIN, cycling TARGET_ADAPT alongside it.
+
+    The GRL lambda is updated PER ITERATION, not once per epoch (this is
+    the original DANN paper's formulation, and v1 got it wrong -- see
+    DOMAIN_ADAPTATION_PLAN.md's kernel v1/v2 status). It matters more than
+    it looks: with a fast ramp (high grl_gamma), a per-epoch lambda would
+    slam the discriminator with strong reversed gradients from the very
+    first batch, before it has learned anything worth reversing --
+    scrambling it into producing meaningless gradients. Per-iteration,
+    lambda still starts at ~0 during the first batches of epoch 1, so the
+    discriminator gets a clean head start, then the reversal ramps up
+    smoothly within the epoch.
+    """
     model.train(True)
     cls_criterion = torch.nn.CrossEntropyLoss()
     domain_criterion = torch.nn.CrossEntropyLoss()
     target_iter = _cycle(target_loader)
+    n_batches = len(source_loader)
 
-    totals = {"cls_loss": 0.0, "domain_loss": 0.0, "anchor_loss": 0.0, "correct": 0, "n": 0}
-    for X_s, domain_s, label_s in source_loader:
+    totals = {
+        "cls_loss": 0.0, "domain_loss": 0.0, "anchor_loss": 0.0,
+        "correct": 0, "domain_correct": 0, "domain_n": 0, "n": 0, "lambda_sum": 0.0,
+    }
+    for batch_idx, (X_s, domain_s, label_s) in enumerate(source_loader):
+        # Global training progress in [0, 1], counted in ITERATIONS.
+        progress = ((epoch - 1) * n_batches + batch_idx) / max(total_epochs * n_batches - 1, 1)
+        lambda_ = grl_lambda_schedule(progress, grl_gamma)
+        model.set_grl_lambda(lambda_)
+
         X_t, domain_t = next(target_iter)
         X_s, domain_s, label_s = X_s.to(device), domain_s.to(device), label_s.to(device)
         X_t, domain_t = X_t.to(device), domain_t.to(device)
@@ -87,14 +112,24 @@ def run_train_epoch(model, source_loader, target_loader, optimizer, device, doma
         totals["domain_loss"] += domain_loss.item() * n
         totals["anchor_loss"] += anchor_loss.item() * n
         totals["correct"] += (class_logits.argmax(dim=1) == label_s).sum().item()
+        # Domain ACCURACY, not just loss: chance is 1/3 here (3 domains), so
+        # ~0.33 means the discriminator genuinely can't tell domains apart,
+        # while a high value means it still can -- much easier to read live
+        # than a cross-entropy hovering near ln(3)=1.099.
+        totals["domain_correct"] += (domain_logits.argmax(dim=1) == domain_targets).sum().item()
+        totals["domain_n"] += len(domain_targets)
+        totals["lambda_sum"] += lambda_ * n
         totals["n"] += n
 
     n = totals.pop("n")
+    domain_n = totals.pop("domain_n")
     return {
         "cls_loss": totals["cls_loss"] / n,
         "domain_loss": totals["domain_loss"] / n,
         "anchor_loss": totals["anchor_loss"] / n,
         "cls_acc": totals["correct"] / n,
+        "domain_acc": totals["domain_correct"] / domain_n,
+        "lambda": totals["lambda_sum"] / n,
     }
 
 
@@ -166,9 +201,29 @@ def train(config: Config, pu_root, force_data: bool = False) -> None:
     n_params = sum(p.numel() for p in model.parameters())
     print(f"Model parameters: {n_params:,}")
 
+    # The domain discriminator gets its own parameter group so its learning
+    # rate can be raised independently (config's discriminator_lr_multiplier,
+    # default 1.0 = no change). Why the knob exists: in the minimax game the
+    # discriminator has to stay one step AHEAD of the feature extractor to
+    # produce meaningful reversed gradients. If domain_acc sits at chance
+    # (~1/3) while the post-hoc probe in evaluate.py still separates the
+    # domains easily, that means the in-training discriminator is simply
+    # losing the race -- not that the features are aligned -- and this is the
+    # dial to turn. See DOMAIN_ADAPTATION_PLAN.md's kernel v2 notes.
+    base_lr = config.train_dann.learning_rate
+    discriminator_lr = base_lr * config.train_dann.discriminator_lr_multiplier
+    discriminator_params = list(model.domain_discriminator.parameters())
+    discriminator_param_ids = {id(p) for p in discriminator_params}
+    backbone_params = [p for p in model.parameters() if id(p) not in discriminator_param_ids]
     optimizer = torch.optim.Adam(
-        model.parameters(), lr=config.train_dann.learning_rate, weight_decay=config.train_dann.weight_decay
+        [
+            {"params": backbone_params, "lr": base_lr},
+            {"params": discriminator_params, "lr": discriminator_lr},
+        ],
+        weight_decay=config.train_dann.weight_decay,
     )
+    if config.train_dann.discriminator_lr_multiplier != 1.0:
+        print(f"Discriminator LR: {discriminator_lr:.2e} ({config.train_dann.discriminator_lr_multiplier}x base {base_lr:.2e})")
 
     best_val_loss = float("inf")
     epochs_without_improvement = 0
@@ -178,12 +233,13 @@ def train(config: Config, pu_root, force_data: bool = False) -> None:
 
     for epoch in range(1, total_epochs + 1):
         t0 = time.time()
-        lambda_ = grl_lambda_schedule(epoch / total_epochs, config.train_dann.grl_gamma)
-        model.set_grl_lambda(lambda_)
-
+        # NB: lambda is set per ITERATION inside run_train_epoch (v1 set it
+        # once per epoch here -- see that function's docstring for why the
+        # difference matters once grl_gamma is raised).
         train_metrics = run_train_epoch(
             model, source_loader, target_loader, optimizer, device,
             config.train_dann.domain_loss_weight, config.train_dann.anchor_loss_weight,
+            epoch, total_epochs, config.train_dann.grl_gamma,
         )
         val_loss, val_acc = run_val_epoch(model, val_loader, device)
         dt = time.time() - t0
@@ -198,12 +254,13 @@ def train(config: Config, pu_root, force_data: bool = False) -> None:
 
         marker = " *" if improved else ""
         print(
-            f"epoch {epoch:3d}/{total_epochs}  lambda={lambda_:.3f}  "
+            f"epoch {epoch:3d}/{total_epochs}  lambda~{train_metrics['lambda']:.3f}  "
             f"cls_loss={train_metrics['cls_loss']:.4f} cls_acc={train_metrics['cls_acc']:.3f}  "
-            f"domain_loss={train_metrics['domain_loss']:.4f} anchor_loss={train_metrics['anchor_loss']:.5f}  "
+            f"domain_loss={train_metrics['domain_loss']:.4f} domain_acc={train_metrics['domain_acc']:.3f} "
+            f"anchor_loss={train_metrics['anchor_loss']:.5f}  "
             f"val_loss={val_loss:.4f} val_acc={val_acc:.3f}  ({dt:.1f}s){marker}"
         )
-        history.append({"epoch": epoch, "lambda": lambda_, "val_loss": val_loss, "val_acc": val_acc, **train_metrics})
+        history.append({"epoch": epoch, "val_loss": val_loss, "val_acc": val_acc, **train_metrics})
 
         if epochs_without_improvement >= config.train_dann.early_stopping_patience:
             print(f"Early stopping: no val improvement in {config.train_dann.early_stopping_patience} epochs.")

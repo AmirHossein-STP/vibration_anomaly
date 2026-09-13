@@ -56,6 +56,7 @@ DOMAIN_ADAPTATION_SRC_FILES = [
     "src/domain_adaptation/train_baseline.py",
     "src/domain_adaptation/train_dann.py",
     "src/domain_adaptation/evaluate.py",
+    "src/domain_adaptation/analysis.py",
     "src/domain_adaptation/viz.py",
 ]
 SRC_FILES = VIBRATION_AD_SRC_FILES + DOMAIN_ADAPTATION_SRC_FILES

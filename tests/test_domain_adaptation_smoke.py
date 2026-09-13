@@ -36,6 +36,7 @@ from domain_adaptation.data import dataset as da_dataset
 from domain_adaptation.data.cwru_loader import build_cwru_catalog
 from domain_adaptation.data.pu_bearing_codes import PU_BEARING_CODES
 from domain_adaptation.data.pu_loader import build_pu_catalog, load_vibration_signal
+from domain_adaptation.analysis import domain_separability_probe
 from domain_adaptation.data.transforms import resample_to_rate
 
 try:
@@ -208,6 +209,45 @@ def test_build_domain_adaptation_datasets_end_to_end(tmp_path):
     # cached second call returns identical arrays without touching raw files
     results2 = da_dataset.build_domain_adaptation_datasets(config, pu_root)
     assert np.array_equal(results["source_train"][0], results2["source_train"][0])
+
+
+# --- analysis (torch-free, so these run locally) ----------------------------
+
+def test_separability_probe_detects_separable_domains():
+    """Two clearly offset clusters -> a fresh probe should nail it (~1.0),
+    which is what "adaptation did nothing" looks like."""
+    rng = np.random.default_rng(0)
+    source = rng.normal(0.0, 0.5, size=(200, 8))
+    target = rng.normal(5.0, 0.5, size=(200, 8))  # far apart, trivially separable
+    result = domain_separability_probe(source, target, seed=0)
+    assert result["separability_accuracy"] > 0.95
+    assert result["proxy_a_distance"] > 1.8
+    assert result["n_per_domain"] == 200
+
+
+def test_separability_probe_reports_chance_for_aligned_domains():
+    """Two samples drawn from the SAME distribution -> no probe can beat
+    chance, which is what successful alignment looks like."""
+    rng = np.random.default_rng(0)
+    source = rng.normal(0.0, 1.0, size=(300, 8))
+    target = rng.normal(0.0, 1.0, size=(300, 8))  # identical distribution
+    result = domain_separability_probe(source, target, seed=0)
+    assert 0.35 < result["separability_accuracy"] < 0.65
+    assert result["proxy_a_distance"] < 0.7
+    assert result["chance"] == 0.5
+
+
+def test_separability_probe_balances_unequal_domain_sizes():
+    rng = np.random.default_rng(0)
+    source = rng.normal(0.0, 1.0, size=(500, 4))
+    target = rng.normal(0.0, 1.0, size=(60, 4))
+    result = domain_separability_probe(source, target, seed=0)
+    assert result["n_per_domain"] == 60  # subsampled to the smaller side, so chance stays 0.5
+
+
+def test_separability_probe_rejects_tiny_inputs():
+    with pytest.raises(ValueError, match="at least|>=10|Need"):
+        domain_separability_probe(np.zeros((3, 4)), np.zeros((50, 4)))
 
 
 # --- models --------------------------------------------------------------
