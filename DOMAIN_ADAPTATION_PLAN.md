@@ -515,6 +515,32 @@ things, in priority order:
 And independently of both: the binary-detection reframing still stands as
 the honest headline, and still needs no new training.
 
+**Kernel v5 (2026-09-13, running): use every available source bearing
+code, 7 -> 18.** The direct application of v4's finding. v1-v4 all ran on
+a subset chosen in the very first planning pass purely to keep the first
+run cheap (3 of 6 healthy, 2 of 7 artificial-outer, 2 of 5
+artificial-inner); that choice was never revisited once it stopped being
+justified. With diversity now the one lever shown to move target
+performance, spending compute on breadth rather than on more adversarial
+tuning is the best-evidenced move available.
+
+Single variable again: every other setting matches the v2 reference run
+(CWRU back in, `discriminator_lr_multiplier` 1.0, `domain_loss_weight` 3.0,
+`grl_gamma` 25.0), with `grad_clip_norm` retained as the inert guardrail.
+The TARGET_TEST set is untouched -- all 11 real-damage codes, as always --
+so the numbers stay directly comparable to v1-v4.
+
+Cost: 2.09x the source windows (33,132 -> ~69,280), 1,420 PU `.mat` reads
+instead of 760, ~103 min projected against v2's ~50. Class balance stays
+sane (6 healthy / 7 outer / 5 inner codes).
+
+*How to read it*: if target metrics climb, diversity was the bottleneck
+all along and the adversarial machinery was never the limiting factor --
+which would also mean v1-v4's conclusions about DANN were drawn on an
+under-powered source. If they stay flat, breadth is exhausted as a lever
+and the untreated speed shift is the remaining suspect, making
+order-domain features the next real engineering effort.
+
 **Still available regardless of v4's outcome**: reframing the headline
 result as binary detection. It needs no new training -- the numbers are
 already in hand (0.994 precision / 2.6% false-alarm rate, above) -- and it

@@ -66,9 +66,15 @@ pu:
   dataset_slug: dippatel03/paderborn-db     # attached via notebooks/domain_adaptation/kernel-metadata.json
   native_fs_hz: 64000
   vibration_channel: vibration_1
-  healthy_codes: [K001, K002, K003]
-  artificial_outer_codes: [KA01, KA05]
-  artificial_inner_codes: [KI01, KI05]
+  # v5 (kernel v4 -> v5): use EVERY available source bearing code, 7 -> 18.
+  # v1-v4 ran on a deliberately trimmed subset chosen to keep the first run
+  # cheap. v4 then showed source diversity is the lever that actually moves
+  # target performance (removing CWRU cost ~11 accuracy points), so spending
+  # compute on breadth is the best-evidenced move available. 2.09x the
+  # source windows, ~103 min projected vs v2's ~50.
+  healthy_codes: [K001, K002, K003, K004, K005, K006]
+  artificial_outer_codes: [KA01, KA03, KA05, KA06, KA07, KA08, KA09]
+  artificial_inner_codes: [KI01, KI03, KI05, KI07, KI08]
   # ALL real-damage codes are used for the target test set -- that's the
   # actual result being measured, not a place to trim for speed.
   real_outer_codes: [KA04, KA15, KA16, KA22, KA30]
