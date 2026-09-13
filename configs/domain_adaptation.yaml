@@ -49,8 +49,13 @@ cwru:
   # than extra data. With this false, the only shift left between source and
   # target is PU's own N15 -> N09 speed change (plus artificial -> real
   # damage) -- a far smaller gap, on one rig with one sensor.
-  # Set back to true to restore the v1-v3 setup.
-  include_in_source: false
+  # v4 RESULT: hypothesis refuted -- CWRU was HELPING, not hurting. Dropping
+  # it cost ~11 accuracy points on the 3-class task (0.282 -> 0.171 for the
+  # baseline) and wrecked binary detection (DANN F1 0.666 -> 0.371, false
+  # alarms 2.6% -> 35.3%). Source DIVERSITY matters more than source purity:
+  # a narrower, single-rig source overfits and generalizes worse, even
+  # though it is "closer" to the target. Restored to true.
+  include_in_source: true
 
 # --- Paderborn / KAt-DataCenter (Source B + Target) -------------------------
 # Bearing-code meanings: src/domain_adaptation/data/pu_bearing_codes.py.

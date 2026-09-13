@@ -460,6 +460,61 @@ damage gap is -- which would make order-domain features (resampling
 against shaft angle so fault frequencies land in the same bins regardless
 of rpm) the principled next move rather than more adversarial tuning.
 
+**Kernel v4 result (2026-09-13): hypothesis REFUTED, and informatively so.
+CWRU was helping, not hurting -- removing it made everything worse.**
+
+| Metric (TARGET_TEST) | with CWRU (v2/v3) | PU-only (v4) |
+|---|---|---|
+| baseline 3-class accuracy | 0.282 | **0.171** |
+| DANN 3-class accuracy | 0.278 / 0.225 | **0.150** |
+| DANN binary F1 | 0.666 | **0.371** |
+| DANN false alarms on healthy | 2.6% | **35.3%** |
+| probe separability (DANN) | 0.937-0.969 | 0.964 |
+
+The baseline comparison is the clean one, since both baselines see only
+labeled source data with no adaptation involved: **0.282 -> 0.171 purely
+from deleting CWRU**. So the cross-rig data was contributing roughly 11
+accuracy points, not sabotaging the features.
+
+**What this actually teaches**: source *diversity* beats source
+*purity*. The PU-only source is "closer" to the target in every obvious
+respect -- same rig, same sensor, same dataset, one speed step away -- and
+it still generalizes worse, because 23k windows from 7 bearing codes on
+one rig is a narrower world to learn from than 33k windows spanning two
+rigs. The intuition that removing the alien domain would help was exactly
+backwards. Note also that outer_race recall went to **0.000 for both
+models** under PU-only: with just KA01/KA05 as artificial outer-race
+examples, nothing transfers to the 5 real outer-race bearings at all.
+
+Training itself was stable this time (no v3-style blow-up; `grad_clip_norm`
+never needed to bite, and `val_acc` peaked at 0.971), so the result is
+about the data, not an optimization failure. `domain_acc` hovered at
+0.516-0.566 against a chance of **0.50** -- note chance is 1/2 here, not
+1/3, because only two domains remain once CWRU is gone, and the balanced
+metric correctly averages over just the domains present.
+
+**Config has been restored to `include_in_source: true`** -- leaving the
+repo in the worse configuration would be a trap for the next run.
+
+**Where this leaves the experiment.** Three adversarial-tuning rounds
+(v1-v3) failed to produce alignment, and the one data-side hypothesis
+(v4) is refuted in the opposite direction. The evidence now points at two
+things, in priority order:
+
+1. **Add MORE source diversity, since that is the lever v4 just proved
+   matters.** v1-v4 used a deliberately trimmed subset: 3 of 6 healthy
+   codes, 2 of 7 artificial-outer, 2 of 5 artificial-inner. Widening to
+   all of them is a config-only change (`pu.*_codes` lists) and directly
+   exploits the finding. Cheapest high-value next run.
+2. **Order-domain features** (angular resampling against shaft speed, so
+   BPFO/BPFI land in the same bins at 900rpm as at 1500rpm). This is the
+   principled fix for the speed shift, which remains the untreated gap.
+   PU ships a `speed` channel in every `.mat`; CWRU encodes rpm in the
+   filename -- so the data supports it. Bigger implementation than (1).
+
+And independently of both: the binary-detection reframing still stands as
+the honest headline, and still needs no new training.
+
 **Still available regardless of v4's outcome**: reframing the headline
 result as binary detection. It needs no new training -- the numbers are
 already in hand (0.994 precision / 2.6% false-alarm rate, above) -- and it
