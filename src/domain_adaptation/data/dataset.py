@@ -38,6 +38,8 @@ overlapping windows from a single run on only one side.
 """
 from __future__ import annotations
 
+import resource
+import sys
 from pathlib import Path
 
 import numpy as np
@@ -45,7 +47,7 @@ import pandas as pd
 
 from vibration_ad.data.dataset import load_signal as load_cwru_signal
 from vibration_ad.data.windows import make_windows
-from vibration_ad.features.spectrogram import windows_to_log_spectrograms
+from vibration_ad.features.spectrogram import expected_shape, windows_to_log_spectrograms
 
 from domain_adaptation.config import Config
 from domain_adaptation.data.cwru_loader import build_cwru_catalog
@@ -99,14 +101,23 @@ def _assign_pu_roles(pu_catalog: pd.DataFrame, config: Config) -> pd.DataFrame:
     return assigned
 
 
-def _windows_and_meta_for_cwru_rows(rows: pd.DataFrame, config: Config, stride: int) -> tuple[np.ndarray, pd.DataFrame]:
-    all_windows, meta_rows = [], []
+def _spectrograms_and_meta_for_cwru_rows(rows: pd.DataFrame, config: Config, stride: int) -> tuple[np.ndarray, pd.DataFrame]:
+    """STFT is applied PER FILE and the raw windows dropped immediately.
+
+    Doing it once over the whole split instead -- which is what this did
+    until kernel v6 -- makes scipy hold a complex128 intermediate sized
+    (n_windows, nperseg/2+1, n_frames) x 16 bytes. At 69,280 windows that is
+    17 GB on its own, and the whole build peaked near 34 GB against Kaggle's
+    ~30 GB, so the process was SIGKILLed. Per file it is a few hundred KB at
+    a time and peak memory becomes just the float32 output.
+    """
+    chunks, meta_rows = [], []
     for _, row in rows.iterrows():
         signal = load_cwru_signal(row["filepath"], config.cwru.sensor)  # already 12kHz == common.fs_hz
         w = make_windows(signal, config.common.segment_length, stride)
         if len(w) == 0:
             continue
-        all_windows.append(w)
+        chunks.append(windows_to_log_spectrograms(w, config.common.fs_hz, config.stft))
         for _ in range(len(w)):
             meta_rows.append(
                 {
@@ -119,9 +130,9 @@ def _windows_and_meta_for_cwru_rows(rows: pd.DataFrame, config: Config, stride: 
                     "source_file": Path(row["filepath"]).name,
                 }
             )
-    if not all_windows:
-        return np.empty((0, config.common.segment_length), dtype=np.float64), pd.DataFrame(meta_rows)
-    return np.concatenate(all_windows, axis=0), pd.DataFrame(meta_rows)
+    if not chunks:
+        return np.empty((0, *expected_shape(config.common, config.stft)), dtype=np.float32), pd.DataFrame(meta_rows)
+    return np.concatenate(chunks, axis=0), pd.DataFrame(meta_rows)
 
 
 # A few unreadable files out of ~1400 is a flaw in the Kaggle mirror, not a
@@ -138,8 +149,9 @@ def _windows_and_meta_for_cwru_rows(rows: pd.DataFrame, config: Config, stride: 
 MAX_UNREADABLE_FRACTION = 0.10
 
 
-def _windows_and_meta_for_pu_rows(rows: pd.DataFrame, config: Config, stride: int) -> tuple[np.ndarray, pd.DataFrame]:
-    all_windows, meta_rows = [], []
+def _spectrograms_and_meta_for_pu_rows(rows: pd.DataFrame, config: Config, stride: int) -> tuple[np.ndarray, pd.DataFrame]:
+    """Per-file STFT, same memory reasoning as the CWRU helper above."""
+    chunks, meta_rows = [], []
     unreadable: list[str] = []
     for _, row in rows.iterrows():
         try:
@@ -152,7 +164,7 @@ def _windows_and_meta_for_pu_rows(rows: pd.DataFrame, config: Config, stride: in
         w = make_windows(signal, config.common.segment_length, stride)
         if len(w) == 0:
             continue
-        all_windows.append(w)
+        chunks.append(windows_to_log_spectrograms(w, config.common.fs_hz, config.stft))
         for _ in range(len(w)):
             meta_rows.append(
                 {
@@ -180,9 +192,22 @@ def _windows_and_meta_for_pu_rows(rows: pd.DataFrame, config: Config, stride: in
                 f"limit {MAX_UNREADABLE_FRACTION:.0%}) -- that is systemic, not a few bad files. "
                 f"First few: {unreadable[:5]}"
             )
-    if not all_windows:
-        return np.empty((0, config.common.segment_length), dtype=np.float64), pd.DataFrame(meta_rows)
-    return np.concatenate(all_windows, axis=0), pd.DataFrame(meta_rows)
+    if not chunks:
+        return np.empty((0, *expected_shape(config.common, config.stft)), dtype=np.float32), pd.DataFrame(meta_rows)
+    return np.concatenate(chunks, axis=0), pd.DataFrame(meta_rows)
+
+
+def _peak_rss_gb() -> float:
+    """Peak resident memory so far, in GB.
+
+    ru_maxrss units are platform-dependent: KB on Linux (which is what
+    Kaggle runs), BYTES on macOS. Getting this wrong makes the local
+    readout off by 1024x -- a misleading gauge is worse than none during a
+    memory investigation, which is exactly what this was added for.
+    """
+    maxrss = resource.getrusage(resource.RUSAGE_SELF).ru_maxrss
+    divisor = 1024 ** 3 if sys.platform == "darwin" else 1024 ** 2
+    return maxrss / divisor
 
 
 def _cache_paths(processed_dir: Path) -> dict[str, Path]:
@@ -229,7 +254,7 @@ def build_domain_adaptation_datasets(
     # CWRU only ever contributes to source_train/source_val -- it isn't the
     # target domain, so target_adapt/target_test are PU-only below.
     cwru_split_for_role = {"source_train": "train", "source_val": "val"}
-    empty_windows = np.empty((0, config.common.segment_length), dtype=np.float64)
+    empty_spectrograms = np.empty((0, *expected_shape(config.common, config.stft)), dtype=np.float32)
 
     results: dict[str, tuple[np.ndarray, pd.DataFrame]] = {}
     for role in ROLES:
@@ -238,18 +263,19 @@ def build_domain_adaptation_datasets(
         if include_cwru and role in cwru_split_for_role:
             cwru_rows = cwru_catalog[cwru_catalog.split == cwru_split_for_role[role]].copy()
             cwru_rows["role"] = role
-            cwru_X, cwru_meta = _windows_and_meta_for_cwru_rows(cwru_rows, config, stride)
+            cwru_X, cwru_meta = _spectrograms_and_meta_for_cwru_rows(cwru_rows, config, stride)
         else:
-            cwru_X, cwru_meta = empty_windows, pd.DataFrame()
+            cwru_X, cwru_meta = empty_spectrograms, pd.DataFrame()
 
-        pu_X, pu_meta = _windows_and_meta_for_pu_rows(pu_catalog[pu_catalog.role == role], config, stride)
+        pu_X, pu_meta = _spectrograms_and_meta_for_pu_rows(pu_catalog[pu_catalog.role == role], config, stride)
 
-        windows = np.concatenate([cwru_X, pu_X], axis=0)
+        spectrograms = np.concatenate([cwru_X, pu_X], axis=0)
+        del cwru_X, pu_X  # release per-domain copies before the next role
         meta = pd.concat([cwru_meta, pu_meta], axis=0, ignore_index=True)
-        if len(windows) == 0:
+        if len(spectrograms) == 0:
             raise RuntimeError(f"Role {role!r} produced zero windows -- check config.")
 
-        spectrograms = windows_to_log_spectrograms(windows, config.common.fs_hz, config.stft)
+        print(f"  {role}: {spectrograms.shape} ({spectrograms.nbytes / 1024**3:.1f} GB)  peak RSS {_peak_rss_gb():.1f} GB")
         results[role] = (spectrograms, meta)
 
         np.save(paths[f"{role}_X"], spectrograms)

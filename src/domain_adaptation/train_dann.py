@@ -24,6 +24,7 @@ Usage:
 from __future__ import annotations
 
 import argparse
+import gc
 import random
 import time
 from typing import Iterator
@@ -190,6 +191,9 @@ def train(config: Config, pu_root, force_data: bool = False) -> None:
     train_X_norm = normalizer.transform(train_X)
     val_X_norm = normalizer.transform(val_X)
     adapt_X_norm = normalizer.transform(adapt_X)
+    # See train_baseline.py: drop the un-normalized copies, they are cached.
+    del train_X, val_X, adapt_X, datasets
+    gc.collect()
 
     device = select_device(config.train_dann.device)
     print(f"Using device: {device}")

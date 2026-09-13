@@ -572,6 +572,42 @@ Re-pushed as kernel version 6. Note the run is now also self-diagnosing:
 whatever it skips will be named in the log, so the next question ("how
 much of the new breadth actually loaded?") answers itself.
 
+**v5 attempt 2 (kernel version 6) died at the same 3-minute mark, but from
+a different and more fundamental cause: SIGKILL 9, the OOM killer.** The
+loader fix worked -- zero files were skipped, so the corrupt file was never
+even reached. The build simply ran out of memory first. Doing the arithmetic
+rather than guessing:
+
+| source_train memory, one-shot STFT | |
+|---|---|
+| raw windows (float64) | 4.3 GB |
+| + `np.concatenate` copy | 4.3 GB |
+| + scipy's complex128 STFT intermediate | **17.0 GB** |
+| + magnitude (float64) | 8.5 GB |
+| **peak** | **~34 GB** vs Kaggle's ~30 GB |
+
+**The one-shot STFT was always the scaling wall** -- v2's 33,132 windows
+peaked near 16 GB and survived on luck as much as design; 2.09x does not
+fit. Nothing about the breadth experiment was wrong; the data pipeline
+simply never scaled.
+
+Fixed structurally, so it now scales to any breadth:
+
+- **STFT is applied per FILE** (~19-78 windows) and raw windows are dropped
+  immediately, instead of accumulating the entire split and transforming it
+  in one call. Peak drops to ~8.5 GB -- just the float32 output plus one
+  concatenate copy -- and the complex intermediates become negligible.
+- `train_baseline.py` / `train_dann.py` `del` the un-normalized arrays once
+  normalized copies exist (~4.2 GB each at this scale); they remain cached
+  on disk, so nothing is lost.
+- Each role now prints its array size and peak RSS, so headroom is visible
+  in the log instead of being inferred from a corpse.
+- The RSS helper handles `ru_maxrss` being KB on Linux but BYTES on macOS
+  -- caught locally when it cheerfully reported 150 GB. A misleading gauge
+  during a memory investigation is worse than no gauge.
+
+Re-pushed as kernel version 7.
+
 **Still available regardless of v4's outcome**: reframing the headline
 result as binary detection. It needs no new training -- the numbers are
 already in hand (0.994 precision / 2.6% false-alarm rate, above) -- and it

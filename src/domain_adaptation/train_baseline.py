@@ -19,6 +19,7 @@ Usage:
 from __future__ import annotations
 
 import argparse
+import gc
 import random
 import shutil
 import time
@@ -87,6 +88,11 @@ def train(config: Config, config_path: str, pu_root, force_data: bool = False) -
     normalizer = SpectrogramNormalizer().fit(train_X)
     train_X_norm = normalizer.transform(train_X)
     val_X_norm = normalizer.transform(val_X)
+    # The un-normalized copies are the same size as the normalized ones
+    # (~4.2 GB each at full source breadth) and are dead from here on.
+    # They stay cached on disk, so nothing is lost by dropping them.
+    del train_X, val_X, datasets
+    gc.collect()
 
     device = select_device(config.train_baseline.device)
     print(f"Using device: {device}")
