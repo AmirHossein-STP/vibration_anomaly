@@ -57,6 +57,7 @@ DOMAIN_ADAPTATION_SRC_FILES = [
     "src/domain_adaptation/train_dann.py",
     "src/domain_adaptation/evaluate.py",
     "src/domain_adaptation/analysis.py",
+    "src/domain_adaptation/infer.py",
     "src/domain_adaptation/viz.py",
 ]
 SRC_FILES = VIBRATION_AD_SRC_FILES + DOMAIN_ADAPTATION_SRC_FILES
@@ -282,6 +283,30 @@ def build_notebook() -> dict:
         "print()",
         "print(json.dumps(metrics, indent=2))",
     ))
+    cells.append(md(
+        "## 9. Phase 5 smoke test: the deployment path on real data",
+        "`infer.py` is what a real machine would actually run -- it loads the "
+        "BASELINE model (never the adapted one; see the plan's verdict), "
+        "resamples whatever rate the machine records at to the model's common "
+        "rate, and reports healthy-vs-faulty per recording rather than fault "
+        "type. Exercised here against real CWRU files, since it cannot be run "
+        "on the dev laptop (no torch there). Calibration mode is pointed at a "
+        "known-HEALTHY file, then detection mode at a known-FAULTY one -- so "
+        "if either verdict comes out backwards, this cell says so loudly "
+        "instead of shipping an untested deployment script.",
+    ))
+    cells.append(code(
+        "print('--- calibrate on a known-HEALTHY recording ---')",
+        "run('-m', 'domain_adaptation.infer', '--config', 'configs/domain_adaptation.yaml',",
+        "    '--input', 'data/raw/1797_Normal.npz', '--signal-key', 'DE', '--fs', '12000', '--calibrate')",
+        "print()",
+        "print('--- detect on a known-FAULTY recording (inner race, 21 mil) ---')",
+        "run('-m', 'domain_adaptation.infer', '--config', 'configs/domain_adaptation.yaml',",
+        "    '--input', 'data/raw/1797_IR_21_DE12.npz', '--signal-key', 'DE', '--fs', '12000',",
+        "    '--out', 'outputs/da_reports/infer_demo.csv')",
+    ))
+
+    cells.append(md("## 10. Figures"))
     cells.append(code(
         "from IPython.display import Image, display",
         "figdir = WORKDIR / 'outputs' / 'da_figures'",

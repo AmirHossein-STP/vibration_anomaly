@@ -225,9 +225,58 @@ bash scripts/20_domain_adaptation_kaggle_status.sh  # poll until COMPLETE/ERROR
 bash scripts/21_domain_adaptation_kaggle_pull.sh    # download results to outputs/domain_adaptation_kaggle_run/
 ```
 
-**Status**: implementation complete, first Kaggle run in progress -- see
-`DOMAIN_ADAPTATION_PLAN.md`'s "Status" section for results once it
-completes.
+### What it found
+
+Five Kaggle runs in, the answer is not the one the plan set out to prove,
+and it is worth stating plainly:
+
+| | faulty recall | false-alarm rate |
+|---|---|---|
+| baseline, 7 source bearing codes | 0.403 | 31.1% |
+| **baseline, 18 source bearing codes** | **0.761** | **16.7%** |
+| DANN (adapted), 18 codes | 0.085 | 9.7% |
+
+1. **Zero-shot fault DETECTION transfers; fault TYPING does not.** No
+   version could tell inner-race from outer-race damage on an unseen
+   machine/speed. Healthy-vs-faulty -- the question a real deployment asks
+   -- is answerable: **95.4% precision, 76.1% recall** on a rig speed the
+   model never trained on, using zero target fault data.
+2. **Source diversity beat every other lever.** Widening the source from 7
+   to 18 bearing codes nearly doubled detection *while halving* false
+   alarms. That single config change outperformed three rounds of
+   adversarial hyperparameter tuning combined.
+3. **The domain adaptation itself did not work.** Across five runs the DANN
+   model never beat the plain baseline and usually destroyed it -- the
+   adapted v5 model calls 91% of everything healthy. That is a real
+   negative result, established with a diagnostic (a post-hoc separability
+   probe) that distinguishes "features aligned" from "the discriminator was
+   fooled". **The deployable model is the baseline; adaptation is kept as
+   the documented negative result.**
+
+Full reasoning, every failed hypothesis, and the two infrastructure bugs
+found along the way are in `DOMAIN_ADAPTATION_PLAN.md`'s Status section.
+
+### Deploying it on your own machine (Phase 5)
+
+`infer.py` runs the detector on a new machine's vibration data at whatever
+sampling rate it records, and reports healthy-vs-faulty per recording:
+
+```bash
+# 1. Calibrate against a recording you KNOW is healthy.
+.venv/bin/python -m domain_adaptation.infer --input healthy_baseline.npy \
+    --fs 25600 --calibrate
+
+# 2. Then monitor.
+.venv/bin/python -m domain_adaptation.infer --input todays_recording.npy --fs 25600
+```
+
+Calibration is not optional ceremony. The dominant error mode is
+**per-unit, not random**: on the target condition every false alarm came
+from ONE of six healthy bearing units (100% of its windows), while the
+other five were essentially clean. A machine that reads as faulty when
+healthy does so consistently -- so you can detect that with healthy data
+alone, before any fault exists, which is exactly what `--calibrate` checks
+and what the zero-shot premise gives you.
 
 ## Tests
 

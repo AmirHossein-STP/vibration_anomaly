@@ -398,6 +398,47 @@ def test_binary_detection_handles_no_positive_predictions():
 # --- models --------------------------------------------------------------
 
 @requires_torch
+def test_infer_reads_every_supported_signal_format(tmp_path):
+    """A real machine's data will not arrive as CWRU .npz -- .npy, .npz and
+    .csv all have to work, since that is what the deployment path accepts."""
+    from domain_adaptation.infer import load_signal_file
+
+    rng = np.random.default_rng(0)
+    sig = rng.standard_normal(5000)
+    np.save(tmp_path / "a.npy", sig)
+    np.savez(tmp_path / "b.npz", vib=sig)
+    (tmp_path / "c.csv").write_text("\n".join(str(v) for v in sig))
+
+    assert load_signal_file(tmp_path / "a.npy").shape == (5000,)
+    assert load_signal_file(tmp_path / "b.npz").shape == (5000,)          # single array: key inferred
+    assert load_signal_file(tmp_path / "b.npz", "vib").shape == (5000,)   # or named
+    assert np.allclose(load_signal_file(tmp_path / "c.csv"), sig, atol=1e-6)
+
+
+@requires_torch
+def test_infer_rejects_ambiguous_npz_and_unknown_formats(tmp_path):
+    from domain_adaptation.infer import load_signal_file
+
+    np.savez(tmp_path / "two.npz", a=np.zeros(10), b=np.zeros(10))
+    with pytest.raises(ValueError, match="signal-key"):
+        load_signal_file(tmp_path / "two.npz")
+    (tmp_path / "x.wav").write_bytes(b"nope")
+    with pytest.raises(ValueError, match="unsupported format"):
+        load_signal_file(tmp_path / "x.wav")
+
+
+@requires_torch
+def test_infer_explains_itself_when_the_signal_is_too_short(tmp_path):
+    """A too-short recording is the most likely first-contact failure for a
+    new user, so it must say what to do, not raise an opaque shape error."""
+    from domain_adaptation.infer import score_signal
+
+    config = make_config(tmp_path)
+    with pytest.raises(ValueError, match="too short|Record a longer"):
+        score_signal(np.zeros(50), fs_hz=1000, config=config, model=None, normalizer=None, device="cpu")
+
+
+@requires_torch
 def test_gradient_reversal_layer_flips_gradient_sign():
     from domain_adaptation.models.grl import GradientReversalLayer
 
