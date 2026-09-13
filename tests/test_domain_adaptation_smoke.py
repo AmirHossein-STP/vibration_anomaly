@@ -35,7 +35,7 @@ from domain_adaptation.config import (
 from domain_adaptation.data import dataset as da_dataset
 from domain_adaptation.data.cwru_loader import build_cwru_catalog
 from domain_adaptation.data.pu_bearing_codes import PU_BEARING_CODES
-from domain_adaptation.data.pu_loader import build_pu_catalog, load_vibration_signal
+from domain_adaptation.data.pu_loader import UnreadableMatFile, build_pu_catalog, load_vibration_signal
 from domain_adaptation.analysis import domain_separability_probe
 from domain_adaptation.data.transforms import resample_to_rate
 
@@ -253,6 +253,66 @@ def test_cwru_included_by_default_still_mixes_both_domains(tmp_path):
             write_synthetic_pu_mat(pu_root, code, cond, run)
     results = da_dataset.build_domain_adaptation_datasets(config, pu_root)
     assert set(results["source_train"][1].domain) == {"cwru", "pu_artificial"}
+
+
+def test_load_vibration_signal_names_the_file_when_unparseable(tmp_path):
+    """scipy raises a bare 'TypeError: Expecting matrix here' with no clue
+    which of ~1400 files was at fault -- which is exactly how kernel v5 died.
+    The wrapper must name the path."""
+    bad = tmp_path / "K001"
+    bad.mkdir()
+    path = bad / "N15_M07_F10_K001_1.mat"
+    path.write_bytes(b"MATLAB 5.0 MAT-file, but truncated garbage" + b"\x00" * 200)
+    with pytest.raises(UnreadableMatFile, match="N15_M07_F10_K001_1.mat"):
+        load_vibration_signal(path)
+
+
+def test_dataset_skips_isolated_unreadable_file(tmp_path, capsys):
+    """One corrupt file among many must NOT kill the run (v5 lost ~100
+    minutes of compute to exactly that)."""
+    config = make_config(tmp_path)
+    config.cwru.include_in_source = False
+    pu_root = tmp_path / "pu_root"
+    for run in range(1, 9):
+        for code, cond in [
+            ("K001", "N15_M07_F10"), ("KA01", "N15_M07_F10"), ("KI01", "N15_M07_F10"),
+            ("K001", "N09_M07_F10"), ("KA04", "N09_M07_F10"), ("KI04", "N09_M07_F10"),
+        ]:
+            write_synthetic_pu_mat(pu_root, code, cond, run)
+    # corrupt exactly one file (1 of 8 runs for that code/condition = 12.5% of
+    # that code, but well under 2% is not achievable at test scale, so this
+    # asserts the SKIP path via a role whose failure fraction stays legal)
+    victim = pu_root / "KA04" / "N09_M07_F10_KA04_3.mat"
+    victim.write_bytes(b"garbage")
+    config_relaxed = make_config(tmp_path)
+    config_relaxed.cwru.include_in_source = False
+    da_dataset.MAX_UNREADABLE_FRACTION = 0.5  # allow it, we are testing the skip path
+    try:
+        results = da_dataset.build_domain_adaptation_datasets(config_relaxed, pu_root)
+        assert len(results["target_test"][0]) > 0  # run survived
+        assert "SKIPPING unreadable" in capsys.readouterr().out
+    finally:
+        da_dataset.MAX_UNREADABLE_FRACTION = 0.02
+
+
+def test_dataset_aborts_when_too_many_files_unreadable(tmp_path):
+    """...but wholesale corruption must abort loudly rather than silently
+    training on a fraction of the data."""
+    config = make_config(tmp_path)
+    config.cwru.include_in_source = False
+    pu_root = tmp_path / "pu_root"
+    for run in range(1, 5):
+        for code, cond in [
+            ("K001", "N15_M07_F10"), ("KA01", "N15_M07_F10"), ("KI01", "N15_M07_F10"),
+            ("K001", "N09_M07_F10"), ("KA04", "N09_M07_F10"), ("KI04", "N09_M07_F10"),
+        ]:
+            write_synthetic_pu_mat(pu_root, code, cond, run)
+    for mat in (pu_root / "KA04").glob("*.mat"):
+        mat.write_bytes(b"garbage")
+    for mat in (pu_root / "KI04").glob("*.mat"):
+        mat.write_bytes(b"garbage")
+    with pytest.raises(RuntimeError, match="systemic"):
+        da_dataset.build_domain_adaptation_datasets(config, pu_root)
 
 
 # --- analysis (torch-free, so these run locally) ----------------------------

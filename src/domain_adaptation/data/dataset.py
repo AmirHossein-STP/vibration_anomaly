@@ -49,7 +49,7 @@ from vibration_ad.features.spectrogram import windows_to_log_spectrograms
 
 from domain_adaptation.config import Config
 from domain_adaptation.data.cwru_loader import build_cwru_catalog
-from domain_adaptation.data.pu_loader import build_pu_catalog, load_vibration_signal
+from domain_adaptation.data.pu_loader import UnreadableMatFile, build_pu_catalog, load_vibration_signal
 from domain_adaptation.data.transforms import resample_to_rate
 
 DOMAIN_IDS = {"cwru": 0, "pu_artificial": 1, "pu_target": 2}
@@ -124,10 +124,30 @@ def _windows_and_meta_for_cwru_rows(rows: pd.DataFrame, config: Config, stride: 
     return np.concatenate(all_windows, axis=0), pd.DataFrame(meta_rows)
 
 
+# A few unreadable files out of ~1400 is a flaw in the Kaggle mirror, not a
+# reason to throw away a 100-minute run; a LOT of them means something
+# systemic (wrong dataset attached, truncated mount) that must not be
+# silently trained through. Same posture the CWRU downloader landed on --
+# see vibration_ad's notes/07_dvc_and_kaggle.md, where the opposite bug
+# (swallowing a total failure) hid a broken run for 35 minutes.
+# Calibration matters here. At ~1000 files per split, one entirely-corrupt
+# bearing code is 3 conditions x 20 runs = 60 files = ~6%, which is NOT
+# systemic -- it costs 1 of 18 codes' diversity and should proceed loudly,
+# not abort. A broken mount or wrong dataset is far above that. 10% sits
+# between the two.
+MAX_UNREADABLE_FRACTION = 0.10
+
+
 def _windows_and_meta_for_pu_rows(rows: pd.DataFrame, config: Config, stride: int) -> tuple[np.ndarray, pd.DataFrame]:
     all_windows, meta_rows = [], []
+    unreadable: list[str] = []
     for _, row in rows.iterrows():
-        signal = load_vibration_signal(row["filepath"], config.pu.vibration_channel)
+        try:
+            signal = load_vibration_signal(row["filepath"], config.pu.vibration_channel)
+        except UnreadableMatFile as exc:
+            unreadable.append(str(row["filepath"]))
+            print(f"  SKIPPING unreadable file: {exc}")
+            continue
         signal = resample_to_rate(signal, row["fs_native_hz"], config.common.fs_hz)
         w = make_windows(signal, config.common.segment_length, stride)
         if len(w) == 0:
@@ -144,6 +164,21 @@ def _windows_and_meta_for_pu_rows(rows: pd.DataFrame, config: Config, stride: in
                     "code": row["code"],
                     "source_file": Path(row["filepath"]).name,
                 }
+            )
+    if unreadable:
+        fraction = len(unreadable) / max(len(rows), 1)
+        # Per-code breakdown: "60 files failed" is ambiguous between one dead
+        # bearing code and scattered rot, and those need different responses.
+        by_code: dict[str, int] = {}
+        for path in unreadable:
+            by_code[Path(path).parent.name] = by_code.get(Path(path).parent.name, 0) + 1
+        per_code = ", ".join(f"{code}={n}" for code, n in sorted(by_code.items()))
+        print(f"  {len(unreadable)}/{len(rows)} PU files unreadable ({fraction:.1%}) in this split -- by code: {per_code}")
+        if fraction > MAX_UNREADABLE_FRACTION:
+            raise RuntimeError(
+                f"{len(unreadable)} of {len(rows)} PU .mat files unreadable ({fraction:.1%}, "
+                f"limit {MAX_UNREADABLE_FRACTION:.0%}) -- that is systemic, not a few bad files. "
+                f"First few: {unreadable[:5]}"
             )
     if not all_windows:
         return np.empty((0, config.common.segment_length), dtype=np.float64), pd.DataFrame(meta_rows)

@@ -63,9 +63,20 @@ def find_pu_root(local_hint: str | Path | None = None) -> Path:
     )
 
 
+class UnreadableMatFile(RuntimeError):
+    """A PU .mat file scipy cannot parse. Raised instead of letting scipy's
+    bare `TypeError: Expecting matrix here` escape with no indication of
+    WHICH of ~1400 files was at fault -- which is exactly how kernel v5
+    died after 3 minutes with an unattributable traceback.
+    """
+
+
 def load_vibration_signal(mat_path: str | Path, channel: str = "vibration_1") -> np.ndarray:
     """Extract one channel's 1D array from a PU .mat file."""
-    data = scipy.io.loadmat(str(mat_path), simplify_cells=True)
+    try:
+        data = scipy.io.loadmat(str(mat_path), simplify_cells=True)
+    except Exception as exc:  # scipy raises bare TypeError/ValueError with no file context
+        raise UnreadableMatFile(f"{mat_path}: scipy could not parse this .mat ({type(exc).__name__}: {exc})") from exc
     key = next(k for k in data if not k.startswith("__"))
     channels = data[key]["Y"]
     for ch in channels:

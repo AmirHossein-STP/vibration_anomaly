@@ -541,6 +541,37 @@ under-powered source. If they stay flat, breadth is exhausted as a lever
 and the untreated speed shift is the remaining suspect, making
 order-domain features the next real engineering effort.
 
+**v5 attempt 1 (kernel version 5) died after 3 minutes -- a latent bug the
+narrow code subset had been hiding.** `scipy.io.loadmat` raised
+`TypeError: Expecting matrix here` on one of the newly-added bearing
+codes' `.mat` files. The 7 codes used in v1-v4 all parse cleanly; at least
+one of the 11 added for v5 does not (a flaw in the Kaggle mirror, not in
+this code). **A single unreadable file out of ~1,420 killed the entire
+run**, and scipy's exception names no path, so the traceback did not even
+say which file.
+
+Fixed properly rather than by dropping the suspect codes blindly:
+
+- `pu_loader.UnreadableMatFile` wraps scipy's bare exception **with the
+  file path**, so a bad file identifies itself.
+- `dataset._windows_and_meta_for_pu_rows` skips unreadable files, prints
+  each one, and reports a per-split count **broken down by bearing code**
+  -- "60 files failed" is ambiguous between one dead code and scattered
+  rot, and those warrant different responses.
+- It aborts if more than `MAX_UNREADABLE_FRACTION` (10%) of a split is
+  unreadable. Calibration is deliberate: one entirely-corrupt code is
+  3 conditions x 20 runs = ~6% of a split, which costs 1 of 18 codes and
+  should proceed loudly rather than abort; a broken mount is far above
+  10%. This is the same posture the CWRU downloader arrived at
+  (vibration_ad's `notes/07_dvc_and_kaggle.md`), where the opposite bug --
+  swallowing a *total* failure -- hid a dead run for 35 minutes.
+- Three tests cover it: the error names the file, an isolated bad file is
+  survived, and wholesale corruption aborts.
+
+Re-pushed as kernel version 6. Note the run is now also self-diagnosing:
+whatever it skips will be named in the log, so the next question ("how
+much of the new breadth actually loaded?") answers itself.
+
 **Still available regardless of v4's outcome**: reframing the headline
 result as binary detection. It needs no new training -- the numbers are
 already in hand (0.994 precision / 2.6% false-alarm rate, above) -- and it
