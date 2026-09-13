@@ -356,14 +356,87 @@ training: `domain_acc` is now macro-averaged over the three domains, so
 chance is a true 1/3 and the number can't be inflated by the batch's 50%
 target share (v2's "0.49" needed a footnote to interpret; v3's won't).
 
-Read v3 as: if `domain_acc` climbs well above 1/3 AND the probe drops
-toward 0.5, the race was the problem and alignment is finally happening.
-If `domain_acc` climbs but the probe stays near 1.0, the discriminator is
-now learning fine and marginal alignment simply isn't sufficient -- which
-would point at the deeper issue (marginal != class-conditional alignment)
-and make the next move a conditional-alignment method, not another
-hyperparameter. If neither moves, the shortcut being exploited is probably
-upstream of the model entirely -- the prime suspect being per-window
-amplitude/scale differences between rigs, which the current
-fit-on-pooled-source normalization does not remove; per-window
-normalization before the STFT would be the v4 test.
+**Kernel v3 result (2026-09-13): the 5x discriminator LR destabilized
+training outright -- none of the three predicted outcomes, a fourth one.**
+
+```
+ ep  lambda  cls_acc  dom_loss  dom_acc   anchor  val_acc
+  3   0.774    0.857    1.0010    0.333   0.5374    0.903
+  4   0.895    0.546   15.3907    0.335  67.7713    0.367   <- blow-up
+  5   0.953    0.382    1.0009    0.333   4.8997    0.367
+  ...  (frozen at these exact values through epoch 9, then early stop)
+```
+
+At epoch 4 the discriminator's larger updates drove `domain_loss` to 15.4
+and `anchor_loss` to 67.8; the feature extractor was blown out and never
+recovered. From epoch 5 on, `cls_acc` is pinned at 0.382 and `domain_acc`
+at exactly 0.333 -- both heads emitting a constant. The saved checkpoint
+is therefore an epoch-3 snapshot from *before* the collapse, i.e. an
+undertrained model, not an adapted one. 5x was too much; the knob was the
+right idea, the setting was not, and there is no gradient clipping in the
+loop to contain a spike like this.
+
+**Three rounds of tuning the adversarial game have not produced
+alignment** (probe: 0.999 baseline -> 0.969 v2 -> 0.937 v3). Before
+spending a fourth run guessing, the cached spectrograms were pulled and
+interrogated locally (minutes, not a 50-minute kernel):
+
+- **The domains are separable from ~10 trivial statistics.** A logistic
+  probe on per-window mean, std, and 8 coarse band means separates source
+  from target at **0.989** on the raw log-spectrograms, and **0.987**
+  after the existing normalizer -- i.e. the current fit-on-pooled-source
+  per-bin normalization does not remove the giveaway.
+- **Per-window standardization helps but doesn't close it** (0.987 ->
+  0.872 on those stats, 0.997 -> 0.946 on a 16x16 downsample). Worth doing,
+  not sufficient.
+- **Every domain pair is perfectly separable at the input level** --
+  including PU_artificial vs PU_target_healthy, which is the *same rig and
+  same dataset*, differing only in shaft speed (N15=1500rpm vs N09=900rpm).
+  A crude order-alignment proxy (rescaling the frequency axis by 900/1500)
+  did not reduce it either.
+- **Caveat on that last set, stated because it limits the conclusion**:
+  a probe returning exactly 1.000 for *every* comparison is saturated and
+  therefore has no resolution -- with 256 features and ~1700 training rows
+  it can separate almost any systematic difference. It is consistent with a
+  large gap; it does not prove one is unbridgeable. The probe on *learned*
+  256-d features (0.999/0.969/0.937) does have resolution, and that is the
+  number to track.
+
+**The finding that actually matters, and it is a positive one.** Collapsing
+the 3-class predictions to healthy-vs-faulty -- the question this whole
+project exists to answer, since the real machine only ever supplies healthy
+data -- the adapted model is clearly *better* than the unadapted one:
+
+| Model | Precision | Recall | F1 | False-alarm rate on healthy |
+|---|---|---|---|---|
+| baseline (no adaptation) | 0.923 | 0.403 | 0.561 | 142/456 = **31.1%** |
+| DANN v3 | **0.994** | 0.501 | **0.666** | 12/456 = **2.6%** |
+
+When the adapted model says "faulty" it is right 99.4% of the time, it
+catches half of all faulty windows, and it false-alarms on 2.6% of healthy
+ones -- against 31.1% for the unadapted baseline. For condition monitoring,
+where a developing fault produces many consecutive windows and the cost of
+a false alarm is high, that is a genuinely useful operating point, and it
+came from a checkpoint taken *before* v3's collapse. (Accuracy is a trap
+here: TARGET_TEST is 90% faulty, so "always say faulty" scores 0.902.)
+
+**So the honest summary of Phases 2-4**: zero-shot *fault-type diagnosis*
+(3-class) does not transfer -- both models sit below the trivial
+majority-class predictor. Zero-shot *fault detection* (binary) partially
+does, and adaptation improves it substantially, mainly by cutting false
+alarms 31.1% -> 2.6%. That split is the result, and it is a more faithful
+answer to the original objective than either number alone.
+
+**Candidate next steps, not yet run** (deliberately stopping to choose
+rather than burning a fourth 50-minute run on another guess):
+1. **Retreat on the knob, add a guardrail**: `discriminator_lr_multiplier`
+   5.0 -> 2.0 plus gradient clipping, so a spike like epoch 4's can't kill
+   the run. Continues the current path; cheapest.
+2. **Drop CWRU from the source pool** (PU-only: artificial N15 -> real
+   N09). Single-variable test of whether the cross-dataset gap is actively
+   *harmful* -- forcing invariance between CWRU and PU may be destroying
+   the very structure the classifier needs. Also trains faster.
+3. **Reframe the headline task as binary detection**, matching this repo's
+   other two experiments and the actual deployment goal, with 3-class
+   typing reported as a stretch goal that does not transfer. Needs no new
+   training at all -- the numbers above already exist.
