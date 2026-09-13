@@ -677,6 +677,34 @@ hypothesis it set out to test:
    separability probe) that can distinguish "aligned" from "discriminator
    was fooled" -- the ambiguity that made v1's failure so hard to read.
 
+### Phase 5 verified (kernel v8, 2026-09-14)
+
+The deployment path is no longer just written, it is exercised. `infer.py`
+ran on real data inside the kernel, since it cannot run on the dev laptop
+(no torch there):
+
+```
+--- calibrate on a known-HEALTHY recording ---
+1797_Normal.npz      113 windows   0.0% flagged   healthy
+  VERDICT: this machine reads clean. Monitor with the default threshold.
+--- detect on a known-FAULTY recording (inner race, 21 mil) ---
+1797_IR_21_DE12.npz   55 windows   100% flagged   FAULTY
+```
+
+Both verdicts correct, and pointed the right way round -- the cell is
+written so a backwards result would be loud rather than silent. **What this
+does and does not show**: it verifies the deployment plumbing end to end
+(file loading, resampling from an arbitrary rate, windowing, per-recording
+aggregation, calibration logic, verdict thresholds). It is NOT a zero-shot
+performance claim -- those are CWRU files, in-domain for this model. The
+zero-shot numbers are the Paderborn ones above.
+
+v8 also re-ran the whole pipeline with `binary_detection` computed inside
+`evaluate.py` rather than by hand afterwards. It reproduced v5's figures
+exactly (0.954 / 0.761 / 16.7% for the baseline; 0.800 / 0.085 / 9.7% for
+DANN), which doubles as a determinism check across two independent runs of
+the same seed and config.
+
 ### What would be worth trying next, in order
 
 1. **Order-domain features** -- angular resampling against shaft speed, so
