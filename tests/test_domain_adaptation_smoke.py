@@ -87,7 +87,7 @@ def make_config(tmp_path: Path, **overrides) -> Config:
         ),
         common=CommonConfig(fs_hz=1000, segment_length=256, train_stride=64, eval_stride=128),
         stft=STFTConfig(nperseg=32, hop_length=8, log_epsilon=1e-10),
-        cwru=CWRUConfig(sensor="DE", train_rpms=[1730, 1750], val_rpm=1797),
+        cwru=CWRUConfig(sensor="DE", train_rpms=[1730, 1750], val_rpm=1797, include_in_source=True),
         pu=PUConfig(
             dataset_slug="test/test", native_fs_hz=4000, vibration_channel="vibration_1",
             healthy_codes=["K001"], artificial_outer_codes=["KA01"], artificial_inner_codes=["KI01"],
@@ -209,6 +209,50 @@ def test_build_domain_adaptation_datasets_end_to_end(tmp_path):
     # cached second call returns identical arrays without touching raw files
     results2 = da_dataset.build_domain_adaptation_datasets(config, pu_root)
     assert np.array_equal(results["source_train"][0], results2["source_train"][0])
+
+
+def test_build_datasets_pu_only_when_cwru_excluded(tmp_path):
+    """config.cwru.include_in_source=False -> SOURCE_TRAIN/SOURCE_VAL come
+    from Paderborn alone, and CWRU's files are never even read (kernel v4's
+    experiment: is forcing CWRU<->PU invariance actively harmful?)."""
+    config = make_config(tmp_path)
+    config.cwru.include_in_source = False
+
+    # Deliberately write NO CWRU files at all: if the loader still tried to
+    # read them this would raise, which is the point of the assertion.
+    pu_root = tmp_path / "pu_root"
+    for run in range(1, 5):
+        for code, cond in [
+            ("K001", "N15_M07_F10"), ("KA01", "N15_M07_F10"), ("KI01", "N15_M07_F10"),
+            ("K001", "N09_M07_F10"), ("KA04", "N09_M07_F10"), ("KI04", "N09_M07_F10"),
+        ]:
+            write_synthetic_pu_mat(pu_root, code, cond, run)
+
+    results = da_dataset.build_domain_adaptation_datasets(config, pu_root)
+    assert set(results["source_train"][1].domain) == {"pu_artificial"}  # no "cwru"
+    assert set(results["source_val"][1].domain) == {"pu_artificial"}
+    assert set(results["source_train"][1].domain_id) == {da_dataset.DOMAIN_IDS["pu_artificial"]}
+    # the target side is unaffected by the toggle
+    assert set(results["target_adapt"][1].domain) == {"pu_target"}
+    assert set(results["target_test"][1].universal_label) == {0, 1, 2}
+
+
+def test_cwru_included_by_default_still_mixes_both_domains(tmp_path):
+    """Guard against the v4 toggle silently changing the v1-v3 setup."""
+    config = make_config(tmp_path)
+    assert config.cwru.include_in_source is True
+    raw_dir = tmp_path / "raw"
+    for rpm, fault in [(1730, "Normal"), (1730, "IR"), (1750, "OR@6"), (1797, "Normal"), (1797, "IR")]:
+        write_synthetic_cwru_npz(raw_dir, rpm, fault)
+    pu_root = tmp_path / "pu_root"
+    for run in range(1, 5):
+        for code, cond in [
+            ("K001", "N15_M07_F10"), ("KA01", "N15_M07_F10"), ("KI01", "N15_M07_F10"),
+            ("K001", "N09_M07_F10"), ("KA04", "N09_M07_F10"), ("KI04", "N09_M07_F10"),
+        ]:
+            write_synthetic_pu_mat(pu_root, code, cond, run)
+    results = da_dataset.build_domain_adaptation_datasets(config, pu_root)
+    assert set(results["source_train"][1].domain) == {"cwru", "pu_artificial"}
 
 
 # --- analysis (torch-free, so these run locally) ----------------------------

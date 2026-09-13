@@ -41,6 +41,16 @@ cwru:
   sensor: DE
   train_rpms: [1730, 1750, 1772]
   val_rpm: 1797
+  # v4 (kernel v3 -> v4): CWRU dropped from the source pool entirely.
+  # v1-v3 all trained on CWRU + PU_artificial and none of them achieved
+  # alignment. The hypothesis being tested: forcing the feature extractor to
+  # be invariant across two ENTIRELY different rigs may be destroying the
+  # very structure the classifier needs, making CWRU actively harmful rather
+  # than extra data. With this false, the only shift left between source and
+  # target is PU's own N15 -> N09 speed change (plus artificial -> real
+  # damage) -- a far smaller gap, on one rig with one sensor.
+  # Set back to true to restore the v1-v3 setup.
+  include_in_source: false
 
 # --- Paderborn / KAt-DataCenter (Source B + Target) -------------------------
 # Bearing-code meanings: src/domain_adaptation/data/pu_bearing_codes.py.
@@ -112,7 +122,12 @@ train_dann:
   # scrambled by the reversal faster than it could learn, so it fed the
   # feature extractor meaningless gradients. Letting it learn 5x faster is
   # the standard fix for losing the minimax race.
-  discriminator_lr_multiplier: 5.0
+  # Back to 1.0 for v4 -- v2's value, which ran stably. v3's 5.0 blew up at
+  # epoch 4 and froze the network, so keeping it would confound the one
+  # variable this run is meant to isolate (CWRU in vs. out).
+  discriminator_lr_multiplier: 1.0
+  # Safety net only, added after v3's blow-up; inert on a healthy run.
+  grad_clip_norm: 5.0
   device: auto
 
 evaluation:

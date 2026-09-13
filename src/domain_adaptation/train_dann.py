@@ -57,7 +57,7 @@ def _cycle(loader: DataLoader) -> Iterator:
 
 def run_train_epoch(
     model, source_loader, target_loader, optimizer, device,
-    domain_weight, anchor_weight, epoch, total_epochs, grl_gamma,
+    domain_weight, anchor_weight, epoch, total_epochs, grl_gamma, grad_clip_norm,
 ) -> dict:
     """One pass over SOURCE_TRAIN, cycling TARGET_ADAPT alongside it.
 
@@ -112,6 +112,8 @@ def run_train_epoch(
 
         optimizer.zero_grad()
         loss.backward()
+        if grad_clip_norm > 0:
+            torch.nn.utils.clip_grad_norm_(model.parameters(), grad_clip_norm)
         optimizer.step()
 
         n = len(X_s)
@@ -252,7 +254,7 @@ def train(config: Config, pu_root, force_data: bool = False) -> None:
         train_metrics = run_train_epoch(
             model, source_loader, target_loader, optimizer, device,
             config.train_dann.domain_loss_weight, config.train_dann.anchor_loss_weight,
-            epoch, total_epochs, config.train_dann.grl_gamma,
+            epoch, total_epochs, config.train_dann.grl_gamma, config.train_dann.grad_clip_norm,
         )
         val_loss, val_acc = run_val_epoch(model, val_loader, device)
         dt = time.time() - t0

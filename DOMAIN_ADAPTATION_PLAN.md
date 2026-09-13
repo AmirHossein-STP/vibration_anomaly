@@ -427,16 +427,41 @@ does, and adaptation improves it substantially, mainly by cutting false
 alarms 31.1% -> 2.6%. That split is the result, and it is a more faithful
 answer to the original objective than either number alone.
 
-**Candidate next steps, not yet run** (deliberately stopping to choose
-rather than burning a fourth 50-minute run on another guess):
-1. **Retreat on the knob, add a guardrail**: `discriminator_lr_multiplier`
-   5.0 -> 2.0 plus gradient clipping, so a spike like epoch 4's can't kill
-   the run. Continues the current path; cheapest.
-2. **Drop CWRU from the source pool** (PU-only: artificial N15 -> real
-   N09). Single-variable test of whether the cross-dataset gap is actively
-   *harmful* -- forcing invariance between CWRU and PU may be destroying
-   the very structure the classifier needs. Also trains faster.
-3. **Reframe the headline task as binary detection**, matching this repo's
-   other two experiments and the actual deployment goal, with 3-class
-   typing reported as a stretch goal that does not transfer. Needs no new
-   training at all -- the numbers above already exist.
+**Kernel v4 (2026-09-13, running): drop CWRU from the source pool.**
+Chosen over two alternatives (retreating the LR knob to 2.0; or simply
+reframing the headline as binary detection) because it is the one
+remaining experiment that could still change the story rather than just
+tune it.
+
+*Hypothesis*: CWRU is not extra data, it is actively harmful. v1-v3 all
+asked the feature extractor to be invariant across two entirely different
+test rigs AND to transfer fault structure across a speed change. Forcing
+CWRU<->PU invariance may be destroying the very structure the classifier
+needs. With `cwru.include_in_source: false`, the only shift left between
+source and target is PU's own N15 -> N09 speed change plus artificial ->
+real damage -- one rig, one sensor, one dataset.
+
+*Kept clean as a single-variable test*: `discriminator_lr_multiplier` goes
+back to **1.0** (v2's value, which ran stably) rather than staying at
+v3's 5.0, so the only training variable that differs from the v2 reference
+run is CWRU in vs. out. `grad_clip_norm: 5.0` is added as a guardrail but
+is inert on a healthy run -- it exists so a v3-style spike cannot silently
+waste another 50 minutes.
+
+*Checked before spending the run*: dropping CWRU does not skew the label
+balance (healthy/inner/outer goes 38.2/27.9/33.9% -> 42.8/28.6/28.6%), so
+a change in result can't be attributed to that. Source shrinks 33132 ->
+23003 windows, so epochs should also run ~31% faster.
+
+*How to read it*: if target metrics jump, CWRU was hurting and the
+multi-rig framing was the mistake. If they stay flat, the cross-dataset
+gap was never the bottleneck and the speed shift / artificial-vs-real
+damage gap is -- which would make order-domain features (resampling
+against shaft angle so fault frequencies land in the same bins regardless
+of rpm) the principled next move rather than more adversarial tuning.
+
+**Still available regardless of v4's outcome**: reframing the headline
+result as binary detection. It needs no new training -- the numbers are
+already in hand (0.994 precision / 2.6% false-alarm rate, above) -- and it
+matches both this repo's other two experiments and the actual deployment
+goal.

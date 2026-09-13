@@ -54,6 +54,12 @@ class CWRUConfig:
     sensor: str
     train_rpms: list[int]
     val_rpm: int
+    # False -> CWRU is dropped from the source pool entirely and SOURCE_TRAIN /
+    # SOURCE_VAL come only from Paderborn. Isolates the cross-DATASET gap from
+    # the cross-CONDITION one: with CWRU out, the only shift left between
+    # source and target is PU's own N15 -> N09 speed change (plus artificial
+    # -> real damage). See DOMAIN_ADAPTATION_PLAN.md's kernel v4 notes.
+    include_in_source: bool = True
 
 
 @dataclass
@@ -116,6 +122,12 @@ class DANNTrainConfig:
     domain_loss_weight: float
     anchor_loss_weight: float
     grl_gamma: float  # steepness of the GRL lambda warm-up schedule (see models/grl.py)
+    # Max global gradient norm, clipped every step. Pure safety net: it is
+    # inert on a healthy run and only bites on a spike like kernel v3's
+    # epoch 4 (domain_loss 15.4, anchor_loss 67.8), which blew the feature
+    # extractor out and left both heads emitting constants for the rest of
+    # the run. Set generously so it does not act as a regularizer.
+    grad_clip_norm: float
     # Learning-rate multiplier for the domain discriminator's own parameter
     # group (1.0 = same as everything else). Lets the discriminator stay a
     # step ahead in the minimax game if it's losing the race -- see

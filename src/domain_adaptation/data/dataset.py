@@ -179,7 +179,14 @@ def build_domain_adaptation_datasets(
     if not force and all(p.exists() for p in paths.values()):
         return {role: (np.load(paths[f"{role}_X"]), pd.read_csv(paths[f"{role}_meta"])) for role in ROLES}
 
-    cwru_catalog = build_cwru_catalog(config.resolve(config.paths.cwru_raw_dir), config.cwru.train_rpms, config.cwru.val_rpm)
+    include_cwru = config.cwru.include_in_source
+    cwru_catalog = (
+        build_cwru_catalog(config.resolve(config.paths.cwru_raw_dir), config.cwru.train_rpms, config.cwru.val_rpm)
+        if include_cwru
+        else None
+    )
+    if not include_cwru:
+        print("CWRU excluded from the source pool (config.cwru.include_in_source=false) -- PU-only run.")
     pu_catalog = _assign_pu_roles(
         build_pu_catalog(pu_root, config.pu.source_codes + config.pu.real_codes, config.pu.native_fs_hz), config
     )
@@ -193,7 +200,7 @@ def build_domain_adaptation_datasets(
     for role in ROLES:
         stride = config.common.train_stride if role in ("source_train", "target_adapt") else config.common.eval_stride
 
-        if role in cwru_split_for_role:
+        if include_cwru and role in cwru_split_for_role:
             cwru_rows = cwru_catalog[cwru_catalog.split == cwru_split_for_role[role]].copy()
             cwru_rows["role"] = role
             cwru_X, cwru_meta = _windows_and_meta_for_cwru_rows(cwru_rows, config, stride)
