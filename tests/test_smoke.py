@@ -7,7 +7,11 @@ from __future__ import annotations
 
 import numpy as np
 import pytest
-import torch
+# torch cannot be installed on this machine (PyPI caps it at 2.2.2 here,
+# which predates numpy 2.x support) -- skip cleanly rather than failing
+# collection, so the rest of the suite still runs locally. On Kaggle,
+# where torch exists, this is a no-op and every test runs as before.
+torch = pytest.importorskip("torch")
 
 from vibration_ad.config import STFTConfig, WindowingConfig
 from vibration_ad.data.windows import make_windows, n_windows

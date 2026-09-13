@@ -13,7 +13,11 @@ from pathlib import Path
 import numpy as np
 import pandas as pd
 import pytest
-import torch
+# torch cannot be installed on this machine (PyPI caps it at 2.2.2 here,
+# which predates numpy 2.x support) -- skip cleanly rather than failing
+# collection, so the rest of the suite still runs locally. On Kaggle,
+# where torch exists, this is a no-op and every test runs as before.
+torch = pytest.importorskip("torch")
 
 from hydraulic_fusion_ad.analysis import (
     best_deployable_threshold,
