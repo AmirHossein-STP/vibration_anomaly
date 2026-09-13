@@ -39,7 +39,7 @@ from domain_adaptation.config import Config, load_config
 from domain_adaptation.data.dataset import build_domain_adaptation_datasets
 from domain_adaptation.data.pu_loader import find_pu_root
 from domain_adaptation.data.torch_dataset import LabeledDomainDataset, UnlabeledDomainDataset
-from domain_adaptation.models.dann import DANNModel, healthy_anchor_loss
+from domain_adaptation.models.dann import N_DOMAINS, DANNModel, healthy_anchor_loss
 from domain_adaptation.models.feature_extractor import select_device
 from domain_adaptation.models.grl import grl_lambda_schedule
 
@@ -80,8 +80,15 @@ def run_train_epoch(
 
     totals = {
         "cls_loss": 0.0, "domain_loss": 0.0, "anchor_loss": 0.0,
-        "correct": 0, "domain_correct": 0, "domain_n": 0, "n": 0, "lambda_sum": 0.0,
+        "correct": 0, "n": 0, "lambda_sum": 0.0,
     }
+    # Per-domain tallies, for a BALANCED domain accuracy. Raw accuracy is
+    # misleading here: every batch is 64 source + 64 target, so pu_target is
+    # 50% of it by construction and a discriminator that blindly answers
+    # "target" scores 0.50 -- which is exactly what v2's 0.487-0.524 was.
+    # Macro-averaging recall over the 3 domains makes chance a true 1/3.
+    domain_correct = torch.zeros(N_DOMAINS)
+    domain_total = torch.zeros(N_DOMAINS)
     for batch_idx, (X_s, domain_s, label_s) in enumerate(source_loader):
         # Global training progress in [0, 1], counted in ITERATIONS.
         progress = ((epoch - 1) * n_batches + batch_idx) / max(total_epochs * n_batches - 1, 1)
@@ -112,23 +119,29 @@ def run_train_epoch(
         totals["domain_loss"] += domain_loss.item() * n
         totals["anchor_loss"] += anchor_loss.item() * n
         totals["correct"] += (class_logits.argmax(dim=1) == label_s).sum().item()
-        # Domain ACCURACY, not just loss: chance is 1/3 here (3 domains), so
-        # ~0.33 means the discriminator genuinely can't tell domains apart,
-        # while a high value means it still can -- much easier to read live
-        # than a cross-entropy hovering near ln(3)=1.099.
-        totals["domain_correct"] += (domain_logits.argmax(dim=1) == domain_targets).sum().item()
-        totals["domain_n"] += len(domain_targets)
+        # Balanced domain accuracy (see domain_correct/domain_total above):
+        # ~0.33 means the discriminator genuinely can't tell the domains
+        # apart; higher means it still can. Much easier to read live than a
+        # cross-entropy hovering near ln(3)=1.099 -- and, unlike raw
+        # accuracy, not inflated by the batch's 50% target share.
+        domain_preds = domain_logits.argmax(dim=1).cpu()
+        domain_truth = domain_targets.cpu()
+        for d in range(N_DOMAINS):
+            mask = domain_truth == d
+            domain_total[d] += mask.sum()
+            domain_correct[d] += (domain_preds[mask] == d).sum()
         totals["lambda_sum"] += lambda_ * n
         totals["n"] += n
 
     n = totals.pop("n")
-    domain_n = totals.pop("domain_n")
+    seen = domain_total > 0
+    balanced_domain_acc = float((domain_correct[seen] / domain_total[seen]).mean())
     return {
         "cls_loss": totals["cls_loss"] / n,
         "domain_loss": totals["domain_loss"] / n,
         "anchor_loss": totals["anchor_loss"] / n,
         "cls_acc": totals["correct"] / n,
-        "domain_acc": totals["domain_correct"] / domain_n,
+        "domain_acc": balanced_domain_acc,
         "lambda": totals["lambda_sum"] / n,
     }
 

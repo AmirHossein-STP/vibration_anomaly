@@ -307,7 +307,63 @@ all?" has a number, not a vibe -- and it needs no target labels, so it
 stays legitimate under the zero-shot constraint.
 
 Read the v2 result as: `separability_accuracy` near 0.5 means alignment
-worked; near 1.0 means it didn't. If DANN's probe stays near 1.0 while
-`domain_acc` in the training log sits at chance (~0.33), that is exactly
-the "discriminator is losing the race" signature -- turn up
-`discriminator_lr_multiplier` for v3.
+worked; near 1.0 means it didn't.
+
+**Kernel v2 result (2026-09-13): the diagnostic paid for itself
+immediately -- it named the failure instead of leaving us to guess.**
+
+| Model | Accuracy | Macro F1 | Probe separability |
+|---|---|---|---|
+| baseline (no adaptation) | 0.282 | 0.269 | **0.999** |
+| DANN v1 | 0.206 | 0.171 | (not measured) |
+| DANN v2 | 0.278 | 0.237 | **0.969** |
+
+- **Adaptation still barely moved the needle.** The probe went 0.999 ->
+  0.969: source and target features remain essentially trivially
+  separable. Tripling `domain_loss_weight` and ramping lambda 2.5x faster
+  bought almost nothing in actual alignment.
+- **The class collapse rotated rather than resolved.** v1 never predicted
+  outer_race (recall 0.086 -> 0.000 on that column); v2 never gets
+  inner_race right instead (recall 0.000, with all 2294 true inner_race
+  windows split between healthy and outer_race), while outer_race recall
+  *improved* 0.086 -> 0.522. Which class the model abandons is essentially
+  arbitrary -- the signature of a classifier extrapolating into feature
+  regions it has no training signal for.
+- **And the diagnosis is now unambiguous**: `domain_acc` sat at 0.487-0.524
+  for all 13 epochs. That is *exactly* the majority-class rate, because
+  every batch is 64 source + 64 target, so answering "target" for
+  everything scores 0.50. The in-training discriminator learned **nothing**
+  -- while a fresh probe on the very same frozen features separates the
+  domains at 0.969. Features separable + discriminator unable to exploit
+  them = the discriminator is losing the minimax race, being scrambled by
+  the reversal faster than it can learn, and therefore feeding the feature
+  extractor meaningless gradients. (Credit where due: this was predicted in
+  advance as the risk of raising `grl_gamma`, before the numbers came in.)
+
+**Sobering context that belongs next to these numbers**: TARGET_TEST is
+456 healthy / 2294 inner_race / 1906 outer_race, so a model that blindly
+answers "inner_race" every time scores **0.493 accuracy / 0.220 macro F1**.
+Both our models are *below* that on accuracy and only marginally above it
+on macro F1. This is not a system that nearly works and needs tuning -- as
+set up, source-trained features do not transfer to the held-out condition
+at all. Worth stating plainly rather than reporting 0.282 as though it
+were a result.
+
+**Kernel v3 (2026-09-13, running)**: single change ->
+`discriminator_lr_multiplier` 1.0 -> 5.0, the knob wired up in v2 for
+exactly this evidence. Plus one measurement fix that doesn't affect
+training: `domain_acc` is now macro-averaged over the three domains, so
+chance is a true 1/3 and the number can't be inflated by the batch's 50%
+target share (v2's "0.49" needed a footnote to interpret; v3's won't).
+
+Read v3 as: if `domain_acc` climbs well above 1/3 AND the probe drops
+toward 0.5, the race was the problem and alignment is finally happening.
+If `domain_acc` climbs but the probe stays near 1.0, the discriminator is
+now learning fine and marginal alignment simply isn't sufficient -- which
+would point at the deeper issue (marginal != class-conditional alignment)
+and make the next move a conditional-alignment method, not another
+hyperparameter. If neither moves, the shortcut being exploited is probably
+upstream of the model entirely -- the prime suspect being per-window
+amplitude/scale differences between rigs, which the current
+fit-on-pooled-source normalization does not remove; per-window
+normalization before the STFT would be the v4 test.

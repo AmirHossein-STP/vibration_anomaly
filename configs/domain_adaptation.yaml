@@ -101,13 +101,18 @@ train_dann:
   # floor, so by the time the adversarial signal arrived the feature
   # extractor had already committed to source-only shortcuts.
   domain_loss_weight: 3.0    # v1: 1.0 -- louder adversarial signal vs. the classification gradient
-  anchor_loss_weight: 0.5    # unchanged, deliberately: isolate ONE change at a time
+  anchor_loss_weight: 0.5    # unchanged since v1, deliberately: isolate changes
   grl_gamma: 25.0            # v1: 10.0 -- lambda hits ~0.46 by end of epoch 1 instead of ~0.17
-  # 1.0 = discriminator learns at the same rate as everything else. Raise
-  # this (e.g. 2-5) if domain_acc sits at chance while evaluate.py's
-  # post-hoc probe still separates domains easily -- that combination means
-  # the discriminator is losing the minimax race, not that alignment worked.
-  discriminator_lr_multiplier: 1.0
+  # v3 (kernel v2 -> v3): 1.0 -> 5.0. v2 produced exactly the signature this
+  # knob exists for: the post-hoc probe still separated source from target at
+  # 0.969 (features NOT aligned), while the in-training discriminator scored
+  # 0.487-0.524 balanced-equivalent -- i.e. the majority-class rate, since
+  # pu_target is 50% of every batch. The features were separable and the
+  # discriminator simply could not learn to exploit them: it was being
+  # scrambled by the reversal faster than it could learn, so it fed the
+  # feature extractor meaningless gradients. Letting it learn 5x faster is
+  # the standard fix for losing the minimax race.
+  discriminator_lr_multiplier: 5.0
   device: auto
 
 evaluation:
