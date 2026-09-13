@@ -32,7 +32,7 @@ from torch.utils.data import DataLoader
 from vibration_ad.features.spectrogram import SpectrogramNormalizer, expected_shape
 
 from domain_adaptation import viz
-from domain_adaptation.analysis import domain_separability_probe
+from domain_adaptation.analysis import binary_detection_metrics, domain_separability_probe
 from domain_adaptation.config import Config, load_config
 from domain_adaptation.data.dataset import build_domain_adaptation_datasets
 from domain_adaptation.data.pu_loader import find_pu_root
@@ -63,7 +63,23 @@ def compute_metrics(y_true: np.ndarray, y_pred: np.ndarray) -> dict:
         "macro_f1": float(f1_score(y_true, y_pred, average="macro", labels=[0, 1, 2], zero_division=0)),
         "confusion_matrix": cm.tolist(),
         "n": int(len(y_true)),
+        # Reported alongside the 3-class figures, not instead of them: across
+        # kernels v1-v5 fault TYPING never transferred while fault DETECTION
+        # partly did, and detection is the question the deployment actually
+        # poses. See analysis.binary_detection_metrics.
+        "binary_detection": binary_detection_metrics(y_true, y_pred),
     }
+
+
+def _print_summary(name: str, metrics: dict) -> None:
+    b = metrics["binary_detection"]
+    print(f"  {name}: 3-class accuracy={metrics['accuracy']:.3f} macro_f1={metrics['macro_f1']:.3f}")
+    print(
+        f"  {name}: BINARY healthy-vs-faulty -- precision={b['precision']:.3f} "
+        f"recall={b['recall']:.3f} f1={b['f1']:.3f} false_alarm_rate={b['false_alarm_rate']:.1%} "
+        f"(always-faulty accuracy would be {b['always_faulty_accuracy']:.3f})"
+    )
+    print(json.dumps(metrics, indent=2))
 
 
 def evaluate(config: Config, pu_root) -> dict:
@@ -100,7 +116,7 @@ def evaluate(config: Config, pu_root) -> dict:
     baseline_features, baseline_preds, _ = run_inference(baseline, test_X_norm, test_domain_ids, test_labels, device)
     results["baseline"] = compute_metrics(test_labels, baseline_preds)
     feature_source = ("baseline", baseline)
-    print(json.dumps(results["baseline"], indent=2))
+    _print_summary("baseline", results["baseline"])
 
     if dann_ckpt.exists():
         print("Evaluating DANN (adapted) on TARGET_TEST...")
@@ -109,7 +125,7 @@ def evaluate(config: Config, pu_root) -> dict:
         dann_features, dann_preds, _ = run_inference(dann, test_X_norm, test_domain_ids, test_labels, device)
         results["dann"] = compute_metrics(test_labels, dann_preds)
         feature_source = ("dann", dann)
-        print(json.dumps(results["dann"], indent=2))
+        _print_summary("dann", results["dann"])
     else:
         print(f"{dann_ckpt} not found -- skipping DANN evaluation (run train_dann.py to add the comparison).")
 

@@ -527,8 +527,20 @@ tuning is the best-evidenced move available.
 Single variable again: every other setting matches the v2 reference run
 (CWRU back in, `discriminator_lr_multiplier` 1.0, `domain_loss_weight` 3.0,
 `grl_gamma` 25.0), with `grad_clip_norm` retained as the inert guardrail.
-The TARGET_TEST set is untouched -- all 11 real-damage codes, as always --
-so the numbers stay directly comparable to v1-v4.
+
+**CORRECTION (written after the run): the claim originally made here -- that
+TARGET_TEST was untouched and the numbers stayed directly comparable to
+v1-v4 -- was wrong.** `healthy_codes` feeds BOTH the source pool and the
+target condition's healthy holdout, so widening it 3 -> 6 doubled
+TARGET_TEST's healthy rows, 456 -> 917 (total 4,656 -> 5,117). The faulty
+half is genuinely untouched (2,294 inner + 1,906 outer = 4,200 identical
+windows), but accuracy, precision and macro-F1 all depend on the class mix
+and are therefore NOT comparable across the v4/v5 boundary. Only two
+metrics survive it: **faulty recall** (computed on the identical 4,200
+windows) and **false-alarm rate** (a rate measured on healthy windows
+only). Those are the ones used in the verdict table below. Fixing this
+properly would mean a separate `pu.target_healthy_codes` so source breadth
+and test composition can move independently -- noted, not yet done.
 
 Cost: 2.09x the source windows (33,132 -> ~69,280), 1,420 PU `.mat` reads
 instead of 760, ~103 min projected against v2's ~50. Class balance stays
@@ -607,6 +619,78 @@ Fixed structurally, so it now scales to any breadth:
   during a memory investigation is worse than no gauge.
 
 Re-pushed as kernel version 7.
+
+**Both fixes confirmed working in kernel v7's log**: exactly ONE unreadable
+file (`KA08/N15_M01_F10_KA08_2.mat`, 0.1% of its split) -- named, skipped,
+run continued, where that same file had killed the previous attempt outright
+-- and **peak RSS 11.6 GB** against the ~34 GB that triggered the OOM
+killer. source_train built out at 69,250 windows (4.2 GB), within 30 windows
+of the 69,280 predicted, the difference being the skipped file.
+
+## Kernel v5 result (2026-09-14): breadth works, adaptation does not
+
+| Model | faulty recall (identical 4,200 windows) | false-alarm rate |
+|---|---|---|
+| v2/v3 baseline (7 source codes) | 0.403 | 31.1% |
+| v3 DANN (7 source codes) | 0.501 | 2.6% |
+| **v5 baseline (18 source codes)** | **0.761** | **16.7%** |
+| v5 DANN (18 source codes) | 0.085 | 9.7% |
+
+**Source breadth was a real bottleneck, and fixing it was the single
+biggest win of the entire experiment.** The baseline's detection recall
+went 0.403 -> 0.761 on byte-identical faulty windows *while false alarms
+simultaneously fell* 31.1% -> 16.7%. Both moved the right way at once, so
+this is a genuine capability gain rather than a threshold being traded
+along a fixed ROC curve. Its 3-class accuracy also rose 0.282 -> 0.456 and
+outer_race recall 0.086 -> 0.513, though those particular figures straddle
+the test-set change above, so treat them as indicative.
+
+**The adversarial machinery is not merely useless here -- it is harmful,
+and more data makes it more harmful.** v5's DANN collapsed to calling 91%
+of everything healthy (recall 0.085) while scoring `cls_acc` 0.99 /
+`val_acc` 0.98 on source data. `domain_acc` sat at 0.340 against a chance
+of 0.333, and the post-hoc probe still separated the domains at 0.949. So
+across five kernels the adversarial component never once achieved
+alignment, and its cost to target performance grew with source size.
+
+### Verdict
+
+**The best model produced by this study is the v5 BASELINE -- no domain
+adaptation at all.** As a zero-shot fault *detector* on a rig speed it
+never trained on, using zero target fault data: **95.4% precision, 76.1%
+recall, 16.7% false-alarm rate.** It is also the simplest thing to deploy,
+having no discriminator, no GRL and no adaptation step.
+
+Three things this study actually establishes, none of which were the
+hypothesis it set out to test:
+
+1. **Zero-shot fault DETECTION transfers across rigs and speeds; fault
+   TYPING does not.** Every version, adapted or not, failed to tell inner
+   from outer race on the target. The binary question -- the one the
+   deployment actually asks -- is answerable.
+2. **Source diversity dominates every other lever tried.** Breadth (7 -> 18
+   codes) beat three rounds of adversarial hyperparameter tuning combined,
+   and v4 showed the converse: removing CWRU cost ~11 accuracy points even
+   though it made the source "closer" to the target.
+3. **DANN, as applied here, does not work on this problem.** That is a real
+   negative result, established across five runs with a diagnostic (the
+   separability probe) that can distinguish "aligned" from "discriminator
+   was fooled" -- the ambiguity that made v1's failure so hard to read.
+
+### What would be worth trying next, in order
+
+1. **Order-domain features** -- angular resampling against shaft speed, so
+   BPFO/BPFI land in the same bins at 900rpm as at 1500rpm. The speed shift
+   is the one gap never addressed; PU ships a `speed` channel and CWRU
+   encodes rpm in the filename, so the data supports it. This is the
+   principled fix and the only remaining idea with a strong physical
+   argument behind it.
+2. **More breadth still** -- the source is now every artificial code, but
+   `source_conditions` is still 3 of 4, and `source_train_fraction` 0.7.
+   Breadth is the proven lever; this is the cheap way to push it.
+3. **Drop the adversarial component entirely** for deployment, and keep
+   `train_baseline.py` as the product. Adaptation can stay in the repo as
+   the documented negative result.
 
 **Still available regardless of v4's outcome**: reframing the headline
 result as binary detection. It needs no new training -- the numbers are

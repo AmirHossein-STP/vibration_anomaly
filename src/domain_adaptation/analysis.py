@@ -59,3 +59,50 @@ def domain_separability_probe(
         "proxy_a_distance": float(2.0 * (1.0 - 2.0 * (1.0 - accuracy))),
         "n_per_domain": int(n),
     }
+
+
+def binary_detection_metrics(y_true: np.ndarray, y_pred: np.ndarray) -> dict:
+    """Collapse the 3-class prediction to healthy (0) vs faulty (1 or 2) and
+    score it as a detector.
+
+    Why this belongs alongside the 3-class numbers rather than in a
+    throwaway script: the deployment question this whole project exists to
+    answer is "the machine only ever gave us healthy data -- will we notice
+    when it breaks?", which is binary. Fault *typing* is a bonus. Across
+    kernels v1-v5 the 3-class task never transferred while detection partly
+    did, so reporting only the 3-class figure understates the result and
+    reporting only accuracy overstates it.
+
+    `false_alarm_rate` is the number to lead with, not accuracy: TARGET_TEST
+    is ~90% faulty, so "always say faulty" scores 0.90 accuracy while being
+    useless. False-alarm rate is measured on healthy windows only, so the
+    test set's skew cannot flatter it, and in condition monitoring it is the
+    figure that decides whether anyone keeps listening to the alarm.
+    """
+    y_true_bin = (np.asarray(y_true) != 0).astype(int)
+    y_pred_bin = (np.asarray(y_pred) != 0).astype(int)
+
+    tp = int(((y_pred_bin == 1) & (y_true_bin == 1)).sum())
+    fp = int(((y_pred_bin == 1) & (y_true_bin == 0)).sum())
+    tn = int(((y_pred_bin == 0) & (y_true_bin == 0)).sum())
+    fn = int(((y_pred_bin == 0) & (y_true_bin == 1)).sum())
+
+    precision = tp / (tp + fp) if (tp + fp) else 0.0
+    recall = tp / (tp + fn) if (tp + fn) else 0.0
+    f1 = 2 * precision * recall / (precision + recall) if (precision + recall) else 0.0
+    n_healthy, n_faulty = tn + fp, tp + fn
+
+    return {
+        "precision": float(precision),
+        "recall": float(recall),
+        "f1": float(f1),
+        "accuracy": float((tp + tn) / len(y_true_bin)) if len(y_true_bin) else 0.0,
+        # Measured on healthy windows only -- immune to the test set's skew.
+        "false_alarm_rate": float(fp / n_healthy) if n_healthy else 0.0,
+        "confusion": {"tn": tn, "fp": fp, "fn": fn, "tp": tp},
+        "n_healthy": n_healthy,
+        "n_faulty": n_faulty,
+        # What a model that always shouts "faulty" would score, so the
+        # headline number can never be read without its null comparison.
+        "always_faulty_accuracy": float(n_faulty / len(y_true_bin)) if len(y_true_bin) else 0.0,
+    }

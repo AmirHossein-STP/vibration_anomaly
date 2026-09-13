@@ -36,7 +36,7 @@ from domain_adaptation.data import dataset as da_dataset
 from domain_adaptation.data.cwru_loader import build_cwru_catalog
 from domain_adaptation.data.pu_bearing_codes import PU_BEARING_CODES
 from domain_adaptation.data.pu_loader import UnreadableMatFile, build_pu_catalog, load_vibration_signal
-from domain_adaptation.analysis import domain_separability_probe
+from domain_adaptation.analysis import binary_detection_metrics, domain_separability_probe
 from domain_adaptation.data.transforms import resample_to_rate
 
 try:
@@ -352,6 +352,47 @@ def test_separability_probe_balances_unequal_domain_sizes():
 def test_separability_probe_rejects_tiny_inputs():
     with pytest.raises(ValueError, match="at least|>=10|Need"):
         domain_separability_probe(np.zeros((3, 4)), np.zeros((50, 4)))
+
+
+def test_binary_detection_collapses_both_fault_types():
+    """Labels 1 and 2 both count as 'faulty'; only 0 is healthy."""
+    y_true = np.array([0, 0, 1, 1, 2, 2])
+    y_pred = np.array([0, 1, 1, 0, 2, 0])  # 1 false alarm, 2 missed faults
+    r = binary_detection_metrics(y_true, y_pred)
+    assert r["confusion"] == {"tn": 1, "fp": 1, "fn": 2, "tp": 2}
+    assert r["n_healthy"] == 2 and r["n_faulty"] == 4
+    assert r["recall"] == pytest.approx(0.5)
+    assert r["false_alarm_rate"] == pytest.approx(0.5)
+
+
+def test_binary_detection_confusing_fault_types_still_counts_as_detected():
+    """Calling an inner-race fault 'outer_race' is wrong for typing but
+    RIGHT for detection -- that distinction is the whole point of reporting
+    both, since v1-v5 showed typing fails while detection partly works."""
+    y_true = np.array([1, 1, 2, 2])
+    y_pred = np.array([2, 2, 1, 1])  # every type wrong, every fault caught
+    r = binary_detection_metrics(y_true, y_pred)
+    assert r["recall"] == pytest.approx(1.0)
+    assert r["false_alarm_rate"] == pytest.approx(0.0)
+    assert r["precision"] == pytest.approx(1.0)
+
+
+def test_binary_detection_reports_always_faulty_null_comparison():
+    """The null model's score must travel with the headline number: a 90%
+    faulty test set makes 'always say faulty' look like 0.9 accuracy."""
+    y_true = np.array([0] + [1] * 9)
+    r = binary_detection_metrics(y_true, np.ones(10, dtype=int))
+    assert r["always_faulty_accuracy"] == pytest.approx(0.9)
+    assert r["accuracy"] == pytest.approx(0.9)
+    assert r["false_alarm_rate"] == pytest.approx(1.0)  # flagged the only healthy window
+
+
+def test_binary_detection_handles_no_positive_predictions():
+    """v5's DANN called ~91% of everything healthy; the metric must not
+    divide by zero when a model predicts no faults at all."""
+    r = binary_detection_metrics(np.array([0, 1, 2]), np.zeros(3, dtype=int))
+    assert r["precision"] == 0.0 and r["recall"] == 0.0 and r["f1"] == 0.0
+    assert r["false_alarm_rate"] == 0.0
 
 
 # --- models --------------------------------------------------------------
