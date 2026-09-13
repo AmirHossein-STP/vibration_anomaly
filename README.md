@@ -135,6 +135,12 @@ Read in order for the full picture, or jump to whichever's relevant:
 9. `notes/08_deeper_analysis_and_presentation.md` — the analyze/sweep
    stages, what the bottleneck sweep actually found, and the presentation
    report.
+10. `notes/09_hydraulic_notes.md` — the hydraulic sensor-fusion experiment's
+    design notes.
+11. `notes/10_domain_adaptation_notes.md` — domain adaptation concepts:
+    what zero-shot means here, how DANN/GRL work, the three ways the
+    adversarial approach failed, and why the metric you choose decides
+    whether the result looks like a failure or a usable detector.
 
 ## Data versioning (DVC) and testing on Kaggle
 
