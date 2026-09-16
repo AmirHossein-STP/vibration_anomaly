@@ -315,6 +315,89 @@ def test_dataset_aborts_when_too_many_files_unreadable(tmp_path):
         da_dataset.build_domain_adaptation_datasets(config, pu_root)
 
 
+# --- order tracking (the cross-speed fix) -----------------------------------
+
+def _peak_order(signal, samples_per_rev=256):
+    """Order of the dominant spectral component of an angular-resampled signal."""
+    spec = np.abs(np.fft.rfft(signal * np.hanning(len(signal))))
+    freqs = np.fft.rfftfreq(len(signal))          # cycles per SAMPLE
+    return float(freqs[np.argmax(spec[1:]) + 1] * samples_per_rev)  # -> per REVOLUTION
+
+
+def test_angular_resample_puts_a_fault_at_the_same_ORDER_at_any_speed():
+    """The whole reason order tracking should fix what adversarial alignment
+    could not. A bearing fault sits at a fixed number of events per
+    REVOLUTION, so its frequency in Hz scales with shaft speed -- which is a
+    multiplicative stretch of the spectrogram's frequency axis, something a
+    CNN has no tolerance for. After angular resampling the speed divides out
+    and the fault lands in the same bin at both speeds.
+    """
+    from domain_adaptation.data.order_tracking import angular_resample
+
+    fs, fault_order, duration = 64000, 5.4, 4.0   # 5.4 orders ~ a typical BPFO
+    t = np.arange(int(fs * duration)) / fs
+    peaks_hz, peaks_order = {}, {}
+    for rpm in (900, 1500):                        # PU's N09 and N15
+        shaft_hz = rpm / 60.0
+        sig = np.sin(2 * np.pi * fault_order * shaft_hz * t)
+        peaks_hz[rpm] = fault_order * shaft_hz
+        peaks_order[rpm] = _peak_order(angular_resample(sig, fs, rpm))
+
+    # In Hz the same defect appears in completely different places...
+    assert peaks_hz[900] == pytest.approx(81.0)
+    assert peaks_hz[1500] == pytest.approx(135.0)
+    # ...but in the order domain both land on the true fault order.
+    assert peaks_order[900] == pytest.approx(fault_order, abs=0.05)
+    assert peaks_order[1500] == pytest.approx(fault_order, abs=0.05)
+    assert peaks_order[900] == pytest.approx(peaks_order[1500], abs=0.05)
+
+
+def test_angular_resample_length_tracks_revolutions_not_seconds():
+    """A fixed-length window covers a fixed number of REVOLUTIONS at any
+    speed -- the invariance the representation is bought for. Four seconds
+    at 1500rpm is 100 revolutions; at 900rpm it is 60."""
+    from domain_adaptation.data.order_tracking import angular_resample, revolutions_per_window
+
+    four_seconds = np.zeros(64000 * 4)
+    assert len(angular_resample(four_seconds, 64000, 1500)) == 100 * 256
+    assert len(angular_resample(four_seconds, 64000, 900)) == 60 * 256
+    assert revolutions_per_window(8384) == pytest.approx(32.75)
+
+
+def test_angular_resample_rejects_nonpositive_rpm():
+    from domain_adaptation.data.order_tracking import angular_resample
+
+    with pytest.raises(ValueError, match="rpm must be positive"):
+        angular_resample(np.zeros(100), 12000, 0)
+
+
+def test_order_axis_spans_zero_to_nyquist_order():
+    from domain_adaptation.data.order_tracking import order_axis
+
+    axis = order_axis(256, samples_per_rev=256)
+    assert axis[0] == 0.0
+    assert axis[-1] == pytest.approx(128.0)   # Nyquist order = samples_per_rev / 2
+    assert len(axis) == 129
+
+
+def test_angular_resample_on_real_cwru_signal_recovers_injected_order():
+    """Same check but on a REAL recording already in data/raw/ (no download):
+    inject a known order into genuine CWRU vibration and recover it."""
+    from domain_adaptation.data.order_tracking import angular_resample
+
+    raw = Path("data/raw/1797_Normal.npz")
+    if not raw.exists():
+        pytest.skip("CWRU data/raw not present")
+    with np.load(raw) as d:
+        sig = d["DE"].astype(np.float64).ravel()[:120000]
+
+    rpm, fs, injected = 1797, 12000, 7.0
+    t = np.arange(len(sig)) / fs
+    # Inject well above the real signal's amplitude so the peak is unambiguous.
+    probe = sig + 20 * sig.std() * np.sin(2 * np.pi * injected * (rpm / 60.0) * t)
+    assert _peak_order(angular_resample(probe, fs, rpm)) == pytest.approx(injected, abs=0.1)
+
+
 # --- analysis (torch-free, so these run locally) ----------------------------
 
 def test_separability_probe_detects_separable_domains():
