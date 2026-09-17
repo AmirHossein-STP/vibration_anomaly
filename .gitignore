@@ -65,3 +65,9 @@ outputs/domain_adaptation_kaggle_run/*
 outputs/server_rescue/**/*.pt
 outputs/server_rescue/**/*.npz
 outputs/server_rescue/**/.*.pt.*
+
+# Paderborn condensed store (437MB, 33 bearing codes, vibration_1 @ 12kHz
+# float32). Built by a Kaggle kernel from the 9.7GB raw dataset -- see
+# src/domain_adaptation/data/prepare_pu.py. Not tracked, but do NOT delete
+# it: regenerating it costs a Kaggle run, and it is the only local copy.
+data/pu/*
