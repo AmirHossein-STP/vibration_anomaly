@@ -182,6 +182,29 @@ So the failure is not a scaling artifact that preprocessing can fix. The
 CWRU-trained representation does not carry a healthy-vs-faulty boundary
 that means anything on Paderborn.
 
+### Arm B: the reverse direction fails too
+
+Arm B had never run to completion (the first server died at 2/6). It makes
+Paderborn the source -- 18 bearing units across 4 operating conditions,
+against CWRU's 4 rpms -- and CWRU the unseen target. It is the
+better-powered direction by a wide margin.
+
+| | n | recall | false alarm | balanced acc |
+|---|---|---|---|---|
+| arm B (Paderborn -> CWRU) | 4 | 0.998 +- 0.005 | **100%** | **0.499 +- 0.002** |
+
+It fails the same way: essentially every CWRU window is called faulty, and
+not one healthy window out of ~2730 is identified. (It is not a
+single-class collapse -- predictions spread over classes 1 and 2 -- but the
+healthy/faulty boundary is gone entirely, which is what matters.)
+
+**This closes the diversity hypothesis.** The open question from the first
+server was whether arm A's ceiling was source diversity or the domain gap
+itself. It is neither: transfer fails in BOTH directions, and it fails just
+as completely when the source is four times richer. The method does not do
+cross-dataset transfer, and no amount of source breadth within these two
+datasets changes that.
+
 ### What this means for the project's claim
 
 The headline -- zero-shot fault detection transfers to an unseen machine,
@@ -192,7 +215,12 @@ permissive setup, 0.772 recall at 15.7% false alarms) does not transfer
 across *datasets*.
 
 That is a negative result, but it is a clean one, and it is the answer to
-the question the project actually asked.
+the question the project actually asked. It is now supported from three
+independent directions: the strict arm collapses (11/11 runs), the reverse
+direction fails identically despite a 4x richer source (4/4 runs), and
+fixing the normalization -- which demonstrably removes the scale mismatch --
+does not help. The one configuration that works is the one with target-rig
+fault data in training.
 
 ## Consequences already established
 
