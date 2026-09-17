@@ -1,0 +1,46 @@
+{
+  "baseline": {
+    "accuracy": 0.2454563220637092,
+    "macro_f1": 0.21548235296295193,
+    "confusion_matrix": [
+      [
+        811,
+        79,
+        27
+      ],
+      [
+        1506,
+        388,
+        400
+      ],
+      [
+        1811,
+        38,
+        57
+      ]
+    ],
+    "n": 5117,
+    "binary_detection": {
+      "precision": 0.8928210313447927,
+      "recall": 0.21023809523809525,
+      "f1": 0.34033532472538064,
+      "accuracy": 0.33105335157318744,
+      "false_alarm_rate": 0.11559432933478735,
+      "confusion": {
+        "tn": 811,
+        "fp": 106,
+        "fn": 3317,
+        "tp": 883
+      },
+      "n_healthy": 917,
+      "n_faulty": 4200,
+      "always_faulty_accuracy": 0.8207934336525308
+    },
+    "domain_separability": {
+      "separability_accuracy": 0.9983333333333333,
+      "chance": 0.5,
+      "proxy_a_distance": 1.9933333333333332,
+      "n_per_domain": 2000
+    }
+  }
+}

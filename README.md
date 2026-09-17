@@ -337,8 +337,10 @@ DAQ, unseen lab.
 > **Where this leaves the project's claim:** zero-shot detection on an
 > unseen machine, sensors, DAQ and lab is NOT supported. With this
 > architecture, on these two datasets, detection requires target-rig fault
-> data in training. What transfers across bearing units within one rig
-> (0.772 recall at 15.7% false alarms) does not transfer across datasets.
+> data in training. What transfers across bearing units within one rig does
+> not transfer across datasets. The contrast is categorical rather than a
+> matter of degree: across 11 strict runs every single one collapsed to one
+> predicted class, and across 3 permissive runs none did.
 
 Fault *typing* still does not transfer (3-class accuracy 0.378). The
 deployable claim remains detection, not diagnosis.

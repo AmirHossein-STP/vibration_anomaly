@@ -121,15 +121,22 @@ The permissive control ran on the same box, same code, same torch
 (2.6.0+cu124), differing from strict arm A in exactly one premise --
 Paderborn's artificial faults are in training:
 
-| | recall | false alarm | balanced acc | predicted classes |
-|---|---|---|---|---|
-| strict (11 runs, 2 torch versions) | 1.000 | 100% | 0.500 | ALL in one class |
-| **permissive** | **0.772** | **15.7%** | **0.807** | 1731 / 949 / 2437 |
-| Kaggle v8 reference | 0.761 | 16.7% | -- | -- |
+| | n | recall | false alarm | balanced acc | collapsed runs |
+|---|---|---|---|---|---|
+| strict (2 torch versions) | 11 | 1.000 +- 0.000 | 100% | 0.500 +- 0.000 | **11/11** |
+| **permissive** | 3 | 0.571 +- 0.313 | 17.5% +- 7.0% | 0.698 +- 0.135 | **0/3** |
+| Kaggle v8 reference | 1 | 0.761 | 16.7% | -- | -- |
 
-The permissive setup reproduces the historical Kaggle result to within a
-percentage point. **The pipeline is sound.** The collapse is specific to
-holding Paderborn out of training.
+Read the **collapsed** column, not the recall. Permissive recall is wildly
+seed-dependent (its best seed hit 0.772 at 15.7% false alarms, squarely on
+the Kaggle reference; its worst dragged the mean to 0.571) -- which is the
+same run-to-run variance this project measured earlier, spanning 0.42-0.97.
+The categorical fact is what matters and it has no overlap: **strict
+collapses in 11 runs out of 11, permissive in 0 out of 3.** One is a
+degenerate model, the other is a noisy working one.
+
+**The pipeline is sound.** The collapse is specific to holding Paderborn
+out of training.
 
 **And this identifies the artifact precisely.** The committed arm A figure
 was recall 0.812 +- 0.159 against a permissive reference of 0.763 +- 0.19 --
