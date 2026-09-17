@@ -115,6 +115,48 @@ which reported recall ~0.76 on Kaggle.
 That control was queued behind the full 437 MB transfer and had not
 completed when this note was written.
 
+## RESOLVED (18:18): the strict premise fails; the old number was the artifact
+
+The permissive control ran on the same box, same code, same torch
+(2.6.0+cu124), differing from strict arm A in exactly one premise --
+Paderborn's artificial faults are in training:
+
+| | recall | false alarm | balanced acc | predicted classes |
+|---|---|---|---|---|
+| strict (11 runs, 2 torch versions) | 1.000 | 100% | 0.500 | ALL in one class |
+| **permissive** | **0.772** | **15.7%** | **0.807** | 1731 / 949 / 2437 |
+| Kaggle v8 reference | 0.761 | 16.7% | -- | -- |
+
+The permissive setup reproduces the historical Kaggle result to within a
+percentage point. **The pipeline is sound.** The collapse is specific to
+holding Paderborn out of training.
+
+**And this identifies the artifact precisely.** The committed arm A figure
+was recall 0.812 +- 0.159 against a permissive reference of 0.763 +- 0.19 --
+statistically indistinguishable. That was recorded at the time as the
+finding "holding PU entirely out of training cost nothing measurable". The
+simpler reading, now that strict-from-a-clean-cache collapses completely,
+is that **PU was never held out**: the arm A `processed_dir` on the first
+server still held windows built while `include_in_source: true`, so
+"strict" arm A was silently measuring the permissive setup. That is exactly
+what an unvalidated cache produces, and it explains why the two agreed so
+closely.
+
+A result that matches the condition you thought you had excluded is
+evidence that you did not exclude it.
+
+### What this means for the project's claim
+
+The headline -- zero-shot fault detection transfers to an unseen machine,
+sensors, DAQ and lab -- is **not supported**. With this architecture, on
+these two datasets, detection requires fault data from the target rig in
+training. What transfers across *bearing units within one rig* (the
+permissive setup, 0.772 recall at 15.7% false alarms) does not transfer
+across *datasets*.
+
+That is a negative result, but it is a clean one, and it is the answer to
+the question the project actually asked.
+
 ## Consequences already established
 
 Independent of how the open question resolves:
