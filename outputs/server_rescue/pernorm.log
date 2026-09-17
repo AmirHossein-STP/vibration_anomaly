@@ -1,0 +1,13 @@
+mode=perwindow seed=1  train p99 1.89  target p99 2.24
+  epoch  1  source val acc 1.0000
+  epoch 10  source val acc 1.0000
+  epoch 20  source val acc 1.0000
+  epoch 30  source val acc 1.0000
+RESULT mode=perwindow seed=1: recall 0.998  precision 0.821  FA 100.0%  balanced 0.499  3class_acc 0.481  pred_counts [8, 3308, 1801]
+mode=perwindow_perbin seed=1  train p99 1.74  target p99 1.79
+  epoch  1  source val acc 0.8492
+  epoch 10  source val acc 0.9092
+  epoch 20  source val acc 0.9204
+  epoch 30  source val acc 0.9176
+RESULT mode=perwindow_perbin seed=1: recall 0.969  precision 0.822  FA 96.0%  balanced 0.505  3class_acc 0.295  pred_counts [166, 1549, 3402]
+PERNORM_DONE

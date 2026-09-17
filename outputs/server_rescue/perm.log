@@ -1,0 +1,227 @@
+torch 2.6.0+cu124
+=== permissive seed=1 start 14:43:21 ===
+Building datasets (cached after first run)...
+PU: reading condensed store at /home/homa/vibration_anomaly_detection/data/pu/prepared_pu_full (2559 runs)
+  source_train: (69253, 128, 128) (4.2 GB)  peak RSS 12.3 GB
+  source_val: (6909, 128, 128) (0.4 GB)  peak RSS 12.3 GB
+  target_adapt: (5619, 128, 128) (0.3 GB)  peak RSS 12.3 GB
+  target_test: (5117, 128, 128) (0.3 GB)  peak RSS 12.3 GB
+  source_train windows: (69253, 128, 128)  source_val windows: (6909, 128, 128)
+Using device: cuda
+Model parameters: 2,228,323
+epoch   1/30  train_loss=0.0362 train_acc=0.985  val_loss=0.2218 val_acc=0.950  (8.8s) *
+epoch   2/30  train_loss=0.0092 train_acc=0.998  val_loss=0.0008 val_acc=1.000  (8.5s) *
+epoch   3/30  train_loss=0.0000 train_acc=1.000  val_loss=0.0007 val_acc=1.000  (7.7s) *
+epoch   4/30  train_loss=0.0152 train_acc=0.997  val_loss=0.0116 val_acc=0.996  (8.3s)
+epoch   5/30  train_loss=0.0067 train_acc=0.998  val_loss=0.0019 val_acc=0.999  (7.3s)
+epoch   6/30  train_loss=0.0148 train_acc=0.998  val_loss=0.0042 val_acc=0.999  (8.3s)
+epoch   7/30  train_loss=0.0039 train_acc=0.999  val_loss=0.0001 val_acc=1.000  (8.0s) *
+epoch   8/30  train_loss=0.0020 train_acc=1.000  val_loss=0.0002 val_acc=1.000  (7.9s)
+epoch   9/30  train_loss=0.0048 train_acc=0.999  val_loss=0.0012 val_acc=1.000  (8.5s)
+epoch  10/30  train_loss=0.0073 train_acc=0.999  val_loss=0.0446 val_acc=0.994  (8.3s)
+epoch  11/30  train_loss=0.0051 train_acc=0.999  val_loss=0.0258 val_acc=0.990  (9.3s)
+epoch  12/30  train_loss=0.0033 train_acc=0.999  val_loss=0.0004 val_acc=1.000  (8.2s)
+epoch  13/30  train_loss=0.0001 train_acc=1.000  val_loss=0.1214 val_acc=0.988  (8.1s)
+Early stopping: no val improvement in 6 epochs.
+
+Best val loss: 0.0001
+Checkpoint saved to: /home/homa/vibration_anomaly_detection/outputs/da_models_perm_s1/baseline_best.pt
+Next: python -m domain_adaptation.train_dann --config <same config>
+Loading cached datasets...
+Evaluating baseline (no adaptation) on TARGET_TEST...
+  baseline: 3-class accuracy=0.450 macro_f1=0.466
+  baseline: BINARY healthy-vs-faulty -- precision=0.957 recall=0.772 f1=0.855 false_alarm_rate=15.7% (always-faulty accuracy would be 0.821)
+{
+  "accuracy": 0.45006839945280436,
+  "macro_f1": 0.46565972075861284,
+  "confusion_matrix": [
+    [
+      773,
+      86,
+      58
+    ],
+    [
+      55,
+      695,
+      1544
+    ],
+    [
+      903,
+      168,
+      835
+    ]
+  ],
+  "n": 5117,
+  "binary_detection": {
+    "precision": 0.9574719432959244,
+    "recall": 0.7719047619047619,
+    "f1": 0.8547324017927762,
+    "accuracy": 0.7846394371702169,
+    "false_alarm_rate": 0.15703380588876772,
+    "confusion": {
+      "tn": 773,
+      "fp": 144,
+      "fn": 958,
+      "tp": 3242
+    },
+    "n_healthy": 917,
+    "n_faulty": 4200,
+    "always_faulty_accuracy": 0.8207934336525308
+  }
+}
+/home/homa/vibration_anomaly_detection/outputs/da_models_perm_s1/dann_best.pt not found -- skipping DANN evaluation (run train_dann.py to add the comparison).
+Computing feature-space embeddings (SOURCE_VAL + TARGET_TEST)...
+  baseline: a fresh probe separates source from target with 0.999 accuracy (0.5 = aligned/indistinguishable, 1.0 = not aligned at all; proxy A-distance 2.00)
+Fitting t-SNE...
+
+Saved metrics/plots to /home/homa/vibration_anomaly_detection/outputs/da_reports_perm_s1 and /home/homa/vibration_anomaly_detection/outputs/da_figures_perm_s1
+=== permissive seed=1 rc=0 end 14:47:20 ===
+=== permissive seed=2 start 14:47:20 ===
+Building datasets (cached after first run)...
+  source_train windows: (69253, 128, 128)  source_val windows: (6909, 128, 128)
+Using device: cuda
+Model parameters: 2,228,323
+epoch   1/30  train_loss=0.0407 train_acc=0.985  val_loss=0.0006 val_acc=1.000  (7.7s) *
+epoch   2/30  train_loss=0.0011 train_acc=1.000  val_loss=0.0030 val_acc=0.999  (7.0s)
+epoch   3/30  train_loss=0.0184 train_acc=0.997  val_loss=0.0085 val_acc=0.999  (7.6s)
+epoch   4/30  train_loss=0.0052 train_acc=0.999  val_loss=0.0001 val_acc=1.000  (6.8s) *
+epoch   5/30  train_loss=0.0006 train_acc=1.000  val_loss=0.0224 val_acc=0.998  (6.8s)
+epoch   6/30  train_loss=0.0160 train_acc=0.998  val_loss=0.0005 val_acc=1.000  (7.5s)
+epoch   7/30  train_loss=0.0012 train_acc=1.000  val_loss=0.0000 val_acc=1.000  (7.9s) *
+epoch   8/30  train_loss=0.0004 train_acc=1.000  val_loss=0.0000 val_acc=1.000  (8.6s) *
+epoch   9/30  train_loss=0.0195 train_acc=0.998  val_loss=0.0009 val_acc=1.000  (7.5s)
+epoch  10/30  train_loss=0.0003 train_acc=1.000  val_loss=0.0009 val_acc=1.000  (7.9s)
+epoch  11/30  train_loss=0.0108 train_acc=0.999  val_loss=0.0208 val_acc=0.995  (7.9s)
+epoch  12/30  train_loss=0.0100 train_acc=0.999  val_loss=0.0117 val_acc=0.999  (8.5s)
+epoch  13/30  train_loss=0.0006 train_acc=1.000  val_loss=0.0009 val_acc=1.000  (7.4s)
+epoch  14/30  train_loss=0.0000 train_acc=1.000  val_loss=0.0000 val_acc=1.000  (7.8s)
+Early stopping: no val improvement in 6 epochs.
+
+Best val loss: 0.0000
+Checkpoint saved to: /home/homa/vibration_anomaly_detection/outputs/da_models_perm_s2/baseline_best.pt
+Next: python -m domain_adaptation.train_dann --config <same config>
+Loading cached datasets...
+Evaluating baseline (no adaptation) on TARGET_TEST...
+  baseline: 3-class accuracy=0.245 macro_f1=0.215
+  baseline: BINARY healthy-vs-faulty -- precision=0.893 recall=0.210 f1=0.340 false_alarm_rate=11.6% (always-faulty accuracy would be 0.821)
+{
+  "accuracy": 0.2454563220637092,
+  "macro_f1": 0.21548235296295193,
+  "confusion_matrix": [
+    [
+      811,
+      79,
+      27
+    ],
+    [
+      1506,
+      388,
+      400
+    ],
+    [
+      1811,
+      38,
+      57
+    ]
+  ],
+  "n": 5117,
+  "binary_detection": {
+    "precision": 0.8928210313447927,
+    "recall": 0.21023809523809525,
+    "f1": 0.34033532472538064,
+    "accuracy": 0.33105335157318744,
+    "false_alarm_rate": 0.11559432933478735,
+    "confusion": {
+      "tn": 811,
+      "fp": 106,
+      "fn": 3317,
+      "tp": 883
+    },
+    "n_healthy": 917,
+    "n_faulty": 4200,
+    "always_faulty_accuracy": 0.8207934336525308
+  }
+}
+/home/homa/vibration_anomaly_detection/outputs/da_models_perm_s2/dann_best.pt not found -- skipping DANN evaluation (run train_dann.py to add the comparison).
+Computing feature-space embeddings (SOURCE_VAL + TARGET_TEST)...
+  baseline: a fresh probe separates source from target with 0.998 accuracy (0.5 = aligned/indistinguishable, 1.0 = not aligned at all; proxy A-distance 1.99)
+Fitting t-SNE...
+
+Saved metrics/plots to /home/homa/vibration_anomaly_detection/outputs/da_reports_perm_s2 and /home/homa/vibration_anomaly_detection/outputs/da_figures_perm_s2
+=== permissive seed=2 rc=0 end 14:50:46 ===
+=== permissive seed=3 start 14:50:46 ===
+Building datasets (cached after first run)...
+  source_train windows: (69253, 128, 128)  source_val windows: (6909, 128, 128)
+Using device: cuda
+Model parameters: 2,228,323
+epoch   1/30  train_loss=0.0437 train_acc=0.984  val_loss=0.0124 val_acc=0.995  (6.4s) *
+epoch   2/30  train_loss=0.0064 train_acc=0.998  val_loss=0.0096 val_acc=0.998  (6.5s) *
+epoch   3/30  train_loss=0.0194 train_acc=0.997  val_loss=0.0014 val_acc=1.000  (8.2s) *
+epoch   4/30  train_loss=0.0000 train_acc=1.000  val_loss=0.0105 val_acc=0.998  (7.0s)
+epoch   5/30  train_loss=0.0013 train_acc=1.000  val_loss=0.0026 val_acc=0.999  (8.1s)
+epoch   6/30  train_loss=0.0147 train_acc=0.998  val_loss=0.0017 val_acc=1.000  (8.2s)
+epoch   7/30  train_loss=0.0014 train_acc=1.000  val_loss=0.0025 val_acc=0.999  (8.6s)
+epoch   8/30  train_loss=0.0086 train_acc=0.999  val_loss=0.0012 val_acc=1.000  (7.9s) *
+epoch   9/30  train_loss=0.0021 train_acc=1.000  val_loss=0.0024 val_acc=1.000  (8.0s)
+epoch  10/30  train_loss=0.0007 train_acc=1.000  val_loss=0.0004 val_acc=1.000  (6.7s) *
+epoch  11/30  train_loss=0.0003 train_acc=1.000  val_loss=0.0834 val_acc=0.987  (6.7s)
+epoch  12/30  train_loss=0.0094 train_acc=0.998  val_loss=0.0725 val_acc=0.992  (6.4s)
+epoch  13/30  train_loss=0.0002 train_acc=1.000  val_loss=0.0013 val_acc=1.000  (6.7s)
+epoch  14/30  train_loss=0.0000 train_acc=1.000  val_loss=0.0012 val_acc=1.000  (6.9s)
+epoch  15/30  train_loss=0.0000 train_acc=1.000  val_loss=0.0026 val_acc=1.000  (7.2s)
+epoch  16/30  train_loss=0.0142 train_acc=0.998  val_loss=0.0015 val_acc=1.000  (7.0s)
+Early stopping: no val improvement in 6 epochs.
+
+Best val loss: 0.0004
+Checkpoint saved to: /home/homa/vibration_anomaly_detection/outputs/da_models_perm_s3/baseline_best.pt
+Next: python -m domain_adaptation.train_dann --config <same config>
+Loading cached datasets...
+Evaluating baseline (no adaptation) on TARGET_TEST...
+  baseline: 3-class accuracy=0.309 macro_f1=0.323
+  baseline: BINARY healthy-vs-faulty -- precision=0.930 recall=0.731 f1=0.819 false_alarm_rate=25.2% (always-faulty accuracy would be 0.821)
+{
+  "accuracy": 0.3091655266757866,
+  "macro_f1": 0.3233522435615018,
+  "confusion_matrix": [
+    [
+      686,
+      10,
+      221
+    ],
+    [
+      189,
+      314,
+      1791
+    ],
+    [
+      940,
+      384,
+      582
+    ]
+  ],
+  "n": 5117,
+  "binary_detection": {
+    "precision": 0.9300423985463355,
+    "recall": 0.7311904761904762,
+    "f1": 0.8187150093308452,
+    "accuracy": 0.7342192691029901,
+    "false_alarm_rate": 0.25190839694656486,
+    "confusion": {
+      "tn": 686,
+      "fp": 231,
+      "fn": 1129,
+      "tp": 3071
+    },
+    "n_healthy": 917,
+    "n_faulty": 4200,
+    "always_faulty_accuracy": 0.8207934336525308
+  }
+}
+/home/homa/vibration_anomaly_detection/outputs/da_models_perm_s3/dann_best.pt not found -- skipping DANN evaluation (run train_dann.py to add the comparison).
+Computing feature-space embeddings (SOURCE_VAL + TARGET_TEST)...
+  baseline: a fresh probe separates source from target with 0.998 accuracy (0.5 = aligned/indistinguishable, 1.0 = not aligned at all; proxy A-distance 1.99)
+Fitting t-SNE...
+
+Saved metrics/plots to /home/homa/vibration_anomaly_detection/outputs/da_reports_perm_s3 and /home/homa/vibration_anomaly_detection/outputs/da_figures_perm_s3
+=== permissive seed=3 rc=0 end 14:53:40 ===
+PERMISSIVE_DONE

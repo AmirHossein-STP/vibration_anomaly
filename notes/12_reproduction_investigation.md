@@ -152,6 +152,36 @@ closely.
 A result that matches the condition you thought you had excluded is
 evidence that you did not exclude it.
 
+### Can it be rescued by fixing the normalization? No.
+
+The obvious suspect was the normalizer: it fits per-frequency-bin mean/std
+on the SOURCE and applies them to the target, baking CWRU's spectral
+profile into the representation (target p99 = 7.78 against the source's
+2.15). Two alternatives were tested, each retraining from the same cached
+windows, since the cache stores un-normalized spectrograms:
+
+| normalization | train p99 | target p99 | recall | FA | balanced | predicted classes |
+|---|---|---|---|---|---|---|
+| source-fit per-bin (current) | 2.15 | **7.78** | 1.000 | 100% | 0.500 | 0 / 0 / 5117 |
+| per-window | 1.89 | **2.24** | 0.998 | 100% | 0.499 | 8 / 3308 / 1801 |
+| per-window per-bin | 1.74 | **1.79** | 0.969 | 96% | 0.505 | 166 / 1549 / 3402 |
+
+Both alternatives **fix the scale mismatch completely** -- target p99 drops
+from 7.78 to 2.24 and then 1.79, matching the source. And the model still
+cannot find a healthy Paderborn window: balanced accuracy stays at chance
+in all three.
+
+This is more informative than another failure. Per-window normalization
+removes the rig-specific reference entirely -- each window is scored against
+itself, so a constant offset or gain difference between rigs cannot
+survive. It still does not transfer. The per-window run is not even a
+single-class collapse any more (it uses classes 1 and 2, and 3-class
+accuracy rises 0.372 -> 0.481), yet it calls essentially everything faulty.
+
+So the failure is not a scaling artifact that preprocessing can fix. The
+CWRU-trained representation does not carry a healthy-vs-faulty boundary
+that means anything on Paderborn.
+
 ### What this means for the project's claim
 
 The headline -- zero-shot fault detection transfers to an unseen machine,
