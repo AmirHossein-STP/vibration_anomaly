@@ -162,6 +162,23 @@ class EvaluationConfig:
 
 
 @dataclass
+class ExperimentConfig:
+    """Which dataset plays the unseen target.
+
+    "pu"   -- train on CWRU (+ optionally PU), adapt on PU healthy at the
+              held-out condition, test on PU real damage. Kernels v1-v8 and
+              arm A.
+    "cwru" -- the mirror: train on Paderborn, adapt on CWRU healthy, test on
+              CWRU faults. Paderborn is then the far larger and more varied
+              source (18 units x 4 conditions vs CWRU's 4 rpms), which is
+              what makes arm B a test of whether arm A was limited by source
+              DIVERSITY rather than by the domain gap itself.
+    """
+
+    target_dataset: str = "pu"
+
+
+@dataclass
 class Config:
     seed: int
     paths: PathsConfig
@@ -173,6 +190,7 @@ class Config:
     train_baseline: BaselineTrainConfig
     train_dann: DANNTrainConfig
     evaluation: EvaluationConfig
+    experiment: ExperimentConfig = field(default_factory=ExperimentConfig)
     project_root: Path = field(default_factory=Path.cwd)
 
     def resolve(self, relative_path: str) -> Path:
@@ -218,5 +236,6 @@ def load_config(config_path: str | Path) -> Config:
         train_baseline=BaselineTrainConfig(**raw["train_baseline"]),
         train_dann=DANNTrainConfig(**raw["train_dann"]),
         evaluation=EvaluationConfig(**raw["evaluation"]),
+        experiment=ExperimentConfig(**raw.get("experiment", {})),
         project_root=project_root,
     )

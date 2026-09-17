@@ -25,6 +25,7 @@ pytest.importorskip("scipy")
 
 from domain_adaptation.config import (
     CommonConfig,
+    ExperimentConfig,
     Config,
     CWRUConfig,
     ModelConfig,
@@ -55,7 +56,10 @@ requires_torch = pytest.mark.skipif(
 
 def write_synthetic_cwru_npz(raw_dir: Path, rpm: int, fault_type: str, size: int = 7) -> None:
     raw_dir.mkdir(parents=True, exist_ok=True)
-    rng = np.random.default_rng(0)
+    # Seed per file, not globally: a fixed seed made every synthetic CWRU
+    # recording byte-identical, which silently defeats any test asking
+    # whether two splits share content.
+    rng = np.random.default_rng(abs(hash((rpm, fault_type, size))) % (2**32))
     signal = rng.standard_normal(20000).astype(np.float64)
     if fault_type == "Normal":
         np.savez(raw_dir / f"{rpm}_Normal.npz", DE=signal)
@@ -96,6 +100,7 @@ def make_config(tmp_path: Path, **overrides) -> Config:
             source_train_fraction=0.5, target_normal_adapt_fraction=0.5,
         ),
         model=ModelConfig(base_channels=2, feature_dim=8, classifier_hidden=6, domain_hidden=6, dropout=0.1),
+        experiment=ExperimentConfig(),
         train_baseline=None,
         train_dann=None,
         evaluation=None,
@@ -544,6 +549,79 @@ def test_default_config_still_trains_on_both_datasets(tmp_path):
     config = load_config("configs/domain_adaptation.yaml")
     assert config.pu.include_in_source is True
     assert config.cwru.include_in_source is True
+
+
+def test_arm_B_makes_CWRU_the_unseen_target(tmp_path):
+    """The mirror of arm A: train on Paderborn, adapt on CWRU HEALTHY only,
+    diagnose CWRU's faults. Paderborn is then the far larger source (18
+    units x 4 conditions vs CWRU's 4 rpms), which is what makes arm B a test
+    of whether arm A was limited by source diversity or by the domain gap.
+    """
+    config = make_config(tmp_path)
+    config.experiment.target_dataset = "cwru"
+    config.pu.include_in_source = True
+    config.pu.source_conditions = ["N15_M07_F10", "N09_M07_F10"]
+    config.pu.real_outer_codes, config.pu.real_inner_codes = [], []
+
+    raw_dir = tmp_path / "raw"
+    for rpm, fault in [(1730, "Normal"), (1730, "IR"), (1750, "OR@6"), (1797, "Normal"), (1797, "IR")]:
+        write_synthetic_cwru_npz(raw_dir, rpm, fault)
+    pu_root = tmp_path / "pu_root"
+    for run in range(1, 5):
+        for code in ("K001", "KA01", "KI01"):
+            for cond in ("N15_M07_F10", "N09_M07_F10"):
+                write_synthetic_pu_mat(pu_root, code, cond, run)
+
+    results = da_dataset.build_domain_adaptation_datasets(config, pu_root)
+
+    # Training is Paderborn and nothing else.
+    for role in ("source_train", "source_val"):
+        assert set(results[role][1].domain) == {"pu_artificial"}, f"{role}: {set(results[role][1].domain)}"
+
+    # CWRU is the target, and its adaptation data is healthy-only.
+    assert set(results["target_adapt"][1].domain) == {"cwru_target"}
+    assert set(results["target_adapt"][1].universal_label) == {0}
+    # Its test set carries the faults.
+    assert set(results["target_test"][1].domain) == {"cwru_target"}
+    assert {1, 2} & set(results["target_test"][1].universal_label), "arm B test set has no faults"
+
+    # No CWRU window may appear in training, in either role.
+    train_domains = set(results["source_train"][1].domain) | set(results["source_val"][1].domain)
+    assert "cwru" not in train_domains and "cwru_target" not in train_domains
+
+
+def test_arm_B_healthy_split_is_contiguous_not_shuffled(tmp_path):
+    """Adjacent windows overlap by design, so a shuffled adapt/test split of
+    the healthy file would put near-duplicates on both sides and leak."""
+    config = make_config(tmp_path)
+    config.experiment.target_dataset = "cwru"
+    config.pu.include_in_source = True
+    config.pu.source_conditions = ["N15_M07_F10"]
+    config.pu.real_outer_codes, config.pu.real_inner_codes = [], []
+    config.pu.target_normal_adapt_fraction = 0.5
+
+    raw_dir = tmp_path / "raw"
+    for rpm, fault in [(1730, "Normal"), (1730, "IR"), (1797, "Normal")]:
+        write_synthetic_cwru_npz(raw_dir, rpm, fault)
+    pu_root = tmp_path / "pu_root"
+    for run in range(1, 5):
+        for code in ("K001", "KA01", "KI01"):
+            write_synthetic_pu_mat(pu_root, code, "N15_M07_F10", run)
+
+    results = da_dataset.build_domain_adaptation_datasets(config, pu_root)
+    adapt, test = results["target_adapt"][0], results["target_test"][0]
+    assert len(adapt) > 0 and len(test) > 0
+    # No adaptation window may reappear in the test set.
+    adapt_rows = {w.tobytes() for w in adapt}
+    overlap = sum(1 for w in test if w.tobytes() in adapt_rows)
+    assert overlap == 0, f"{overlap} windows appear in BOTH adaptation and test"
+
+
+def test_default_direction_is_unchanged(tmp_path):
+    """Arm A / kernels v1-v8 must be unaffected by the new switch."""
+    from domain_adaptation.config import load_config
+    assert load_config("configs/domain_adaptation.yaml").experiment.target_dataset == "pu"
+    assert load_config("configs/da_armA_order.yaml").experiment.target_dataset == "pu"
 
 
 # --- order tracking (the cross-speed fix) -----------------------------------

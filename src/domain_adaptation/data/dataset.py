@@ -61,7 +61,7 @@ from domain_adaptation.data.pu_loader import (
 from domain_adaptation.data.order_tracking import angular_resample
 from domain_adaptation.data.transforms import resample_to_rate
 
-DOMAIN_IDS = {"cwru": 0, "pu_artificial": 1, "pu_target": 2}
+DOMAIN_IDS = {"cwru": 0, "pu_artificial": 1, "pu_target": 2, "cwru_target": 2}
 ROLES = ("source_train", "source_val", "target_adapt", "target_test")
 
 
@@ -79,6 +79,26 @@ def _split_pu_runs_by_fraction(df: pd.DataFrame, fraction: float) -> tuple[pd.Da
 
 def _assign_pu_roles(pu_catalog: pd.DataFrame, config: Config) -> pd.DataFrame:
     pu_cfg = config.pu
+
+    if config.experiment.target_dataset == "cwru":
+        # Arm B: Paderborn is purely the source, so nothing is held back for
+        # a target condition -- every code and condition becomes training
+        # data. This is what makes arm B the better-powered direction: 18
+        # bearing units across 4 conditions, against CWRU's 4 rpms.
+        # Every labelled Paderborn unit trains, including the REAL-damage
+        # ones: in arm B they are simply "faults seen on other bearings",
+        # which is precisely the data the project assumes it has. Only the
+        # target dataset's faults must stay hidden, and here that is CWRU.
+        source = pu_catalog[pu_catalog.code.isin(pu_cfg.source_codes + pu_cfg.real_codes)].copy()
+        train, val = _split_pu_runs_by_fraction(source, pu_cfg.source_train_fraction)
+        train["role"], train["domain"] = "source_train", "pu_artificial"
+        val["role"], val["domain"] = "source_val", "pu_artificial"
+        assigned = pd.concat([train, val], ignore_index=True)
+        for role in ("source_train", "source_val"):
+            if assigned[assigned.role == role].empty:
+                raise RuntimeError(f"PU produced zero rows for {role!r} in arm B -- check config.pu's code lists.")
+        return assigned
+
     source_mask = pu_catalog.code.isin(pu_cfg.source_codes) & pu_catalog.condition.isin(pu_cfg.source_conditions)
     target_healthy_mask = pu_catalog.code.isin(pu_cfg.healthy_codes) & (pu_catalog.condition == pu_cfg.target_condition)
     target_real_mask = pu_catalog.code.isin(pu_cfg.real_codes) & (pu_catalog.condition == pu_cfg.target_condition)
@@ -129,6 +149,71 @@ def _to_common_representation(signal: np.ndarray, native_fs_hz: float, rpm: floa
     return resample_to_rate(signal, native_fs_hz, config.common.fs_hz)
 
 
+def _assign_cwru_roles(cwru_catalog: pd.DataFrame, config: Config) -> pd.DataFrame:
+    """Give every CWRU file a role, for either direction of the experiment.
+
+    As SOURCE (the usual case) the existing RPM split stands: train_rpms ->
+    source_train, val_rpm -> source_val.
+
+    As TARGET (arm B) CWRU becomes the unseen machine. Its healthy files
+    supply the adaptation baseline and part of the test set, its fault files
+    the rest of the test set, and none of it may reach training. Unlike
+    Paderborn there are no 20 repeat runs to split, so the healthy/test
+    division happens over WINDOWS of the single Normal file per rpm --
+    contiguously, never shuffled, for the same anti-leakage reason
+    vibration_ad splits its holdout that way (overlapping windows either
+    side of a random split are near-duplicates).
+    """
+    catalog = cwru_catalog.copy()
+    if config.experiment.target_dataset != "cwru":
+        catalog["role"] = catalog["split"].map({"train": "source_train", "val": "source_val"})
+        return catalog
+
+    healthy = catalog.universal_label == 0
+    catalog.loc[healthy, "role"] = "target_adapt_and_test"   # split by window, below
+    catalog.loc[~healthy, "role"] = "target_test"
+    catalog["domain"] = "cwru_target"
+    return catalog
+
+
+def _cwru_target_rows_for_role(
+    cwru_roles: pd.DataFrame, config: Config, stride: int, role: str
+) -> tuple[np.ndarray, pd.DataFrame]:
+    """Windows for CWRU acting as the unseen target (arm B).
+
+    `target_adapt` gets the leading fraction of each healthy file's windows;
+    `target_test` gets the remainder plus every fault file. The healthy split
+    is contiguous rather than random because adjacent windows overlap by
+    design, so a shuffled split would put near-duplicates on both sides and
+    leak the adaptation data into the test set.
+    """
+    fault_rows = cwru_roles[cwru_roles.role == "target_test"]
+    healthy_rows = cwru_roles[cwru_roles.role == "target_adapt_and_test"]
+
+    chunks, metas = [], []
+    for _, row in healthy_rows.iterrows():
+        one = pd.DataFrame([row])
+        X, meta = _spectrograms_and_meta_for_cwru_rows(one, config, stride)
+        if len(X) == 0:
+            continue
+        cut = int(round(len(X) * config.pu.target_normal_adapt_fraction))
+        take = slice(0, cut) if role == "target_adapt" else slice(cut, len(X))
+        if len(X[take]) == 0:
+            continue
+        chunks.append(X[take])
+        metas.append(meta.iloc[take].assign(role=role))
+
+    if role == "target_test" and len(fault_rows):
+        X, meta = _spectrograms_and_meta_for_cwru_rows(fault_rows, config, stride)
+        if len(X):
+            chunks.append(X)
+            metas.append(meta.assign(role=role))
+
+    if not chunks:
+        return np.empty((0, *expected_shape(config.common, config.stft)), dtype=np.float32), pd.DataFrame()
+    return np.concatenate(chunks, axis=0), pd.concat(metas, ignore_index=True)
+
+
 def _spectrograms_and_meta_for_cwru_rows(rows: pd.DataFrame, config: Config, stride: int) -> tuple[np.ndarray, pd.DataFrame]:
     """STFT is applied PER FILE and the raw windows dropped immediately.
 
@@ -151,7 +236,7 @@ def _spectrograms_and_meta_for_cwru_rows(rows: pd.DataFrame, config: Config, str
             meta_rows.append(
                 {
                     "domain": row["domain"],
-                    "domain_id": DOMAIN_IDS["cwru"],
+                    "domain_id": DOMAIN_IDS[row["domain"]],
                     "role": row["role"],
                     "universal_label": row["universal_label"],
                     "condition": row["condition"],
@@ -286,9 +371,13 @@ def build_domain_adaptation_datasets(
         print(f"PU: reading condensed store at {pu_root} ({len(pu_store.manifest)} runs)")
 
     include_cwru = config.cwru.include_in_source
-    cwru_catalog = (
-        build_cwru_catalog(config.resolve(config.paths.cwru_raw_dir), config.cwru.train_rpms, config.cwru.val_rpm)
-        if include_cwru
+    cwru_needed = include_cwru or config.experiment.target_dataset == "cwru"
+    cwru_roles = (
+        _assign_cwru_roles(
+            build_cwru_catalog(config.resolve(config.paths.cwru_raw_dir), config.cwru.train_rpms, config.cwru.val_rpm),
+            config,
+        )
+        if cwru_needed
         else None
     )
     if not include_cwru:
@@ -316,9 +405,10 @@ def build_domain_adaptation_datasets(
     for role in ROLES:
         stride = config.common.train_stride if role in ("source_train", "target_adapt") else config.common.eval_stride
 
-        if include_cwru and role in cwru_split_for_role:
-            cwru_rows = cwru_catalog[cwru_catalog.split == cwru_split_for_role[role]].copy()
-            cwru_rows["role"] = role
+        if cwru_roles is not None and role in ("target_adapt", "target_test") and config.experiment.target_dataset == "cwru":
+            cwru_X, cwru_meta = _cwru_target_rows_for_role(cwru_roles, config, stride, role)
+        elif include_cwru and role in cwru_split_for_role and config.experiment.target_dataset != "cwru":
+            cwru_rows = cwru_roles[cwru_roles.role == role].copy()
             cwru_X, cwru_meta = _spectrograms_and_meta_for_cwru_rows(cwru_rows, config, stride)
         else:
             cwru_X, cwru_meta = empty_spectrograms, pd.DataFrame()
