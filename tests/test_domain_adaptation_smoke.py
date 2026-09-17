@@ -315,6 +315,103 @@ def test_dataset_aborts_when_too_many_files_unreadable(tmp_path):
         da_dataset.build_domain_adaptation_datasets(config, pu_root)
 
 
+# --- condensed PU store (what actually gets moved to the GPU server) --------
+
+def _build_prepared_store(tmp_path, codes_conditions, runs=(1, 2, 3, 4), n_samples=64000):
+    """Synthetic raw PU -> prepare_pu -> condensed store, returning both roots."""
+    from domain_adaptation.data.prepare_pu import prepare_code
+    import pandas as pd
+
+    raw = tmp_path / "raw_pu"
+    for code, cond in codes_conditions:
+        for run in runs:
+            write_synthetic_pu_mat(raw, code, cond, run, n_samples=n_samples)
+    prepared = tmp_path / "prepared_pu"
+    rows = []
+    for code in sorted({c for c, _ in codes_conditions}):
+        rows += prepare_code(raw / code, prepared, fs_out=25600)["rows"]
+    pd.DataFrame(rows).to_csv(prepared / "manifest.csv", index=False)
+    return raw, prepared
+
+
+def test_prepared_store_is_detected_and_raw_is_not(tmp_path):
+    from domain_adaptation.data.pu_loader import is_prepared_store
+
+    raw, prepared = _build_prepared_store(tmp_path, [("K001", "N15_M07_F10")])
+    assert is_prepared_store(prepared)      # has manifest.csv
+    assert not is_prepared_store(raw)       # bare bearing-code folders
+    # Auto-detection is what lets one --pu-root serve both forms.
+
+
+def test_prepared_store_round_trips_signals_at_the_reduced_rate(tmp_path):
+    from domain_adaptation.data.pu_loader import PreparedPUStore
+
+    _, prepared = _build_prepared_store(tmp_path, [("K001", "N15_M07_F10")], runs=(1,), n_samples=64000)
+    store = PreparedPUStore(prepared)
+    sig = store.load("K001", "N15_M07_F10", 1)
+    # 64000 samples at 64kHz -> 25600 at 25.6kHz: exactly the 2/5 ratio.
+    assert len(sig) == 25600
+    assert np.isfinite(sig).all()
+
+
+def test_prepared_catalog_matches_the_raw_catalog_schema(tmp_path):
+    from domain_adaptation.data.pu_loader import PreparedPUStore, build_pu_catalog
+
+    raw, prepared = _build_prepared_store(
+        tmp_path, [("K001", "N15_M07_F10"), ("KA04", "N09_M07_F10")]
+    )
+    raw_cat = build_pu_catalog(raw, ["K001", "KA04"])
+    prep_cat = PreparedPUStore(prepared).catalog(["K001", "KA04"])
+    assert list(raw_cat.columns) == list(prep_cat.columns)      # identical schema
+    assert len(raw_cat) == len(prep_cat)
+    assert set(raw_cat.code) == set(prep_cat.code)
+    assert set(raw_cat.universal_label) == set(prep_cat.universal_label)
+    assert set(prep_cat.fs_native_hz) == {25600}                # already downsampled
+    assert set(raw_cat.fs_native_hz) == {64000}
+
+
+def test_prepared_store_missing_code_fails_loudly(tmp_path):
+    from domain_adaptation.data.pu_loader import PreparedPUStore
+
+    _, prepared = _build_prepared_store(tmp_path, [("K001", "N15_M07_F10")])
+    with pytest.raises(FileNotFoundError, match="KA04"):
+        PreparedPUStore(prepared).catalog(["K001", "KA04"])
+
+
+def test_dataset_build_is_equivalent_through_either_storage_form(tmp_path):
+    """The point of the condensed store: identical downstream results.
+
+    Values are close rather than bit-identical because the raw path
+    resamples 64k -> 12k in one polyphase step while the prepared path goes
+    64k -> 25.6k -> 12k in two. The overall ratio is the same 3/16, and the
+    25.6 kHz intermediate sits well above twice the final 6 kHz Nyquist, so
+    no content the final signal needs is lost -- only the anti-alias filter
+    shaping differs slightly.
+    """
+    codes_conditions = [(c, cond) for c in ("K001", "KA01", "KI01") for cond in ("N15_M07_F10",)]
+    codes_conditions += [(c, "N09_M07_F10") for c in ("K001", "KA04", "KI04")]
+    raw, prepared = _build_prepared_store(tmp_path, codes_conditions, n_samples=64000)
+
+    results = {}
+    for name, root in [("raw", raw), ("prepared", prepared)]:
+        config = make_config(tmp_path / name)
+        config.cwru.include_in_source = False
+        config.pu.native_fs_hz = 64000
+        config.common.fs_hz = 12000
+        config.common.segment_length, config.common.train_stride, config.common.eval_stride = 4096, 512, 1024
+        config.stft.nperseg, config.stft.hop_length = 256, 32
+        results[name] = da_dataset.build_domain_adaptation_datasets(config, root)
+
+    for role in da_dataset.ROLES:
+        X_raw, m_raw = results["raw"][role]
+        X_prep, m_prep = results["prepared"][role]
+        assert X_raw.shape == X_prep.shape, f"{role}: shape differs"
+        assert list(m_raw.universal_label) == list(m_prep.universal_label), f"{role}: labels differ"
+        assert list(m_raw.code) == list(m_prep.code), f"{role}: provenance differs"
+        # Same content, marginally different filter shaping.
+        assert np.corrcoef(X_raw.ravel(), X_prep.ravel())[0, 1] > 0.98, f"{role}: content diverged"
+
+
 # --- order tracking (the cross-speed fix) -----------------------------------
 
 def _peak_order(signal, samples_per_rev=256):

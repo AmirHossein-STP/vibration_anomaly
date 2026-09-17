@@ -51,7 +51,13 @@ from vibration_ad.features.spectrogram import expected_shape, windows_to_log_spe
 
 from domain_adaptation.config import Config
 from domain_adaptation.data.cwru_loader import build_cwru_catalog
-from domain_adaptation.data.pu_loader import UnreadableMatFile, build_pu_catalog, load_vibration_signal
+from domain_adaptation.data.pu_loader import (
+    PreparedPUStore,
+    UnreadableMatFile,
+    build_pu_catalog,
+    is_prepared_store,
+    load_vibration_signal,
+)
 from domain_adaptation.data.transforms import resample_to_rate
 
 DOMAIN_IDS = {"cwru": 0, "pu_artificial": 1, "pu_target": 2}
@@ -149,16 +155,28 @@ def _spectrograms_and_meta_for_cwru_rows(rows: pd.DataFrame, config: Config, str
 MAX_UNREADABLE_FRACTION = 0.10
 
 
-def _spectrograms_and_meta_for_pu_rows(rows: pd.DataFrame, config: Config, stride: int) -> tuple[np.ndarray, pd.DataFrame]:
-    """Per-file STFT, same memory reasoning as the CWRU helper above."""
+def _spectrograms_and_meta_for_pu_rows(
+    rows: pd.DataFrame, config: Config, stride: int, store: PreparedPUStore | None = None
+) -> tuple[np.ndarray, pd.DataFrame]:
+    """Per-file STFT, same memory reasoning as the CWRU helper above.
+
+    `store` set -> signals come from prepare_pu.py's condensed archives
+    instead of raw .mat files. Only the read differs; resampling, windowing
+    and the STFT are identical, so results are comparable either way (the
+    prepared store is already at 25.6 kHz, and row["fs_native_hz"] carries
+    that so the resample below still lands on config.common.fs_hz).
+    """
     chunks, meta_rows = [], []
     unreadable: list[str] = []
     for _, row in rows.iterrows():
         try:
-            signal = load_vibration_signal(row["filepath"], config.pu.vibration_channel)
-        except UnreadableMatFile as exc:
-            unreadable.append(str(row["filepath"]))
-            print(f"  SKIPPING unreadable file: {exc}")
+            if store is not None:
+                signal = store.load(row["code"], row["condition"], int(row["run"]))
+            else:
+                signal = load_vibration_signal(row["filepath"], config.pu.vibration_channel)
+        except (UnreadableMatFile, KeyError) as exc:
+            unreadable.append(str(row["filepath"] or f'{row["code"]}/{row["condition"]}_{row["run"]}'))
+            print(f"  SKIPPING unreadable: {exc}")
             continue
         signal = resample_to_rate(signal, row["fs_native_hz"], config.common.fs_hz)
         w = make_windows(signal, config.common.segment_length, stride)
@@ -239,6 +257,11 @@ def build_domain_adaptation_datasets(
     if not force and all(p.exists() for p in paths.values()):
         return {role: (np.load(paths[f"{role}_X"]), pd.read_csv(paths[f"{role}_meta"])) for role in ROLES}
 
+    # Auto-detect which PU storage form we were pointed at.
+    pu_store = PreparedPUStore(pu_root) if is_prepared_store(pu_root) else None
+    if pu_store is not None:
+        print(f"PU: reading condensed store at {pu_root} ({len(pu_store.manifest)} runs)")
+
     include_cwru = config.cwru.include_in_source
     cwru_catalog = (
         build_cwru_catalog(config.resolve(config.paths.cwru_raw_dir), config.cwru.train_rpms, config.cwru.val_rpm)
@@ -247,9 +270,12 @@ def build_domain_adaptation_datasets(
     )
     if not include_cwru:
         print("CWRU excluded from the source pool (config.cwru.include_in_source=false) -- PU-only run.")
-    pu_catalog = _assign_pu_roles(
-        build_pu_catalog(pu_root, config.pu.source_codes + config.pu.real_codes, config.pu.native_fs_hz), config
+    pu_codes = config.pu.source_codes + config.pu.real_codes
+    raw_pu_catalog = (
+        pu_store.catalog(pu_codes) if pu_store is not None
+        else build_pu_catalog(pu_root, pu_codes, config.pu.native_fs_hz)
     )
+    pu_catalog = _assign_pu_roles(raw_pu_catalog, config)
 
     # CWRU only ever contributes to source_train/source_val -- it isn't the
     # target domain, so target_adapt/target_test are PU-only below.
@@ -267,7 +293,9 @@ def build_domain_adaptation_datasets(
         else:
             cwru_X, cwru_meta = empty_spectrograms, pd.DataFrame()
 
-        pu_X, pu_meta = _spectrograms_and_meta_for_pu_rows(pu_catalog[pu_catalog.role == role], config, stride)
+        pu_X, pu_meta = _spectrograms_and_meta_for_pu_rows(
+            pu_catalog[pu_catalog.role == role], config, stride, store=pu_store
+        )
 
         spectrograms = np.concatenate([cwru_X, pu_X], axis=0)
         del cwru_X, pu_X  # release per-domain copies before the next role

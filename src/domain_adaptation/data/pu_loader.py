@@ -133,3 +133,63 @@ def build_pu_catalog(root_dir: str | Path, codes: list[str], native_fs_hz: int =
     if not rows:
         raise FileNotFoundError(f"No matching PU .mat files found under {root_dir} for codes {codes}")
     return pd.DataFrame(rows)
+
+# --- condensed ("prepared") store ------------------------------------------
+# prepare_pu.py turns the 9.7 GB raw dataset into ~1 GB of per-code .npz
+# archives. Everything below reads that form. Detection is automatic, so the
+# same --pu-root works whether it points at raw .mat folders or a condensed
+# store -- no config flag to forget to flip, and no second code path through
+# the rest of the pipeline.
+
+
+def is_prepared_store(root: str | Path) -> bool:
+    """A condensed store is identified by its manifest; raw PU has none."""
+    return (Path(root) / "manifest.csv").is_file()
+
+
+class PreparedPUStore:
+    """Reads the per-code archives written by prepare_pu.py.
+
+    numpy loads .npz members lazily, so holding one open handle per bearing
+    code and indexing into it avoids re-reading a ~33 MB archive for every
+    one of its 80 runs.
+    """
+
+    def __init__(self, root: str | Path):
+        self.root = Path(root)
+        manifest_path = self.root / "manifest.csv"
+        if not manifest_path.is_file():
+            raise FileNotFoundError(f"{self.root} is not a prepared store (no manifest.csv)")
+        self.manifest = pd.read_csv(manifest_path)
+        self._handles: dict[str, object] = {}
+
+    def _handle(self, code: str):
+        if code not in self._handles:
+            path = self.root / f"{code}.npz"
+            if not path.is_file():
+                raise FileNotFoundError(f"{path} missing -- manifest lists {code} but the archive is absent")
+            self._handles[code] = np.load(path)
+        return self._handles[code]
+
+    def load(self, code: str, condition: str, run: int) -> np.ndarray:
+        key = f"{condition}_{run}"
+        handle = self._handle(code)
+        if key not in handle:
+            raise KeyError(f"{code}.npz has no run {key!r}")
+        return np.asarray(handle[key], dtype=np.float64)
+
+    def catalog(self, codes: list[str]) -> pd.DataFrame:
+        """Same columns build_pu_catalog returns, so downstream code is
+        identical for either storage form."""
+        wanted = self.manifest[self.manifest.code.isin(codes)].copy()
+        missing = sorted(set(codes) - set(wanted.code.unique()))
+        if missing:
+            raise FileNotFoundError(f"Prepared store {self.root} has no data for codes {missing}")
+        wanted = wanted[wanted.universal_label.notna()]
+        wanted["universal_label"] = wanted.universal_label.astype(int)
+        wanted["filepath"] = ""          # signals live inside the archives, not as files
+        wanted["fs_native_hz"] = wanted["fs_hz"]
+        wanted["domain"] = "pu"
+        cols = ["filepath", "code", "condition", "run", "fault_type",
+                "damage_mode", "universal_label", "fs_native_hz", "domain"]
+        return wanted[cols].reset_index(drop=True)
