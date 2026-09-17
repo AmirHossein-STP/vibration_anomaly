@@ -46,12 +46,24 @@ out = pd.DataFrame(rows).sort_values(["truth", "flagged"])
 print(out.to_string(index=False, float_format=lambda v: f"{v:.3f}"))
 
 print("\n--- per-RECORDING (majority of windows in a file, pooled seeds) ---")
-rec = df.groupby(["seed", "code", "source_file"]).agg(
-    faulty_true=("faulty_true", "first"), frac=("faulty_pred", "mean")).reset_index()
-rec["alarm"] = rec.frac > 0.5
-for truth, g in rec.groupby("faulty_true"):
-    name = "FAULTY recordings detected" if truth else "healthy recordings false-alarmed"
-    print(f"  {name}: {g.alarm.mean():.3f}  (n={len(g)//len(paths)} recordings x {len(paths)} runs)")
+# PU rows carry an EMPTY source_file when they come from the prepared
+# (condensed) store -- the per-recording identity is not written into the
+# window metadata. A groupby on it silently drops every row, which is how
+# this section came to print nothing at all. Say so rather than imply the
+# aggregate is zero: the per-recording figure this project once quoted
+# (91.8% detection) cannot be recomputed from these artifacts until the
+# dataset builder writes a recording id into the PU meta.
+if df.source_file.isna().all() or (df.source_file.astype(str).str.len() == 0).all():
+    print("  UNAVAILABLE: source_file is empty for every row (prepared PU store does")
+    print("  not record per-recording identity). Fix upstream in data/dataset.py by")
+    print("  writing the manifest's `run` into the window meta.")
+else:
+    rec = df.groupby(["seed", "code", "source_file"]).agg(
+        faulty_true=("faulty_true", "first"), frac=("faulty_pred", "mean")).reset_index()
+    rec["alarm"] = rec.frac > 0.5
+    for truth, g in rec.groupby("faulty_true"):
+        name = "FAULTY recordings detected" if truth else "healthy recordings false-alarmed"
+        print(f"  {name}: {g.alarm.mean():.3f}  (n={len(g)//len(paths)} recordings x {len(paths)} runs)")
 
 f = out[out.truth == "FAULTY"]
 print(f"\nAcross the {len(f)} faulty units, per-unit recall ranges "
