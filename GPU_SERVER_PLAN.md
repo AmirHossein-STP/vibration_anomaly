@@ -148,6 +148,24 @@ damage. No PU fault -- artificial or real -- ever seen in training.
 > PU, and the arrays are identical, so this *should* be inert -- but it is
 > untested against the full store).
 >
+> **Update (17:55): torch and the PU trim are both exonerated.** Installing
+> torch 2.6.0+cu124 (the first server's exact version) reproduced the
+> collapse to three decimals across 3 seeds. And the trimmed store is
+> identical to the full one for every target-relevant row: runs 1-20 per
+> healthy code, cutoff 12, the same 60/40 adapt/test split. Same data, same
+> code, both torch versions, 19 runs: the collapse is deterministic.
+>
+> **Leading explanation: a stale window cache on the first server.**
+> `build_domain_adaptation_datasets` returned a cached `processed_dir`
+> whenever the files merely EXISTED -- no config hash, no validation. The
+> first server accumulated caches across many config edits; this box was
+> new, so every cache was built fresh from the config as written. That
+> makes today's collapse the honest behaviour of this config and the
+> earlier numbers the artifact, not the reverse. This is now guarded by a
+> config fingerprint (`_cache_fingerprint`, regression test in
+> `tests/test_domain_adaptation_smoke.py`), so it cannot recur -- but it
+> cannot be proven retroactively, because the first server is gone.
+>
 > **The numbers below are therefore unconfirmed.** The original artifacts
 > were never pulled off the first server, so they cannot be re-examined.
 > Until a rebuild reproduces them, treat this table as provisional.

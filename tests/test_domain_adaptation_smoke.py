@@ -933,3 +933,47 @@ def test_tiny_dann_training_step_reduces_classification_loss(tmp_path):
 
     assert all(np.isfinite(losses))
     assert losses[-1] < losses[0]
+
+
+def test_cache_fingerprint_changes_with_config_not_seed():
+    """The window cache is keyed on a config fingerprint, not file existence.
+
+    Regression guard for a silent-reuse bug: build_domain_adaptation_datasets
+    used to return a cached processed_dir whenever the files were present,
+    so a directory built under one config was reused under another without
+    a word. Results then described the OLD dataset while appearing to
+    describe the new config.
+
+    The seed must NOT affect the fingerprint -- windows do not depend on it,
+    and tagging the cache per seed would rebuild an identical dataset for
+    every run in a sweep.
+    """
+    from copy import deepcopy
+
+    from domain_adaptation.config import load_config
+    from domain_adaptation.data.dataset import _cache_fingerprint
+
+    config = load_config("configs/da_armA_time.yaml")
+    base = _cache_fingerprint(config)
+
+    seed_changed = deepcopy(config)
+    seed_changed.seed = config.seed + 1
+    assert _cache_fingerprint(seed_changed) == base, "seed must not invalidate the cache"
+
+    for field, value in (
+        ("representation", "order" if config.common.representation == "time" else "time"),
+        ("fs_hz", config.common.fs_hz * 2),
+    ):
+        changed = deepcopy(config)
+        setattr(changed.common, field, value)
+        assert _cache_fingerprint(changed) != base, f"{field} must invalidate the cache"
+
+    codes_changed = deepcopy(config)
+    codes_changed.pu.healthy_codes = config.pu.healthy_codes[:-1]
+    assert _cache_fingerprint(codes_changed) != base, "PU code lists must invalidate the cache"
+
+    strictness_changed = deepcopy(config)
+    strictness_changed.pu.include_in_source = not config.pu.include_in_source
+    assert _cache_fingerprint(strictness_changed) != base, (
+        "include_in_source flips the whole strict/permissive premise and must invalidate"
+    )

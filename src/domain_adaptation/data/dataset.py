@@ -38,6 +38,10 @@ overlapping windows from a single run on only one side.
 """
 from __future__ import annotations
 
+import hashlib
+import json
+from dataclasses import asdict
+
 import resource
 import sys
 from pathlib import Path
@@ -344,6 +348,30 @@ def _cache_paths(processed_dir: Path) -> dict[str, Path]:
     return paths
 
 
+def _cache_fingerprint(config: Config) -> str:
+    """Hash of every config field that changes what the cached windows ARE.
+
+    Without this the cache was keyed on file existence alone, so a
+    processed_dir built under one config was silently reused under another
+    -- the windows on disk could disagree with the config that asked for
+    them, and nothing would say so. A sweep that edited a config and reran
+    would keep loading the OLD dataset, and the results would look like
+    findings about the new config.
+
+    The seed is deliberately NOT included: the window set does not depend
+    on it, and including it would rebuild an identical dataset per seed.
+    """
+    payload = {
+        "common": asdict(config.common),
+        "stft": asdict(config.stft),
+        "cwru": asdict(config.cwru),
+        "pu": asdict(config.pu),
+        "target_dataset": config.experiment.target_dataset,
+    }
+    blob = json.dumps(payload, sort_keys=True, default=str)
+    return hashlib.sha256(blob.encode()).hexdigest()[:16]
+
+
 def build_domain_adaptation_datasets(
     config: Config, pu_root: str | Path, force: bool = False
 ) -> dict[str, tuple[np.ndarray, pd.DataFrame]]:
@@ -362,8 +390,24 @@ def build_domain_adaptation_datasets(
     processed_dir.mkdir(parents=True, exist_ok=True)
     paths = _cache_paths(processed_dir)
 
+    fingerprint_path = processed_dir / "cache_fingerprint.json"
+    fingerprint = _cache_fingerprint(config)
+    cached_fingerprint = None
+    if fingerprint_path.exists():
+        try:
+            cached_fingerprint = json.loads(fingerprint_path.read_text()).get("fingerprint")
+        except (ValueError, OSError):
+            cached_fingerprint = None
+
     if not force and all(p.exists() for p in paths.values()):
-        return {role: (np.load(paths[f"{role}_X"]), pd.read_csv(paths[f"{role}_meta"])) for role in ROLES}
+        if cached_fingerprint == fingerprint:
+            return {role: (np.load(paths[f"{role}_X"]), pd.read_csv(paths[f"{role}_meta"])) for role in ROLES}
+        # A cache built under different settings is worse than no cache: it
+        # answers a question nobody asked, silently. Rebuild instead.
+        print(
+            f"Cached dataset in {processed_dir} was built under a different config "
+            f"(fingerprint {cached_fingerprint} != {fingerprint}) -- rebuilding."
+        )
 
     # Auto-detect which PU storage form we were pointed at.
     pu_store = PreparedPUStore(pu_root) if is_prepared_store(pu_root) else None
@@ -428,5 +472,9 @@ def build_domain_adaptation_datasets(
 
         np.save(paths[f"{role}_X"], spectrograms)
         meta.to_csv(paths[f"{role}_meta"], index=False)
+
+    # Written LAST, so an interrupted build leaves no fingerprint and the
+    # partial cache is rebuilt rather than trusted.
+    fingerprint_path.write_text(json.dumps({"fingerprint": fingerprint}, indent=2))
 
     return results
