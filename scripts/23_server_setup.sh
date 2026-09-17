@@ -50,18 +50,33 @@ echo "=== 4. project deps ==="
 "$VENV/bin/pip" install -q -e "$PROJECT_DIR"
 
 echo "=== 5. datasets ==="
-# ~12 GB total. Both are public Kaggle datasets -- the same ones the Kaggle
-# kernels attached, so results stay comparable. Needs ~/.kaggle/kaggle.json
-# or KAGGLE_API_TOKEN set.
+# Paderborn arrives CONDENSED, not raw. scripts/build_kaggle_notebook_prepare_pu.py
+# runs on Kaggle (free, data already mounted there) and reduces the 9.7 GB
+# dataset to 932 MB by keeping only the vibration_1 channel at 25.6 kHz --
+# the rest is six unused channels at a rate the pipeline downsamples anyway.
+# That is ~10x less paid transfer, and it covers EVERY bearing code and
+# operating condition, so no config change sends us back for more.
 mkdir -p "$DATA_DIR"
-if [ ! -d "$DATA_DIR/paderborn" ]; then
-  echo "  downloading Paderborn (~9.7 GB)..."
-  "$VENV/bin/kaggle" datasets download -d dippatel03/paderborn-db -p "$DATA_DIR" --unzip
-  mv "$DATA_DIR"/K0* "$DATA_DIR"/KA* "$DATA_DIR"/KI* "$DATA_DIR"/KB* "$DATA_DIR/paderborn/" 2>/dev/null || true
+PREPARED="$DATA_DIR/paderborn_prepared"
+if [ ! -f "$PREPARED/manifest.csv" ]; then
+  echo "  pulling condensed Paderborn (~932 MB, 32 archives)..."
+  "$VENV/bin/kaggle" kernels output aghzuzu/prepare-paderborn-subset -p "$PREPARED" --force
 fi
-if [ ! -d "$DATA_DIR/cwru_mat" ]; then
-  echo "  downloading CWRU..."
-  "$VENV/bin/kaggle" datasets download -d esraakhaled299/cwru-data -p "$DATA_DIR/cwru_mat" --unzip
+if [ -f "$PREPARED/manifest.csv" ]; then
+  echo "  Paderborn: $(wc -l < "$PREPARED/manifest.csv") manifest rows, $(du -sh "$PREPARED" | cut -f1)"
+else
+  echo "  WARNING: condensed Paderborn missing -- rerun the prepare-paderborn-subset kernel" >&2
+fi
+
+# CWRU is NOT downloaded: the laptop already holds it converted to .npz
+# (179 MB, 64 files), which is ~10x smaller than the .mat form on Kaggle and
+# skips the conversion step. Copy it up before running this:
+#   scp -r data/raw <server>:$PROJECT_DIR/data/raw
+if [ -d "$DATA_DIR/raw" ] && [ "$(ls -1 "$DATA_DIR/raw"/*.npz 2>/dev/null | wc -l)" -ge 64 ]; then
+  echo "  CWRU: $(ls -1 "$DATA_DIR/raw"/*.npz | wc -l) .npz files present"
+else
+  echo "  WARNING: CWRU not found at $DATA_DIR/raw -- scp it from the laptop:" >&2
+  echo "    scp -r data/raw <server>:$DATA_DIR/raw" >&2
 fi
 
 echo "=== 6. smoke test ==="
