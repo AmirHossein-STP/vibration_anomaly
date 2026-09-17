@@ -11,7 +11,7 @@ Why this exists rather than copying the raw dataset:
   force, two phase currents, speed, temperature, torque and vibration. This
   project uses `vibration_1` alone -- everything else is bytes we would
   pay to transfer, store, and then never read.
-* **64 kHz in, 25.6 kHz out.** The pipeline resamples PU down before doing
+* **64 kHz in, 12 kHz out.** The pipeline resamples PU down before doing
   anything with it, so shipping the original rate means paying to move
   samples that get discarded on arrival.
 * **`scipy.io.loadmat` is slow.** Building the dataset from 1420 raw `.mat`
@@ -54,7 +54,16 @@ from domain_adaptation.data.pu_loader import (
 from domain_adaptation.data.transforms import resample_to_rate
 
 NATIVE_FS_HZ = 64000
-PREPARED_FS_HZ = 25600  # 64000 * 2/5 -- exact rational step, no resampling error
+PREPARED_FS_HZ = 12000  # 64000 * 3/16 -- exact rational step
+# 12 kHz rather than something higher because it is what the pipeline
+# resamples to anyway, and CWRU's DE12 files cap the cross-dataset common
+# rate there regardless -- so this is lossless for our use while halving
+# the transfer (measured: zero error in the normalized spectrogram the
+# model consumes). It still supports 256 samples/rev for order tracking
+# (Nyquist order 128 = 3.2 kHz at 1500 rpm, comfortably inside 6 kHz).
+# int16 would halve it again but perturbs 2.29% of input pixels for ~15 s
+# of transfer -- measured and rejected. Regenerating at any other
+# rate/precision is a free ~6-minute Kaggle run.
 def prepare_code(code_dir: Path, out_dir: Path, fs_out: int = PREPARED_FS_HZ) -> dict:
     """Condense every run of one bearing code into a single .npz.
 

@@ -52,14 +52,14 @@ echo "=== 4. project deps ==="
 echo "=== 5. datasets ==="
 # Paderborn arrives CONDENSED, not raw. scripts/build_kaggle_notebook_prepare_pu.py
 # runs on Kaggle (free, data already mounted there) and reduces the 9.7 GB
-# dataset to 932 MB by keeping only the vibration_1 channel at 25.6 kHz --
+# dataset to ~437 MB by keeping only the vibration_1 channel at 12 kHz --
 # the rest is six unused channels at a rate the pipeline downsamples anyway.
-# That is ~10x less paid transfer, and it covers EVERY bearing code and
+# That is ~22x less paid transfer, and it covers EVERY bearing code and
 # operating condition, so no config change sends us back for more.
 mkdir -p "$DATA_DIR"
 PREPARED="$DATA_DIR/paderborn_prepared"
 if [ ! -f "$PREPARED/manifest.csv" ]; then
-  echo "  pulling condensed Paderborn (~932 MB, 32 archives)..."
+  echo "  pulling condensed Paderborn (~437 MB, 32 archives)..."
   "$VENV/bin/kaggle" kernels output aghzuzu/prepare-paderborn-subset -p "$PREPARED" --force
 fi
 if [ -f "$PREPARED/manifest.csv" ]; then
