@@ -126,6 +126,32 @@ Train CWRU only. Adapt on Paderborn HEALTHY only. Diagnose Paderborn's real
 damage. No PU fault -- artificial or real -- ever seen in training.
 3 seeds per representation.
 
+> **REPRODUCTION FAILED (2026-09-17, second server).** After the first
+> server was deleted, a clean-room rebuild of arm A on an identical RTX
+> 3090 did NOT reproduce the table below. All 8 time-representation seeds
+> collapsed to a single class (every one of 5117 target windows predicted
+> outer-race), giving recall 1.000, false-alarm 100%, balanced accuracy
+> 0.500 -- and **identical to 3 decimal places across all 8 seeds**, where
+> the original runs spanned 0.42-0.97. Order-rep runs varied by seed but
+> were also far worse (balanced accuracy 0.493).
+>
+> What was ruled out: source training is perfect (val_acc 1.000 on CUDA);
+> the repacked PU store is byte-identical to the original for every array
+> used; the window cache is per-config so no cross-config contamination;
+> all cached spectrograms are 100% finite. What was found: target windows
+> have std 0.857 against the source's 2.145, so normalizing by source
+> statistics squeezes the target into a narrow blob -- constant features,
+> seed-independent argmax.
+>
+> What differs from the original runs: torch 2.8.0+cu128 (was 2.6.0+cu124),
+> and a PU store trimmed to the N09 target condition (arm A never trains on
+> PU, and the arrays are identical, so this *should* be inert -- but it is
+> untested against the full store).
+>
+> **The numbers below are therefore unconfirmed.** The original artifacts
+> were never pulled off the first server, so they cannot be re-examined.
+> Until a rebuild reproduces them, treat this table as provisional.
+
 **Updated to n=8 per representation** (the n=3 figures first recorded here
 left the error bars too wide to act on):
 
