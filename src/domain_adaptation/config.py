@@ -179,6 +179,23 @@ class Config:
         return (self.project_root / relative_path).resolve()
 
 
+def apply_overrides(config: Config, seed: int | None = None, tag: str | None = None) -> Config:
+    """Vary seed and output location without writing a config file per run.
+
+    Every result through kernel v8 was a single seed, which is why the
+    project's strongest claim ("DANN is harmful") rests on n=1 comparisons.
+    Sweeps need many runs cheaply, and they must not overwrite each other --
+    `tag` suffixes every output directory so a seed/arm combination keeps
+    its own models, reports and figures.
+    """
+    if seed is not None:
+        config.seed = seed
+    if tag:
+        for path_field in ("processed_dir", "models_dir", "figures_dir", "reports_dir"):
+            setattr(config.paths, path_field, f"{getattr(config.paths, path_field)}_{tag}")
+    return config
+
+
 def load_config(config_path: str | Path) -> Config:
     config_path = Path(config_path).resolve()
     with open(config_path) as f:

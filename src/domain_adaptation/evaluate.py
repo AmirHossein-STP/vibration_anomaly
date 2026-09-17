@@ -33,7 +33,7 @@ from vibration_ad.features.spectrogram import SpectrogramNormalizer, expected_sh
 
 from domain_adaptation import viz
 from domain_adaptation.analysis import binary_detection_metrics, domain_separability_probe
-from domain_adaptation.config import Config, load_config
+from domain_adaptation.config import Config, apply_overrides, load_config
 from domain_adaptation.data.dataset import build_domain_adaptation_datasets
 from domain_adaptation.data.pu_loader import find_pu_root
 from domain_adaptation.data.torch_dataset import LabeledDomainDataset
@@ -212,10 +212,12 @@ def evaluate(config: Config, pu_root) -> dict:
 def main() -> None:
     parser = argparse.ArgumentParser(description=__doc__)
     parser.add_argument("--config", default="configs/domain_adaptation.yaml")
+    parser.add_argument("--seed", type=int, default=None, help="Override config.seed (for seed replication).")
+    parser.add_argument("--tag", default=None, help="Suffix every output dir, so parallel runs do not collide.")
     parser.add_argument("--pu-root", default=None, help="Root dir of the PU dataset (default: auto-detect /kaggle/input, else config's pu_root_local).")
     args = parser.parse_args()
 
-    config = load_config(args.config)
+    config = apply_overrides(load_config(args.config), seed=args.seed, tag=args.tag)
     pu_root = args.pu_root or find_pu_root(config.resolve(config.paths.pu_root_local))
     evaluate(config, pu_root)
 
