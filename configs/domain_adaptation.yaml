@@ -26,6 +26,13 @@ paths:
 # purpose -- same 128x128 output shape, so vibration_ad's own
 # windowing/spectrogram code is imported directly, not reimplemented.
 common:
+  # "time" reproduces every result through kernel v8. "order" switches to
+  # angular resampling (src/domain_adaptation/data/order_tracking.py), which
+  # removes the cross-speed gap by construction rather than asking the
+  # network to learn around it -- the one untried idea with a physical
+  # argument behind it after five runs of adversarial tuning failed.
+  representation: time
+  samples_per_rev: 256      # order mode only; Nyquist order = 128
   fs_hz: 12000
   segment_length: 8384
   train_stride: 512

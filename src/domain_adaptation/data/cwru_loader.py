@@ -68,5 +68,8 @@ def build_cwru_catalog(raw_dir: Path, train_rpms: list[int], val_rpm: int) -> pd
         raise ValueError(f"val_rpm={val_rpm} not present in CWRU catalog RPMs {sorted(present_rpms)}")
 
     catalog["split"] = catalog.rpm.apply(lambda r: "val" if r == val_rpm else "train")
-    cols = ["filepath", "domain", "condition", "fs_native_hz", "fault_type", "universal_label", "split"]
+    # rpm is kept as a column, not just folded into `condition`: order
+    # tracking needs the actual shaft speed to resample against angle.
+    cols = ["filepath", "domain", "condition", "rpm", "fs_native_hz",
+            "fault_type", "universal_label", "split"]
     return catalog[cols].reset_index(drop=True)

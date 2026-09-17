@@ -58,6 +58,7 @@ from domain_adaptation.data.pu_loader import (
     is_prepared_store,
     load_vibration_signal,
 )
+from domain_adaptation.data.order_tracking import angular_resample
 from domain_adaptation.data.transforms import resample_to_rate
 
 DOMAIN_IDS = {"cwru": 0, "pu_artificial": 1, "pu_target": 2}
@@ -107,6 +108,23 @@ def _assign_pu_roles(pu_catalog: pd.DataFrame, config: Config) -> pd.DataFrame:
     return assigned
 
 
+def _to_common_representation(signal: np.ndarray, native_fs_hz: float, rpm: float, config: Config) -> np.ndarray:
+    """Put a signal on whichever common axis config.common.representation asks
+    for: uniform in TIME (resampled to a shared rate, axis in Hz) or uniform
+    in SHAFT ANGLE (axis in orders, speed divided out).
+
+    Both datasets end up on the same axis either way -- that is the whole
+    point, since a classifier trained on one rig/speed has to read the other.
+    """
+    if config.common.representation == "order":
+        return angular_resample(signal, native_fs_hz, rpm, config.common.samples_per_rev)
+    if config.common.representation != "time":
+        raise ValueError(
+            f"common.representation must be 'time' or 'order', got {config.common.representation!r}"
+        )
+    return resample_to_rate(signal, native_fs_hz, config.common.fs_hz)
+
+
 def _spectrograms_and_meta_for_cwru_rows(rows: pd.DataFrame, config: Config, stride: int) -> tuple[np.ndarray, pd.DataFrame]:
     """STFT is applied PER FILE and the raw windows dropped immediately.
 
@@ -119,7 +137,8 @@ def _spectrograms_and_meta_for_cwru_rows(rows: pd.DataFrame, config: Config, str
     """
     chunks, meta_rows = [], []
     for _, row in rows.iterrows():
-        signal = load_cwru_signal(row["filepath"], config.cwru.sensor)  # already 12kHz == common.fs_hz
+        signal = load_cwru_signal(row["filepath"], config.cwru.sensor)
+        signal = _to_common_representation(signal, row["fs_native_hz"], row["rpm"], config)
         w = make_windows(signal, config.common.segment_length, stride)
         if len(w) == 0:
             continue
@@ -178,7 +197,7 @@ def _spectrograms_and_meta_for_pu_rows(
             unreadable.append(str(row["filepath"] or f'{row["code"]}/{row["condition"]}_{row["run"]}'))
             print(f"  SKIPPING unreadable: {exc}")
             continue
-        signal = resample_to_rate(signal, row["fs_native_hz"], config.common.fs_hz)
+        signal = _to_common_representation(signal, row["fs_native_hz"], row["rpm"], config)
         w = make_windows(signal, config.common.segment_length, stride)
         if len(w) == 0:
             continue

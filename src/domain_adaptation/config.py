@@ -36,6 +36,15 @@ class CommonConfig:
     segment_length: int
     train_stride: int
     eval_stride: int
+    # "time"  -> resample every domain to fs_hz, spectrogram axis is Hz.
+    # "order" -> resample against SHAFT ANGLE instead (data/order_tracking.py),
+    #            axis becomes orders (events per revolution) and shaft speed
+    #            divides out. The speed shift between PU's N15 (1500rpm) and
+    #            N09 (900rpm) is a multiplicative stretch of the frequency
+    #            axis, which a CNN has no tolerance for -- this removes it by
+    #            construction instead of asking the network to learn around it.
+    representation: str = "time"
+    samples_per_rev: int = 256  # order mode only; Nyquist order = this / 2
 
 
 @dataclass

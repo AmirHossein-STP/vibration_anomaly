@@ -45,25 +45,16 @@ import numpy as np
 import pandas as pd
 
 from domain_adaptation.data.pu_bearing_codes import PU_BEARING_CODES
-from domain_adaptation.data.pu_loader import FILENAME_RE, UnreadableMatFile, load_vibration_signal
+from domain_adaptation.data.pu_loader import (
+    FILENAME_RE,
+    UnreadableMatFile,
+    load_vibration_signal,
+    rpm_for_condition,
+)
 from domain_adaptation.data.transforms import resample_to_rate
 
 NATIVE_FS_HZ = 64000
 PREPARED_FS_HZ = 25600  # 64000 * 2/5 -- exact rational step, no resampling error
-# Nominal shaft speed per PU operating-condition code, needed for order
-# tracking (data/order_tracking.py). N15 = 1500 rpm, N09 = 900 rpm.
-CONDITION_RPM = {"N15": 1500, "N09": 900}
-
-
-def rpm_for_condition(condition: str) -> int:
-    """`N09_M07_F10` -> 900. Speed is the first field; torque and radial
-    force (M/F) do not change shaft rate."""
-    prefix = condition.split("_")[0]
-    if prefix not in CONDITION_RPM:
-        raise KeyError(f"Unknown speed code {prefix!r} in condition {condition!r}")
-    return CONDITION_RPM[prefix]
-
-
 def prepare_code(code_dir: Path, out_dir: Path, fs_out: int = PREPARED_FS_HZ) -> dict:
     """Condense every run of one bearing code into a single .npz.
 

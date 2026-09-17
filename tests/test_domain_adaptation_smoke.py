@@ -315,6 +315,90 @@ def test_dataset_aborts_when_too_many_files_unreadable(tmp_path):
         da_dataset.build_domain_adaptation_datasets(config, pu_root)
 
 
+def _order_locked_signal(fs, rpm, fault_order, seconds=4.0, seed=0):
+    """A bearing-like signal whose defect sits at a fixed ORDER, so its
+    frequency in Hz moves with speed -- exactly the real situation."""
+    rng = np.random.default_rng(seed)
+    t = np.arange(int(fs * seconds)) / fs
+    shaft_hz = rpm / 60.0
+    sig = 0.05 * rng.standard_normal(len(t))
+    for harmonic in (1, 2, 3):           # defect tone plus two harmonics
+        sig += np.sin(2 * np.pi * fault_order * harmonic * shaft_hz * t) / harmonic
+    return sig
+
+
+def test_order_representation_aligns_two_speeds_that_time_representation_does_not():
+    """The decisive check for the whole order-tracking idea, at the level the
+    model actually sees: spectrograms.
+
+    The same defect at the same ORDER is recorded at 1500rpm and 900rpm. In
+    the time representation its Hz differ by 1500/900, so the spectrograms
+    disagree. After angular resampling the speed divides out and they should
+    line up.
+    """
+    from domain_adaptation.data.order_tracking import angular_resample
+    from domain_adaptation.data.transforms import resample_to_rate
+    from vibration_ad.features.spectrogram import windows_to_log_spectrograms
+    from vibration_ad.data.windows import make_windows
+
+    class STFT:
+        nperseg, hop_length, log_epsilon = 256, 64, 1e-10
+        noverlap = 256 - 64
+
+    fs, fault_order, seg = 64000, 5.4, 4096
+
+    def mean_spectrogram(rpm, mode):
+        sig = _order_locked_signal(fs, rpm, fault_order)
+        sig = (angular_resample(sig, fs, rpm, 256) if mode == "order"
+               else resample_to_rate(sig, fs, 12000))
+        w = make_windows(sig, seg, seg // 2)
+        return windows_to_log_spectrograms(w, 12000, STFT).mean(axis=0)
+
+    for mode, expectation in [("time", "disagree"), ("order", "agree")]:
+        a, b = mean_spectrogram(1500, mode), mean_spectrogram(900, mode)
+        corr = np.corrcoef(a.ravel(), b.ravel())[0, 1]
+        if mode == "time":
+            time_corr = corr
+        else:
+            order_corr = corr
+
+    # Order tracking must bring the two speeds substantially closer together.
+    assert order_corr > time_corr, (
+        f"order tracking failed to help: time={time_corr:.3f} order={order_corr:.3f}"
+    )
+    assert order_corr > 0.9, f"speeds still not aligned in order domain: {order_corr:.3f}"
+
+
+def test_dataset_builds_in_order_representation(tmp_path):
+    """The switch has to work end to end, not just on bare signals."""
+    config = make_config(tmp_path)
+    config.common.representation = "order"
+    config.common.samples_per_rev = 64        # small, to suit the tiny test signals
+    config.common.segment_length = 128
+    config.common.train_stride, config.common.eval_stride = 32, 64
+    config.stft.nperseg, config.stft.hop_length = 32, 8
+    config.cwru.include_in_source = False
+    config.pu.native_fs_hz = 4000
+
+    pu_root = tmp_path / "pu_root"
+    for run in range(1, 5):
+        for code, cond in [("K001", "N15_M07_F10"), ("KA01", "N15_M07_F10"), ("KI01", "N15_M07_F10"),
+                           ("K001", "N09_M07_F10"), ("KA04", "N09_M07_F10"), ("KI04", "N09_M07_F10")]:
+            write_synthetic_pu_mat(pu_root, code, cond, run, n_samples=8000)
+
+    results = da_dataset.build_domain_adaptation_datasets(config, pu_root)
+    for role in da_dataset.ROLES:
+        X, meta = results[role]
+        assert len(X) == len(meta) > 0, role
+
+
+def test_unknown_representation_is_rejected(tmp_path):
+    config = make_config(tmp_path)
+    config.common.representation = "wavelet"
+    with pytest.raises(ValueError, match="must be 'time' or 'order'"):
+        da_dataset._to_common_representation(np.zeros(1000), 12000, 1500, config)
+
+
 # --- condensed PU store (what actually gets moved to the GPU server) --------
 
 def _build_prepared_store(tmp_path, codes_conditions, runs=(1, 2, 3, 4), n_samples=64000):

@@ -34,6 +34,20 @@ from domain_adaptation.data.pu_bearing_codes import PU_BEARING_CODES
 
 FILENAME_RE = re.compile(r"^(?P<condition>N\d{2}_M\d{2}_F\d{2})_(?P<code>[A-Z]+\d+)_(?P<run>\d+)\.mat$")
 
+# Nominal shaft speed per PU operating-condition code. Needed for order
+# tracking (data/order_tracking.py), which divides speed out of the
+# representation. Only the N field sets shaft rate -- M (load torque) and
+# F (radial force) do not.
+CONDITION_RPM = {"N15": 1500, "N09": 900}
+
+
+def rpm_for_condition(condition: str) -> int:
+    """`N09_M07_F10` -> 900."""
+    prefix = condition.split("_")[0]
+    if prefix not in CONDITION_RPM:
+        raise KeyError(f"Unknown speed code {prefix!r} in condition {condition!r}")
+    return CONDITION_RPM[prefix]
+
 
 def find_pu_root(local_hint: str | Path | None = None) -> Path:
     """Locate the PU dataset's root directory (the folder that directly
@@ -98,7 +112,7 @@ def build_pu_catalog(root_dir: str | Path, codes: list[str], native_fs_hz: int =
     this against small synthetic signals at a lower rate -- production
     callers pass config.pu.native_fs_hz (64000 for the real dataset).
 
-    Returns columns: filepath, code, condition, run, fault_type,
+    Returns columns: filepath, code, condition, run, rpm, fault_type,
     damage_mode, universal_label, fs_native_hz, domain.
     """
     root_dir = Path(root_dir)
@@ -123,6 +137,7 @@ def build_pu_catalog(root_dir: str | Path, codes: list[str], native_fs_hz: int =
                     "code": code,
                     "condition": m.group("condition"),
                     "run": int(m.group("run")),
+                    "rpm": rpm_for_condition(m.group("condition")),
                     "fault_type": meta["fault_type"],
                     "damage_mode": meta["damage_mode"],
                     "universal_label": meta["universal_label"],
@@ -190,6 +205,6 @@ class PreparedPUStore:
         wanted["filepath"] = ""          # signals live inside the archives, not as files
         wanted["fs_native_hz"] = wanted["fs_hz"]
         wanted["domain"] = "pu"
-        cols = ["filepath", "code", "condition", "run", "fault_type",
+        cols = ["filepath", "code", "condition", "run", "rpm", "fault_type",
                 "damage_mode", "universal_label", "fs_native_hz", "domain"]
         return wanted[cols].reset_index(drop=True)
