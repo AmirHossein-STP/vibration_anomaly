@@ -1,196 +1,190 @@
-# GPU Server Plan
+# GPU Server Plan — strict cross-dataset feasibility
 
-Written 2026-09-17, when a rented 24 GB-class GPU box replaced CPU-only
-Kaggle kernels. Companion to `DOMAIN_ADAPTATION_PLAN.md` (the chronological
-record of kernels v1-v8) and `notes/10_domain_adaptation_notes.md` (the
-concepts). This file is the forward plan.
+Written 2026-09-17, rewritten the same day once the objective was stated
+precisely. Companion to `DOMAIN_ADAPTATION_PLAN.md` (the record of kernels
+v1-v8) and `notes/10_domain_adaptation_notes.md` (the concepts).
 
-**The server bills by the minute.** Every estimate below is in GPU-minutes,
-and anything that can run free elsewhere (Kaggle, this laptop) does.
+**The server bills by the minute.** Estimates are in GPU-minutes, and
+anything that can run free elsewhere does.
 
 ---
 
-## 1. What compute actually changes
+## 1. The actual question
 
-Not "bigger model". The important change is **statistical power for claims
-already made**.
+> We have labelled data — healthy and every fault type — on **many**
+> bearings. We have nothing from the **target** bearing except perhaps some
+> healthy recordings. It sits in a different environment, on a different
+> rig, with different sensors and a different DAQ. Can we diagnose its
+> faults?
 
-The project's strongest conclusion -- *domain-adversarial training is
-harmful here* -- rests on **3 distinct hyperparameter points, one seed
-each**:
+So the unseen thing is **the machine**, not the failure mode. Fault types
+are known and labelled; the model must carry that knowledge onto hardware
+it has never encountered. That makes this a *classification* problem
+(we want "inner race", not merely "something is wrong"), and it makes the
+test a **cross-dataset** one.
 
-| kernel | domain_w | grl_γ | disc_lr | seed |
-|---|---|---|---|---|
-| v1 | 1.0 | 10 | 1× | 42 |
-| v2 | 3.0 | 25 | 1× | 42 |
-| v3 | 3.0 | 25 | 5× | 42 |
-| v4, v5/v8 | 3.0 | 25 | 1× | 42 (data varied, not hyperparameters) |
+### Two arms
 
-Three points in a four-dimensional space. And the diagnosed failure modes
--- "the classifier wins the race", "the discriminator loses the race" --
-are precisely what a sweep resolves. v3 collapsed at epoch 4 and that was
-attributed to its 5× learning rate, but **it was never checked whether the
-collapse was seed-specific**; with one seed it could not have been.
-
-The positive results are equally thin: baseline faulty-recall 0.761 is
-n=1, and v4's "CWRU helps" is n=1 versus n=1.
-
-Every compute-driven compromise is now revisitable:
-
-| compromise | why it was made | now |
+| | arm A | arm B (mirror) |
 |---|---|---|
-| small CNN, not ResNet-18 | CPU cost; documented deviation from the original plan | testable as specified |
-| 12 kHz common rate | partly "keep it CPU-feasible" | revisit (though CWRU's DE12 caps it) |
-| 3 of 4 source conditions, `source_train_fraction` 0.7 | budget | widen |
-| single seeds, no sweeps | 142 min/run | the core of Phases 1 and 3 |
-| torch untestable locally | Intel Mac caps torch at 2.2.2 | **12 skipped tests finally run** |
+| **train** (labelled, all fault types) | CWRU only | Paderborn only |
+| **adapt** (healthy, unlabelled) | PU healthy | CWRU healthy |
+| **test** (never seen) | PU real damage | CWRU faults |
+
+Running both distinguishes "this *direction* is hard" from "cross-dataset
+transfer is hard". They are not symmetric: PU is the larger, more varied
+source (18 bearing units × 4 conditions), CWRU the smaller (4 rpms).
+
+### What this invalidates
+
+**Every result through kernel v8 answers an easier question.** Those runs
+trained on CWRU **+ PU artificial faults** and tested on PU real faults —
+same rig, same sensors, same DAQ as the target, differing only in bearing
+unit. The headline 95.4% precision / 76.1% recall was measured under that
+leakage with respect to the strict question. It is not wrong, it simply
+answers "unseen *unit*" rather than "unseen *machine*". Expect the strict
+numbers to be lower, possibly much lower.
+
+`pu.include_in_source: false` now enforces the separation, with a test
+asserting it mechanically.
 
 ---
 
-## 2. Established vs. under-powered
+## 2. What is established, and what is not
 
-**Carry forward (multiple runs agree, large effects):**
-- Zero-shot fault *detection* transfers; fault *typing* does not. Every
-  version failed to separate inner from outer race on the target.
-- Source *diversity* dominates every other lever: 7 → 18 bearing codes took
-  detection 0.403 → 0.761 while false alarms *fell* 31.1% → 16.7%.
-  Removing CWRU (v4) cost ~11 accuracy points.
-- False alarms are per-UNIT, not random: all of them came from one of six
-  healthy bearings (K002, 100% of its windows).
+**Established** (multiple runs, large effects):
+- Fault *detection* transfers better than fault *typing*; no configuration
+  ever separated inner from outer race on the target.
+- Source **diversity** dominates every other lever tried: 7 → 18 bearing
+  codes took detection 0.403 → 0.761 while false alarms *fell* 31.1% →
+  16.7%. Removing CWRU (v4) cost ~11 accuracy points.
+- Errors are **per-unit, not random**: every false alarm came from one of
+  six healthy bearings (K002, 100% of its windows), the rest near-clean.
+  Under the strict framing this is the central risk, not a footnote.
 
-**Treat as unproven until Phase 1/3:**
-- "DANN is harmful." Under-powered, as above.
-- Any single headline number's precision (all n=1).
-- v3's collapse being caused by the learning rate rather than the seed.
+**Not established:**
+- "DANN is harmful" — three hyperparameter points, one seed each.
+- Any single number's precision; everything is n=1.
+- Whether v3's collapse was its learning rate or its seed.
 
 ---
 
-## 3. Data logistics — DONE
+## 3. Infrastructure findings
 
-| | route | size |
-|---|---|---|
-| CWRU | `scp` from the laptop, already `.npz` | 179 MB |
-| Paderborn | server pulls a condensed bundle from Kaggle | **437 MB** |
-
-Raw Paderborn is 9.7 GB of which this project reads one channel
-(`vibration_1`) out of seven, at a rate it immediately downsamples.
-`data/prepare_pu.py` runs on Kaggle (free, data already mounted) and keeps
-only that channel at 12 kHz float32 — **22× smaller, and lossless for our
-use**, since the pipeline resamples to 12 kHz anyway and CWRU's DE12 files
-cap the cross-dataset common rate there regardless. Covers every bearing
-code and condition (2559 of 2560 runs; the miss is the known-corrupt
-`KA08/N15_M01_F10_KA08_2.mat`), so no config change triggers another
-download at server rates.
-
-int16 would halve it again to ~218 MB but perturbs 2.29% of the model's
-input pixels for ~15 s of transfer — measured and rejected. Regenerating
-at any other rate/precision is a free 6-minute Kaggle run.
-
-Reading it is automatic: `pu_loader.is_prepared_store` detects the
-condensed form by its manifest, so the same `--pu-root` serves either.
+- **The server cannot reach Kaggle usefully**: 10.8 KB/s to kaggle.com
+  against 9.0 MB/s to Cloudflare and full speed from PyPI — roughly 830×
+  slower, Kaggle-specific. The 437 MB bundle would have taken ~12 hours.
+  Data therefore routes **Kaggle → laptop → server**, and the server cannot
+  be relied on for any future Kaggle interaction.
+- **Paderborn is condensed to 437 MB** from 9.7 GB: one channel
+  (`vibration_1`) of seven, at 12 kHz — the rate the pipeline resamples to
+  anyway, so lossless for our use. Covers every code and condition.
+- **torch 2.6.0+cu124 on an RTX 3090**, and the full suite runs: **69
+  passed**, versus 35 passed / 12 skipped on the laptop. The GRL gradient
+  reversal, DANN shapes, healthy-anchor loss and a training step have now
+  been verified against real torch rather than reasoned about.
 
 ---
 
 ## 4. Phases
 
-Estimates assume a 24 GB GPU and that the current model (2.2 M params,
-128×128 inputs, ~69 k windows) trains ~20-40× faster than the Kaggle CPU
-baseline of 8 min, with data loading becoming the floor.
+### Phase 0 — Validate the port (~20 GPU-min)
+Suite green on GPU (done), then reproduce kernel v8's *permissive* config
+(recall 0.761, false alarms 16.7%) within seed noise.
 
-### Phase 0 — Provision and validate (~20 GPU-min)
-`scripts/23_server_setup.sh`: CUDA torch, deps, pull the bundle, `scp` CWRU,
-run the suite. **The 12 torch-gated tests execute for the first time** —
-GRL gradient reversal, DANN forward shapes, the healthy-anchor loss, a
-training step. Every one of those has only ever been checked by inference.
+*Gate:* if v8 does not reproduce, stop. Everything downstream would be
+built on a port that silently differs.
 
-*Exit criterion:* full suite green on GPU, and one baseline run reproduces
-kernel v8's numbers within seed noise (recall 0.761, false alarms 16.7%).
-If it does not, stop — something about the port is wrong and every later
-number would be built on it.
+### Phase 1 — Arm A, the strict question (~60 GPU-min) — **primary**
+Train CWRU only → adapt on PU healthy → diagnose PU real damage.
+Run `{time, order} × 3 seeds`, so the speed gap is a measured variable
+rather than an uncontrolled confound.
 
-### Phase 1 — Seed replication (~40 GPU-min)
-5 seeds × {baseline, DANN} at the v8 configuration. Produces mean±std on
-every headline number and answers whether v3's collapse was the learning
-rate or the seed.
+**Order tracking is necessary here, not optional.** CWRU runs at 1730-1797
+rpm, PU at 900/1500 — a ~2× stretch of the frequency axis, which a CNN has
+no tolerance for. Without it a poor result cannot be attributed.
 
-*Pre-registered:* if baseline recall's std exceeds ~0.05, every
-single-seed comparison in `DOMAIN_ADAPTATION_PLAN.md` — including v4's
-"CWRU helps" — gets re-labelled as indicative rather than established.
+*Pre-registered readings:*
+- **Detection (binary) at ≤20% false alarms** is the headline. Typing is
+  secondary; it has never transferred.
+- *order beats time* → the speed gap was a real barrier and the
+  representation fixes it.
+- *both poor* → cross-dataset transfer from CWRU alone does not work, and
+  the honest next question is whether it is a diversity problem (arm B has
+  far more source data) or a domain-gap problem.
 
-### Phase 2 — Order-domain transfer (~60 GPU-min) — *highest upside*
-The untried physics fix. Bearing fault frequencies scale with shaft speed,
-so 1500 → 900 rpm multiplies the frequency axis by 0.6 — a *stretch*, which
-a CNN has no tolerance for. `common.representation: order` resamples
-against shaft angle instead, so a defect sits at the same order at any
-speed. Already implemented, wired behind a config switch, and validated on
-synthetic signals: spectrogram correlation between the two speeds goes
-**0.799 → 0.978**.
+### Phase 2 — Arm B, the mirror (~60 GPU-min)
+Train PU → adapt on CWRU healthy → diagnose CWRU faults. Needs a small
+change: CWRU currently only ever plays a source role, so its healthy files
+must be splittable into adaptation and test.
 
-Run: {time, order} × {baseline, DANN} × 3 seeds.
+Arm B is the better-powered direction (more source units and conditions).
+If A fails and B succeeds, the limit is source diversity, not the domain
+gap — which is actionable, because more source data is obtainable.
 
-*Pre-registered success:* order-domain baseline beats time-domain baseline
-on target faulty recall at equal-or-lower false-alarm rate. If it does,
-this becomes the project's main result and Phase 3 drops in priority — a
-better *representation* beating better *adversarial training* is the more
-useful finding either way.
+### Phase 3 — Seed replication and variance (~40 GPU-min)
+5 seeds on whichever arm looks live, plus the permissive v8 config for
+comparability. Turns every single-seed claim in the existing write-up into
+mean±std, and settles whether v3's collapse was seed-specific.
 
-### Phase 3 — Settle the DANN question (~4-6 GPU-hr)
+*Pre-registered:* if baseline recall's std exceeds ~0.05, single-seed
+comparisons in `DOMAIN_ADAPTATION_PLAN.md` get re-labelled as indicative.
+
+### Phase 4 — Leave-one-unit-out (~90 GPU-min)
+Feasibility needs an error bar across *machines*, not one number. Rotate
+each target bearing unit through the held-out role and report the
+distribution. The K002 finding says this spread may be large, and "works on
+9 of 11 units, fails on these 2, and here is what distinguishes them" is a
+far better basis for deployment than a single average.
+
+### Phase 5 — Diversity curve (~90 GPU-min)
+Diversity is the one proven lever and its shape is unknown. 4-6 points from
+narrow to full source. Saturating vs still-climbing changes what to do next,
+and directly informs whether arm A's likely weakness is fixable with data.
+
+### Phase 6 — Settle DANN, demoted (~3-4 GPU-hr)
 Random search over `domain_loss_weight` × `grl_gamma` ×
-`discriminator_lr_multiplier` × `anchor_loss_weight`, 3 seeds per config,
-~16-24 configs.
+`discriminator_lr_multiplier` × `anchor_loss_weight`, 3 seeds each.
 
-*Pre-registered success:* **any** configuration beating the baseline's
-faulty recall at ≤ its false-alarm rate. If none does, "DANN does not work
-on this problem" becomes a defensible negative result backed by a real
-search rather than three guesses. If one does, the current write-up is
-wrong and gets corrected.
+*Pre-registered success:* any configuration beating its baseline's recall
+at ≤ its false-alarm rate. None → the negative result becomes defensible
+rather than under-powered. One → the current write-up is wrong and
+`README.md` gets corrected prominently.
 
-Track `domain_acc` (balanced, chance = 1/3) and the post-hoc separability
-probe per run — together they distinguish "aligned" from "discriminator was
-fooled", the ambiguity that made v1 unreadable.
+Demoted because adaptation has never helped in eight runs while
+representation and diversity both have.
 
-### Phase 4 — Undo the compute compromises (~2-3 GPU-hr)
-- **ResNet-18**, as the original plan specified, vs the small CNN.
-- **All 4 source conditions** and a higher `source_train_fraction`.
-- **Source-diversity curve**: 4-6 points, not the current two. Diversity is
-  the proven lever and its shape is unknown — saturating or still climbing
-  changes what to do next.
+### Phase 7 — Deployment (~30 GPU-min)
+Re-verify `infer.py` against the best model. Confirm `--calibrate` detects
+a K002-like unit from healthy data alone — the safeguard that matters most
+under the strict framing, since it is the only check available before a
+real fault ever occurs.
 
-### Phase 5 — Deployment hardening (~30 GPU-min)
-Re-verify `infer.py` against the best model, and settle the per-unit
-calibration story (K002 was misread in 100% of its windows while five other
-healthy units were clean). Confirm `--calibrate` detects that case from
-healthy data alone, which is what a real machine can offer.
-
-**Total: roughly 8-12 GPU-hours** for Phases 0-5.
+**Total ≈ 7-9 GPU-hours.**
 
 ---
 
 ## 5. Deliberately not doing
 
-- **Re-running things that already agree across runs.** Detection-transfers
-  and diversity-dominates are established; re-proving them is paid time.
-- **Chasing accuracy on 3-class typing.** It failed in every configuration;
-  the deployment question is binary and already answerable.
-- **Bigger models for their own sake.** Diversity beat every optimisation
-  knob tried, which is evidence that data, not capacity, is the constraint.
-  ResNet-18 is in Phase 4 to test a documented deviation, not on a hunch.
-- **Keeping Kaggle in the loop for training.** It stays useful for free
-  preprocessing; the 142-minute cycle does not.
+- Re-proving what already replicates (detection-over-typing, diversity).
+- Chasing 3-class accuracy; the deployment question is binary.
+- Bigger models on a hunch. Diversity beat every optimisation knob tried,
+  which points at data rather than capacity. ResNet-18 stays available if
+  Phase 5 shows the source is saturated.
+- Kaggle in the training loop — the route is unusable from the server.
 
 ---
 
 ## 6. How we would know we are wrong
 
-- **Phase 0 fails to reproduce v8.** Then the port is broken and everything
-  downstream is suspect — stop and fix.
-- **Phase 1 shows large seed variance.** Then most of the existing
-  narrative is noise, and the conclusions get downgraded in writing.
-- **Phase 3 finds a winning DANN config.** Then the headline negative
-  result is wrong and `DOMAIN_ADAPTATION_PLAN.md` and `README.md` both get
-  corrected, prominently.
-- **Phase 2 shows no order-domain gain.** Then the speed shift was not the
-  bottleneck either, and the honest conclusion is that this cross-rig,
-  cross-speed transfer is harder than any single fix addresses — at which
-  point the deployable result is the existing detector plus per-machine
-  calibration, and further compute is better spent elsewhere.
+- **Phase 0 fails to reproduce v8** → broken port; stop and fix.
+- **Phase 3 shows large seed variance** → much of the narrative is noise
+  and gets downgraded in writing.
+- **Phase 6 finds a winning DANN config** → the headline negative result is
+  wrong; correct `README.md` and `DOMAIN_ADAPTATION_PLAN.md` prominently.
+- **Both arms fail even with order tracking** → cross-*machine* transfer
+  without target fault data does not work at this data scale. That is a
+  legitimate finding and the honest deliverable becomes the healthy-baseline
+  detector plus per-machine calibration, not a cross-dataset classifier.
+  Saying so clearly is more useful than a number that will not survive
+  contact with a real pump.

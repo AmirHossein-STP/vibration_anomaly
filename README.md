@@ -262,9 +262,19 @@ and it is worth stating plainly:
 Full reasoning, every failed hypothesis, and the two infrastructure bugs
 found along the way are in `DOMAIN_ADAPTATION_PLAN.md`'s Status section.
 
-**Current phase (2026-09-17): moving off Kaggle onto a GPU server.** The
-forward plan is `GPU_SERVER_PLAN.md`. Two things to know before reading the
-numbers above as settled:
+**Current phase (2026-09-17): the strict cross-dataset question, on a GPU
+server.** The forward plan is `GPU_SERVER_PLAN.md`.
+
+**Read the table above with one caveat: it answers an easier question than
+the project's actual goal.** Those runs trained on CWRU *plus Paderborn's
+artificial faults* and tested on Paderborn's real faults — the same rig,
+sensors and DAQ as the target, differing only in bearing unit. The real
+question is harder: train on one dataset, adapt using nothing but healthy
+data from a completely different machine, and diagnose its faults. That is
+now enforced by `pu.include_in_source: false`, and the strict numbers
+should be expected to come out lower.
+
+Two further things to know:
 
 - **"DANN is harmful" is under-powered.** It rests on three hyperparameter
   points at one seed each. A real sweep either confirms it or overturns it;
