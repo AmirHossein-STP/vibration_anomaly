@@ -121,6 +121,15 @@ Two related traps this experiment walked into:
 
 ## 6. What to try next, and why
 
+> **Status update (2026-09-17)**: order tracking described below is now
+> implemented (`data/order_tracking.py`) and selectable via
+> `common.representation: order`. Validated on synthetic order-locked
+> signals and on a real CWRU recording -- a 5.4-order defect lands at 5.4
+> orders at both 900 and 1500 rpm, and the correlation between the two
+> speeds' spectrograms rises 0.799 -> 0.978. **Not yet tested on real
+> Paderborn data**; that is Phase 2 of `GPU_SERVER_PLAN.md`.
+
+
 **Order-domain features.** Instead of sampling against time, resample the
 signal against *shaft angle* — so many samples per revolution rather than
 per second. Frequency then becomes "orders of shaft rotation", and a fault

@@ -705,6 +705,26 @@ exactly (0.954 / 0.761 / 16.7% for the baseline; 0.800 / 0.085 / 9.7% for
 DANN), which doubles as a determinism check across two independent runs of
 the same seed and config.
 
+### Superseded by GPU_SERVER_PLAN.md (2026-09-17)
+
+Everything below was written under CPU-only Kaggle kernels with a
+~142-minute turnaround. A rented GPU server has since replaced that, and
+the forward plan now lives in **`GPU_SERVER_PLAN.md`**. Two things changed
+materially:
+
+1. **Order-domain features are built**, not merely proposed:
+   `data/order_tracking.py` plus a `common.representation: time|order`
+   switch. On synthetic order-locked signals the correlation between
+   1500 rpm and 900 rpm spectrograms goes 0.799 -> 0.978. Untested on real
+   Paderborn data -- that is GPU_SERVER_PLAN.md's Phase 2.
+2. **The headline negative result is now treated as unproven.** "DANN is
+   harmful" rests on three hyperparameter points at one seed each, which is
+   too thin for the claim; Phases 1 and 3 there either confirm it with a
+   real search or overturn it. If overturned, this file gets corrected.
+
+The list below remains the correct ordering of ideas; it is kept for the
+record of what was known before compute was available.
+
 ### What would be worth trying next, in order
 
 1. **Order-domain features** -- angular resampling against shaft speed, so

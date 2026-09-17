@@ -262,6 +262,28 @@ and it is worth stating plainly:
 Full reasoning, every failed hypothesis, and the two infrastructure bugs
 found along the way are in `DOMAIN_ADAPTATION_PLAN.md`'s Status section.
 
+**Current phase (2026-09-17): moving off Kaggle onto a GPU server.** The
+forward plan is `GPU_SERVER_PLAN.md`. Two things to know before reading the
+numbers above as settled:
+
+- **"DANN is harmful" is under-powered.** It rests on three hyperparameter
+  points at one seed each. A real sweep either confirms it or overturns it;
+  if overturned, the table above gets corrected.
+- **Order tracking is now implemented** (`data/order_tracking.py`,
+  `common.representation: order`) -- angular resampling so a fault sits at
+  the same *order* regardless of shaft speed, removing the cross-speed gap
+  by construction rather than asking the network to learn around it.
+  Validated on synthetic signals (spectrogram correlation between 1500 and
+  900 rpm: 0.799 -> 0.978); untested on real Paderborn data.
+
+Paderborn reaches the server as a **437 MB condensed bundle** rather than
+the 9.7 GB raw dataset: same 2,559 runs and every bearing code, but keeping
+only the `vibration_1` channel at 12 kHz float32 -- which is what the
+pipeline resamples to anyway, so it is lossless for our use. Built by a
+free Kaggle kernel (`scripts/build_kaggle_notebook_prepare_pu.py`); read
+automatically, since `pu_loader.is_prepared_store` detects the condensed
+form by its manifest.
+
 ### Deploying it on your own machine (Phase 5)
 
 `infer.py` runs the detector on a new machine's vibration data at whatever
