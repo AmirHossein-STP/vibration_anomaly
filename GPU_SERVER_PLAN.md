@@ -120,6 +120,51 @@ of the binary fault/no-fault question. Identical data, identical config.
 single run is not a result. Arm A in particular would have produced a
 number indistinguishable from noise had the gate not caught this.
 
+## 1c. ARM A RESULT (2026-09-17): detection transfers across datasets
+
+Train CWRU only. Adapt on Paderborn HEALTHY only. Diagnose Paderborn's real
+damage. No PU fault -- artificial or real -- ever seen in training.
+3 seeds per representation.
+
+| representation | recall | precision | false alarm | 3-class acc |
+|---|---|---|---|---|
+| time | 0.710 +- 0.197 | **0.940** +- 0.029 | 19.7% +- 7.6% | 0.334 |
+| order | 0.504 +- 0.114 | **0.944** +- 0.029 | 14.8% +- 10.8% | 0.367 |
+| *permissive reference (PU faults IN training, 6 seeds)* | 0.763 +- 0.19 | | | |
+
+**1. Detection transfers.** ~94% precision on an unseen rig, sensor set and
+DAQ. When the model says "faulty" it is right roughly 19 times in 20. For
+the project's actual question -- diagnosing a machine we have no fault data
+for -- this is the affirmative result.
+
+**2. Holding Paderborn out of training cost essentially nothing.** Strict
+0.710 +- 0.197 against permissive 0.763 +- 0.19: indistinguishable. The PU
+artificial faults, recorded on the very rig under test, bought almost
+nothing. This is the strongest practical finding here, because it means a
+deployment does **not** need fault data from the target machine's rig.
+
+**3. Order tracking did not help, contradicting a strong prior claim.**
+This plan previously called it "necessary rather than optional" for arm A.
+Recall fell 0.710 -> 0.504; the -0.206 delta is smaller than the 0.227
+pooled spread, so at n=3 the honest reading is *no evidence either way* --
+but there is certainly no support for the claim as stated.
+
+A physical reason was missed when that claim was made: bearing fault energy
+rides on **structural resonances, which are fixed in Hz, not in orders**.
+Angular resampling aligns the fault harmonics and simultaneously smears
+those resonances, so it trades one alignment for another. The classical
+remedy is envelope analysis -- demodulate around the resonance band, then
+order-track the envelope -- which aligns both. That is the version worth
+testing before order tracking is written off.
+
+**4. Typing still fails** (0.33-0.37 accuracy), as in every configuration
+ever run.
+
+### Caveats
+n=3, and recall's spread remains wide. The recall figures should be read as
+"somewhere in 0.4-0.9" rather than as point estimates; precision is far more
+stable (+-0.029) and is the number to lean on.
+
 ## 2. What is established, and what is not
 
 **Established** (multiple runs, large effects):

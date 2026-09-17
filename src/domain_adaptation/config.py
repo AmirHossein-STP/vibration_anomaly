@@ -191,7 +191,11 @@ def apply_overrides(config: Config, seed: int | None = None, tag: str | None = N
     if seed is not None:
         config.seed = seed
     if tag:
-        for path_field in ("processed_dir", "models_dir", "figures_dir", "reports_dir"):
+        # processed_dir is deliberately NOT tagged: the cached spectrograms
+        # depend on the config (representation, codes, conditions), never on
+        # the seed. Tagging it would rebuild an identical dataset for every
+        # seed in a sweep, and the build is the expensive part of a run.
+        for path_field in ("models_dir", "figures_dir", "reports_dir"):
             setattr(config.paths, path_field, f"{getattr(config.paths, path_field)}_{tag}")
     return config
 
