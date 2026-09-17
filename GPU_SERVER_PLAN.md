@@ -50,6 +50,76 @@ asserting it mechanically.
 
 ---
 
+## 1b. MEASURED (2026-09-17): the variance swamps the effects
+
+Phase 0 was meant to be a formality. It failed, and the investigation
+produced the most consequential result in the project so far.
+
+Six runs of the **identical** config on identical data, differing only in
+random seed:
+
+| seed | recall | precision | false alarm |
+|---|---|---|---|
+| 42 (Phase 0) | 0.424 | 0.921 | 16.6% |
+| 1 | 0.902 | 0.922 | 34.9% |
+| 2 | 0.859 | 0.960 | 16.6% |
+| 3 | 0.710 | 0.947 | 18.2% |
+| 4 | 0.974 | 0.964 | 16.7% |
+| 5 | 0.711 | 0.956 | 14.8% |
+
+**Target recall spans 0.42 to 0.97. Six-run mean 0.763 -- almost exactly
+the 0.761 kernel v8 reported as a result.** That number was a typical draw
+from a very wide distribution, presented as a measurement.
+
+Source validation accuracy was 0.9997 in every run. It does not move, and
+it does not predict target performance at all.
+
+Ruled out as causes, by measurement rather than argument:
+- **float32 storage**: worst-case 0.006 sigma on any pixel, 0.0000% of
+  pixels shifted more than 0.01 sigma.
+- **resampling**: bit-identical between the raw and condensed paths
+  (`np.array_equal` true, max signal difference 7.4e-09).
+- **a broken port**: source-side behaviour reproduces exactly.
+
+### What this invalidates
+
+The run-to-run spread (recall std ~0.12, 3-class accuracy std ~0.058) is
+the same size as, or larger than, the effects the project concluded from:
+
+| claim | effect size | vs noise | verdict |
+|---|---|---|---|
+| DANN is harmful | 0.761 -> 0.085 recall | >3 sigma | probably real |
+| diversity helps (7 -> 18 codes) | 0.403 -> 0.761 | ~2-3 sigma | plausible, not established |
+| CWRU helps (v4) | 0.282 -> 0.171 accuracy | ~2 sigma | not established |
+| v3's collapse was the learning rate | single run | within noise | unsupported |
+
+**Every single-seed comparison in `DOMAIN_ADAPTATION_PLAN.md` and
+`README.md` must be read as indicative at best.** Nothing below 2 sigma
+survives, and nothing was replicated.
+
+### And a constraint that cannot be engineered away
+
+We cannot select or tune for recall. Measuring it needs target fault
+labels, which the problem definition denies us. A criterion built on target
+*healthy* data alone actively rewards the failure mode observed here -- a
+model that calls everything healthy scores perfectly on false alarms. So
+"just pick the good run" is not available at deployment.
+
+Ensembling is the one lever that needs no labels. Majority vote over the
+five seeds: recall 0.805, precision 0.958, false alarms 16.4% -- near the
+*mean* rather than the best, with better precision and fewer false alarms.
+Its value is predictability, not peak performance. (Measured once; the
+variance-reduction claim itself is not yet measured.)
+
+The five models agree on only **33% of windows**, and disagree on **43%**
+of the binary fault/no-fault question. Identical data, identical config.
+
+### Consequence for everything downstream
+
+**Every experiment from here reports mean +- std over >= 3 seeds.** A
+single run is not a result. Arm A in particular would have produced a
+number indistinguishable from noise had the gate not caught this.
+
 ## 2. What is established, and what is not
 
 **Established** (multiple runs, large effects):

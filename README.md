@@ -265,8 +265,16 @@ found along the way are in `DOMAIN_ADAPTATION_PLAN.md`'s Status section.
 **Current phase (2026-09-17): the strict cross-dataset question, on a GPU
 server.** The forward plan is `GPU_SERVER_PLAN.md`.
 
-**Read the table above with one caveat: it answers an easier question than
-the project's actual goal.** Those runs trained on CWRU *plus Paderborn's
+> **WARNING (2026-09-17): the numbers in the table above are single runs,
+> and the run-to-run spread is larger than the differences being compared.**
+> Six identical-config runs differing only in random seed produced target
+> recall from **0.42 to 0.97** (mean 0.763 -- essentially the 0.761 quoted
+> below). Source validation accuracy was 0.9997 in every one and predicts
+> nothing about target performance. Treat every comparison here as
+> indicative until replicated; see `GPU_SERVER_PLAN.md` section 1b.
+
+**Read the table above with a second caveat: it also answers an easier
+question than the project's actual goal.** Those runs trained on CWRU *plus Paderborn's
 artificial faults* and tested on Paderborn's real faults — the same rig,
 sensors and DAQ as the target, differing only in bearing unit. The real
 question is harder: train on one dataset, adapt using nothing but healthy
