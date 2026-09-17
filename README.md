@@ -287,12 +287,39 @@ Two further things to know:
 - **"DANN is harmful" is under-powered.** It rests on three hyperparameter
   points at one seed each. A real sweep either confirms it or overturns it;
   if overturned, the table above gets corrected.
-- **Order tracking is now implemented** (`data/order_tracking.py`,
-  `common.representation: order`) -- angular resampling so a fault sits at
-  the same *order* regardless of shaft speed, removing the cross-speed gap
-  by construction rather than asking the network to learn around it.
-  Validated on synthetic signals (spectrogram correlation between 1500 and
-  900 rpm: 0.799 -> 0.978); untested on real Paderborn data.
+- **Order tracking was implemented and then measured to be worse.**
+  Angular resampling (`data/order_tracking.py`, `common.representation:
+  order`) puts a fault at the same *order* regardless of shaft speed,
+  removing the cross-speed gap by construction. It validated beautifully on
+  synthetic signals (spectrogram correlation between 1500 and 900 rpm:
+  0.799 -> 0.978) and lost on real data at 8 seeds per arm -- see the arm A
+  table below. The synthetic test used a pure order-locked tone, i.e.
+  exactly what the transform is built to align, so it could not have
+  failed. Real bearings also carry structural resonances that are fixed in
+  **Hz**, and angular resampling smears those.
+
+### Arm A: the strict cross-dataset result (2026-09-17, n=8 per arm)
+
+Train on **CWRU only** -- no Paderborn data of any kind in training --
+adapt using nothing but Paderborn healthy windows, then diagnose
+Paderborn's real bearing damage. Unseen machine, unseen sensors, unseen
+DAQ, unseen lab.
+
+| representation | recall | precision | false alarm | F1 | balanced acc |
+|---|---|---|---|---|---|
+| **time** | **0.812 +- 0.159** | **0.943 +- 0.022** | 22.3% +- 9.4% | **0.865 +- 0.098** | **0.795 +- 0.078** |
+| order | 0.606 +- 0.218 | 0.948 +- 0.026 | 15.9% +- 10.1% | 0.719 +- 0.155 | 0.723 +- 0.078 |
+
+**The zero-shot premise survives its hardest test.** A model that never saw
+a single Paderborn fault flags real Paderborn damage at **94.3% precision,
+81.2% recall**. Holding out all same-rig fault data cost nothing
+measurable against the permissive setup that trained on them
+(0.763 +- 0.19) -- so claim 2 above, "source diversity beat every other
+lever", does not survive either: the diversity that mattered was not the
+kind the earlier runs added.
+
+Fault *typing* still does not transfer (3-class accuracy 0.378). The
+deployable claim remains detection, not diagnosis.
 
 Paderborn reaches the server as a **437 MB condensed bundle** rather than
 the 9.7 GB raw dataset: same 2,559 runs and every bearing code, but keeping
