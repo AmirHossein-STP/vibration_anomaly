@@ -318,13 +318,27 @@ DAQ, unseen lab.
 | **time** | **0.812 +- 0.159** | **0.943 +- 0.022** | 22.3% +- 9.4% | **0.865 +- 0.098** | **0.795 +- 0.078** |
 | order | 0.606 +- 0.218 | 0.948 +- 0.026 | 15.9% +- 10.1% | 0.719 +- 0.155 | 0.723 +- 0.078 |
 
-**The zero-shot premise survives its hardest test.** A model that never saw
-a single Paderborn fault flags real Paderborn damage at **94.3% precision,
-81.2% recall**. Holding out all same-rig fault data cost nothing
-measurable against the permissive setup that trained on them
-(0.763 +- 0.19) -- so claim 2 above, "source diversity beat every other
-lever", does not survive either: the diversity that mattered was not the
-kind the earlier runs added.
+> **RETRACTED (2026-09-17). This table did not reproduce and is now
+> believed to be a caching artifact.** A clean-room rebuild on a second
+> machine collapsed completely -- every target window assigned to one class,
+> identically across 8 seeds. The permissive control (Paderborn faults IN
+> training) reproduced its historical result on the same box to within a
+> percentage point, so the pipeline is sound; only the strict setup fails.
+>
+> The tell was visible in the original numbers: 0.812 +- 0.159 strict
+> against 0.763 +- 0.19 permissive is no difference at all, which was
+> written up at the time as "holding PU out cost nothing measurable". The
+> simpler reading is that PU was never held out -- the window cache was
+> keyed on file existence with no config hash, so arm A reused windows
+> built while `include_in_source: true`. Full account in
+> `notes/12_reproduction_investigation.md`; the cache is now guarded by a
+> config fingerprint.
+>
+> **Where this leaves the project's claim:** zero-shot detection on an
+> unseen machine, sensors, DAQ and lab is NOT supported. With this
+> architecture, on these two datasets, detection requires target-rig fault
+> data in training. What transfers across bearing units within one rig
+> (0.772 recall at 15.7% false alarms) does not transfer across datasets.
 
 Fault *typing* still does not transfer (3-class accuracy 0.378). The
 deployable claim remains detection, not diagnosis.
