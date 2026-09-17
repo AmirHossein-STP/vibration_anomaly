@@ -141,6 +141,14 @@ Read in order for the full picture, or jump to whichever's relevant:
     what zero-shot means here, how DANN/GRL work, the three ways the
     adversarial approach failed, and why the metric you choose decides
     whether the result looks like a failure or a usable detector.
+12. `notes/11_gpu_server_runbook.md` — **read before renting a GPU box
+    again.** What the provider's machine already has (a working CUDA torch
+    — do not build a venv), how slow the uplink is, and the six traps that
+    cost real time on 2026-09-17. The box is DELETED at subscription end,
+    so results must be pulled continuously.
+13. `notes/12_reproduction_investigation.md` — why the arm A numbers did
+    not reproduce on a second machine, the four hypotheses that were tested
+    and refuted, and what is still open.
 
 ## Data versioning (DVC) and testing on Kaggle
 
