@@ -346,7 +346,7 @@ DAQ, unseen lab.
 > |---|---|
 > | strict CWRU -> Paderborn (11 runs, 2 torch versions) | collapsed to one class **11/11** |
 > | permissive, same pipeline (3 runs) | collapsed **0/3** — it works, if noisily |
-> | strict Paderborn -> CWRU, a 4x richer source (4 runs) | 100% false alarms, balanced acc **0.499** |
+> | strict Paderborn -> CWRU, a 4x richer source (5 runs) | 100% false alarms, balanced acc **0.499** |
 > | per-window normalization, which provably removes the scale mismatch | balanced acc **0.499–0.505** |
 >
 > The reverse direction matters most: Paderborn offers 18 bearing units

@@ -191,7 +191,7 @@ better-powered direction by a wide margin.
 
 | | n | recall | false alarm | balanced acc |
 |---|---|---|---|---|
-| arm B (Paderborn -> CWRU) | 4 | 0.998 +- 0.005 | **100%** | **0.499 +- 0.002** |
+| arm B (Paderborn -> CWRU) | 5 | 0.998 +- 0.004 | **100%** | **0.499 +- 0.002** |
 
 It fails the same way: essentially every CWRU window is called faulty, and
 not one healthy window out of ~2730 is identified. (It is not a

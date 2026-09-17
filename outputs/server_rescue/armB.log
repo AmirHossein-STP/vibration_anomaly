@@ -282,3 +282,81 @@ Fitting t-SNE...
 Saved metrics/plots to /home/homa/vibration_anomaly_detection/outputs/da_reports_armB_time_armB_s5 and /home/homa/vibration_anomaly_detection/outputs/da_figures_armB_time_armB_s5
 === armB seed=5 rc=0 end 15:17:02 ===
 === armB seed=6 start 15:17:02 ===
+Building datasets (cached after first run)...
+  source_train windows: (127022, 128, 128)  source_val windows: (13296, 128, 128)
+Using device: cuda
+Model parameters: 2,228,323
+epoch   1/30  train_loss=0.0452 train_acc=0.983  val_loss=0.0133 val_acc=0.996  (18.6s) *
+epoch   2/30  train_loss=0.0179 train_acc=0.997  val_loss=0.0076 val_acc=0.997  (12.9s) *
+epoch   3/30  train_loss=0.0031 train_acc=0.999  val_loss=0.0135 val_acc=0.998  (13.5s)
+epoch   4/30  train_loss=0.0107 train_acc=0.998  val_loss=0.0059 val_acc=0.998  (14.8s) *
+epoch   5/30  train_loss=0.0055 train_acc=0.999  val_loss=0.0221 val_acc=0.996  (14.1s)
+epoch   6/30  train_loss=0.0034 train_acc=0.999  val_loss=0.0041 val_acc=0.999  (12.7s) *
+epoch   7/30  train_loss=0.0081 train_acc=0.998  val_loss=0.0059 val_acc=0.999  (14.1s)
+epoch   8/30  train_loss=0.0012 train_acc=1.000  val_loss=0.0037 val_acc=0.999  (12.9s) *
+epoch   9/30  train_loss=0.0052 train_acc=0.999  val_loss=0.0052 val_acc=0.999  (14.9s)
+epoch  10/30  train_loss=0.0021 train_acc=1.000  val_loss=0.0017 val_acc=1.000  (13.0s) *
+epoch  11/30  train_loss=0.0057 train_acc=0.999  val_loss=0.0038 val_acc=0.999  (12.1s)
+epoch  12/30  train_loss=0.0003 train_acc=1.000  val_loss=0.0022 val_acc=0.999  (13.4s)
+epoch  13/30  train_loss=0.0017 train_acc=1.000  val_loss=0.0007 val_acc=1.000  (13.8s) *
+epoch  14/30  train_loss=0.0027 train_acc=0.999  val_loss=0.0021 val_acc=0.999  (14.9s)
+epoch  15/30  train_loss=0.0026 train_acc=0.999  val_loss=0.0018 val_acc=0.999  (13.3s)
+epoch  16/30  train_loss=0.0027 train_acc=0.999  val_loss=0.0068 val_acc=0.999  (15.3s)
+epoch  17/30  train_loss=0.0016 train_acc=1.000  val_loss=0.0083 val_acc=0.998  (14.5s)
+epoch  18/30  train_loss=0.0012 train_acc=1.000  val_loss=0.0019 val_acc=0.999  (13.2s)
+epoch  19/30  train_loss=0.0004 train_acc=1.000  val_loss=0.0024 val_acc=1.000  (14.8s)
+Early stopping: no val improvement in 6 epochs.
+
+Best val loss: 0.0007
+Checkpoint saved to: /home/homa/vibration_anomaly_detection/outputs/da_models_armB_time_armB_s6/baseline_best.pt
+Next: python -m domain_adaptation.train_dann --config <same config>
+Loading cached datasets...
+Evaluating baseline (no adaptation) on TARGET_TEST...
+  baseline: 3-class accuracy=0.321 macro_f1=0.178
+  baseline: BINARY healthy-vs-faulty -- precision=0.884 recall=1.000 f1=0.938 false_alarm_rate=100.0% (always-faulty accuracy would be 0.884)
+{
+  "accuracy": 0.3208791208791209,
+  "macro_f1": 0.1781435208797414,
+  "confusion_matrix": [
+    [
+      0,
+      0,
+      318
+    ],
+    [
+      0,
+      874,
+      0
+    ],
+    [
+      0,
+      1536,
+      2
+    ]
+  ],
+  "n": 2730,
+  "binary_detection": {
+    "precision": 0.8835164835164835,
+    "recall": 1.0,
+    "f1": 0.9381563593932322,
+    "accuracy": 0.8835164835164835,
+    "false_alarm_rate": 1.0,
+    "confusion": {
+      "tn": 0,
+      "fp": 318,
+      "fn": 0,
+      "tp": 2412
+    },
+    "n_healthy": 318,
+    "n_faulty": 2412,
+    "always_faulty_accuracy": 0.8835164835164835
+  }
+}
+/home/homa/vibration_anomaly_detection/outputs/da_models_armB_time_armB_s6/dann_best.pt not found -- skipping DANN evaluation (run train_dann.py to add the comparison).
+Computing feature-space embeddings (SOURCE_VAL + TARGET_TEST)...
+  baseline: a fresh probe separates source from target with 1.000 accuracy (0.5 = aligned/indistinguishable, 1.0 = not aligned at all; proxy A-distance 2.00)
+Fitting t-SNE...
+
+Saved metrics/plots to /home/homa/vibration_anomaly_detection/outputs/da_reports_armB_time_armB_s6 and /home/homa/vibration_anomaly_detection/outputs/da_figures_armB_time_armB_s6
+=== armB seed=6 rc=0 end 15:23:40 ===
+ARMB_DONE

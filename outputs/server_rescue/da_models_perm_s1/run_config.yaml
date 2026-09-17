@@ -1,0 +1,152 @@
+# Config for the domain-adaptation / zero-shot fault diagnosis experiment
+# (src/domain_adaptation/). See DOMAIN_ADAPTATION_PLAN.md for the full plan
+# and its "Revisions & Decisions" section for why these specific numbers.
+
+seed: 42
+
+paths:
+  cwru_raw_dir: data/raw                        # reuses the existing CWRU npz files, untouched
+  processed_dir: data/da_processed
+  models_dir: outputs/da_models
+  figures_dir: outputs/da_figures
+  reports_dir: outputs/da_reports
+  # Local-dev-only: point this at a small folder laid out like the real PU
+  # dataset (bearing-code subfolders of .mat files) if you ever want to test
+  # against real files without Kaggle. Not required -- see
+  # data/pu_loader.find_pu_root() and tests/test_domain_adaptation_smoke.py,
+  # which use synthetic .mat files instead so no download is needed to run
+  # the test suite.
+  pu_root_local: data/pu_dev_sample
+
+# --- Common cross-domain alignment -----------------------------------------
+# Every signal (CWRU already native, PU resampled down from 64kHz) is
+# brought to this one rate before windowing/STFT, so "spectrogram bin 40"
+# means the same physical frequency in every domain. segment_length/STFT
+# params below are IDENTICAL to vibration_ad/configs/default.yaml on
+# purpose -- same 128x128 output shape, so vibration_ad's own
+# windowing/spectrogram code is imported directly, not reimplemented.
+common:
+  # "time" reproduces every result through kernel v8. "order" switches to
+  # angular resampling (src/domain_adaptation/data/order_tracking.py), which
+  # removes the cross-speed gap by construction rather than asking the
+  # network to learn around it -- the one untried idea with a physical
+  # argument behind it after five runs of adversarial tuning failed.
+  representation: time
+  samples_per_rev: 256      # order mode only; Nyquist order = 128
+  fs_hz: 12000
+  segment_length: 8384
+  train_stride: 512
+  eval_stride: 2096
+
+stft:
+  nperseg: 256
+  hop_length: 64
+  log_epsilon: 1.0e-10
+
+# --- CWRU (Source A) --------------------------------------------------------
+cwru:
+  sensor: DE
+  train_rpms: [1730, 1750, 1772]
+  val_rpm: 1797
+  # v4 (kernel v3 -> v4): CWRU dropped from the source pool entirely.
+  # v1-v3 all trained on CWRU + PU_artificial and none of them achieved
+  # alignment. The hypothesis being tested: forcing the feature extractor to
+  # be invariant across two ENTIRELY different rigs may be destroying the
+  # very structure the classifier needs, making CWRU actively harmful rather
+  # than extra data. With this false, the only shift left between source and
+  # target is PU's own N15 -> N09 speed change (plus artificial -> real
+  # damage) -- a far smaller gap, on one rig with one sensor.
+  # v4 RESULT: hypothesis refuted -- CWRU was HELPING, not hurting. Dropping
+  # it cost ~11 accuracy points on the 3-class task (0.282 -> 0.171 for the
+  # baseline) and wrecked binary detection (DANN F1 0.666 -> 0.371, false
+  # alarms 2.6% -> 35.3%). Source DIVERSITY matters more than source purity:
+  # a narrower, single-rig source overfits and generalizes worse, even
+  # though it is "closer" to the target. Restored to true.
+  include_in_source: true
+
+# --- Paderborn / KAt-DataCenter (Source B + Target) -------------------------
+# Bearing-code meanings: src/domain_adaptation/data/pu_bearing_codes.py.
+# Kept deliberately small for a first Kaggle run -- widen these lists to use
+# more of the dataset once the pipeline is proven; nothing downstream is
+# hardcoded to this exact subset.
+pu:
+  dataset_slug: dippatel03/paderborn-db     # attached via notebooks/domain_adaptation/kernel-metadata.json
+  native_fs_hz: 64000
+  vibration_channel: vibration_1
+  # v5 (kernel v4 -> v5): use EVERY available source bearing code, 7 -> 18.
+  # v1-v4 ran on a deliberately trimmed subset chosen to keep the first run
+  # cheap. v4 then showed source diversity is the lever that actually moves
+  # target performance (removing CWRU cost ~11 accuracy points), so spending
+  # compute on breadth is the best-evidenced move available. 2.09x the
+  # source windows, ~103 min projected vs v2's ~50.
+  healthy_codes: [K001, K002, K003, K004, K005, K006]
+  artificial_outer_codes: [KA01, KA03, KA05, KA06, KA07, KA08, KA09]
+  artificial_inner_codes: [KI01, KI03, KI05, KI07, KI08]
+  # ALL real-damage codes are used for the target test set -- that's the
+  # actual result being measured, not a place to trim for speed.
+  real_outer_codes: [KA04, KA15, KA16, KA22, KA30]
+  real_inner_codes: [KI04, KI14, KI16, KI17, KI18, KI21]
+  # The other 3 conditions vary load torque / radial force at the SAME
+  # 1500rpm (N15) speed; N09 (900rpm) is held out as the target because
+  # speed shifts every bearing characteristic frequency multiplicatively --
+  # the most physically distinct domain gap available among the 4.
+  source_conditions: [N15_M07_F10, N15_M01_F10, N15_M07_F04]
+  target_condition: N09_M07_F10
+  source_train_fraction: 0.7
+  target_normal_adapt_fraction: 0.6
+
+# --- Model -------------------------------------------------------------
+# Small custom CNN (same 4-layer stride-2 conv shape as vibration_ad's
+# autoencoder encoder), not literally ResNet-18 -- see plan revisions for why.
+model:
+  base_channels: 16
+  feature_dim: 256
+  classifier_hidden: 128
+  domain_hidden: 128
+  dropout: 0.3
+
+# --- Phase 2: supervised source-only baseline (no adaptation) --------------
+train_baseline:
+  batch_size: 64
+  epochs: 30
+  learning_rate: 1.0e-3
+  weight_decay: 1.0e-5
+  early_stopping_patience: 6
+  device: auto
+
+# --- Phase 3: DANN (adds domain discriminator + GRL + healthy-anchor loss) -
+train_dann:
+  batch_size: 64
+  epochs: 30
+  learning_rate: 1.0e-3
+  weight_decay: 1.0e-5
+  early_stopping_patience: 6
+  # v2 (kernel v1 -> v2): adversarial pressure raised and applied EARLIER.
+  # v1's domain alignment simply never happened -- target features ended up
+  # in regions of feature space no source data occupies (see the plan's
+  # Status section). Root cause: the classifier converges on source almost
+  # immediately (81% accuracy in epoch 1) while lambda was still near its
+  # floor, so by the time the adversarial signal arrived the feature
+  # extractor had already committed to source-only shortcuts.
+  domain_loss_weight: 3.0    # v1: 1.0 -- louder adversarial signal vs. the classification gradient
+  anchor_loss_weight: 0.5    # unchanged since v1, deliberately: isolate changes
+  grl_gamma: 25.0            # v1: 10.0 -- lambda hits ~0.46 by end of epoch 1 instead of ~0.17
+  # v3 (kernel v2 -> v3): 1.0 -> 5.0. v2 produced exactly the signature this
+  # knob exists for: the post-hoc probe still separated source from target at
+  # 0.969 (features NOT aligned), while the in-training discriminator scored
+  # 0.487-0.524 balanced-equivalent -- i.e. the majority-class rate, since
+  # pu_target is 50% of every batch. The features were separable and the
+  # discriminator simply could not learn to exploit them: it was being
+  # scrambled by the reversal faster than it could learn, so it fed the
+  # feature extractor meaningless gradients. Letting it learn 5x faster is
+  # the standard fix for losing the minimax race.
+  # Back to 1.0 for v4 -- v2's value, which ran stably. v3's 5.0 blew up at
+  # epoch 4 and froze the network, so keeping it would confound the one
+  # variable this run is meant to isolate (CWRU in vs. out).
+  discriminator_lr_multiplier: 1.0
+  # Safety net only, added after v3's blow-up; inert on a healthy run.
+  grad_clip_norm: 5.0
+  device: auto
+
+evaluation:
+  tsne_perplexity: 30
