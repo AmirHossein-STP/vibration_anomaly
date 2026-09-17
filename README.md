@@ -335,12 +335,25 @@ DAQ, unseen lab.
 > config fingerprint.
 >
 > **Where this leaves the project's claim:** zero-shot detection on an
-> unseen machine, sensors, DAQ and lab is NOT supported. With this
+> unseen machine, sensors, DAQ and lab is **NOT supported**. With this
 > architecture, on these two datasets, detection requires target-rig fault
 > data in training. What transfers across bearing units within one rig does
-> not transfer across datasets. The contrast is categorical rather than a
-> matter of degree: across 11 strict runs every single one collapsed to one
-> predicted class, and across 3 permissive runs none did.
+> not transfer across datasets.
+>
+> Three independent lines of evidence, all pointing the same way:
+>
+> | test | result |
+> |---|---|
+> | strict CWRU -> Paderborn (11 runs, 2 torch versions) | collapsed to one class **11/11** |
+> | permissive, same pipeline (3 runs) | collapsed **0/3** — it works, if noisily |
+> | strict Paderborn -> CWRU, a 4x richer source (4 runs) | 100% false alarms, balanced acc **0.499** |
+> | per-window normalization, which provably removes the scale mismatch | balanced acc **0.499–0.505** |
+>
+> The reverse direction matters most: Paderborn offers 18 bearing units
+> across 4 operating conditions against CWRU's 4 rpms, and still not one
+> healthy CWRU window out of ~2730 is identified. So the ceiling is not
+> source diversity, and it is not preprocessing. The only configuration
+> that works is the one holding target-rig fault data in training.
 
 Fault *typing* still does not transfer (3-class accuracy 0.378). The
 deployable claim remains detection, not diagnosis.

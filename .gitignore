@@ -56,3 +56,12 @@ outputs/domain_adaptation_kaggle_run/*
 # OS / editor
 .DS_Store
 .vscode/
+
+# Rescue pulls from the rented GPU box: keep the EVIDENCE (metrics json,
+# per-window prediction csv, figures, run logs) under version control --
+# losing exactly those is what made the 2026-09-17 reproduction failure
+# undiagnosable. The model binaries are large and are deliberately not
+# tracked; they live on disk in outputs/server_rescue/ only.
+outputs/server_rescue/**/*.pt
+outputs/server_rescue/**/*.npz
+outputs/server_rescue/**/.*.pt.*
