@@ -126,11 +126,14 @@ Train CWRU only. Adapt on Paderborn HEALTHY only. Diagnose Paderborn's real
 damage. No PU fault -- artificial or real -- ever seen in training.
 3 seeds per representation.
 
-| representation | recall | precision | false alarm | 3-class acc |
-|---|---|---|---|---|
-| time | 0.710 +- 0.197 | **0.940** +- 0.029 | 19.7% +- 7.6% | 0.334 |
-| order | 0.504 +- 0.114 | **0.944** +- 0.029 | 14.8% +- 10.8% | 0.367 |
-| *permissive reference (PU faults IN training, 6 seeds)* | 0.763 +- 0.19 | | | |
+**Updated to n=8 per representation** (the n=3 figures first recorded here
+left the error bars too wide to act on):
+
+| representation | recall | precision | false alarm | F1 | balanced acc |
+|---|---|---|---|---|---|
+| **time** | **0.812 +- 0.159** | **0.943 +- 0.022** | 22.3% +- 9.4% | **0.865 +- 0.098** | **0.795 +- 0.078** |
+| order | 0.606 +- 0.218 | 0.948 +- 0.026 | 15.9% +- 10.1% | 0.719 +- 0.155 | 0.723 +- 0.078 |
+| *permissive reference (PU faults IN training, 6 seeds)* | 0.763 +- 0.19 | | | | |
 
 **1. Detection transfers.** ~94% precision on an unseen rig, sensor set and
 DAQ. When the model says "faulty" it is right roughly 19 times in 20. For
@@ -143,11 +146,22 @@ artificial faults, recorded on the very rig under test, bought almost
 nothing. This is the strongest practical finding here, because it means a
 deployment does **not** need fault data from the target machine's rig.
 
-**3. Order tracking did not help, contradicting a strong prior claim.**
-This plan previously called it "necessary rather than optional" for arm A.
-Recall fell 0.710 -> 0.504; the -0.206 delta is smaller than the 0.227
-pooled spread, so at n=3 the honest reading is *no evidence either way* --
-but there is certainly no support for the claim as stated.
+**3. Order tracking is WORSE, and at n=8 that is now measurable.** This
+plan previously called it "necessary rather than optional" for arm A. It is
+the opposite: recall 0.812 -> 0.606 (2.2 SE), F1 0.865 -> 0.719 (2.3 SE),
+balanced accuracy 0.795 -> 0.723 (1.9 SE), with precision unchanged
+(0.4 SE).
+
+The obvious confound was checked and rejected: order shows *both* lower
+recall and lower false alarms, which is the signature of a more
+conservative operating point rather than weaker discrimination. But F1 and
+balanced accuracy weigh both directions, and order loses on both -- so it
+genuinely discriminates worse, not merely differently.
+
+**Why the synthetic validation misled.** The transform was accepted on a
+synthetic test where spectrogram correlation between 1500 and 900 rpm rose
+0.799 -> 0.978. That test used a pure order-locked tone, which is exactly
+what angular resampling is built to align -- it could not have failed.
 
 A physical reason was missed when that claim was made: bearing fault energy
 rides on **structural resonances, which are fixed in Hz, not in orders**.
