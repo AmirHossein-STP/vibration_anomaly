@@ -496,6 +496,56 @@ def test_dataset_build_is_equivalent_through_either_storage_form(tmp_path):
         assert np.corrcoef(X_raw.ravel(), X_prep.ravel())[0, 1] > 0.98, f"{role}: content diverged"
 
 
+def test_strict_split_keeps_every_PU_fault_out_of_training(tmp_path):
+    """The strict feasibility question: train on CWRU, adapt on nothing but
+    PU HEALTHY data, diagnose PU's real faults. PU is a different rig with
+    different sensors and DAQ, so any PU fault appearing in training would
+    be leakage -- and every run through kernel v8 had exactly that, since
+    PU's artificial faults were in the source pool.
+
+    Asserts the separation mechanically rather than trusting the config.
+    """
+    config = make_config(tmp_path)
+    config.pu.include_in_source = False
+    config.cwru.include_in_source = True
+
+    raw_dir = tmp_path / "raw"
+    for rpm, fault in [(1730, "Normal"), (1730, "IR"), (1750, "OR@6"), (1797, "Normal"), (1797, "IR")]:
+        write_synthetic_cwru_npz(raw_dir, rpm, fault)
+    pu_root = tmp_path / "pu_root"
+    for run in range(1, 5):
+        # PU artificial faults exist on disk and must STILL be ignored.
+        for code, cond in [("KA01", "N15_M07_F10"), ("KI01", "N15_M07_F10"),
+                           ("K001", "N15_M07_F10"),
+                           ("K001", "N09_M07_F10"), ("KA04", "N09_M07_F10"), ("KI04", "N09_M07_F10")]:
+            write_synthetic_pu_mat(pu_root, code, cond, run)
+
+    results = da_dataset.build_domain_adaptation_datasets(config, pu_root)
+
+    # Training sees CWRU and nothing else.
+    for role in ("source_train", "source_val"):
+        domains = set(results[role][1].domain)
+        assert domains == {"cwru"}, f"{role} leaked non-CWRU data: {domains}"
+
+    # The target side is PU, and the faults live only in the hidden test set.
+    assert set(results["target_adapt"][1].domain) == {"pu_target"}
+    assert set(results["target_adapt"][1].universal_label) == {0}, "adaptation data must be healthy only"
+    assert set(results["target_test"][1].universal_label) == {0, 1, 2}
+
+    # No PU artificial-damage unit may appear anywhere in training.
+    train_codes = set(results["source_train"][1].code) | set(results["source_val"][1].code)
+    assert not (train_codes & {"KA01", "KI01", "K001"}), f"PU units leaked into training: {train_codes}"
+
+
+def test_default_config_still_trains_on_both_datasets(tmp_path):
+    """Guard the switch: the permissive setting must stay the default so
+    kernel v1-v8 remain reproducible."""
+    from domain_adaptation.config import load_config
+    config = load_config("configs/domain_adaptation.yaml")
+    assert config.pu.include_in_source is True
+    assert config.cwru.include_in_source is True
+
+
 # --- order tracking (the cross-speed fix) -----------------------------------
 
 def _peak_order(signal, samples_per_rev=256):

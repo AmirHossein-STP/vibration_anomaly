@@ -92,6 +92,17 @@ class PUConfig:
     # adaptation step (domain discriminator + healthy-anchor loss); the
     # rest are held out as healthy rows in the final zero-shot test set.
     target_normal_adapt_fraction: float
+    # False -> Paderborn contributes NOTHING to training: no artificial
+    # faults, no healthy source-condition rows. It appears only as the
+    # target's healthy adaptation data and the hidden test set.
+    #
+    # This is the strict feasibility question: train on one dataset, adapt
+    # using nothing but healthy data from a completely different rig with
+    # different sensors and DAQ, and diagnose real faults there. Every run
+    # through kernel v8 had this True, which trains on PU artificial faults
+    # recorded on the SAME rig as the target -- an easier problem, and
+    # leakage with respect to the strict question.
+    include_in_source: bool = True
 
     @property
     def source_codes(self) -> list[str]:

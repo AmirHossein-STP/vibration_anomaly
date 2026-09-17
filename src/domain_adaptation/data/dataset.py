@@ -85,10 +85,11 @@ def _assign_pu_roles(pu_catalog: pd.DataFrame, config: Config) -> pd.DataFrame:
 
     parts = []
 
-    source_train, source_val = _split_pu_runs_by_fraction(pu_catalog[source_mask], pu_cfg.source_train_fraction)
-    source_train["role"], source_train["domain"] = "source_train", "pu_artificial"
-    source_val["role"], source_val["domain"] = "source_val", "pu_artificial"
-    parts += [source_train, source_val]
+    if pu_cfg.include_in_source:
+        source_train, source_val = _split_pu_runs_by_fraction(pu_catalog[source_mask], pu_cfg.source_train_fraction)
+        source_train["role"], source_train["domain"] = "source_train", "pu_artificial"
+        source_val["role"], source_val["domain"] = "source_val", "pu_artificial"
+        parts += [source_train, source_val]
 
     target_adapt, target_healthy_test = _split_pu_runs_by_fraction(
         pu_catalog[target_healthy_mask], pu_cfg.target_normal_adapt_fraction
@@ -102,7 +103,10 @@ def _assign_pu_roles(pu_catalog: pd.DataFrame, config: Config) -> pd.DataFrame:
     parts.append(target_real_test)
 
     assigned = pd.concat(parts, ignore_index=True)
-    for role in ROLES:
+    # When PU is held out of training, it legitimately has no source rows --
+    # that is the point. Only the target roles must be populated.
+    required = ROLES if pu_cfg.include_in_source else ("target_adapt", "target_test")
+    for role in required:
         if assigned[assigned.role == role].empty:
             raise RuntimeError(f"PU role assignment produced zero rows for {role!r} -- check config.pu's code/condition lists.")
     return assigned
@@ -289,7 +293,14 @@ def build_domain_adaptation_datasets(
     )
     if not include_cwru:
         print("CWRU excluded from the source pool (config.cwru.include_in_source=false) -- PU-only run.")
-    pu_codes = config.pu.source_codes + config.pu.real_codes
+    # With PU out of the source pool we only need its healthy units (target
+    # adaptation + held-out healthy test rows) and its real-damage units
+    # (the hidden test set) -- never its artificial faults.
+    pu_codes = (
+        config.pu.source_codes + config.pu.real_codes
+        if config.pu.include_in_source
+        else config.pu.healthy_codes + config.pu.real_codes
+    )
     raw_pu_catalog = (
         pu_store.catalog(pu_codes) if pu_store is not None
         else build_pu_catalog(pu_root, pu_codes, config.pu.native_fs_hz)
