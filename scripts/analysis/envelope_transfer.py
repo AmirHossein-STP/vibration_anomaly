@@ -68,7 +68,7 @@ def build_cwru(max_files=None, per_file=8):
     return pd.DataFrame(rows)[FEATURE_NAMES], np.array(labels)
 
 
-def build_pu(per_run=4):
+def build_pu(per_run=4, condition="N09_M07_F10"):
     from domain_adaptation.data import pu_bearing_codes as pbc
     store = PreparedPUStore(Path("data/pu/prepared_pu"))
     # healthy + REAL damage only: artificial (filed/drilled) defects are not
@@ -76,7 +76,7 @@ def build_pu(per_run=4):
     # been the real-damage bearings.
     codes = pbc.HEALTHY + pbc.REAL_OUTER + pbc.REAL_INNER
     cat = store.catalog(codes)
-    cat = cat[cat.condition == "N09_M07_F10"]
+    cat = cat[cat.condition == condition]
     rows, labels, codes = [], [], []
     for r in cat.itertuples():
         sig = np.asarray(store.load(r.code, r.condition, r.run)).squeeze().astype(np.float64)
@@ -99,14 +99,18 @@ def report(name, y_true, y_pred):
 def main():
     ap = argparse.ArgumentParser()
     ap.add_argument("--max-files", type=int, default=None)
+    ap.add_argument("--per-file", type=int, default=8, help="windows per CWRU file")
+    ap.add_argument("--per-run", type=int, default=4, help="windows per Paderborn run")
+    ap.add_argument("--condition", default="N09_M07_F10",
+                    help="Paderborn operating condition; N09 is 900rpm, N15_* are 1500rpm")
     args = ap.parse_args()
 
     print("Extracting CWRU (source) envelope-order features...")
-    Xs, ys = build_cwru(max_files=args.max_files)
+    Xs, ys = build_cwru(max_files=args.max_files, per_file=args.per_file)
     print(f"  {Xs.shape[0]} windows, labels {np.bincount(ys).tolist()}")
 
-    print("Extracting Paderborn N09 (target) envelope-order features...")
-    Xt, yt, codes = build_pu()
+    print(f"Extracting Paderborn {args.condition} (target) envelope-order features...")
+    Xt, yt, codes = build_pu(per_run=args.per_run, condition=args.condition)
     print(f"  {Xt.shape[0]} windows, labels {np.bincount(yt).tolist()}")
 
     scaler = StandardScaler().fit(Xs)
@@ -175,6 +179,28 @@ def main():
         m = codes == code
         truth = "healthy" if yt[m][0] == 0 else "FAULTY"
         print(f"  {code} {truth:>7}: flagged {flagged[m].mean():.2f}  (n={m.sum()})")
+
+    # --- fault TYPING, which has never transferred in this project -------
+    # Worth retrying precisely because these features are keyed to the
+    # geometry: bpfo_* and bpfi_* ARE the outer/inner distinction, rather
+    # than something a network has to infer from texture. If typing
+    # transfers anywhere, it transfers here.
+    print("\nFAULT TYPING (3-class), fit on CWRU only:")
+    clf3 = LogisticRegression(max_iter=3000, class_weight="balanced").fit(Xs_s, ys)
+    p3 = clf3.predict(Xt_s)
+    acc = float((p3 == yt).mean())
+    print(f"  3-class accuracy {acc:.3f}   (majority-class baseline "
+          f"{np.bincount(yt).max() / len(yt):.3f})")
+    # Among windows correctly called faulty, is the RACE right? That is the
+    # question a maintenance engineer actually asks, and it is not visible
+    # in raw 3-class accuracy when healthy windows dominate the errors.
+    faulty = yt > 0
+    race_ok = float((p3[faulty] == yt[faulty]).mean())
+    print(f"  among true faulty windows, correct race: {race_ok:.3f} (chance 0.5)")
+    for name, lbl in (("inner (BPFI)", 1), ("outer (BPFO)", 2)):
+        m = yt == lbl
+        print(f"    true {name}: predicted "
+              f"{np.bincount(p3[m], minlength=3).tolist()} (healthy/inner/outer)")
 
     print("\nSanity check -- does the representation work WITHIN CWRU?")
     from sklearn.model_selection import cross_val_score

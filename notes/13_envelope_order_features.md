@@ -90,13 +90,54 @@ catch it. False alarms remain per-UNIT rather than random (K005 accounts for
 most of them), which is the same pattern kernel v5 saw with K002 and is
 what makes healthy-only calibration work as a deployment step.
 
+## Scaling up, a second speed, and fault typing
+
+**Scale is not doing the work.** Re-running with 2.5x the windows (956
+source / 2380 target) leaves the headline unchanged: balanced accuracy
+0.821 +- 0.009 against 0.823 +- 0.007 before. The result is not a
+small-sample artifact.
+
+**The second operating condition is markedly worse, and this is unexplained.**
+N15_M07_F10 is the same rig, same bearings, same load, at 1500 rpm instead
+of 900:
+
+| target condition | recall @10% FA | balanced acc |
+|---|---|---|
+| N09 (900 rpm) | 0.755 +- 0.010 | **0.825 +- 0.007** |
+| N15 (1500 rpm) | 0.469 +- 0.004 | **0.685 +- 0.005** |
+
+Still well above chance, but a large drop -- and it runs against the
+obvious prediction. CWRU is recorded at 1730-1797 rpm, so N15 is the
+*closer* speed to the training data and should have been the easier target.
+It is not. The cause is not established; the fixed 1.5-5.5 kHz resonance
+band interacting differently with the higher shaft rate is the first thing
+to check, and the band was deliberately never tuned. **Do not quote the N09
+number as if it were the method's general performance.**
+
+**Fault typing transfers for the first time, weakly.** Every earlier
+experiment found typing did not transfer at all (3-class accuracy ~0.37,
+i.e. chance). With geometry-keyed features:
+
+- 3-class accuracy **0.593**, against a 0.353 majority-class baseline
+- among windows that really are faulty, the correct race is chosen **60.8%**
+  of the time (chance 50%)
+
+That is real but not usable, and it is lopsided: inner-race faults are
+mostly caught (590/840 correct), outer-race ones are mostly misread as
+inner (347/700 correct, 299 called inner). Since `bpfo_*` and `bpfi_*` are
+literally the outer/inner evidence, the asymmetry suggests the outer-race
+peak is being masked -- plausibly because an outer-race defect sits in a
+fixed load zone and its envelope peak does not carry the shaft-rate
+sidebands the classifier leans on. Worth pursuing, not worth claiming.
+
 ## Honest limits
 
-- **Binary detection only.** Fault TYPING is not attempted here, and every
-  earlier experiment says it does not transfer.
+- **Detection is the usable result.** Typing clears chance for the first
+  time (60.8% race accuracy) but is not reliable enough to act on.
 - **Sub-sampled**: 8 windows per CWRU file, 4 per Paderborn run (1360 target
   windows). Scaling up is the obvious next step and costs nothing but time.
-- **One target condition** (N09, 900 rpm). N15 is untested.
+- **Speed-dependent**: strong at 900 rpm, much weaker at 1500 rpm, for
+  reasons not yet understood (see above).
 - **A linear model on 13 features.** No deep model, no adaptation, no DANN.
   That it beats every neural configuration tried is itself the finding.
 - Artificial-damage Paderborn codes are excluded; only real damage is tested.
