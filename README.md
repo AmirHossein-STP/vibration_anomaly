@@ -141,12 +141,15 @@ Read in order for the full picture, or jump to whichever's relevant:
     what zero-shot means here, how DANN/GRL work, the three ways the
     adversarial approach failed, and why the metric you choose decides
     whether the result looks like a failure or a usable detector.
-12. `notes/11_gpu_server_runbook.md` — **read before renting a GPU box
+12. `notes/13_envelope_order_features.md` — the representation that
+    actually crosses rigs, why spectrograms could not, and the bearing
+    geometry that makes CWRU and Paderborn features comparable.
+13. `notes/11_gpu_server_runbook.md` — **read before renting a GPU box
     again.** What the provider's machine already has (a working CUDA torch
     — do not build a venv), how slow the uplink is, and the six traps that
     cost real time on 2026-09-17. The box is DELETED at subscription end,
     so results must be pulled continuously.
-13. `notes/12_reproduction_investigation.md` — why the arm A numbers did
+14. `notes/12_reproduction_investigation.md` — why the arm A numbers did
     not reproduce on a second machine, the four hypotheses that were tested
     and refuted, and what is still open.
 
@@ -352,8 +355,23 @@ DAQ, unseen lab.
 > The reverse direction matters most: Paderborn offers 18 bearing units
 > across 4 operating conditions against CWRU's 4 rpms, and still not one
 > healthy CWRU window out of ~2730 is identified. So the ceiling is not
-> source diversity, and it is not preprocessing. The only configuration
-> that works is the one holding target-rig fault data in training.
+> source diversity, and it is not preprocessing.
+>
+> **But the conclusion is about the REPRESENTATION, not the premise.** A
+> log-spectrogram is dominated by structural resonances, which sit at fixed
+> Hz and belong to the rig; a CNN trained on one machine largely learns what
+> that machine sounds like. Replacing it with envelope-order features --
+> which discard the rig-specific carrier and keep only the bearing's own
+> fault orders -- makes the strict transfer work:
+>
+> | fit on CWRU only, calibrated on target HEALTHY windows alone | recall | FA | balanced acc |
+> |---|---|---|---|
+> | envelope-order features @10% target FA | **0.746 ± 0.012** | 10.1% | **0.823 ± 0.007** |
+> | every spectrogram variant tried | — | — | 0.499–0.505 (chance) |
+>
+> So zero-shot detection across rigs IS feasible; it just is not feasible by
+> learning a spectrogram end-to-end. Details, per-unit breakdown and the
+> honest limits are in `notes/13_envelope_order_features.md`.
 
 Fault *typing* still does not transfer (3-class accuracy 0.378). The
 deployable claim remains detection, not diagnosis.
