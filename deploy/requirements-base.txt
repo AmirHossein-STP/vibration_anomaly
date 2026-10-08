@@ -1,0 +1,7 @@
+# Pinned for the Docker images. Tested together with torch 2.2.2 (the last torch
+# with macOS-Intel wheels, so the exact shipped set can also be tested on a Mac).
+numpy==1.26.4
+scipy==1.13.1
+pandas==2.2.3
+scikit-learn==1.5.2
+PyYAML==6.0.2

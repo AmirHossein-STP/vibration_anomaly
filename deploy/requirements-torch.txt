@@ -1,0 +1,2 @@
+# Installed from the CPU-only index in the Dockerfile (no CUDA, ~200 MB instead of ~2 GB).
+torch==2.2.2

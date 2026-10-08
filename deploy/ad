@@ -1,0 +1,12 @@
+#!/usr/bin/env bash
+# Operator shortcut:  ./ad <bearing|vibration|hydraulic> <command> [options]
+#   ./ad bearing doctor        ./ad vibration train --seeds 3        ./ad hydraulic infer --archive
+set -euo pipefail
+cd "$(dirname "$0")"
+[ -f .env ] || { echo "deploy/.env is missing: copy .env.example to .env and edit it"; exit 2; }
+set -a; . ./.env; set +a
+: "${HOST_UID:=$(id -u)}"; : "${HOST_GID:=$(id -g)}"; export HOST_UID HOST_GID
+[ $# -ge 2 ] || { echo "usage: ./ad <bearing|vibration|hydraulic> <command> [options]"; exit 2; }
+svc="$1"; shift
+mkdir -p "${DATA_DIR:-./volumes/data}/$svc" "${MODELS_DIR:-./volumes/models}/$svc"
+exec docker compose run --rm -T "$svc" "$@"

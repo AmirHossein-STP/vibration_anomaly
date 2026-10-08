@@ -71,3 +71,5 @@ outputs/server_rescue/**/.*.pt.*
 # src/domain_adaptation/data/prepare_pu.py. Not tracked, but do NOT delete
 # it: regenerating it costs a Kaggle run, and it is the only local copy.
 data/pu/*
+deploy/volumes/
+deploy/.env

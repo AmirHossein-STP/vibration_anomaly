@@ -1,0 +1,25 @@
+# Three independent services. Nothing here runs a long-lived process: the services are
+# commands you invoke (`docker compose run --rm <service> <command>`), or that cron calls.
+# Folder contract (host side):  deploy/volumes/data/<service>/{in,train,out,config}
+#                               deploy/volumes/models/<service>/
+# Set DATA_DIR / MODELS_DIR in deploy/.env to put them elsewhere (e.g. a big disk).
+x-common: &common
+  restart: "no"
+  user: "${HOST_UID:-1000}:${HOST_GID:-1000}"
+  volumes:
+    - ${DATA_DIR:-./volumes/data}:/data
+    - ${MODELS_DIR:-./volumes/models}:/models
+
+services:
+  bearing:
+    <<: *common
+    image: ${REGISTRY:-local}/ad-bearing:${TAG:-dev}
+    build: {context: .., dockerfile: deploy/Dockerfile, target: bearing, args: {SERVICE_IMAGE_TAG: "${TAG:-dev}"}}
+  vibration:
+    <<: *common
+    image: ${REGISTRY:-local}/ad-vibration:${TAG:-dev}
+    build: {context: .., dockerfile: deploy/Dockerfile, target: vibration, args: {SERVICE_IMAGE_TAG: "${TAG:-dev}"}}
+  hydraulic:
+    <<: *common
+    image: ${REGISTRY:-local}/ad-hydraulic:${TAG:-dev}
+    build: {context: .., dockerfile: deploy/Dockerfile, target: hydraulic, args: {SERVICE_IMAGE_TAG: "${TAG:-dev}"}}

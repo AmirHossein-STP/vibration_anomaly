@@ -1,0 +1,10 @@
+.venv/
+.git/
+data/
+outputs/
+notebooks/
+reports/
+notes/
+kaggle_dataset/
+**/__pycache__/
+deploy/volumes/
