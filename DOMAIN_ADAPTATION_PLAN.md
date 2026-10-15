@@ -1,5 +1,7 @@
 # Domain Adaptation on Bearing Conditions: MVP & Feasibility Study
 
+> **Status 2026-10-15: historical record. The forward plan is [MASTER_PLAN.md](MASTER_PLAN.md).**
+
 ## 1. Executive Summary & Objective
 This project addresses **Zero-Shot Fault Diagnosis** via Unsupervised Domain Adaptation (UDA). 
 Your physical target bearing currently generates **only normal (healthy) data**. Our objective is to train a diagnostic model on external datasets (where fault data is abundant), adapt it to your target bearing using *only its normal baseline*, and accurately diagnose future faults when they occur.

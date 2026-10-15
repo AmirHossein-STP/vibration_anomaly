@@ -1,5 +1,7 @@
 # GPU Server Plan — strict cross-dataset feasibility
 
+> **Status 2026-10-15: historical record. The forward plan is [MASTER_PLAN.md](MASTER_PLAN.md).**
+
 Written 2026-09-17, rewritten the same day once the objective was stated
 precisely. Companion to `DOMAIN_ADAPTATION_PLAN.md` (the record of kernels
 v1-v8) and `notes/10_domain_adaptation_notes.md` (the concepts).

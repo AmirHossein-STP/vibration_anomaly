@@ -1,5 +1,7 @@
 # Plan: sensor-fusion extension (ZeMA hydraulic dataset)
 
+> **Status 2026-10-15: historical record. The forward plan is [MASTER_PLAN.md](MASTER_PLAN.md).**
+
 This is a second, independent experiment added alongside the original CWRU
 vibration MVP — not a rewrite of it. `vibration_ad/` (single accelerometer
 channel, spectrogram autoencoder) is untouched; this adds

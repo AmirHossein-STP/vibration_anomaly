@@ -1,5 +1,7 @@
 # Deployment plan: three services, handed to someone else
 
+> **Status 2026-10-15: historical record; the forward plan is [MASTER_PLAN.md](MASTER_PLAN.md). Section 8 (implementation status) remains the description of what `src/serving_core/` implements.**
+
 Goal (from the request): each subproject runs on a server on its own, takes
 **new inputs**, writes **outputs in a fixed format**, and lets an operator
 **trigger training, then go back to inference**. The operator is a different

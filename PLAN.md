@@ -1,5 +1,7 @@
 # Plan: original vs. revised, and why
 
+> **Status 2026-10-15: historical record. The forward plan is [MASTER_PLAN.md](MASTER_PLAN.md).**
+
 ## Your original plan
 
 1. Download CWRU (via CWRU_Bearing_NumPy).

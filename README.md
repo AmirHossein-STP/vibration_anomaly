@@ -7,6 +7,10 @@ for turbo pump predictive maintenance, using the CWRU bearing dataset as a
 labeled stand-in (see `notes/00_project_overview.md` for the full framing,
 and `PLAN.md` for how this plan differs from the original draft and why).
 
+**The forward plan for the whole repository is [`MASTER_PLAN.md`](MASTER_PLAN.md)**
+(2026-10-15). It unifies the earlier per-experiment plans, which are now kept
+as the historical record.
+
 **Three experiments live in this repo now.** Everything below this point is
 the original single-sensor CWRU vibration MVP (`src/vibration_ad/`). A
 second, independent experiment -- multi-sensor **fusion** anomaly
@@ -273,8 +277,9 @@ and it is worth stating plainly:
 Full reasoning, every failed hypothesis, and the two infrastructure bugs
 found along the way are in `DOMAIN_ADAPTATION_PLAN.md`'s Status section.
 
-**Current phase (2026-09-17): the strict cross-dataset question, on a GPU
-server.** The forward plan is `GPU_SERVER_PLAN.md`.
+**Current phase (2026-10-15):** the forward plan is
+[`MASTER_PLAN.md`](MASTER_PLAN.md). (`GPU_SERVER_PLAN.md`, the 2026-09-17 plan
+for the strict cross-dataset question, is now history.)
 
 > **WARNING (2026-09-17): the numbers in the table above are single runs,
 > and the run-to-run spread is larger than the differences being compared.**
