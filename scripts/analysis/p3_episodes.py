@@ -87,17 +87,17 @@ def cap(f: pd.DataFrame, rng: np.random.Generator) -> pd.DataFrame:
     return f if len(f) <= CAP else f.iloc[np.sort(rng.choice(len(f), CAP, replace=False))]
 
 
-def static_folds(dataset: str, df: pd.DataFrame) -> list[Fold]:
-    out = []
+def static_parts(dataset: str, df: pd.DataFrame):
+    """The static datasets' folds as frames: (name, cal, held, pos, bc, info). Track B reuses it."""
     if dataset == "hust":                                   # notes/24: per type x load
         for t in sorted(df.unit.unique()):
             d = df[df.unit == t]
             h = d[d.label == 0]
             for load_ in sorted(d.condition.unique()):
                 f = d[(d.label > 0) & (d.condition == load_)]
-                out.append(make_fold(dataset, f"{t}:{load_}", h[h.condition != load_], h[h.condition == load_],
-                                     f[f.label.isin(RACE_INVOLVING)], f[f.label.isin(BC)], {"type": str(t)}))
-        return out
+                yield (f"{t}:{load_}", h[h.condition != load_], h[h.condition == load_],
+                       f[f.label.isin(RACE_INVOLVING)], f[f.label.isin(BC)], {"type": str(t)})
+        return
     parts = {f"pu:{c}": df[df.condition == c] for c in sorted(df.condition.unique())} if dataset == "pu" else {dataset: df}
     modes = ["own", "machine"] if dataset == "ottawa_2023" else ["machine"]
     for pname, frame in parts.items():
@@ -105,9 +105,12 @@ def static_folds(dataset: str, df: pd.DataFrame) -> list[Fold]:
             frame = frame.assign(state=np.where(frame.label > 0, "faulty", "healthy"))
         for mode in modes:
             for name, cal, held, fault in wp5_folds(pname, frame, mode):
-                out.append(make_fold(dataset, f"{pname}:{mode}:{name}", cal, held, fault[fault.label.isin((1, 2))],
-                                     fault[fault.label.isin(BC)], {"part": pname, "baseline": mode}))
-    return out
+                yield (f"{pname}:{mode}:{name}", cal, held, fault[fault.label.isin((1, 2))],
+                       fault[fault.label.isin(BC)], {"part": pname, "baseline": mode})
+
+
+def static_folds(dataset: str, df: pd.DataFrame) -> list[Fold]:
+    return [make_fold(dataset, *p) for p in static_parts(dataset, df)]
 
 
 def rtf_folds(dataset: str, df: pd.DataFrame) -> list[Fold]:

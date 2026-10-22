@@ -1,0 +1,12 @@
+# Phase 3 Track B only (notes/31): MOMENT-1 embeddings. Installed into a SEPARATE venv,
+# ~/work/venv_fm (uv venv --system-site-packages, then requirements-server.txt), with
+# --no-deps, because momentfm's own pins would replace the image's torch 2.8 with 2.14.
+momentfm==0.1.4
+transformers==4.33.3
+tokenizers==0.13.3
+safetensors==0.4.5
+huggingface-hub==0.24.7
+regex
+filelock
+requests
+packaging
