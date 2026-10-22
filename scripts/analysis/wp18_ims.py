@@ -38,11 +38,13 @@ DETECTORS = ("geometry_free", "six_line")
 
 def find_tests() -> dict[int, Path]:
     for rar in sorted(UNSEALED.rglob("*.rar")):
+        if "__MACOSX" in rar.parts or rar.name.startswith("._"):     # AppleDouble metadata in the zip, not data
+            continue
         dest = UNSEALED / "rar" / rar.stem
         if not dest.exists():
             extract_rar(rar, dest)
     out = {}
-    for d in {p.parent for p in UNSEALED.rglob("*") if p.is_file() and STAMP.match(p.name)}:
+    for d in {p.parent for p in UNSEALED.rglob("*") if p.is_file() and STAMP.match(p.name) and "__MACOSX" not in p.parts}:
         first = sorted(p.name for p in d.iterdir() if STAMP.match(p.name))[0]
         out[TESTS[first[:7]]] = d
     if sorted(out) != [1, 2, 3]:
