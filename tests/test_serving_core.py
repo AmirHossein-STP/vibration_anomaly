@@ -103,14 +103,14 @@ def test_promote_refuses_tampered_version(env):
     assert Registry(models).active() is None
 
 
-def test_calibrate_needs_geometry_and_enough_data(env):
+def test_calibrate_needs_consistent_geometry_and_enough_data(env):
     run, base, _ = env
-    (base / "config" / "service.yaml").write_text("fs_hz: 12000\nrpm: 900\n")
+    (base / "config" / "service.yaml").write_text("fs_hz: 12000\nrpm: 900\nbearing: {n_balls: 8}\n")
     np.save(base / "train" / "h.npy", healthy(1))
-    rc, _, err = run("calibrate")
-    assert rc == 2 and "geometry" in err
+    rc, _, err = run("calibrate")                           # half a geometry is refused
+    assert rc == 2 and "together" in err
     (base / "config" / "service.yaml").write_text(GEOM)
-    rc, _, err = run("calibrate")                           # one 12 s file = 11 windows < 200
+    rc, _, err = run("calibrate")                           # one 12 s file = 23 windows < 200
     assert rc == 2 and "healthy windows" in err
 
 
