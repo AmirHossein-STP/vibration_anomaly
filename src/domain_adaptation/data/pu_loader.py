@@ -85,19 +85,31 @@ class UnreadableMatFile(RuntimeError):
     """
 
 
-def load_vibration_signal(mat_path: str | Path, channel: str = "vibration_1") -> np.ndarray:
-    """Extract one channel's 1D array from a PU .mat file."""
+def _read_channels(mat_path: str | Path) -> list[dict]:
     try:
         data = scipy.io.loadmat(str(mat_path), simplify_cells=True)
     except Exception as exc:  # scipy raises bare TypeError/ValueError with no file context
         raise UnreadableMatFile(f"{mat_path}: scipy could not parse this .mat ({type(exc).__name__}: {exc})") from exc
     key = next(k for k in data if not k.startswith("__"))
-    channels = data[key]["Y"]
-    for ch in channels:
-        if ch["Name"] == channel:
-            return np.asarray(ch["Data"], dtype=np.float64).ravel()
-    available = [ch["Name"] for ch in channels]
-    raise KeyError(f"{mat_path}: channel {channel!r} not found (has: {available})")
+    return data[key]["Y"]
+
+
+def load_vibration_signal(mat_path: str | Path, channel: str = "vibration_1") -> np.ndarray:
+    """Extract one channel's 1D array from a PU .mat file."""
+    return load_channels(mat_path, [channel])[channel]
+
+
+def load_channels(mat_path: str | Path, wanted: list[str]) -> dict[str, np.ndarray]:
+    """Several channels from one parse of the file -- the v2 condensed store
+    (remote/datasets/condense_pu.py) keeps speed, torque and force beside
+    vibration_1, and loadmat is the slow part."""
+    channels = _read_channels(mat_path)
+    by_name = {ch["Name"]: ch for ch in channels}
+    missing = [w for w in wanted if w not in by_name]
+    if missing:
+        available = [ch["Name"] for ch in channels]
+        raise KeyError(f"{mat_path}: channel {missing[0]!r} not found (has: {available})")
+    return {w: np.asarray(by_name[w]["Data"], dtype=np.float64).ravel() for w in wanted}
 
 
 def build_pu_catalog(root_dir: str | Path, codes: list[str], native_fs_hz: int = 64000) -> pd.DataFrame:

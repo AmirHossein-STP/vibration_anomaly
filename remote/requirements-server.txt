@@ -1,0 +1,70 @@
+# Generated on the box (python 3.10.12) from remote/requirements-server.in by uv 0.5.11:
+#   uv pip compile --no-header --python /usr/bin/python3 remote/requirements-server.in -o remote/requirements-server.txt
+cloudpickle==3.1.2
+    # via joblib
+contourpy==1.3.2
+    # via matplotlib
+cycler==0.12.1
+    # via matplotlib
+exceptiongroup==1.3.1
+    # via pytest
+fonttools==4.65.0
+    # via matplotlib
+iniconfig==2.3.1
+    # via pytest
+joblib==1.6.0
+    # via scikit-learn
+kiwisolver==1.5.1
+    # via matplotlib
+matplotlib==3.10.9
+    # via -r tmpuv/req.in
+numpy==2.1.2
+    # via
+    #   -r tmpuv/req.in
+    #   contourpy
+    #   matplotlib
+    #   pandas
+    #   scikit-learn
+    #   scipy
+packaging==26.3
+    # via
+    #   matplotlib
+    #   pytest
+pandas==2.3.3
+    # via -r tmpuv/req.in
+pillow==12.3.0
+    # via matplotlib
+pluggy==1.7.0
+    # via pytest
+pygments==2.21.0
+    # via pytest
+pyparsing==3.3.3
+    # via matplotlib
+pytest==9.1.1
+    # via -r tmpuv/req.in
+python-dateutil==2.9.0.post0
+    # via
+    #   matplotlib
+    #   pandas
+pytz==2026.5
+    # via pandas
+pyyaml==6.0.3
+    # via -r tmpuv/req.in
+scikit-learn==1.7.2
+    # via -r tmpuv/req.in
+scipy==1.15.3
+    # via
+    #   -r tmpuv/req.in
+    #   scikit-learn
+six==1.17.0
+    # via python-dateutil
+threadpoolctl==3.7.0
+    # via scikit-learn
+tomli==2.5.0
+    # via pytest
+tqdm==4.70.1
+    # via -r tmpuv/req.in
+typing-extensions==4.16.0
+    # via exceptiongroup
+tzdata==2026.5
+    # via pandas

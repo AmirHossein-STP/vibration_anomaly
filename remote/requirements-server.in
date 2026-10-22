@@ -1,0 +1,14 @@
+# Server venv (uv venv --system-site-packages): the image's torch 2.8+cu128
+# and numpy are used as is, so numpy is pinned to the image's version and
+# torch is absent. dvc and kaggle are left out: Kaggle/GCS refuse downloads
+# from the box's location, and DVC is a laptop-side tool here.
+# Recompile after editing (on the box, python 3.10):
+#   /mnt/vault/env/bin/uv pip compile --no-header --python /usr/bin/python3 remote/requirements-server.in -o remote/requirements-server.txt
+numpy==2.1.2
+scipy
+scikit-learn
+pandas
+pyyaml
+tqdm
+matplotlib
+pytest

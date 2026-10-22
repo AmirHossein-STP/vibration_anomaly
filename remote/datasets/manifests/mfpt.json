@@ -1,0 +1,165 @@
+{
+ "citation": "Society for Machinery Failure Prevention Technology, Fault Data Sets, https://mfpt.org/fault-data-sets/",
+ "condensed": {},
+ "dataset": "mfpt",
+ "history": [
+  {
+   "at": "2026-10-21T22:08:00Z",
+   "by": "payesh-20-947",
+   "event": "raw verified"
+  },
+  {
+   "at": "2026-10-21T22:08:00Z",
+   "by": "payesh-20-947",
+   "event": "complete"
+  }
+ ],
+ "license": "See license.txt in the mirror (MFPT Society data)",
+ "notes": "The 20 test-rig sets (3 baseline, 3+7 outer, 7 inner). The three real-world sets are not in this mirror.",
+ "raw": {
+  "README.md": {
+   "publisher_checksum": "gitsha1:b19d0eb2104ee06b788a421e3c0da27b14697b89",
+   "sha256": "10e8a37645483cb03d78de826363b8b5fa693aa9404cd90318733b153923bfe2",
+   "size": 1342,
+   "url": "https://raw.githubusercontent.com/mathworks/RollingElementBearingFaultDiagnosis-Data/master/README.md"
+  },
+  "license.txt": {
+   "publisher_checksum": "gitsha1:434fb61060762ee85d62b42c362a8ba6c6461821",
+   "sha256": "c0caba14aed81b8346e4fd2b06d68416652da9d4c27aecb9fd12031ec30c5ff5",
+   "size": 124,
+   "url": "https://raw.githubusercontent.com/mathworks/RollingElementBearingFaultDiagnosis-Data/master/license.txt"
+  },
+  "test_data/InnerRaceFault_vload_6.mat": {
+   "publisher_checksum": "gitsha1:93e30f284d707ee11747127ab90eb9ee434d957c",
+   "sha256": "51ace00de918012668beae944442588004655f40447497944ac63d71b3aa9e64",
+   "size": 1124470,
+   "url": "https://raw.githubusercontent.com/mathworks/RollingElementBearingFaultDiagnosis-Data/master/test_data/InnerRaceFault_vload_6.mat"
+  },
+  "test_data/InnerRaceFault_vload_7.mat": {
+   "publisher_checksum": "gitsha1:9547e4db77b1adc86e14697a07bae8bd5982eb27",
+   "sha256": "f9b0131045d8b05cd410fb72e8c2db06ee2eab16177cbc09657a63fef3110ef6",
+   "size": 1124472,
+   "url": "https://raw.githubusercontent.com/mathworks/RollingElementBearingFaultDiagnosis-Data/master/test_data/InnerRaceFault_vload_7.mat"
+  },
+  "test_data/OuterRaceFault_3.mat": {
+   "publisher_checksum": "gitsha1:ecf4a890c9aa9bc24075e558b5f719b2792ec0b6",
+   "sha256": "48fdf58ae0717fed02fbfe44773c15bbd96f3ceab9387fcfbf52b8260fdc3d97",
+   "size": 4484607,
+   "url": "https://raw.githubusercontent.com/mathworks/RollingElementBearingFaultDiagnosis-Data/master/test_data/OuterRaceFault_3.mat"
+  },
+  "test_data/OuterRaceFault_vload_6.mat": {
+   "publisher_checksum": "gitsha1:be3573835a11ab1c89d667142ff2d4ed62f08751",
+   "sha256": "ea167417e39b7481a9ea422fdc5f5b67b96d8521f27cf703e46c4f8cbb8cd995",
+   "size": 1121355,
+   "url": "https://raw.githubusercontent.com/mathworks/RollingElementBearingFaultDiagnosis-Data/master/test_data/OuterRaceFault_vload_6.mat"
+  },
+  "test_data/OuterRaceFault_vload_7.mat": {
+   "publisher_checksum": "gitsha1:931e5ee4053c8890c4d1208b121a985dac70f5d4",
+   "sha256": "38ef59f7fea41d4839d89dd9aa7ad3cab783f2e5f10960e34c81c83d3328105e",
+   "size": 1124569,
+   "url": "https://raw.githubusercontent.com/mathworks/RollingElementBearingFaultDiagnosis-Data/master/test_data/OuterRaceFault_vload_7.mat"
+  },
+  "test_data/baseline_3.mat": {
+   "publisher_checksum": "gitsha1:9c5bcc53b1a180ce8d1da89c27d6f30be30c55ba",
+   "sha256": "d4b7c69d9f9ef4e9e7b4f5e9964c2dd58bc09a2787b3e3d89877ec27400eb003",
+   "size": 4477042,
+   "url": "https://raw.githubusercontent.com/mathworks/RollingElementBearingFaultDiagnosis-Data/master/test_data/baseline_3.mat"
+  },
+  "train_data/InnerRaceFault_vload_1.mat": {
+   "publisher_checksum": "gitsha1:33a65bdefdcba6d2126b4a064007a19a3c077526",
+   "sha256": "943e1f0ecef2496ee5233063765d40b8a3aab480044b36a9feaa3483e5331db9",
+   "size": 1124871,
+   "url": "https://raw.githubusercontent.com/mathworks/RollingElementBearingFaultDiagnosis-Data/master/train_data/InnerRaceFault_vload_1.mat"
+  },
+  "train_data/InnerRaceFault_vload_2.mat": {
+   "publisher_checksum": "gitsha1:20bf52f0be0e9d7c09c0067ba310ace3f97da9d3",
+   "sha256": "4e85dc145f230db5b687d032ba94e849d58adb85fd1c00e605efba0bc14edc92",
+   "size": 1124681,
+   "url": "https://raw.githubusercontent.com/mathworks/RollingElementBearingFaultDiagnosis-Data/master/train_data/InnerRaceFault_vload_2.mat"
+  },
+  "train_data/InnerRaceFault_vload_3.mat": {
+   "publisher_checksum": "gitsha1:b399822bfea8ef74a44ad176be5bed0846085c05",
+   "sha256": "f4b100c59db948212f1603112952af332967497db66c6ebe5b4f799ac62dd4bf",
+   "size": 1124601,
+   "url": "https://raw.githubusercontent.com/mathworks/RollingElementBearingFaultDiagnosis-Data/master/train_data/InnerRaceFault_vload_3.mat"
+  },
+  "train_data/InnerRaceFault_vload_4.mat": {
+   "publisher_checksum": "gitsha1:f041b51c34e0ee449a895328ba8f9a84f140c4e3",
+   "sha256": "3826a49dcac630176b82569a0b923ef16fa13db5a667171066ffac62949d498b",
+   "size": 1123967,
+   "url": "https://raw.githubusercontent.com/mathworks/RollingElementBearingFaultDiagnosis-Data/master/train_data/InnerRaceFault_vload_4.mat"
+  },
+  "train_data/InnerRaceFault_vload_5.mat": {
+   "publisher_checksum": "gitsha1:e863248287c384dcbef2fa9bf11e12fcce1f4197",
+   "sha256": "5eb0c3b88f4abab2d00f17f12170a25e51946adf05ff95ee79844360ccce2e92",
+   "size": 1124229,
+   "url": "https://raw.githubusercontent.com/mathworks/RollingElementBearingFaultDiagnosis-Data/master/train_data/InnerRaceFault_vload_5.mat"
+  },
+  "train_data/OuterRaceFault_1.mat": {
+   "publisher_checksum": "gitsha1:6007ea4a538a217f1d5ee260a3f506896795021a",
+   "sha256": "1a54a9d9ebb95b6ef1f72c4edd347358eedca979cce47992fcf6147b009bb290",
+   "size": 4471331,
+   "url": "https://raw.githubusercontent.com/mathworks/RollingElementBearingFaultDiagnosis-Data/master/train_data/OuterRaceFault_1.mat"
+  },
+  "train_data/OuterRaceFault_2.mat": {
+   "publisher_checksum": "gitsha1:4fc8c94d0a7e6d5ba1c0e92741e1958ae0afea7a",
+   "sha256": "c177a4092ff22d0a568ee591fbef43b0d07ac57c8527f2ab45cd352313fb712c",
+   "size": 4476284,
+   "url": "https://raw.githubusercontent.com/mathworks/RollingElementBearingFaultDiagnosis-Data/master/train_data/OuterRaceFault_2.mat"
+  },
+  "train_data/OuterRaceFault_vload_1.mat": {
+   "publisher_checksum": "gitsha1:a1b836d47a99be22da67682b256ec401d1391f3c",
+   "sha256": "8a1977da6f1c8dd74c7826b66e75cf9d52e1cdcf6000c1348d1b356a06781af0",
+   "size": 1121586,
+   "url": "https://raw.githubusercontent.com/mathworks/RollingElementBearingFaultDiagnosis-Data/master/train_data/OuterRaceFault_vload_1.mat"
+  },
+  "train_data/OuterRaceFault_vload_2.mat": {
+   "publisher_checksum": "gitsha1:6584cc001790de41443800a03374e1dd0a763ad2",
+   "sha256": "1883793fc865e10c6ddebe8a8241dd4924bfd4b4fd0ba6284affc697d2b29e6d",
+   "size": 1121822,
+   "url": "https://raw.githubusercontent.com/mathworks/RollingElementBearingFaultDiagnosis-Data/master/train_data/OuterRaceFault_vload_2.mat"
+  },
+  "train_data/OuterRaceFault_vload_3.mat": {
+   "publisher_checksum": "gitsha1:c99ec0c3ed6f74f2da5e0f67c7fc1efad86c5af4",
+   "sha256": "52410e466c71413e70b9da800d8c1fa4d74ada9bfcf14e45bbe455e1a073296d",
+   "size": 1120163,
+   "url": "https://raw.githubusercontent.com/mathworks/RollingElementBearingFaultDiagnosis-Data/master/train_data/OuterRaceFault_vload_3.mat"
+  },
+  "train_data/OuterRaceFault_vload_4.mat": {
+   "publisher_checksum": "gitsha1:78486170b3d9137e58c4c7b61628d6d1308498ec",
+   "sha256": "81b4b1dde9340774c9170633d564fdc08b8a55e38676c3033a8088a0121c6191",
+   "size": 1120321,
+   "url": "https://raw.githubusercontent.com/mathworks/RollingElementBearingFaultDiagnosis-Data/master/train_data/OuterRaceFault_vload_4.mat"
+  },
+  "train_data/OuterRaceFault_vload_5.mat": {
+   "publisher_checksum": "gitsha1:ab38c83ee88650f9fb7170f7a8d3e3c1176b732a",
+   "sha256": "8f5b43ae668518165cd65fcb3cf30cd9e32e6f69b3c5192b4ebb93ff42c47689",
+   "size": 1121183,
+   "url": "https://raw.githubusercontent.com/mathworks/RollingElementBearingFaultDiagnosis-Data/master/train_data/OuterRaceFault_vload_5.mat"
+  },
+  "train_data/baseline_1.mat": {
+   "publisher_checksum": "gitsha1:d46daf6c6f4a43b4f22b9067d1c76add642eecb5",
+   "sha256": "23f63a29f61c398e930fc69221beb729bd931656508fdda41aa63a0809cf4d8f",
+   "size": 4477991,
+   "url": "https://raw.githubusercontent.com/mathworks/RollingElementBearingFaultDiagnosis-Data/master/train_data/baseline_1.mat"
+  },
+  "train_data/baseline_2.mat": {
+   "publisher_checksum": "gitsha1:6d60d2ae99630a6d6259563671534520e7f2643b",
+   "sha256": "5949a1330d7846c3052853d6f8248f78398713de43c250e1c978dbf9bdef11b8",
+   "size": 4477679,
+   "url": "https://raw.githubusercontent.com/mathworks/RollingElementBearingFaultDiagnosis-Data/master/train_data/baseline_2.mat"
+  }
+ },
+ "raw_on_vault": true,
+ "role": "dev",
+ "sealed": false,
+ "source": {
+  "include": "\\.(mat|md|txt)$",
+  "kind": "github_tree",
+  "ref": "master",
+  "repo": "mathworks/RollingElementBearingFaultDiagnosis-Data"
+ },
+ "stage": "vault",
+ "status": "complete",
+ "version": "mathworks-github-master"
+}

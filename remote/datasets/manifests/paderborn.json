@@ -1,0 +1,484 @@
+{
+ "citation": "Lessmeier et al., Condition Monitoring of Bearing Damage in Electromechanical Drive Systems..., PHME 2016",
+ "condensed": {
+  "v1/K001.npz": {
+   "sha256": "44a24cec9d59bca8e49ad0fa77d32c0e9c8e006bf79ee95551d587e696966905",
+   "size": 14338213
+  },
+  "v1/K002.npz": {
+   "sha256": "6bd3185a67a24c6222e75d75c3059a3a9223d4a05e6296a1822cf07067a9b139",
+   "size": 14337124
+  },
+  "v1/K003.npz": {
+   "sha256": "02f683d5c7c8d5aa11d8586697ecb8c361d657375521293969bac20492c28993",
+   "size": 14363835
+  },
+  "v1/K004.npz": {
+   "sha256": "e8786708fc1caa0181a4f0b4d021a583b0bb0790a3fb301dbdfdb2a72c70b265",
+   "size": 14298373
+  },
+  "v1/K005.npz": {
+   "sha256": "09b9eddfd5674c336c626cf621bc982e475dc0feb8621fe19843f62661cfcdfd",
+   "size": 14304709
+  },
+  "v1/K006.npz": {
+   "sha256": "67e086d0b6b9024245d958eb7a716d9bfd6a1dc5e08f9654ef1ba8dc550fe020",
+   "size": 14356486
+  },
+  "v1/KA01.npz": {
+   "sha256": "3b8825eab5710c70b5ed7bcea8bd69fd5c02a75ec2ee165b4a31e4bc27560554",
+   "size": 14411758
+  },
+  "v1/KA03.npz": {
+   "sha256": "654f4c505c9d5edbd6ac2f4748c520db50ab61f66abdf0eb5135a0cb4bc7a001",
+   "size": 14397388
+  },
+  "v1/KA04.npz": {
+   "sha256": "31e813ab61ad1a2f84752ad32b9247980fd6824ec55c990a39648d31f8f14500",
+   "size": 14325492
+  },
+  "v1/KA05.npz": {
+   "sha256": "1123e58aab9b713ab07342a6b0710ea3c08488b9655d4c379688e6751beb1a8a",
+   "size": 14314423
+  },
+  "v1/KA06.npz": {
+   "sha256": "9bb3a6a7944ca729fd672014aeecb8f66d7749661ce371250e4878d2db4d9cfa",
+   "size": 14311727
+  },
+  "v1/KA07.npz": {
+   "sha256": "dd6edec757ee4c9d1827446d228cae2a83e515d92565ab579700ac5921cb5c15",
+   "size": 14371162
+  },
+  "v1/KA08.npz": {
+   "sha256": "e19e2db2cf055c2d343bde64cd0dee3c4c3ff2ae10b8d4ef71f8f08b5f3017a1",
+   "size": 14130758
+  },
+  "v1/KA09.npz": {
+   "sha256": "cd1d58f5c6aa3bb23e0cbb2f4967390cc1f9f247718866c7f42f0ad3d101243d",
+   "size": 14335771
+  },
+  "v1/KA15.npz": {
+   "sha256": "5176fbe09c8665157626bf5a62c35e299a8b468396b5d3f56d0f9dda918fe230",
+   "size": 14237544
+  },
+  "v1/KA16.npz": {
+   "sha256": "632cf48cc680e430aa2eba347eeec7b1ab341a9464dd6097c61829273a636d4c",
+   "size": 14332256
+  },
+  "v1/KA22.npz": {
+   "sha256": "39aab96d3592e9c72454f25221be6e7aed6521fa9907528f739b183183768808",
+   "size": 14268404
+  },
+  "v1/KA30.npz": {
+   "sha256": "1cba80a7753df6b10b3463a566f1b5f9b0243247635f116a277785033a197478",
+   "size": 14283862
+  },
+  "v1/KB23.npz": {
+   "sha256": "4ad787147b614f4b9183c5e805862074a40dca87b4194c73fe34a979c1e11215",
+   "size": 14361918
+  },
+  "v1/KB24.npz": {
+   "sha256": "ad7bed6fe4f69dbe47b834bdab8d4a979d8d580eb7416eeea1ea94f9aabdb367",
+   "size": 14390656
+  },
+  "v1/KB27.npz": {
+   "sha256": "c6cc6d55813365e96004ff51bea00ad84c3462b5f4dcf61473ae164b7ebced5f",
+   "size": 14299345
+  },
+  "v1/KI01.npz": {
+   "sha256": "ea01fccb28bcbeeb52be9e3a4bbd2eec7ff288d41c6885ff2f9a3522a955a916",
+   "size": 14367300
+  },
+  "v1/KI03.npz": {
+   "sha256": "40fb0ea9ef3603039e24142daf4d5b03351caaa7b54f20d63bb123d735814360",
+   "size": 14270850
+  },
+  "v1/KI04.npz": {
+   "sha256": "2a253e4952278142151d27fa2724447cf94e782fa9db2ff9f77db26631ac59e9",
+   "size": 14301887
+  },
+  "v1/KI05.npz": {
+   "sha256": "0b12b984c3a7fc28e965191573019ca162e2ce909a863017e1bbc006b678e847",
+   "size": 14350583
+  },
+  "v1/KI07.npz": {
+   "sha256": "394cd3feef453dd41bf4e85281e81fdf18c4ab8c3dc8c15a87ba4b50a956899c",
+   "size": 14325209
+  },
+  "v1/KI08.npz": {
+   "sha256": "af8e35ba3f9d551a2d841bbcf16a82b46f4cf71f4c82773c31e94d8f86b78090",
+   "size": 14323310
+  },
+  "v1/KI14.npz": {
+   "sha256": "5177c7f1167d32632a4e4a4fdf90a8cd858cdfac0e8631fcdceeb30f3b10306c",
+   "size": 14267873
+  },
+  "v1/KI16.npz": {
+   "sha256": "3bc29832c25ba69cea50163f85f83513186a3cf725290d8fc53b5cd53384f61e",
+   "size": 14400010
+  },
+  "v1/KI17.npz": {
+   "sha256": "135c74c4eb00675aabcb954dcf66e9a8f1c0dacf823fccafd157606a2a4b0cdc",
+   "size": 14331012
+  },
+  "v1/KI18.npz": {
+   "sha256": "d0632f243de5134c54bf970ebc0be34255267791d75a25495f2b2446f2fd8adf",
+   "size": 14327298
+  },
+  "v1/KI21.npz": {
+   "sha256": "eca560ec358fe810a64f9991d8b33cf54a073ee2e423e109053060ff87feb71d",
+   "size": 14257616
+  },
+  "v1/manifest.csv": {
+   "sha256": "403c916d5c7178ff970fc88b73aaf62c013d01527dbb09564e4df0f8897e3408",
+   "size": 147264
+  },
+  "v2/K001.npz": {
+   "sha256": "8c3e42c22529f45b84023e82e3f4ecf556fd7aba527b1115338ab5f3b5bd340a",
+   "size": 43849106
+  },
+  "v2/K002.npz": {
+   "sha256": "08eeed1a20a5807ce624b82e124ca9e61b41a455f742b916b2b4f92844bb24f2",
+   "size": 40427615
+  },
+  "v2/K003.npz": {
+   "sha256": "031d41e76af82565da86918bdfe416826a649975a71674be8ed40c7054b08c2a",
+   "size": 42693945
+  },
+  "v2/K004.npz": {
+   "sha256": "3b267919a49058743f8ff67935548db81b2680836558806fc1cd05d6ba3ac9ac",
+   "size": 39121639
+  },
+  "v2/K005.npz": {
+   "sha256": "07738bd87e99f130fbcac3dc981541be406e9af4410d540c9d1f126d0fa3e5a7",
+   "size": 39795693
+  },
+  "v2/K006.npz": {
+   "sha256": "ac4fbd0a9307fa8fbddd12b433eb219fd2f7432060075ac2ef4a0972fab5b3c1",
+   "size": 43558997
+  },
+  "v2/KA01.npz": {
+   "sha256": "b5aa964f34c9874fa07e984df85b624360a879af089c97a39dfc1aef85fed46f",
+   "size": 43817859
+  },
+  "v2/KA03.npz": {
+   "sha256": "290ecbecffe37630b4f7c57a39ed947cf8c855377fb23a6c20f41099dd9d8be8",
+   "size": 43209892
+  },
+  "v2/KA04.npz": {
+   "sha256": "e36a2735c592e06d7bce7f9f3a657bbcd704cfca462f8d47def8a29de987e9bb",
+   "size": 44897928
+  },
+  "v2/KA05.npz": {
+   "sha256": "835abf499d8abe6ee8ba0c79ee6a49f9795bf91a931df7720c0495002bfe5870",
+   "size": 41373188
+  },
+  "v2/KA06.npz": {
+   "sha256": "bdaea0566d99bf35cc119639621e59c3b65e86291936fcdfa208105ece164a73",
+   "size": 41560676
+  },
+  "v2/KA07.npz": {
+   "sha256": "e91ac7cb85c5c553882323321233c29389b066a107e3aba5f0be4667d6020081",
+   "size": 40274279
+  },
+  "v2/KA09.npz": {
+   "sha256": "521de1138e20fd7b72e6d06df741482b5c5c89d970cb54afbbadc12e4420f450",
+   "size": 41367465
+  },
+  "v2/KA15.npz": {
+   "sha256": "4c29977b6fd57e51d7ed5de0ad6f3283695c847e54819cb0c3fe7a7f5e9f1e63",
+   "size": 40223623
+  },
+  "v2/KA16.npz": {
+   "sha256": "3e1f31337c87d732f475aa96496bcd412d0336b95f8a8f7f05af7eb08b482b1b",
+   "size": 45787554
+  },
+  "v2/KA22.npz": {
+   "sha256": "4cae60dd67cbc15235619f647f267a5e18f6e7fba26e66c9c602357f33bfe7ab",
+   "size": 39047351
+  },
+  "v2/KA30.npz": {
+   "sha256": "42e5ed260029658928d7879240279e189eb0664eaea30b6e67fc8bc13dbd91fe",
+   "size": 43465321
+  },
+  "v2/KB23.npz": {
+   "sha256": "87a63e282ba7f6744882964135903edc946f9fb4e5e3f6bb9dd28bceab491d1a",
+   "size": 46319489
+  },
+  "v2/KB24.npz": {
+   "sha256": "3c0b14038695c61c4aa0289abe43196ed63a45f45e0116e197f8d7f9f53bade7",
+   "size": 48867585
+  },
+  "v2/KB27.npz": {
+   "sha256": "9bbe6347800c6362d680288f513477b616e6fe16edf18a1084df17954a8b0baf",
+   "size": 40611942
+  },
+  "v2/KI01.npz": {
+   "sha256": "5677baee2370c44bc2bc409229b196021ccba8864369e8ebdf72b40018938d71",
+   "size": 46200562
+  },
+  "v2/KI03.npz": {
+   "sha256": "7d07fcd3ec3e466aa6b42bcfecac0bdfe4eb3e11f446d252fd283779e7b2a668",
+   "size": 40205589
+  },
+  "v2/KI04.npz": {
+   "sha256": "c82e5f862863de9933b7639fa020de48ec9bd614571b4f36ff4de0fc582fc0e2",
+   "size": 43858200
+  },
+  "v2/KI05.npz": {
+   "sha256": "5c3c40e1cbf266df70b7b7e28862512b655df4b3f87ab1d752bdf4356f42bac1",
+   "size": 40435567
+  },
+  "v2/KI07.npz": {
+   "sha256": "7b5deefa481c406a13e34b53b1e8a97f9afee28bac6aa9b147ceac1cbb0b57ec",
+   "size": 41696700
+  },
+  "v2/KI08.npz": {
+   "sha256": "6eeece431dcb24bf47d572d9e302692decd00bbee255ff7fa256923cc1b76da7",
+   "size": 42612175
+  },
+  "v2/KI14.npz": {
+   "sha256": "638f83abf0e39b0faa5e4396bf342138b86bfe525095195902c43277fec9f76c",
+   "size": 40632195
+  },
+  "v2/KI16.npz": {
+   "sha256": "b88366c19d6b15166484df4a1fd2a195ed7b4a87883922c9f57fb526ad0321f8",
+   "size": 43774384
+  },
+  "v2/KI17.npz": {
+   "sha256": "13d20a588355339ca958d143caa57a8d7c2aae27d1a9bfe862008cfbb80f5e63",
+   "size": 41409330
+  },
+  "v2/KI18.npz": {
+   "sha256": "375c48671f56c023513e4b232b954be9291eac4343912b0da0620705559104df",
+   "size": 43229140
+  },
+  "v2/KI21.npz": {
+   "sha256": "e4aff059637734c69f90ff4c49ad846f945c2f7e83698562543c77e843a3c26c",
+   "size": 41587228
+  },
+  "v2/manifest.csv": {
+   "sha256": "00ec092551232e3106b67d23c285a983fbab06e29f78cf71cc0a6df788b1b0e7",
+   "size": 247934
+  }
+ },
+ "dataset": "paderborn",
+ "history": [
+  {
+   "at": "2026-10-21T22:15:09Z",
+   "by": "payesh-20-947",
+   "event": "raw verified"
+  },
+  {
+   "at": "2026-10-21T22:16:54Z",
+   "by": "payesh-20-947",
+   "event": "complete"
+  },
+  {
+   "at": "2026-10-21T22:17:47Z",
+   "by": "payesh-20-947",
+   "event": "rehash condensed"
+  }
+ ],
+ "license": "CC BY-NC 4.0 (KAt DataCenter); Zenodo mirror lists CC BY 4.0",
+ "notes": "The Zenodo mirror has 31 of the 32 bearing codes: KA08 is missing. KA08 v1 is copied from the laptop's Kaggle-built store with `box data push`, so v1 stays complete; v2 has no KA08. condensed/v1/KA08.npz merged 2026-10-22 from the laptop Kaggle-built store (dippatel03/paderborn-db mirror; 79 runs, KA08/N15_M01_F10_KA08_2 unreadable there).",
+ "raw": {
+  "K001.rar": {
+   "publisher_checksum": "md5:af6dc58283d356cd438e7738a2d525b8",
+   "sha256": "0f119ebdb28fb2f4d9fac1beb1319429f63f7ae1256c23c872f280f3560918e5",
+   "size": 173881721,
+   "url": "https://zenodo.org/api/records/15845309/files/K001.rar/content"
+  },
+  "K002.rar": {
+   "publisher_checksum": "md5:88631bc0081a6470846d18189d46381d",
+   "sha256": "1040da8b74d169c4e8c8545afa335d7a3a320bcaf36a471250c3e434bc4caffd",
+   "size": 161981588,
+   "url": "https://zenodo.org/api/records/15845309/files/K002.rar/content"
+  },
+  "K003.rar": {
+   "publisher_checksum": "md5:08b61792e1058dc47dd21071666bca2c",
+   "sha256": "d7d1edf6047fac088efe118198abd0856c5280dd8653496fbac9a5d877180f1e",
+   "size": 173194389,
+   "url": "https://zenodo.org/api/records/15845309/files/K003.rar/content"
+  },
+  "K004.rar": {
+   "publisher_checksum": "md5:5b9fde1c6d754806539f9a890ee6bbdd",
+   "sha256": "97242542046cf3ce286c13e12d8df11f618a53365efe592750e2047256345333",
+   "size": 163337851,
+   "url": "https://zenodo.org/api/records/15845309/files/K004.rar/content"
+  },
+  "K005.rar": {
+   "publisher_checksum": "md5:28d91412ad14583fbdfda958b64a8267",
+   "sha256": "2faf0ee4ee66055bcc066e5b6d9ed9fc44638b2c1ea397a279261103aa83caaa",
+   "size": 167366765,
+   "url": "https://zenodo.org/api/records/15845309/files/K005.rar/content"
+  },
+  "K006.rar": {
+   "publisher_checksum": "md5:b36389294fc5a21539d9fcfacfa3604a",
+   "sha256": "250b8e0ef18082163ae4003cd7f50e6daa3061b3a095e226378910da55b78b94",
+   "size": 175997605,
+   "url": "https://zenodo.org/api/records/15845309/files/K006.rar/content"
+  },
+  "KA01.rar": {
+   "publisher_checksum": "md5:5627ec9320199078205db5325c1c2f84",
+   "sha256": "6a6be1e11132730cc6f560d51eacedcbfd5fd74b829e9d8d3728c6c8a7cd4c0e",
+   "size": 166571438,
+   "url": "https://zenodo.org/api/records/15845309/files/KA01.rar/content"
+  },
+  "KA03.rar": {
+   "publisher_checksum": "md5:0bba6927ac1732d23934a909af4c1fc6",
+   "sha256": "21f188899e46183a29752e5dbc830e3132e0fee4d7eb5507450d1730a5b264b5",
+   "size": 176196084,
+   "url": "https://zenodo.org/api/records/15845309/files/KA03.rar/content"
+  },
+  "KA04.rar": {
+   "publisher_checksum": "md5:f87503ed69a624ba6e1d9e573e6c09fb",
+   "sha256": "6fc317157e2cd4cb55bc54d6fac1b1753f8ab31abcccd1ac68cbfb78e5e8299d",
+   "size": 180920703,
+   "url": "https://zenodo.org/api/records/15845309/files/KA04.rar/content"
+  },
+  "KA05.rar": {
+   "publisher_checksum": "md5:22b6ffd9ff083f084918c34f6ddcc538",
+   "sha256": "880ad18fae8f1deef2c99643cb74e2dbd284cdf1fe490caff9418717729c4dd1",
+   "size": 163644977,
+   "url": "https://zenodo.org/api/records/15845309/files/KA05.rar/content"
+  },
+  "KA06.rar": {
+   "publisher_checksum": "md5:be58a820fee4851b2c16a97a88c282cb",
+   "sha256": "a0f3e8b167b1a1cee63f904566dff6ee8b0d905ffb67796809dbfc7f279c5f60",
+   "size": 164139086,
+   "url": "https://zenodo.org/api/records/15845309/files/KA06.rar/content"
+  },
+  "KA07.rar": {
+   "publisher_checksum": "md5:185e3de688149ebabf20c51d80fd7dd8",
+   "sha256": "0c081e1fe273d17cf26f052bd99c742fc9a1fcbbc76667b4c0c394f3a8aaf95b",
+   "size": 160346192,
+   "url": "https://zenodo.org/api/records/15845309/files/KA07.rar/content"
+  },
+  "KA09.rar": {
+   "publisher_checksum": "md5:de9392fdbf878171a429c2451d2696fd",
+   "sha256": "6a4fb9b05c95324d9f4ee38d3855106dba21052309f25c30c866dbae9305ce9b",
+   "size": 171467156,
+   "url": "https://zenodo.org/api/records/15845309/files/KA09.rar/content"
+  },
+  "KA15.rar": {
+   "publisher_checksum": "md5:db518f97ba5bcaedb09c648a317431e0",
+   "sha256": "2914d003a7a7a23425a825f03f09b2dede8e0f53c266e0b3ad90aa6b98958b7b",
+   "size": 164268273,
+   "url": "https://zenodo.org/api/records/15845309/files/KA15.rar/content"
+  },
+  "KA16.rar": {
+   "publisher_checksum": "md5:ef848f5621f9c10523c313131d1a4c21",
+   "sha256": "3e300d2e3402b47a18ce9c75694d3146f6e4b5f86bcd1d159f4938221fb261b6",
+   "size": 167165704,
+   "url": "https://zenodo.org/api/records/15845309/files/KA16.rar/content"
+  },
+  "KA22.rar": {
+   "publisher_checksum": "md5:7a16a5bc88d5fe1d83d169f88f0709e8",
+   "sha256": "95790035ebe5a69bb298f93a7f4fc64769f0baeffd04a2cbb3ff5b4af8608642",
+   "size": 159054470,
+   "url": "https://zenodo.org/api/records/15845309/files/KA22.rar/content"
+  },
+  "KA30.rar": {
+   "publisher_checksum": "md5:715c0cf7862a7ba83e7c6a6fb5c91a61",
+   "sha256": "cbe1810281a7cbd28d5ad0372cc392c910744709d46d4db501a45eeea18dd518",
+   "size": 163625195,
+   "url": "https://zenodo.org/api/records/15845309/files/KA30.rar/content"
+  },
+  "KB23.rar": {
+   "publisher_checksum": "md5:bb87c72669baa9dbbefd10b5294ffcc8",
+   "sha256": "a07e976b285438c33492650c4f5b28250a49e7855990191b30b6bcb541831c6c",
+   "size": 170933916,
+   "url": "https://zenodo.org/api/records/15845309/files/KB23.rar/content"
+  },
+  "KB24.rar": {
+   "publisher_checksum": "md5:c60ce8867c824583540794ae00cce333",
+   "sha256": "ae5928ee2ed02773e3787aeceaae73074b15ff3ae158cd932c7a6865fbc9c1ff",
+   "size": 186677308,
+   "url": "https://zenodo.org/api/records/15845309/files/KB24.rar/content"
+  },
+  "KB27.rar": {
+   "publisher_checksum": "md5:965dd4af26391d7def4638c8b31a87e7",
+   "sha256": "738b9c332b31038ab051f60a7e1ceec5612f28449254cccda6154ae14655e4aa",
+   "size": 162452979,
+   "url": "https://zenodo.org/api/records/15845309/files/KB27.rar/content"
+  },
+  "KI01.rar": {
+   "publisher_checksum": "md5:03429a4ab5e3768b7395d1654e55bead",
+   "sha256": "b1dd6d99bb64d556f889fefaedb7e6e672900f5f015125615feaae776f055348",
+   "size": 175265779,
+   "url": "https://zenodo.org/api/records/15845309/files/KI01.rar/content"
+  },
+  "KI03.rar": {
+   "publisher_checksum": "md5:26f0452f00ab698a4e657e27b7a249b3",
+   "sha256": "725010ee4158256eef9ef7f58da835fc2150579d6e97b5d48bcd2ee70795d77e",
+   "size": 159217524,
+   "url": "https://zenodo.org/api/records/15845309/files/KI03.rar/content"
+  },
+  "KI04.rar": {
+   "publisher_checksum": "md5:a5a634fcdcb33a8501e7411d30441c6d",
+   "sha256": "8fde861a9ceac4b41fe8a030b4c5bbb4b9b9af0590d9338a8de0150b4661be77",
+   "size": 172644279,
+   "url": "https://zenodo.org/api/records/15845309/files/KI04.rar/content"
+  },
+  "KI05.rar": {
+   "publisher_checksum": "md5:c777459ddc7a1d38df7155f09e0ce782",
+   "sha256": "5a936f170f4188e38c537b05a260a3cf60cc3b671f90502a008636aac6c66bf4",
+   "size": 160359281,
+   "url": "https://zenodo.org/api/records/15845309/files/KI05.rar/content"
+  },
+  "KI07.rar": {
+   "publisher_checksum": "md5:c26144f53ebcc34562bdc2e3a0ef1087",
+   "sha256": "5f3089d19db77ae071a6731198ef116c800e03d3628316086f4672d029d5a2ed",
+   "size": 160646876,
+   "url": "https://zenodo.org/api/records/15845309/files/KI07.rar/content"
+  },
+  "KI08.rar": {
+   "publisher_checksum": "md5:f546b3481ffdcd80f0d14a797db48deb",
+   "sha256": "f00d6dca7360ed6ec30b78c0e186161913852db4c209551975c5a0998447d514",
+   "size": 163760131,
+   "url": "https://zenodo.org/api/records/15845309/files/KI08.rar/content"
+  },
+  "KI14.rar": {
+   "publisher_checksum": "md5:13603834975435ca10eb08de6d1840dc",
+   "sha256": "16911b5f8c723b568b6aa69397b00796fea41e43bf627a1a0158a7294f2b7a60",
+   "size": 163581312,
+   "url": "https://zenodo.org/api/records/15845309/files/KI14.rar/content"
+  },
+  "KI16.rar": {
+   "publisher_checksum": "md5:db14eae04a213afd0d1ca99d3d850342",
+   "sha256": "f7f4ce4feffc3ae799f92289cdea7708d2cf6e154ad5382f9f4c2c8bed890c44",
+   "size": 166348305,
+   "url": "https://zenodo.org/api/records/15845309/files/KI16.rar/content"
+  },
+  "KI17.rar": {
+   "publisher_checksum": "md5:d1055fe5cc44948e5d3a39f2e0db9dbe",
+   "sha256": "d80dbdb612cfaeb7ba1ffe6387c52c4d938084b2466e55d96a5528aff4d8b084",
+   "size": 167363476,
+   "url": "https://zenodo.org/api/records/15845309/files/KI17.rar/content"
+  },
+  "KI18.rar": {
+   "publisher_checksum": "md5:db5da511e9240dbc56ec1e850fd91699",
+   "sha256": "37b9b17c392d033f0b14c35bf0fd19ea878909299cdc8c517e2226f794048615",
+   "size": 161226797,
+   "url": "https://zenodo.org/api/records/15845309/files/KI18.rar/content"
+  },
+  "KI21.rar": {
+   "publisher_checksum": "md5:911ce3e37a86d258818e3e93274752a2",
+   "sha256": "1e3c563fa1d1564e3586736189b2e0807688389b549944af4a06908485c1d5bf",
+   "size": 164882839,
+   "url": "https://zenodo.org/api/records/15845309/files/KI21.rar/content"
+  }
+ },
+ "raw_on_vault": false,
+ "role": "dev",
+ "sealed": false,
+ "source": {
+  "include": "^K[ABI]?\\d+\\.rar$",
+  "kind": "zenodo",
+  "record": 15845309
+ },
+ "stage": "ssd",
+ "status": "complete",
+ "version": "zenodo-15845309"
+}

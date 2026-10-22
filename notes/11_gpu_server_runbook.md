@@ -1,3 +1,5 @@
+> **Superseded 2026-10-22 by [remote/README.md](../remote/README.md).** Kept as history; its traps are carried over there. Since 2026-10-22 the box downloads datasets itself onto the persistent vault, and Kaggle is unreachable from the box ("not available in your location").
+
 # GPU server runbook (185.13.231.x, rented per minute)
 
 Written after two rentals on 2026-09-17, the first of which was deleted

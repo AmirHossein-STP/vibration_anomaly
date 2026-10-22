@@ -1,0 +1,42 @@
+{
+ "citation": "J. Lee, H. Qiu, G. Yu, J. Lin, Rexnord Technical Services (2007), IMS, Univ. of Cincinnati, Bearing Data Set, NASA PCoE Data Repository",
+ "condensed": {},
+ "dataset": "ims",
+ "history": [
+  {
+   "at": "2026-10-21T22:10:33Z",
+   "by": "payesh-20-947",
+   "event": "raw verified"
+  },
+  {
+   "at": "2026-10-21T22:10:33Z",
+   "by": "payesh-20-947",
+   "event": "complete"
+  }
+ ],
+ "license": "NASA PCoE data repository, public",
+ "notes": null,
+ "raw": {
+  "IMS.zip": {
+   "publisher_checksum": null,
+   "sha256": "6cb42c263b0281c725abf99f4b9fcf49915c949f31dbd2333877dc2e06ce9ec2",
+   "size": 1061902801,
+   "url": "https://data.nasa.gov/docs/legacy/IMS.zip"
+  }
+ },
+ "raw_on_vault": true,
+ "role": "sealed",
+ "sealed": true,
+ "source": {
+  "files": [
+   {
+    "name": "IMS.zip",
+    "url": "https://data.nasa.gov/docs/legacy/IMS.zip"
+   }
+  ],
+  "kind": "url"
+ },
+ "stage": "vault",
+ "status": "complete",
+ "version": "nasa-legacy-ims-zip"
+}

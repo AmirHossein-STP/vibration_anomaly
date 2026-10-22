@@ -1,0 +1,999 @@
+{
+ "citation": "Case Western Reserve University Bearing Data Center, https://engineering.case.edu/bearingdatacenter",
+ "condensed": {},
+ "dataset": "cwru",
+ "history": [
+  {
+   "at": "2026-10-21T22:07:56Z",
+   "by": "payesh-20-947",
+   "event": "raw verified"
+  },
+  {
+   "at": "2026-10-21T22:07:56Z",
+   "by": "payesh-20-947",
+   "event": "complete"
+  }
+ ],
+ "license": "CWRU Bearing Data Center, free for research; npz conversion by srigas (GitHub)",
+ "notes": null,
+ "raw": {
+  "1730_B_14_DE12.npz": {
+   "publisher_checksum": "gitsha1:9255d1d68ba9564b2b5b62e1f8f0bf093120f53a",
+   "sha256": "873bfea949155de79249d1603190b76b18daf83d3d9b2ceec5d151039f4cfe0c",
+   "size": 2931994,
+   "url": "https://raw.githubusercontent.com/srigas/CWRU_Bearing_NumPy/main/Data/1730%20RPM/1730_B_14_DE12.npz"
+  },
+  "1730_B_14_DE48.npz": {
+   "publisher_checksum": "gitsha1:9ee77da24f3324d8618e24d6ee10f7308b65f626",
+   "sha256": "9576f01eb7baba8fe5bc12056b47e4710a9873747eaee49438878d2cb39a5c95",
+   "size": 7789358,
+   "url": "https://raw.githubusercontent.com/srigas/CWRU_Bearing_NumPy/main/Data/1730%20RPM/1730_B_14_DE48.npz"
+  },
+  "1730_B_14_FE.npz": {
+   "publisher_checksum": "gitsha1:f6d1ef75a6f82d99956d5fc70451a9c117016257",
+   "sha256": "8f7d1ed6b63f7651ad994ac59d82b71707082f39a0d681d42dbba0ed91df35f4",
+   "size": 2908762,
+   "url": "https://raw.githubusercontent.com/srigas/CWRU_Bearing_NumPy/main/Data/1730%20RPM/1730_B_14_FE.npz"
+  },
+  "1730_B_21_DE12.npz": {
+   "publisher_checksum": "gitsha1:76bb4ed58f817bfc247d325a004667b951450d20",
+   "sha256": "ac66f158a5603f74372c3de7a1ea8cb8db37b0fe9ec62ba13a95dc6acc66f699",
+   "size": 2931994,
+   "url": "https://raw.githubusercontent.com/srigas/CWRU_Bearing_NumPy/main/Data/1730%20RPM/1730_B_21_DE12.npz"
+  },
+  "1730_B_21_DE48.npz": {
+   "publisher_checksum": "gitsha1:a8d11715b48ba71b7bbb452db6240a30b6cbbdfd",
+   "sha256": "e964574be1613be730510a41ee88b40e9fbc18d4683721787ac7a57b82676993",
+   "size": 7789358,
+   "url": "https://raw.githubusercontent.com/srigas/CWRU_Bearing_NumPy/main/Data/1730%20RPM/1730_B_21_DE48.npz"
+  },
+  "1730_B_21_FE.npz": {
+   "publisher_checksum": "gitsha1:52dcf6f0be0cc88e88b24aa23d0125428e13c2e5",
+   "sha256": "858f58de52e61e3f8fb39523d60be5c387ef5ba9403f0cbf9ce46d329c12cc80",
+   "size": 2899954,
+   "url": "https://raw.githubusercontent.com/srigas/CWRU_Bearing_NumPy/main/Data/1730%20RPM/1730_B_21_FE.npz"
+  },
+  "1730_B_28_DE12.npz": {
+   "publisher_checksum": "gitsha1:5b5bd7ac283c50dc0f96461bf93187ebb1d2c84b",
+   "sha256": "fb58ba5edefbe26e49aa828eee6b228fb56a49d07c6af539d4b0bb3e8f5811f1",
+   "size": 968130,
+   "url": "https://raw.githubusercontent.com/srigas/CWRU_Bearing_NumPy/main/Data/1730%20RPM/1730_B_28_DE12.npz"
+  },
+  "1730_B_7_DE12.npz": {
+   "publisher_checksum": "gitsha1:df19b25baab918705be42174a41b8d821fadf16b",
+   "sha256": "52f3c0676df6da0f9127e50f90c446b61624220ef8d73f69099937eb8c70b2a2",
+   "size": 2918074,
+   "url": "https://raw.githubusercontent.com/srigas/CWRU_Bearing_NumPy/main/Data/1730%20RPM/1730_B_7_DE12.npz"
+  },
+  "1730_B_7_DE48.npz": {
+   "publisher_checksum": "gitsha1:2c39f47cdde3db348e1d51a60ed3c97e05fccf47",
+   "sha256": "c7f8b65531fdaef71948e07e572427315f15c13cea4a1cc938da617ae768ec82",
+   "size": 7817214,
+   "url": "https://raw.githubusercontent.com/srigas/CWRU_Bearing_NumPy/main/Data/1730%20RPM/1730_B_7_DE48.npz"
+  },
+  "1730_B_7_FE.npz": {
+   "publisher_checksum": "gitsha1:de6bc7e6d1bfd230bb1b08dc8493462cf77ad1c2",
+   "sha256": "4135bac7ee33e75154061df949907c92b5d112309c8a124e0f941c5bf8dc415b",
+   "size": 2908762,
+   "url": "https://raw.githubusercontent.com/srigas/CWRU_Bearing_NumPy/main/Data/1730%20RPM/1730_B_7_FE.npz"
+  },
+  "1730_IR_14_DE12.npz": {
+   "publisher_checksum": "gitsha1:e5cf7ef2a1cc90b7eef8b31bfe2fb0023c62927d",
+   "sha256": "372bf4155c42c652c3f451dd5b1eb3b6f5ffed92cdb359a01ab1be5c363f7d51",
+   "size": 2921554,
+   "url": "https://raw.githubusercontent.com/srigas/CWRU_Bearing_NumPy/main/Data/1730%20RPM/1730_IR_14_DE12.npz"
+  },
+  "1730_IR_14_DE48.npz": {
+   "publisher_checksum": "gitsha1:d9f64840597212cd1f78e7dfde15b5ea5c5d5bcd",
+   "sha256": "8e24d7964efe78d6fe9740e312c05641f2bf05510f8096dfe830deeb824263ff",
+   "size": 7761502,
+   "url": "https://raw.githubusercontent.com/srigas/CWRU_Bearing_NumPy/main/Data/1730%20RPM/1730_IR_14_DE48.npz"
+  },
+  "1730_IR_14_FE.npz": {
+   "publisher_checksum": "gitsha1:57639d0de59b1969e6cbc4af9605332074471e40",
+   "sha256": "81ee6aa2952aca9433a9c30e37814483a04a2857cdab6c6ce6b37201dc857394",
+   "size": 2908762,
+   "url": "https://raw.githubusercontent.com/srigas/CWRU_Bearing_NumPy/main/Data/1730%20RPM/1730_IR_14_FE.npz"
+  },
+  "1730_IR_21_DE12.npz": {
+   "publisher_checksum": "gitsha1:3962901da1ab1ed00436cc0c25f8ada105fd3c02",
+   "sha256": "f68d3e8bd1e0948ebe33d050edac5efc283ba0c87fe5009a9eba48753559e1c5",
+   "size": 2928514,
+   "url": "https://raw.githubusercontent.com/srigas/CWRU_Bearing_NumPy/main/Data/1730%20RPM/1730_IR_21_DE12.npz"
+  },
+  "1730_IR_21_DE48.npz": {
+   "publisher_checksum": "gitsha1:d3cd29be18194049d9fae9fe9051ceaa7fc23b9c",
+   "sha256": "9e08033666fab0dd1de3b7a111ded8d9c79e9848e499b1b81b46ec3154cc71b9",
+   "size": 7826494,
+   "url": "https://raw.githubusercontent.com/srigas/CWRU_Bearing_NumPy/main/Data/1730%20RPM/1730_IR_21_DE48.npz"
+  },
+  "1730_IR_21_FE.npz": {
+   "publisher_checksum": "gitsha1:560dbfbb2775026cb1e4efa775feed532abafc60",
+   "sha256": "63d79525500c3635205d42d37846bc7c41001aa3f07ab8d0d20dcd85713b77ec",
+   "size": 2908762,
+   "url": "https://raw.githubusercontent.com/srigas/CWRU_Bearing_NumPy/main/Data/1730%20RPM/1730_IR_21_FE.npz"
+  },
+  "1730_IR_28_DE12.npz": {
+   "publisher_checksum": "gitsha1:e0b857a6c75a5ce36a180c80f868654d04228479",
+   "sha256": "807fe551712ba555fea0948600be85016e009046b0be831a3b6cc3f43ab803cb",
+   "size": 972538,
+   "url": "https://raw.githubusercontent.com/srigas/CWRU_Bearing_NumPy/main/Data/1730%20RPM/1730_IR_28_DE12.npz"
+  },
+  "1730_IR_7_DE12.npz": {
+   "publisher_checksum": "gitsha1:658d5295ecb221d62db3868f0ab29737bba69864",
+   "sha256": "807c5d48973c8c49dc58e27a4177f9e481e8f95f3d72ce5ebe2665aa01222dfe",
+   "size": 2950738,
+   "url": "https://raw.githubusercontent.com/srigas/CWRU_Bearing_NumPy/main/Data/1730%20RPM/1730_IR_7_DE12.npz"
+  },
+  "1730_IR_7_DE48.npz": {
+   "publisher_checksum": "gitsha1:fd51858bf4c961bf55c28aa4aee4ec651bb694d1",
+   "sha256": "fbd45bcc76b0bf4210989945b9348bbb1065086b959687c4b40a8afe8c43f74f",
+   "size": 7770782,
+   "url": "https://raw.githubusercontent.com/srigas/CWRU_Bearing_NumPy/main/Data/1730%20RPM/1730_IR_7_DE48.npz"
+  },
+  "1730_IR_7_FE.npz": {
+   "publisher_checksum": "gitsha1:e114208fe6e7d68f857745d5b1590a7b61c339a1",
+   "sha256": "9c89a875111cd9d5465713d64172ef7b58ec2f8e90ab38cb1a13807ab2e499d9",
+   "size": 2917570,
+   "url": "https://raw.githubusercontent.com/srigas/CWRU_Bearing_NumPy/main/Data/1730%20RPM/1730_IR_7_FE.npz"
+  },
+  "1730_Normal.npz": {
+   "publisher_checksum": "gitsha1:618d4618bb3680ddd8985832c96a34cc8a1f3e43",
+   "sha256": "e71083ee7e4971575b3deb99325b2eee058d1010a69652e3f0347673c45092b6",
+   "size": 7770782,
+   "url": "https://raw.githubusercontent.com/srigas/CWRU_Bearing_NumPy/main/Data/1730%20RPM/1730_Normal.npz"
+  },
+  "1730_OR@12_21_DE12.npz": {
+   "publisher_checksum": "gitsha1:578227934752dd248b98966427d3578042295f45",
+   "sha256": "5e3bb9e5a95762f4b9599e342f59267c54c870c12de127f4508430cd4a44be3c",
+   "size": 2921554,
+   "url": "https://raw.githubusercontent.com/srigas/CWRU_Bearing_NumPy/main/Data/1730%20RPM/1730_OR%4012_21_DE12.npz"
+  },
+  "1730_OR@12_21_DE48.npz": {
+   "publisher_checksum": "gitsha1:1e7a177eafaf0349f03952fc64400e4cb8ff1af3",
+   "sha256": "49bda72e1f763faedf7ce20ebe073f375056c51f0a5fcb08e7e622a8048795c0",
+   "size": 7780078,
+   "url": "https://raw.githubusercontent.com/srigas/CWRU_Bearing_NumPy/main/Data/1730%20RPM/1730_OR%4012_21_DE48.npz"
+  },
+  "1730_OR@12_7_DE12.npz": {
+   "publisher_checksum": "gitsha1:c2e9d80e0694c3d2fe30d806123fe32cd66357e5",
+   "sha256": "345098fcf406148a6e5ec3289a1d30b08d22b786423c794c43acff01553f49c8",
+   "size": 2931994,
+   "url": "https://raw.githubusercontent.com/srigas/CWRU_Bearing_NumPy/main/Data/1730%20RPM/1730_OR%4012_7_DE12.npz"
+  },
+  "1730_OR@12_7_DE48.npz": {
+   "publisher_checksum": "gitsha1:01b41379682427ebbb62212c6eeee67e056ad121",
+   "sha256": "2b6d96a91ac4ecab07d12493a6c2ebe8f424159a88519b5ab95e5da6b5bc1a52",
+   "size": 7752222,
+   "url": "https://raw.githubusercontent.com/srigas/CWRU_Bearing_NumPy/main/Data/1730%20RPM/1730_OR%4012_7_DE48.npz"
+  },
+  "1730_OR@12_7_FE.npz": {
+   "publisher_checksum": "gitsha1:273fcc6ae27aa4a4944d14ee713accf0d36c9b0e",
+   "sha256": "9108bf581e0da423d201dd58e7be56301c314936bbf638bae08d9c6ec60796cc",
+   "size": 2908762,
+   "url": "https://raw.githubusercontent.com/srigas/CWRU_Bearing_NumPy/main/Data/1730%20RPM/1730_OR%4012_7_FE.npz"
+  },
+  "1730_OR@3_14_FE.npz": {
+   "publisher_checksum": "gitsha1:a514a20caf94e7ddbc2a5ea38d0889d58cd61966",
+   "sha256": "2fe5b9dcebd30e392da93e693a8d357a1e30b8826fd8d106869f8485e7a958d9",
+   "size": 2904346,
+   "url": "https://raw.githubusercontent.com/srigas/CWRU_Bearing_NumPy/main/Data/1730%20RPM/1730_OR%403_14_FE.npz"
+  },
+  "1730_OR@3_21_DE12.npz": {
+   "publisher_checksum": "gitsha1:6689ca95dcf5cc3b53d8328e4e54115a28705d3a",
+   "sha256": "af5791f6e1a2b6d37cae5589c258f3efa29f28a6b717b2042593212f4bbc229d",
+   "size": 2931994,
+   "url": "https://raw.githubusercontent.com/srigas/CWRU_Bearing_NumPy/main/Data/1730%20RPM/1730_OR%403_21_DE12.npz"
+  },
+  "1730_OR@3_21_DE48.npz": {
+   "publisher_checksum": "gitsha1:ed677fd68df5f5ba97bb64100093cef399528ac2",
+   "sha256": "4f9c040f6302928f6663575115b1388127645e84022ff454adba6dd307f3187f",
+   "size": 7752222,
+   "url": "https://raw.githubusercontent.com/srigas/CWRU_Bearing_NumPy/main/Data/1730%20RPM/1730_OR%403_21_DE48.npz"
+  },
+  "1730_OR@3_21_FE.npz": {
+   "publisher_checksum": "gitsha1:dc5e962376eda1a72f418036525356d4fe8f5f19",
+   "sha256": "b7ee66fd227e3b930e7207bf701193c52e76db8999bd812e250fb2aee0fcc6d1",
+   "size": 2913154,
+   "url": "https://raw.githubusercontent.com/srigas/CWRU_Bearing_NumPy/main/Data/1730%20RPM/1730_OR%403_21_FE.npz"
+  },
+  "1730_OR@3_7_DE12.npz": {
+   "publisher_checksum": "gitsha1:9428ba046ddf89aede1dd2f0d0186401f662ecba",
+   "sha256": "325b13f8184010ea89ed08115eccc6dca925d0674092641004fa8e5e320702fe",
+   "size": 2935474,
+   "url": "https://raw.githubusercontent.com/srigas/CWRU_Bearing_NumPy/main/Data/1730%20RPM/1730_OR%403_7_DE12.npz"
+  },
+  "1730_OR@3_7_DE48.npz": {
+   "publisher_checksum": "gitsha1:1f932d665d284bb4ededa7f010bafb577bc84728",
+   "sha256": "12e6925192c60be6f912dc0425eb8335ea6e89580a8508ac57e63213216ea7e0",
+   "size": 7780078,
+   "url": "https://raw.githubusercontent.com/srigas/CWRU_Bearing_NumPy/main/Data/1730%20RPM/1730_OR%403_7_DE48.npz"
+  },
+  "1730_OR@3_7_FE.npz": {
+   "publisher_checksum": "gitsha1:23fa81f8f9d9a5eb1f921145b1f0c3842fe7c775",
+   "sha256": "434e4edc96dbbd0decdcd74ba2a5325477dbf4346fb319603e65cbd4bf94bddc",
+   "size": 2921986,
+   "url": "https://raw.githubusercontent.com/srigas/CWRU_Bearing_NumPy/main/Data/1730%20RPM/1730_OR%403_7_FE.npz"
+  },
+  "1730_OR@6_14_DE12.npz": {
+   "publisher_checksum": "gitsha1:97d0c68ecc618ce3c6fdf731caf6575626f844fd",
+   "sha256": "6585557063bc55387b346424b3ae1afff82dfc898f9c998a2555ec414e6feb8d",
+   "size": 2928514,
+   "url": "https://raw.githubusercontent.com/srigas/CWRU_Bearing_NumPy/main/Data/1730%20RPM/1730_OR%406_14_DE12.npz"
+  },
+  "1730_OR@6_14_DE48.npz": {
+   "publisher_checksum": "gitsha1:e767bf981315013a3c71939b0a4a7338a2050109",
+   "sha256": "72ce40c05efb8bc3baad2c7f110f63e7357f5d9bf8750b08ff34824d0e179817",
+   "size": 7817214,
+   "url": "https://raw.githubusercontent.com/srigas/CWRU_Bearing_NumPy/main/Data/1730%20RPM/1730_OR%406_14_DE48.npz"
+  },
+  "1730_OR@6_21_DE12.npz": {
+   "publisher_checksum": "gitsha1:afffa064640953e3c7d1cc468705a1731784345a",
+   "sha256": "0654f52b747dc1af31e78de5d53613dedfd25fb0cad36335b5a4710e0d209dcd",
+   "size": 2928514,
+   "url": "https://raw.githubusercontent.com/srigas/CWRU_Bearing_NumPy/main/Data/1730%20RPM/1730_OR%406_21_DE12.npz"
+  },
+  "1730_OR@6_21_DE48.npz": {
+   "publisher_checksum": "gitsha1:d2e904cc0bab0b496769453b98297d1015cf9432",
+   "sha256": "edaf92cc1c63efefe0dad910be946370217b8ab069d8899185cfb828f9234542",
+   "size": 7826494,
+   "url": "https://raw.githubusercontent.com/srigas/CWRU_Bearing_NumPy/main/Data/1730%20RPM/1730_OR%406_21_DE48.npz"
+  },
+  "1730_OR@6_7_DE12.npz": {
+   "publisher_checksum": "gitsha1:91f87099eef7e5335a2afc45a929cad804496a54",
+   "sha256": "77ba53cbcf7d51781b5c09d4a9dba1491acb07b9e399f051f489a36c12adf253",
+   "size": 2942434,
+   "url": "https://raw.githubusercontent.com/srigas/CWRU_Bearing_NumPy/main/Data/1730%20RPM/1730_OR%406_7_DE12.npz"
+  },
+  "1730_OR@6_7_DE48.npz": {
+   "publisher_checksum": "gitsha1:75bfbe96d9254ed90628949b0d4ded9545649fd1",
+   "sha256": "e7d887bb768c8e0482302cf54718e22edba121023c474ec3b49a1a0c29c2765f",
+   "size": 7807918,
+   "url": "https://raw.githubusercontent.com/srigas/CWRU_Bearing_NumPy/main/Data/1730%20RPM/1730_OR%406_7_DE48.npz"
+  },
+  "1730_OR@6_7_FE.npz": {
+   "publisher_checksum": "gitsha1:48ac936d26c7b802de1129b16932952c5fce9c61",
+   "sha256": "9951575e5e0b5ca50310a55676045df34287aefdfb939908924101ac09252e32",
+   "size": 2926378,
+   "url": "https://raw.githubusercontent.com/srigas/CWRU_Bearing_NumPy/main/Data/1730%20RPM/1730_OR%406_7_FE.npz"
+  },
+  "1750_B_14_DE12.npz": {
+   "publisher_checksum": "gitsha1:c9eb950d2c400417fcbdb2fc0e552a9d744f2781",
+   "sha256": "51f71b777a4fc8ef26c97408c745ce57f4e37620b9a2714110c11865dd608515",
+   "size": 2928514,
+   "url": "https://raw.githubusercontent.com/srigas/CWRU_Bearing_NumPy/main/Data/1750%20RPM/1750_B_14_DE12.npz"
+  },
+  "1750_B_14_DE48.npz": {
+   "publisher_checksum": "gitsha1:1ba77686b318601f0d0a758ee7585e7ca3da88be",
+   "sha256": "42df6445dbe92b01f215d9f69ad7daac2c1f359096142fb41b5d9b9186341c29",
+   "size": 7798638,
+   "url": "https://raw.githubusercontent.com/srigas/CWRU_Bearing_NumPy/main/Data/1750%20RPM/1750_B_14_DE48.npz"
+  },
+  "1750_B_14_FE.npz": {
+   "publisher_checksum": "gitsha1:f25f486c3f7dda60be53faa5dcd7af8ba85254a8",
+   "sha256": "2684d66bfcbc61d93ad8a01274e228b48833638a1076227695ce970cd1931ee9",
+   "size": 2935186,
+   "url": "https://raw.githubusercontent.com/srigas/CWRU_Bearing_NumPy/main/Data/1750%20RPM/1750_B_14_FE.npz"
+  },
+  "1750_B_21_DE12.npz": {
+   "publisher_checksum": "gitsha1:61af3f1d90c4658834d69ef30c1f02370c8dd581",
+   "sha256": "d81fc5830e71a0b05dc34d3ce5b859a2ee9749a52e2a93ef1f214a1291c1c8c7",
+   "size": 2931994,
+   "url": "https://raw.githubusercontent.com/srigas/CWRU_Bearing_NumPy/main/Data/1750%20RPM/1750_B_21_DE12.npz"
+  },
+  "1750_B_21_DE48.npz": {
+   "publisher_checksum": "gitsha1:6c10204e9969903e840578773e9a148f4f2c9e75",
+   "sha256": "834ec653271fecc2ceeddcf803fcb2d7c76f9071e443e82f7406e19f52be6a37",
+   "size": 7798638,
+   "url": "https://raw.githubusercontent.com/srigas/CWRU_Bearing_NumPy/main/Data/1750%20RPM/1750_B_21_DE48.npz"
+  },
+  "1750_B_21_FE.npz": {
+   "publisher_checksum": "gitsha1:cb565ed7d36db12e11ec3ec44c7eb8d86fad14bb",
+   "sha256": "daea402f871268074e79a49e93d77e91d860aaf19a2ce949b44add828512992e",
+   "size": 2917570,
+   "url": "https://raw.githubusercontent.com/srigas/CWRU_Bearing_NumPy/main/Data/1750%20RPM/1750_B_21_FE.npz"
+  },
+  "1750_B_28_DE12.npz": {
+   "publisher_checksum": "gitsha1:f0bfea357990d0a153e2c2b8c8e73ede3277bfec",
+   "sha256": "457565a263dd8544c948f183bbf8c317dd08fa6f594f21e17e4054bafa99630e",
+   "size": 968130,
+   "url": "https://raw.githubusercontent.com/srigas/CWRU_Bearing_NumPy/main/Data/1750%20RPM/1750_B_28_DE12.npz"
+  },
+  "1750_B_7_DE12.npz": {
+   "publisher_checksum": "gitsha1:b678be0164b9d45268f32ab7d9289eb9123a3eb3",
+   "sha256": "ddfbdcc5065492ffcef2cc917996ae1384321fa59dea313b978cc192e7514096",
+   "size": 2918074,
+   "url": "https://raw.githubusercontent.com/srigas/CWRU_Bearing_NumPy/main/Data/1750%20RPM/1750_B_7_DE12.npz"
+  },
+  "1750_B_7_DE48.npz": {
+   "publisher_checksum": "gitsha1:f32f5f21b9232f6817a472e9f277d77c5ccc2e47",
+   "sha256": "46290514344ba81ce4e96f27838891aa3d5f46e15786d9ec1d2bf1509cfa2fac",
+   "size": 7789358,
+   "url": "https://raw.githubusercontent.com/srigas/CWRU_Bearing_NumPy/main/Data/1750%20RPM/1750_B_7_DE48.npz"
+  },
+  "1750_B_7_FE.npz": {
+   "publisher_checksum": "gitsha1:dc47d133cc50e9fb1ff66bd0ed3b7aa5cadd0995",
+   "sha256": "5e3c2f8fcb085e2ea17b5769cd318b230267e1564088deb922f8aaf74fed7632",
+   "size": 2921986,
+   "url": "https://raw.githubusercontent.com/srigas/CWRU_Bearing_NumPy/main/Data/1750%20RPM/1750_B_7_FE.npz"
+  },
+  "1750_IR_14_DE12.npz": {
+   "publisher_checksum": "gitsha1:e1bc0d5d9b41df089e2601185d48149d9a07480b",
+   "sha256": "c3a6e09970eb1857ccb6006cfcdb443d0d7af9ac1bb69747be6d248b6b0cb5bb",
+   "size": 2925034,
+   "url": "https://raw.githubusercontent.com/srigas/CWRU_Bearing_NumPy/main/Data/1750%20RPM/1750_IR_14_DE12.npz"
+  },
+  "1750_IR_14_DE48.npz": {
+   "publisher_checksum": "gitsha1:399d54aa6d5b08652d059d90edcdd9de5411b81a",
+   "sha256": "026f75e2a41b50ba876325f371b9425553f0591ee23a0c8fe3587294d8adee7b",
+   "size": 7807918,
+   "url": "https://raw.githubusercontent.com/srigas/CWRU_Bearing_NumPy/main/Data/1750%20RPM/1750_IR_14_DE48.npz"
+  },
+  "1750_IR_14_FE.npz": {
+   "publisher_checksum": "gitsha1:c84e6e50b4e368084f911e051de87e507e174b31",
+   "sha256": "3f941295902ae115a702dd58a3fd839fdb5c15d29a575e264bd0bf73b672059e",
+   "size": 2913154,
+   "url": "https://raw.githubusercontent.com/srigas/CWRU_Bearing_NumPy/main/Data/1750%20RPM/1750_IR_14_FE.npz"
+  },
+  "1750_IR_21_DE12.npz": {
+   "publisher_checksum": "gitsha1:de3cfed09d357febc5519410c558c6aeecee7b3d",
+   "sha256": "5429f9a29c2ed4cfa4985d58f2371edb3450841a59787d54f026134e0f96f74e",
+   "size": 2925034,
+   "url": "https://raw.githubusercontent.com/srigas/CWRU_Bearing_NumPy/main/Data/1750%20RPM/1750_IR_21_DE12.npz"
+  },
+  "1750_IR_21_DE48.npz": {
+   "publisher_checksum": "gitsha1:a72691ee55edfaf3186fad766e8d5134bafbc3d5",
+   "sha256": "aaeb990c3a434ac6fdc8f1b6b955f3ab1acb76a5a85b9cd3d5f6dc135637f987",
+   "size": 7863630,
+   "url": "https://raw.githubusercontent.com/srigas/CWRU_Bearing_NumPy/main/Data/1750%20RPM/1750_IR_21_DE48.npz"
+  },
+  "1750_IR_21_FE.npz": {
+   "publisher_checksum": "gitsha1:5d43965fdf05a7a9611fa6c9937fdd6520849da1",
+   "sha256": "7472071e739d85d7446ccc55bf59ad380ec344987c2a09b9bf3d1356f56adda3",
+   "size": 2904346,
+   "url": "https://raw.githubusercontent.com/srigas/CWRU_Bearing_NumPy/main/Data/1750%20RPM/1750_IR_21_FE.npz"
+  },
+  "1750_IR_28_DE12.npz": {
+   "publisher_checksum": "gitsha1:ac5a2f67925c6936302df679eb02eeef7fbf9e18",
+   "sha256": "ffb4e8d95362939cfdfb0e7d33bdcfcf4e5cab0768e748f670fbe91c267e303f",
+   "size": 971066,
+   "url": "https://raw.githubusercontent.com/srigas/CWRU_Bearing_NumPy/main/Data/1750%20RPM/1750_IR_28_DE12.npz"
+  },
+  "1750_IR_7_DE12.npz": {
+   "publisher_checksum": "gitsha1:c6ad6efd4cdcc95bea066d667699e77f77eaf79a",
+   "sha256": "dd601c822e287065badf1963ab543404aac7156b986e0799afabd4dbea0aed5f",
+   "size": 2931994,
+   "url": "https://raw.githubusercontent.com/srigas/CWRU_Bearing_NumPy/main/Data/1750%20RPM/1750_IR_7_DE12.npz"
+  },
+  "1750_IR_7_DE48.npz": {
+   "publisher_checksum": "gitsha1:4c04a376cd034613e8b46461d2016d418496d9f2",
+   "sha256": "763d5b368d441b437e91cb95f18be9151854095335c32ff18990d04fcb2d4e96",
+   "size": 7770782,
+   "url": "https://raw.githubusercontent.com/srigas/CWRU_Bearing_NumPy/main/Data/1750%20RPM/1750_IR_7_DE48.npz"
+  },
+  "1750_IR_7_FE.npz": {
+   "publisher_checksum": "gitsha1:4c1a431480b507deafd800a9afcedb24c2a367cd",
+   "sha256": "55c8d3d4a59e64429ee6e515e648f0e329fd31d058dc8bac4ef0fd086a802311",
+   "size": 2913154,
+   "url": "https://raw.githubusercontent.com/srigas/CWRU_Bearing_NumPy/main/Data/1750%20RPM/1750_IR_7_FE.npz"
+  },
+  "1750_Normal.npz": {
+   "publisher_checksum": "gitsha1:151f4873bbd201580da9d13b21c430c589c985a7",
+   "sha256": "77830970288497a8f3dbf0c8a3d90d7142846bd7283735e3a795f85b49995a28",
+   "size": 7761502,
+   "url": "https://raw.githubusercontent.com/srigas/CWRU_Bearing_NumPy/main/Data/1750%20RPM/1750_Normal.npz"
+  },
+  "1750_OR@12_21_DE12.npz": {
+   "publisher_checksum": "gitsha1:1b6f1a77efb4371dd8a278956880c6b8b3c6e327",
+   "sha256": "b2ea1bcaaaa430b3a6701822f060325a14e5c5f5f73ab914267e2922abae0a7f",
+   "size": 2945914,
+   "url": "https://raw.githubusercontent.com/srigas/CWRU_Bearing_NumPy/main/Data/1750%20RPM/1750_OR%4012_21_DE12.npz"
+  },
+  "1750_OR@12_21_DE48.npz": {
+   "publisher_checksum": "gitsha1:cbf9d19b51e1990c09f0c91e419cd131c74ce308",
+   "sha256": "5a447f885a0724447e899e15ea13b269dc8da9131ffc09f3acbac6072696efac",
+   "size": 7789358,
+   "url": "https://raw.githubusercontent.com/srigas/CWRU_Bearing_NumPy/main/Data/1750%20RPM/1750_OR%4012_21_DE48.npz"
+  },
+  "1750_OR@12_7_DE12.npz": {
+   "publisher_checksum": "gitsha1:15cee728984e79bbcad222f6838b6a83e0830a38",
+   "sha256": "65ffbeef4ba84652c7fc8d9bd06268219129d4ccaff908adeb5e6c4ac028973d",
+   "size": 2935474,
+   "url": "https://raw.githubusercontent.com/srigas/CWRU_Bearing_NumPy/main/Data/1750%20RPM/1750_OR%4012_7_DE12.npz"
+  },
+  "1750_OR@12_7_DE48.npz": {
+   "publisher_checksum": "gitsha1:72082c869accb7a9f2fe228337725fb9ca692836",
+   "sha256": "323c766516a52267b9ed48285d115fed997c67e3fc584add1b98b06dba5f812e",
+   "size": 7733662,
+   "url": "https://raw.githubusercontent.com/srigas/CWRU_Bearing_NumPy/main/Data/1750%20RPM/1750_OR%4012_7_DE48.npz"
+  },
+  "1750_OR@12_7_FE.npz": {
+   "publisher_checksum": "gitsha1:a2ed10c5f60576b36f82510a4931f65c6163e1e8",
+   "sha256": "379f64c4414a6e1469b0ba12e0b82e15380c24daaa10f05dddc538664a6f7bd8",
+   "size": 2921986,
+   "url": "https://raw.githubusercontent.com/srigas/CWRU_Bearing_NumPy/main/Data/1750%20RPM/1750_OR%4012_7_FE.npz"
+  },
+  "1750_OR@3_14_FE.npz": {
+   "publisher_checksum": "gitsha1:eba3581603bfe6b4ed4756a7608d1998dc6acd7d",
+   "sha256": "a1bad46611f5e759baa4d04f7afac45db9e8b522c47b8ec1a9aa9527aaa2bdd5",
+   "size": 2904346,
+   "url": "https://raw.githubusercontent.com/srigas/CWRU_Bearing_NumPy/main/Data/1750%20RPM/1750_OR%403_14_FE.npz"
+  },
+  "1750_OR@3_21_DE12.npz": {
+   "publisher_checksum": "gitsha1:d1fb8ee92c202c23dca695081c3f632bce4dc85d",
+   "sha256": "3c906891a863f089a91d8525a07f9f66f47342dd84190107b396305d06fe6892",
+   "size": 2935474,
+   "url": "https://raw.githubusercontent.com/srigas/CWRU_Bearing_NumPy/main/Data/1750%20RPM/1750_OR%403_21_DE12.npz"
+  },
+  "1750_OR@3_21_DE48.npz": {
+   "publisher_checksum": "gitsha1:d834c3cdda0d0b1a7075a2eb0dc9900044551e5b",
+   "sha256": "bf535465d85dd2a6cbd8c0beeb6b8193c87a016c0c773e5027e7cc2ffb06f2f6",
+   "size": 7798638,
+   "url": "https://raw.githubusercontent.com/srigas/CWRU_Bearing_NumPy/main/Data/1750%20RPM/1750_OR%403_21_DE48.npz"
+  },
+  "1750_OR@3_21_FE.npz": {
+   "publisher_checksum": "gitsha1:9b327eb512f17e2521aaab266d487344fed697f4",
+   "sha256": "49c2cef25f7a6dc26beb90021e316a49253eb2a2bfd6ae74aa53c9684f04a5ac",
+   "size": 2895538,
+   "url": "https://raw.githubusercontent.com/srigas/CWRU_Bearing_NumPy/main/Data/1750%20RPM/1750_OR%403_21_FE.npz"
+  },
+  "1750_OR@3_7_DE12.npz": {
+   "publisher_checksum": "gitsha1:79315d3e9d5f8aad1e37f52ef1b87ac832eede26",
+   "sha256": "526808f79fd1f5f6bcb759f8657123a8fb25cd53ffb5fda064d47e82ed3c71a2",
+   "size": 2918074,
+   "url": "https://raw.githubusercontent.com/srigas/CWRU_Bearing_NumPy/main/Data/1750%20RPM/1750_OR%403_7_DE12.npz"
+  },
+  "1750_OR@3_7_DE48.npz": {
+   "publisher_checksum": "gitsha1:33d46a12fe59b97d8bf3e3dc38cfe48a6b2e9604",
+   "sha256": "401d829138567755b03cbdd07843e14ca53eefc8d1e5b520c6137dee2a45a2c2",
+   "size": 7770782,
+   "url": "https://raw.githubusercontent.com/srigas/CWRU_Bearing_NumPy/main/Data/1750%20RPM/1750_OR%403_7_DE48.npz"
+  },
+  "1750_OR@3_7_FE.npz": {
+   "publisher_checksum": "gitsha1:5022e44ee367d2e08f07ea5b5763ca95047d5de2",
+   "sha256": "87ff5d20e375dd29d5af5edfac931f90f6c65709c1a67e7b8e6dbc8d530e2ed3",
+   "size": 2926378,
+   "url": "https://raw.githubusercontent.com/srigas/CWRU_Bearing_NumPy/main/Data/1750%20RPM/1750_OR%403_7_FE.npz"
+  },
+  "1750_OR@6_14_DE12.npz": {
+   "publisher_checksum": "gitsha1:d185db58c577f86b5f96564a16a5c9c18ae269fb",
+   "sha256": "6e137b06d95e12c1ba422663b5091cbd26d63cc35dbd4cc2a9c364b374bfca82",
+   "size": 2925034,
+   "url": "https://raw.githubusercontent.com/srigas/CWRU_Bearing_NumPy/main/Data/1750%20RPM/1750_OR%406_14_DE12.npz"
+  },
+  "1750_OR@6_14_DE48.npz": {
+   "publisher_checksum": "gitsha1:cf618ab8f7bdd6e008a5cc6d43df5617d6b914a4",
+   "sha256": "c14bc0eed8adae1383e0523ec86d33d07772e997a4fc545ee99a525e003beaca",
+   "size": 7789358,
+   "url": "https://raw.githubusercontent.com/srigas/CWRU_Bearing_NumPy/main/Data/1750%20RPM/1750_OR%406_14_DE48.npz"
+  },
+  "1750_OR@6_21_DE12.npz": {
+   "publisher_checksum": "gitsha1:03e7bac6fc50c58ed70cc0482a08937fae11ff00",
+   "sha256": "f0d79a1ac896dbb0a042a5607b181bd27068f845079d46ee8d62f636d87a8d4a",
+   "size": 2935474,
+   "url": "https://raw.githubusercontent.com/srigas/CWRU_Bearing_NumPy/main/Data/1750%20RPM/1750_OR%406_21_DE12.npz"
+  },
+  "1750_OR@6_21_DE48.npz": {
+   "publisher_checksum": "gitsha1:530417f2f392f2928983f082181c0d30158e3fdc",
+   "sha256": "f4ef8ceec39974706343da02415a2b008883e947e224331973eceb5f07b5787e",
+   "size": 7807918,
+   "url": "https://raw.githubusercontent.com/srigas/CWRU_Bearing_NumPy/main/Data/1750%20RPM/1750_OR%406_21_DE48.npz"
+  },
+  "1750_OR@6_7_DE12.npz": {
+   "publisher_checksum": "gitsha1:44ca926201eb3049ff1af113ac54fd6bec8f39af",
+   "sha256": "39890b0b01907e0fa15ddc1b2230fc5f0e08fb9d6fd9a777bc2af82324bca49b",
+   "size": 2914570,
+   "url": "https://raw.githubusercontent.com/srigas/CWRU_Bearing_NumPy/main/Data/1750%20RPM/1750_OR%406_7_DE12.npz"
+  },
+  "1750_OR@6_7_DE48.npz": {
+   "publisher_checksum": "gitsha1:ab2da4bab4be22361579e6562697685864246fab",
+   "sha256": "bcee85ae9d4fe48e56abf13846c158509ad543428765325d5f3cebb6241bc692",
+   "size": 7789358,
+   "url": "https://raw.githubusercontent.com/srigas/CWRU_Bearing_NumPy/main/Data/1750%20RPM/1750_OR%406_7_DE48.npz"
+  },
+  "1750_OR@6_7_FE.npz": {
+   "publisher_checksum": "gitsha1:6028255a618f08a5a468ae7a80281639528f4fbb",
+   "sha256": "c5f1b27643b19c2aaf46f90e6086ec90cb6baa241416c25c18eb07d4054b3632",
+   "size": 2908762,
+   "url": "https://raw.githubusercontent.com/srigas/CWRU_Bearing_NumPy/main/Data/1750%20RPM/1750_OR%406_7_FE.npz"
+  },
+  "1772_B_14_DE12.npz": {
+   "publisher_checksum": "gitsha1:aa20d9e5304825e01163958306715ed14f517a0a",
+   "sha256": "031699ebcb6008543c857ca1c291442664c0f90c0c6bb1bb63944e7fba8c7e6c",
+   "size": 2931994,
+   "url": "https://raw.githubusercontent.com/srigas/CWRU_Bearing_NumPy/main/Data/1772%20RPM/1772_B_14_DE12.npz"
+  },
+  "1772_B_14_DE48.npz": {
+   "publisher_checksum": "gitsha1:65246be7c999c1a1f1b7240246428208edd73976",
+   "sha256": "77532e450a2edd01055b5b1b9ce8eed7f9b286066da8df1cc159e3cd4d525377",
+   "size": 7780078,
+   "url": "https://raw.githubusercontent.com/srigas/CWRU_Bearing_NumPy/main/Data/1772%20RPM/1772_B_14_DE48.npz"
+  },
+  "1772_B_14_FE.npz": {
+   "publisher_checksum": "gitsha1:29d42aa8c62eddbcefe4e7c4f613ca9b0591b600",
+   "sha256": "e3eb396bad38fc27da8fe8becf8f8e02bf00275a76c29abae188ef781431a213",
+   "size": 2921986,
+   "url": "https://raw.githubusercontent.com/srigas/CWRU_Bearing_NumPy/main/Data/1772%20RPM/1772_B_14_FE.npz"
+  },
+  "1772_B_21_DE12.npz": {
+   "publisher_checksum": "gitsha1:790abfa9297618d471ddd9b57f01359d494477e1",
+   "sha256": "6267c515becf3c8a7e156515bcf3460454029a12364518760a681b633c257ad5",
+   "size": 2921554,
+   "url": "https://raw.githubusercontent.com/srigas/CWRU_Bearing_NumPy/main/Data/1772%20RPM/1772_B_21_DE12.npz"
+  },
+  "1772_B_21_DE48.npz": {
+   "publisher_checksum": "gitsha1:f84bf8c0270b36a2a379675e33b26ef8553035da",
+   "sha256": "509ee5651f687ebfe94e0067b5dd09cb9da58f88b0e380bfef566c01b588cf1f",
+   "size": 7789358,
+   "url": "https://raw.githubusercontent.com/srigas/CWRU_Bearing_NumPy/main/Data/1772%20RPM/1772_B_21_DE48.npz"
+  },
+  "1772_B_21_FE.npz": {
+   "publisher_checksum": "gitsha1:628375ed0e88eaee382f294bf9f34e3d15070f6d",
+   "sha256": "e33ebced450af471a1346ac594c99f572f54a8f93835d8c2f689ad44c71c7015",
+   "size": 2913154,
+   "url": "https://raw.githubusercontent.com/srigas/CWRU_Bearing_NumPy/main/Data/1772%20RPM/1772_B_21_FE.npz"
+  },
+  "1772_B_28_DE12.npz": {
+   "publisher_checksum": "gitsha1:320ad144b8ac3fb7079f1303dd9693458cce8426",
+   "sha256": "f7088beeabef6e8d25d20e8a37f916871846835129ca96c20d7cd82af835e62e",
+   "size": 971066,
+   "url": "https://raw.githubusercontent.com/srigas/CWRU_Bearing_NumPy/main/Data/1772%20RPM/1772_B_28_DE12.npz"
+  },
+  "1772_B_7_DE12.npz": {
+   "publisher_checksum": "gitsha1:dede1093f57373c6c201e89a832749f3ca8e06a9",
+   "sha256": "7542b67fa52f17ac8b8720060c6ec63c46caa16ab5fbf64ffc59c763f5f0c109",
+   "size": 2914570,
+   "url": "https://raw.githubusercontent.com/srigas/CWRU_Bearing_NumPy/main/Data/1772%20RPM/1772_B_7_DE12.npz"
+  },
+  "1772_B_7_DE48.npz": {
+   "publisher_checksum": "gitsha1:50933e4620e2f6adf0f82e7536e0a8348d11353f",
+   "sha256": "6cbf3dbdb67d17bc37630d1e87a449586d9e6ed2004a2c8293d430a14d5f9478",
+   "size": 7798638,
+   "url": "https://raw.githubusercontent.com/srigas/CWRU_Bearing_NumPy/main/Data/1772%20RPM/1772_B_7_DE48.npz"
+  },
+  "1772_B_7_FE.npz": {
+   "publisher_checksum": "gitsha1:b5a1580cdf13e0350e0104ad245b5850e66511f8",
+   "sha256": "7427bf1eebfa49ba3791dca3ff7d45bbed6e7e7331d29953d7a185eec57dda96",
+   "size": 2899954,
+   "url": "https://raw.githubusercontent.com/srigas/CWRU_Bearing_NumPy/main/Data/1772%20RPM/1772_B_7_FE.npz"
+  },
+  "1772_IR_14_DE12.npz": {
+   "publisher_checksum": "gitsha1:54c18771681a90b0fb4a42b2aae27f5fe1026738",
+   "sha256": "936e882c7a31c1bfa79533d365ec263949d619117fcd5fd03f15a0773fef618d",
+   "size": 2925034,
+   "url": "https://raw.githubusercontent.com/srigas/CWRU_Bearing_NumPy/main/Data/1772%20RPM/1772_IR_14_DE12.npz"
+  },
+  "1772_IR_14_DE48.npz": {
+   "publisher_checksum": "gitsha1:9b20f288e7bab882394ec3846d5319169c981107",
+   "sha256": "0cda5bb32a7290ed45c8620db047e3c15862021232233ef5e90235d2c9f6ad4c",
+   "size": 6110734,
+   "url": "https://raw.githubusercontent.com/srigas/CWRU_Bearing_NumPy/main/Data/1772%20RPM/1772_IR_14_DE48.npz"
+  },
+  "1772_IR_14_FE.npz": {
+   "publisher_checksum": "gitsha1:e6e2b99f0a27d8149639acf5dd189b3bd8ec1f28",
+   "sha256": "42041aba19eebcca3c3218b8c842a4fccea4fc9a5267e0c0dfe0a24791fa8871",
+   "size": 2913154,
+   "url": "https://raw.githubusercontent.com/srigas/CWRU_Bearing_NumPy/main/Data/1772%20RPM/1772_IR_14_FE.npz"
+  },
+  "1772_IR_21_DE12.npz": {
+   "publisher_checksum": "gitsha1:a31a0f774d21fe80b2a88b1b9d67172dc855b170",
+   "sha256": "6fcd1329cb438801897c06e995cf1e13e6c7c65942ccf3def773937f36d30aa1",
+   "size": 2918074,
+   "url": "https://raw.githubusercontent.com/srigas/CWRU_Bearing_NumPy/main/Data/1772%20RPM/1772_IR_21_DE12.npz"
+  },
+  "1772_IR_21_DE48.npz": {
+   "publisher_checksum": "gitsha1:2a37927415ae36a015238c513169c769e74c1502",
+   "sha256": "7b1d24759249514213a85b388196fcbbcabda3747fa221633115850670247798",
+   "size": 7761502,
+   "url": "https://raw.githubusercontent.com/srigas/CWRU_Bearing_NumPy/main/Data/1772%20RPM/1772_IR_21_DE48.npz"
+  },
+  "1772_IR_21_FE.npz": {
+   "publisher_checksum": "gitsha1:6f8ac17add5a0a8098c38b85119a98afb1ade191",
+   "sha256": "937b35b3b8b22527fc3f95563bec8c6e5027128a7b2f3682ae3a7cc904569496",
+   "size": 2908762,
+   "url": "https://raw.githubusercontent.com/srigas/CWRU_Bearing_NumPy/main/Data/1772%20RPM/1772_IR_21_FE.npz"
+  },
+  "1772_IR_28_DE12.npz": {
+   "publisher_checksum": "gitsha1:5d0ee423c0673b879d89c36c7bc22bae4be62334",
+   "sha256": "3dd2e02389924b1cdc92e9d90e3e7f644ee48fe666c9aedcdd2b9c8b5f8f84e7",
+   "size": 971066,
+   "url": "https://raw.githubusercontent.com/srigas/CWRU_Bearing_NumPy/main/Data/1772%20RPM/1772_IR_28_DE12.npz"
+  },
+  "1772_IR_7_DE12.npz": {
+   "publisher_checksum": "gitsha1:a1a2c62eadad7b8ecfdba508b2d788519fc56f5f",
+   "sha256": "23b9d0110cabccee79d94f0b12942590540d8e66e66818b98a5c1470a7a654b7",
+   "size": 2928514,
+   "url": "https://raw.githubusercontent.com/srigas/CWRU_Bearing_NumPy/main/Data/1772%20RPM/1772_IR_7_DE12.npz"
+  },
+  "1772_IR_7_DE48.npz": {
+   "publisher_checksum": "gitsha1:a87f1662633714e51e698b64587aa3d3293715c0",
+   "sha256": "55799cd157f5b9db3a151acaaa9893874bfe35062f04758d4a90ceb31952f9c6",
+   "size": 7780078,
+   "url": "https://raw.githubusercontent.com/srigas/CWRU_Bearing_NumPy/main/Data/1772%20RPM/1772_IR_7_DE48.npz"
+  },
+  "1772_IR_7_FE.npz": {
+   "publisher_checksum": "gitsha1:4ddfd2d1ba75b28b5addb1b5273b4ea6967a125b",
+   "sha256": "8df8ad9fbde936aa01eebbac8b30c7fa6c5c0042519158456432e22ef60a61b5",
+   "size": 2913154,
+   "url": "https://raw.githubusercontent.com/srigas/CWRU_Bearing_NumPy/main/Data/1772%20RPM/1772_IR_7_FE.npz"
+  },
+  "1772_Normal.npz": {
+   "publisher_checksum": "gitsha1:882452e9d29550636957e142f850a1f04f071e11",
+   "sha256": "ebb7cce9e15c260dacf2999c28551d0be43ce196f85dcd2227fd4cf3221df175",
+   "size": 7742942,
+   "url": "https://raw.githubusercontent.com/srigas/CWRU_Bearing_NumPy/main/Data/1772%20RPM/1772_Normal.npz"
+  },
+  "1772_OR@12_21_DE12.npz": {
+   "publisher_checksum": "gitsha1:830e54fd7dbb8b1e2e1e44c453776ae9cbfd0e0c",
+   "sha256": "95c7f0026b9784a6cc10d6cfa4fdac6012443376980ccf5f13e431e51aacaeaf",
+   "size": 2938954,
+   "url": "https://raw.githubusercontent.com/srigas/CWRU_Bearing_NumPy/main/Data/1772%20RPM/1772_OR%4012_21_DE12.npz"
+  },
+  "1772_OR@12_21_DE48.npz": {
+   "publisher_checksum": "gitsha1:87567b521669bd27ddef7778a7a0921753da0804",
+   "sha256": "9277f99b13d562008e9c92e116c8638df2f2f2281af030aaf3bf52329f5af2ee",
+   "size": 7780078,
+   "url": "https://raw.githubusercontent.com/srigas/CWRU_Bearing_NumPy/main/Data/1772%20RPM/1772_OR%4012_21_DE48.npz"
+  },
+  "1772_OR@12_7_DE12.npz": {
+   "publisher_checksum": "gitsha1:618ea12f2da0af33f112c660b0e5ba494c52bdf5",
+   "sha256": "55923943df5ce8647d57d5dfe1eb538b3ac1f08bd85fe61d34f9abb334826179",
+   "size": 2928514,
+   "url": "https://raw.githubusercontent.com/srigas/CWRU_Bearing_NumPy/main/Data/1772%20RPM/1772_OR%4012_7_DE12.npz"
+  },
+  "1772_OR@12_7_DE48.npz": {
+   "publisher_checksum": "gitsha1:d79bc5b41d668cde76962850bc5e1b07afb1487d",
+   "sha256": "7f7d6fe443728634e65806edd25cc627d61ec4d8a70d87cb99461bfde1e31adc",
+   "size": 7724366,
+   "url": "https://raw.githubusercontent.com/srigas/CWRU_Bearing_NumPy/main/Data/1772%20RPM/1772_OR%4012_7_DE48.npz"
+  },
+  "1772_OR@12_7_FE.npz": {
+   "publisher_checksum": "gitsha1:7774a7ec41a7f1c1962dc7e7e42911dbc779b857",
+   "sha256": "2a6129e150a83d40fa922de00399503a803f17ec37661392505412a714d46cd6",
+   "size": 2904346,
+   "url": "https://raw.githubusercontent.com/srigas/CWRU_Bearing_NumPy/main/Data/1772%20RPM/1772_OR%4012_7_FE.npz"
+  },
+  "1772_OR@3_14_FE.npz": {
+   "publisher_checksum": "gitsha1:1463e7b978ac13d866e9aa508daecffa8586b0c1",
+   "sha256": "e7172bce25ff27add442a557f59f3a441d127c33c6bddefc651cad2517270d9d",
+   "size": 2908762,
+   "url": "https://raw.githubusercontent.com/srigas/CWRU_Bearing_NumPy/main/Data/1772%20RPM/1772_OR%403_14_FE.npz"
+  },
+  "1772_OR@3_21_DE12.npz": {
+   "publisher_checksum": "gitsha1:0c2fd23ef54eed6e3e4825e35d6fabf7f8c2e641",
+   "sha256": "ec8fb0773daf3eef8b39a9e47f20091dce4bde06e4293c637c4bc67a46209a8c",
+   "size": 2928514,
+   "url": "https://raw.githubusercontent.com/srigas/CWRU_Bearing_NumPy/main/Data/1772%20RPM/1772_OR%403_21_DE12.npz"
+  },
+  "1772_OR@3_21_DE48.npz": {
+   "publisher_checksum": "gitsha1:4d3aae27d50e2d71ef42baa2d1d02ec9c6c8c6cf",
+   "sha256": "8d208f05b102a080b1646942041c1aeefa66932e60d1b0d3873b4d530f50e922",
+   "size": 7835774,
+   "url": "https://raw.githubusercontent.com/srigas/CWRU_Bearing_NumPy/main/Data/1772%20RPM/1772_OR%403_21_DE48.npz"
+  },
+  "1772_OR@3_21_FE.npz": {
+   "publisher_checksum": "gitsha1:642bc9359d2a77df689703004be20d5382be6f79",
+   "sha256": "91a896a76d0896c0c0deebd2f205c960e60fe7b5a34332cf91dc112d609c73bd",
+   "size": 2895538,
+   "url": "https://raw.githubusercontent.com/srigas/CWRU_Bearing_NumPy/main/Data/1772%20RPM/1772_OR%403_21_FE.npz"
+  },
+  "1772_OR@3_7_DE12.npz": {
+   "publisher_checksum": "gitsha1:baa452890b131db76babdcb11f527abaf1929b3c",
+   "sha256": "153c79fd4abcdabc1516928c8565f91926ad374d224ec7a3f8955f5b33c36de9",
+   "size": 2925034,
+   "url": "https://raw.githubusercontent.com/srigas/CWRU_Bearing_NumPy/main/Data/1772%20RPM/1772_OR%403_7_DE12.npz"
+  },
+  "1772_OR@3_7_DE48.npz": {
+   "publisher_checksum": "gitsha1:5c4c3550623280c9050725c81a56cb11a8596a28",
+   "sha256": "5e9b28b84157acabac82ff8a904410388689c05b1f6398fc12f74545ee893845",
+   "size": 7761502,
+   "url": "https://raw.githubusercontent.com/srigas/CWRU_Bearing_NumPy/main/Data/1772%20RPM/1772_OR%403_7_DE48.npz"
+  },
+  "1772_OR@3_7_FE.npz": {
+   "publisher_checksum": "gitsha1:1fe733f68e4ac9fa3b004c9b19826a26f7a09a34",
+   "sha256": "3611c4cff31c67470b8adcca48936e6d7ecc6c08c4023e4c236b807ba5d934eb",
+   "size": 2908762,
+   "url": "https://raw.githubusercontent.com/srigas/CWRU_Bearing_NumPy/main/Data/1772%20RPM/1772_OR%403_7_FE.npz"
+  },
+  "1772_OR@6_14_DE12.npz": {
+   "publisher_checksum": "gitsha1:b3c6f07010eb695fda651ee09db5139848c9d913",
+   "sha256": "ac28e7e2900c75225b343dcb05c38fc849ad1d30fe71804f8112350a1adc2c51",
+   "size": 2931994,
+   "url": "https://raw.githubusercontent.com/srigas/CWRU_Bearing_NumPy/main/Data/1772%20RPM/1772_OR%406_14_DE12.npz"
+  },
+  "1772_OR@6_14_DE48.npz": {
+   "publisher_checksum": "gitsha1:00039c35ca516b4cd716399a5e3b888d63420fd1",
+   "sha256": "7d656532c01313a7b340bdf788658abacf263bd44df0ac175bc1595756d4d247",
+   "size": 7752222,
+   "url": "https://raw.githubusercontent.com/srigas/CWRU_Bearing_NumPy/main/Data/1772%20RPM/1772_OR%406_14_DE48.npz"
+  },
+  "1772_OR@6_21_DE12.npz": {
+   "publisher_checksum": "gitsha1:9f5b258b9d16e5262a25581b16b4b763d840d3e3",
+   "sha256": "6b33cd1d636fe363f12f8fa0cc79ff77671ff339b87553f28d3524e60516a9a2",
+   "size": 2928514,
+   "url": "https://raw.githubusercontent.com/srigas/CWRU_Bearing_NumPy/main/Data/1772%20RPM/1772_OR%406_21_DE12.npz"
+  },
+  "1772_OR@6_21_DE48.npz": {
+   "publisher_checksum": "gitsha1:b11613f75c8ff9e7004f2c3eda3be5704a1809d4",
+   "sha256": "2bff49fd224a690e439904bc0b4a8cd7bdcbb502fa1fd9e6b4a020853e4e3981",
+   "size": 7826494,
+   "url": "https://raw.githubusercontent.com/srigas/CWRU_Bearing_NumPy/main/Data/1772%20RPM/1772_OR%406_21_DE48.npz"
+  },
+  "1772_OR@6_7_DE12.npz": {
+   "publisher_checksum": "gitsha1:763752de9d026cc33860ef06d6ee6516194fff02",
+   "sha256": "c93827a28e533730c6fad84d2cb2dd00cf881df1c0d77871595d740aaa0d1a1e",
+   "size": 2938954,
+   "url": "https://raw.githubusercontent.com/srigas/CWRU_Bearing_NumPy/main/Data/1772%20RPM/1772_OR%406_7_DE12.npz"
+  },
+  "1772_OR@6_7_DE48.npz": {
+   "publisher_checksum": "gitsha1:552ee0830070a50ada9751993a2cf8ff86311c76",
+   "sha256": "73dc4e3a219f342bef0867dcfd9ac824df77b63a43e78dfc3adfafa285ce4e43",
+   "size": 7789358,
+   "url": "https://raw.githubusercontent.com/srigas/CWRU_Bearing_NumPy/main/Data/1772%20RPM/1772_OR%406_7_DE48.npz"
+  },
+  "1772_OR@6_7_FE.npz": {
+   "publisher_checksum": "gitsha1:6774bd15690be6dd2b55b6abbb0b74cedf3bd13f",
+   "sha256": "9ba382b280832191c4686b5ffdf31eaf24baf30793c599c48d5b9e06e4b38e16",
+   "size": 2917570,
+   "url": "https://raw.githubusercontent.com/srigas/CWRU_Bearing_NumPy/main/Data/1772%20RPM/1772_OR%406_7_FE.npz"
+  },
+  "1797_B_14_DE12.npz": {
+   "publisher_checksum": "gitsha1:f8839a9da21e311b0339203b556d88dfd9d4f42f",
+   "sha256": "3e439e091b84ea353de1a722f6abb7d43df1924682e51afffd3b1d4eb9ea88f7",
+   "size": 2925034,
+   "url": "https://raw.githubusercontent.com/srigas/CWRU_Bearing_NumPy/main/Data/1797%20RPM/1797_B_14_DE12.npz"
+  },
+  "1797_B_14_DE48.npz": {
+   "publisher_checksum": "gitsha1:12d496f6d0bbf3d93a27e8db84ddd083425b1fd9",
+   "sha256": "09e2b4450d154b3abf1b7da334145f6967848dcb21b1328bac796dfcdd2e33c6",
+   "size": 3986830,
+   "url": "https://raw.githubusercontent.com/srigas/CWRU_Bearing_NumPy/main/Data/1797%20RPM/1797_B_14_DE48.npz"
+  },
+  "1797_B_14_FE.npz": {
+   "publisher_checksum": "gitsha1:c772f5fd90a439bf27650ad087cfef39ec9fed9f",
+   "sha256": "0c0bd13cdc775d26ed3ce4b32078ee77f68862b06dc225ea5aad8aea37b47260",
+   "size": 2930794,
+   "url": "https://raw.githubusercontent.com/srigas/CWRU_Bearing_NumPy/main/Data/1797%20RPM/1797_B_14_FE.npz"
+  },
+  "1797_B_21_DE12.npz": {
+   "publisher_checksum": "gitsha1:030f2cebce77aacdfd35cb8878cf2cda68cfe6c3",
+   "sha256": "1147555cb94383cd6ae41541ed62ea95210a3b0c247093912c54905df1ea1818",
+   "size": 2928514,
+   "url": "https://raw.githubusercontent.com/srigas/CWRU_Bearing_NumPy/main/Data/1797%20RPM/1797_B_21_DE12.npz"
+  },
+  "1797_B_21_DE48.npz": {
+   "publisher_checksum": "gitsha1:aa08970c0f64276a17af20fce1c41e7bd7eac73e",
+   "sha256": "d3ecfff24f9bb7cb6e7cab3c9739689a29eaf60089de11a6e5536b07a7533405",
+   "size": 3903502,
+   "url": "https://raw.githubusercontent.com/srigas/CWRU_Bearing_NumPy/main/Data/1797%20RPM/1797_B_21_DE48.npz"
+  },
+  "1797_B_21_FE.npz": {
+   "publisher_checksum": "gitsha1:89b8921c6dcd442afc7d7915229d616c59ffd9d2",
+   "sha256": "9f5d1c3eb9c8856271d8d5b2c123cedfd896f3a8766e6342f7b0b46df0462351",
+   "size": 2913154,
+   "url": "https://raw.githubusercontent.com/srigas/CWRU_Bearing_NumPy/main/Data/1797%20RPM/1797_B_21_FE.npz"
+  },
+  "1797_B_28_DE12.npz": {
+   "publisher_checksum": "gitsha1:e5975e5a4828607269979f9c1ecdc92f459511a3",
+   "sha256": "a2e252c5a082f27ee19083856e3cadd053f74055ae991cb60fb71a6c9aa1bd24",
+   "size": 966666,
+   "url": "https://raw.githubusercontent.com/srigas/CWRU_Bearing_NumPy/main/Data/1797%20RPM/1797_B_28_DE12.npz"
+  },
+  "1797_B_7_DE12.npz": {
+   "publisher_checksum": "gitsha1:98c7d7899b27d8bc7f6c7b6c0efcde9655746bd4",
+   "sha256": "b3f85480c32e6e3e858dec74ed0f2c7f5c698ab53937e99d621bae6c1414937f",
+   "size": 2942434,
+   "url": "https://raw.githubusercontent.com/srigas/CWRU_Bearing_NumPy/main/Data/1797%20RPM/1797_B_7_DE12.npz"
+  },
+  "1797_B_7_DE48.npz": {
+   "publisher_checksum": "gitsha1:3a8126b0608acfd58378d0b4a8d06d6ca506a419",
+   "sha256": "80cb4b64f2570738a9b4ce34589a4fa02b90bc71516538e0b9a69b83aa99e235",
+   "size": 3916318,
+   "url": "https://raw.githubusercontent.com/srigas/CWRU_Bearing_NumPy/main/Data/1797%20RPM/1797_B_7_DE48.npz"
+  },
+  "1797_B_7_FE.npz": {
+   "publisher_checksum": "gitsha1:9885892e0ce8457ae7aa40f2877406dcbbfdefa7",
+   "sha256": "b55459d092d405044095034f5834617df52d49b24da2c469da9a4627d45ee09f",
+   "size": 2908762,
+   "url": "https://raw.githubusercontent.com/srigas/CWRU_Bearing_NumPy/main/Data/1797%20RPM/1797_B_7_FE.npz"
+  },
+  "1797_IR_14_DE12.npz": {
+   "publisher_checksum": "gitsha1:930a7935ffb9944999f65aaa6dd01f89e4e21219",
+   "sha256": "ca0722f375dc1f807a5e3b3ddd884b25bfa8756550872495fe70413da91d2e5b",
+   "size": 2925034,
+   "url": "https://raw.githubusercontent.com/srigas/CWRU_Bearing_NumPy/main/Data/1797%20RPM/1797_IR_14_DE12.npz"
+  },
+  "1797_IR_14_DE48.npz": {
+   "publisher_checksum": "gitsha1:02913b86ac6d9b6a01c3eb12546529b00e1fb55a",
+   "sha256": "5554c9d244134738c9a06c3a73630bd7015bfa336a50c27d9a818361246bc4d6",
+   "size": 1021102,
+   "url": "https://raw.githubusercontent.com/srigas/CWRU_Bearing_NumPy/main/Data/1797%20RPM/1797_IR_14_DE48.npz"
+  },
+  "1797_IR_14_FE.npz": {
+   "publisher_checksum": "gitsha1:83d30e4dea664b234d0317001c060676adfdcfaa",
+   "sha256": "2ba26b152edf68ba3c89b6ed492f1a1533c3bc511454222b4ab6e0050e87e8df",
+   "size": 2913154,
+   "url": "https://raw.githubusercontent.com/srigas/CWRU_Bearing_NumPy/main/Data/1797%20RPM/1797_IR_14_FE.npz"
+  },
+  "1797_IR_21_DE12.npz": {
+   "publisher_checksum": "gitsha1:f1a68de2a44b5daa8efe87397d0094b4e1c7e0b2",
+   "sha256": "4fe4b0198a9ef77e2d249420ebd31c558a82f9d95db9f9fef1c26345d88b9c33",
+   "size": 2931994,
+   "url": "https://raw.githubusercontent.com/srigas/CWRU_Bearing_NumPy/main/Data/1797%20RPM/1797_IR_21_DE12.npz"
+  },
+  "1797_IR_21_DE48.npz": {
+   "publisher_checksum": "gitsha1:84b6674802e7963d66d6e1bca1e37dfaad07ba2a",
+   "sha256": "ae7be82c319b4713cf890f256edf2b687a321721f0398fb11f3aef91212c6c56",
+   "size": 3909918,
+   "url": "https://raw.githubusercontent.com/srigas/CWRU_Bearing_NumPy/main/Data/1797%20RPM/1797_IR_21_DE48.npz"
+  },
+  "1797_IR_21_FE.npz": {
+   "publisher_checksum": "gitsha1:e01a0d818680e356c323007b1ddfb9ad2cf4fb6f",
+   "sha256": "c1fc5dc4a2b15660e3751385258f19fcf823994333a176209f6369cf7db06d03",
+   "size": 2908762,
+   "url": "https://raw.githubusercontent.com/srigas/CWRU_Bearing_NumPy/main/Data/1797%20RPM/1797_IR_21_FE.npz"
+  },
+  "1797_IR_28_DE12.npz": {
+   "publisher_checksum": "gitsha1:3239880a6b82608d29eb26ab1c823912c66891b7",
+   "sha256": "da9903e1d02f26863ea109d4f24736dec6aa90da72b5630e3d8c136de9022a87",
+   "size": 966666,
+   "url": "https://raw.githubusercontent.com/srigas/CWRU_Bearing_NumPy/main/Data/1797%20RPM/1797_IR_28_DE12.npz"
+  },
+  "1797_IR_7_DE12.npz": {
+   "publisher_checksum": "gitsha1:bc2f720a45878a78d28fcf4c486de6553033191c",
+   "sha256": "b1694c0ed4c77486c909a4fac8f512101cad21302358743486bc4edaa8e8cff3",
+   "size": 2911090,
+   "url": "https://raw.githubusercontent.com/srigas/CWRU_Bearing_NumPy/main/Data/1797%20RPM/1797_IR_7_DE12.npz"
+  },
+  "1797_IR_7_DE48.npz": {
+   "publisher_checksum": "gitsha1:d2f056d69f7e2eabddba21c7164604b9590aaac4",
+   "sha256": "1cad8f45be3b9aa68dfa0a6516c922ce4558324114456ae5618fb8a5dc31a5b6",
+   "size": 3903502,
+   "url": "https://raw.githubusercontent.com/srigas/CWRU_Bearing_NumPy/main/Data/1797%20RPM/1797_IR_7_DE48.npz"
+  },
+  "1797_IR_7_FE.npz": {
+   "publisher_checksum": "gitsha1:d6d0769f314f7c1fff8f6d13e4202085145c6293",
+   "sha256": "ed3701abe63fdfbe06435b87e18b8edd92e47738bb1df573c397812ff3730713",
+   "size": 2917570,
+   "url": "https://raw.githubusercontent.com/srigas/CWRU_Bearing_NumPy/main/Data/1797%20RPM/1797_IR_7_FE.npz"
+  },
+  "1797_Normal.npz": {
+   "publisher_checksum": "gitsha1:b835e0b6eebdae10a77b57d250dbf7826466c735",
+   "sha256": "4cd7f673aced17ef1b1253159b32d6c3146ba76af1b6034b1e18c86aed6c0e26",
+   "size": 3903502,
+   "url": "https://raw.githubusercontent.com/srigas/CWRU_Bearing_NumPy/main/Data/1797%20RPM/1797_Normal.npz"
+  },
+  "1797_OR@12_21_DE12.npz": {
+   "publisher_checksum": "gitsha1:c51636980e1e58ed34017b2049d00a03e90f66d9",
+   "sha256": "794a0f6f1a82f0589783dbb4268b029e63ed81ec15cf7c0e04f78bbea542b660",
+   "size": 2925034,
+   "url": "https://raw.githubusercontent.com/srigas/CWRU_Bearing_NumPy/main/Data/1797%20RPM/1797_OR%4012_21_DE12.npz"
+  },
+  "1797_OR@12_21_DE48.npz": {
+   "publisher_checksum": "gitsha1:aef9e88ddce461a59e80c386b76cadb803303dd5",
+   "sha256": "50a39d80461ff904ecb08372db9730c3a5ec2e9005ef5e341f63df88d3f27d91",
+   "size": 2089278,
+   "url": "https://raw.githubusercontent.com/srigas/CWRU_Bearing_NumPy/main/Data/1797%20RPM/1797_OR%4012_21_DE48.npz"
+  },
+  "1797_OR@12_7_DE12.npz": {
+   "publisher_checksum": "gitsha1:4936a8a62a66d19af2fbeab6fd9c877e65cb4747",
+   "sha256": "7ac1594d621bbd041becf99a07304eb8eea68954e825819a3015555719a12099",
+   "size": 2935474,
+   "url": "https://raw.githubusercontent.com/srigas/CWRU_Bearing_NumPy/main/Data/1797%20RPM/1797_OR%4012_7_DE12.npz"
+  },
+  "1797_OR@12_7_DE48.npz": {
+   "publisher_checksum": "gitsha1:db99e2f06052988bf6a47529e7415f863838a638",
+   "sha256": "74e0285e357fa2c5992d813df8901eabbb5fca08e29dd00109c248178c04d27e",
+   "size": 2079998,
+   "url": "https://raw.githubusercontent.com/srigas/CWRU_Bearing_NumPy/main/Data/1797%20RPM/1797_OR%4012_7_DE48.npz"
+  },
+  "1797_OR@12_7_FE.npz": {
+   "publisher_checksum": "gitsha1:e3b06d5058016dbfad2ff88aadef8856d1061cdd",
+   "sha256": "b1608f41fc3d39e40a5760ba2479deed1275bf331d435c24706b847f7d4d32c6",
+   "size": 2908762,
+   "url": "https://raw.githubusercontent.com/srigas/CWRU_Bearing_NumPy/main/Data/1797%20RPM/1797_OR%4012_7_FE.npz"
+  },
+  "1797_OR@3_14_FE.npz": {
+   "publisher_checksum": "gitsha1:be26cf360ea6fe91bd3a601ea364e3aa34ad021c",
+   "sha256": "52eea7a7b421cb120de4e9208195a4c6a587fa317e96618ad2df560f102ab073",
+   "size": 2917570,
+   "url": "https://raw.githubusercontent.com/srigas/CWRU_Bearing_NumPy/main/Data/1797%20RPM/1797_OR%403_14_FE.npz"
+  },
+  "1797_OR@3_21_DE12.npz": {
+   "publisher_checksum": "gitsha1:85b5d76392616c35be44a54ff0723635d333e005",
+   "sha256": "09f0976e21d9e8a28dba6e8b04cc85113eb59a671585a6304fa111925bb3f7fb",
+   "size": 2921554,
+   "url": "https://raw.githubusercontent.com/srigas/CWRU_Bearing_NumPy/main/Data/1797%20RPM/1797_OR%403_21_DE12.npz"
+  },
+  "1797_OR@3_21_DE48.npz": {
+   "publisher_checksum": "gitsha1:2b7e5a0a4a97c53252cecd47129070df64d4649e",
+   "sha256": "7bb19bbf50f5fabac58d84c274e38bd9503a6f3a1f87c952024a635235c5202d",
+   "size": 2059102,
+   "url": "https://raw.githubusercontent.com/srigas/CWRU_Bearing_NumPy/main/Data/1797%20RPM/1797_OR%403_21_DE48.npz"
+  },
+  "1797_OR@3_7_DE12.npz": {
+   "publisher_checksum": "gitsha1:f6e4ed5fc9fb7816b1a837fbaa9fa351f943d578",
+   "sha256": "49d68cdb0223e343f10f9d2dc47681799eb2135eeb31abf16a65276fbd487831",
+   "size": 2935474,
+   "url": "https://raw.githubusercontent.com/srigas/CWRU_Bearing_NumPy/main/Data/1797%20RPM/1797_OR%403_7_DE12.npz"
+  },
+  "1797_OR@3_7_DE48.npz": {
+   "publisher_checksum": "gitsha1:765febb1b1a9b05f763f73bbc95bcfac8cd9693e",
+   "sha256": "4f810d0e470e2c295e29703665fae6f467a3ecdeb470870b091d419e4b23be92",
+   "size": 1994126,
+   "url": "https://raw.githubusercontent.com/srigas/CWRU_Bearing_NumPy/main/Data/1797%20RPM/1797_OR%403_7_DE48.npz"
+  },
+  "1797_OR@3_7_FE.npz": {
+   "publisher_checksum": "gitsha1:5fb7ba12ecb4acf0813e60f695edd61efc67c9d0",
+   "sha256": "b3230a2b30f6368924c4b9bc4fec999b07ff68b0ccd76d32ca0e27cfd17d84b2",
+   "size": 2904346,
+   "url": "https://raw.githubusercontent.com/srigas/CWRU_Bearing_NumPy/main/Data/1797%20RPM/1797_OR%403_7_FE.npz"
+  },
+  "1797_OR@6_14_DE12.npz": {
+   "publisher_checksum": "gitsha1:f7a615ed1b9483b38232c5a071685afa43e9d07d",
+   "sha256": "0886978ce0fb409d45494f9776a98db3aaa5e38b3f2d72340c4f5e9ceb3db4a1",
+   "size": 2925034,
+   "url": "https://raw.githubusercontent.com/srigas/CWRU_Bearing_NumPy/main/Data/1797%20RPM/1797_OR%406_14_DE12.npz"
+  },
+  "1797_OR@6_14_DE48.npz": {
+   "publisher_checksum": "gitsha1:cd77b794d9ac860bd96a35730d52333040bb4788",
+   "sha256": "b6c437382a5d72936e60b222244d3ce82e04cfd6f2e476a74be331d8a5e8472e",
+   "size": 3922734,
+   "url": "https://raw.githubusercontent.com/srigas/CWRU_Bearing_NumPy/main/Data/1797%20RPM/1797_OR%406_14_DE48.npz"
+  },
+  "1797_OR@6_14_FE.npz": {
+   "publisher_checksum": "gitsha1:4bc99cc7bf283dbfba659fed650ab77d8c278743",
+   "sha256": "e60fcea72053df139cf62965cd5bb4b8ac454cb8afe1a9a5a6c11f13909159df",
+   "size": 2904346,
+   "url": "https://raw.githubusercontent.com/srigas/CWRU_Bearing_NumPy/main/Data/1797%20RPM/1797_OR%406_14_FE.npz"
+  },
+  "1797_OR@6_21_DE12.npz": {
+   "publisher_checksum": "gitsha1:391994150d010346d33d2ca2c76803c1ead6742b",
+   "sha256": "068d400e9fe360d6d49b188aca568fa60a4451128d724868d63f741e1f824c8c",
+   "size": 2938954,
+   "url": "https://raw.githubusercontent.com/srigas/CWRU_Bearing_NumPy/main/Data/1797%20RPM/1797_OR%406_21_DE12.npz"
+  },
+  "1797_OR@6_21_DE48.npz": {
+   "publisher_checksum": "gitsha1:4209ec667b770f70b3c1cd06817dac1908b1c8f1",
+   "sha256": "a8255d7564fb62faa821b156a1e174142eb5abaaa988cbe415529cdde08735f3",
+   "size": 3941966,
+   "url": "https://raw.githubusercontent.com/srigas/CWRU_Bearing_NumPy/main/Data/1797%20RPM/1797_OR%406_21_DE48.npz"
+  },
+  "1797_OR@6_21_FE.npz": {
+   "publisher_checksum": "gitsha1:73b07d898ada710ebddf171f6581b47beeae56cf",
+   "sha256": "f93551b4a5550d7793c50759fc0b3caf7c266021b40055bade626735a22dcf53",
+   "size": 2895538,
+   "url": "https://raw.githubusercontent.com/srigas/CWRU_Bearing_NumPy/main/Data/1797%20RPM/1797_OR%406_21_FE.npz"
+  },
+  "1797_OR@6_7_DE12.npz": {
+   "publisher_checksum": "gitsha1:ba4dfb9dfba989c5653e611fd3d836991cf351a9",
+   "sha256": "c44f3adcfd04026f21ccd081e43a3ba6b9631e92ad1940165d390b7be1909172",
+   "size": 2928514,
+   "url": "https://raw.githubusercontent.com/srigas/CWRU_Bearing_NumPy/main/Data/1797%20RPM/1797_OR%406_7_DE12.npz"
+  },
+  "1797_OR@6_7_DE48.npz": {
+   "publisher_checksum": "gitsha1:d2325eaf41e92aef03c2bfa7120e258445176df9",
+   "sha256": "6a1e0f57b93e6a7c7e405245280f87d9998111a36066f760c7d776d5fce567ba",
+   "size": 3897102,
+   "url": "https://raw.githubusercontent.com/srigas/CWRU_Bearing_NumPy/main/Data/1797%20RPM/1797_OR%406_7_DE48.npz"
+  },
+  "1797_OR@6_7_FE.npz": {
+   "publisher_checksum": "gitsha1:a44ca36bc77482571ed491e9067e9e692cb61993",
+   "sha256": "d4f30533b71ab439881d34a22553c29efba7ff0d0d0de95e08d763b090f001a3",
+   "size": 2908762,
+   "url": "https://raw.githubusercontent.com/srigas/CWRU_Bearing_NumPy/main/Data/1797%20RPM/1797_OR%406_7_FE.npz"
+  }
+ },
+ "raw_on_vault": true,
+ "role": "dev",
+ "sealed": false,
+ "source": {
+  "include": "^Data/.*\\.npz$",
+  "kind": "github_tree",
+  "ref": "main",
+  "repo": "srigas/CWRU_Bearing_NumPy"
+ },
+ "stage": "vault",
+ "status": "complete",
+ "version": "srigas-npz-main"
+}

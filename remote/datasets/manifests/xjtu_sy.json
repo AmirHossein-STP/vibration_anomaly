@@ -1,0 +1,133 @@
+{
+ "citation": "Wang, Lei, Li, Li, A Hybrid Prognostics Approach for Estimating RUL of Rolling Element Bearings, IEEE Trans. Reliab. 69(1), 2020",
+ "condensed": {
+  "35Hz12kN/Bearing1_1.npy": {
+   "sha256": "8641838c2d4be1633ca13b3ae5dc9369d772455530cab21d31245aa9722fdc36",
+   "size": 32243840
+  },
+  "35Hz12kN/Bearing1_2.npy": {
+   "sha256": "7bf7193598b6064a14d9e0ed8d7c466803ef3f15c5164dc4bfe946997161448f",
+   "size": 42205312
+  },
+  "35Hz12kN/Bearing1_3.npy": {
+   "sha256": "8d68b6937cd023e73da28a93bbd98bf20658aa315a1d29840af55e8b7a1b9276",
+   "size": 41418880
+  },
+  "35Hz12kN/Bearing1_4.npy": {
+   "sha256": "4f189f2be256c7e531b268ed6e62fbaffc07455afb9ee87b9bdde690e9c8efd1",
+   "size": 31981696
+  },
+  "35Hz12kN/Bearing1_5.npy": {
+   "sha256": "ba321a3b6f4fd30a16458532cac592e99a6a9a410652d7623ab304d7efcfe053",
+   "size": 13631616
+  },
+  "37.5Hz11kN/Bearing2_1.npy": {
+   "sha256": "0ff672f099140085d86d43e157a260b66c0ecdeb3dd985c2d47910bd78e53151",
+   "size": 128712832
+  },
+  "37.5Hz11kN/Bearing2_2.npy": {
+   "sha256": "00358401a28873cad42aae470c26256951e94bf016c2c22af1e14443d5ac1e04",
+   "size": 42205312
+  },
+  "37.5Hz11kN/Bearing2_3.npy": {
+   "sha256": "3f4cab7f616b31656967b6bdd6b8033f92ccda21176d34e8e8d04aea31e41a6a",
+   "size": 139722880
+  },
+  "37.5Hz11kN/Bearing2_4.npy": {
+   "sha256": "02c266d0a73e907541796ff9bcba1a194214a44ede1cecea481c482a5b644296",
+   "size": 11010176
+  },
+  "37.5Hz11kN/Bearing2_5.npy": {
+   "sha256": "20b15190f122b6fc94fdfec4b39b416ddc688818453af6eb6fa845f7398eb89c",
+   "size": 88866944
+  },
+  "40Hz10kN/Bearing3_1.npy": {
+   "sha256": "071ca6efe5eb99d2a9219b25c10c9075e08516a9b8a25d2df160b4681ef14a7e",
+   "size": 665321600
+  },
+  "40Hz10kN/Bearing3_2.npy": {
+   "sha256": "96029f1f0def53a0a6a7e776885d0d08de5befddabef0784a2f87d731b372656",
+   "size": 654311552
+  },
+  "40Hz10kN/Bearing3_3.npy": {
+   "sha256": "fa8edbbf09137a6e49d0ba9d8510e80fdfd53bb88f33e4ce7f8af03df749cda6",
+   "size": 97255552
+  },
+  "40Hz10kN/Bearing3_4.npy": {
+   "sha256": "1f7157fa7219cf8fa0a1d8d8ebe2e64e40416321513c1508012dc49616d3cd4d",
+   "size": 397148288
+  },
+  "40Hz10kN/Bearing3_5.npy": {
+   "sha256": "c210bd5c0d91c5fe2ccb9530e9527c841458bd41bb104e788bbfadcbe633f015",
+   "size": 29884544
+  },
+  "manifest.csv": {
+   "sha256": "2f853c6cb24b351e77b5bd1bc0d21a722207ca2ccf1b05143f29bad473a7799f",
+   "size": 1447
+  }
+ },
+ "dataset": "xjtu_sy",
+ "history": [
+  {
+   "at": "2026-10-21T22:08:37Z",
+   "by": "payesh-20-947",
+   "event": "raw verified"
+  },
+  {
+   "at": "2026-10-21T22:11:21Z",
+   "by": "payesh-20-947",
+   "event": "complete"
+  }
+ ],
+ "license": "Free for research, cite the paper below",
+ "notes": null,
+ "raw": {
+  "XJTU-SY_Bearing_Datasets.part01.rar": {
+   "publisher_checksum": "sha256:c500657353f089a4ab50212ff4ddfc7b982729e92e2b127440c8ad881d80b968",
+   "sha256": "c500657353f089a4ab50212ff4ddfc7b982729e92e2b127440c8ad881d80b968",
+   "size": 744488960,
+   "url": "mediafire:https://www.mediafire.com/file/58qg5pjkqq5t26r/XJTU-SY_Bearing_Datasets.part01.rar/file"
+  },
+  "XJTU-SY_Bearing_Datasets.part02.rar": {
+   "publisher_checksum": "sha256:4dfa6286a8e9c7cec1e925b347642349f36e27ab3f703c90d1d08977b7b4f61f",
+   "sha256": "4dfa6286a8e9c7cec1e925b347642349f36e27ab3f703c90d1d08977b7b4f61f",
+   "size": 744488960,
+   "url": "mediafire:https://www.mediafire.com/file/sqbsl8ja9c9e84x/XJTU-SY_Bearing_Datasets.part02.rar/file"
+  },
+  "XJTU-SY_Bearing_Datasets.part03.rar": {
+   "publisher_checksum": "sha256:6929f531284f79e0209246b4ee23b23dd8d4faac1c0c3ff8fb131cda4a18bd3a",
+   "sha256": "6929f531284f79e0209246b4ee23b23dd8d4faac1c0c3ff8fb131cda4a18bd3a",
+   "size": 744488960,
+   "url": "mediafire:https://www.mediafire.com/file/fj8e74g01vwn5hy/XJTU-SY_Bearing_Datasets.part03.rar/file"
+  },
+  "XJTU-SY_Bearing_Datasets.part04.rar": {
+   "publisher_checksum": "sha256:2245825acd29bed3b95e7a77879a3fbadf20f4ad4f99486384c714174621597d",
+   "sha256": "2245825acd29bed3b95e7a77879a3fbadf20f4ad4f99486384c714174621597d",
+   "size": 744488960,
+   "url": "mediafire:https://www.mediafire.com/file/domu7dirov1wjc8/XJTU-SY_Bearing_Datasets.part04.rar/file"
+  },
+  "XJTU-SY_Bearing_Datasets.part05.rar": {
+   "publisher_checksum": "sha256:e1b0a41a32b865e48ea7981c56f952a960d94335f3496b72eb4a65932f1671bd",
+   "sha256": "e1b0a41a32b865e48ea7981c56f952a960d94335f3496b72eb4a65932f1671bd",
+   "size": 744488960,
+   "url": "mediafire:https://www.mediafire.com/file/n5ozw16n3wqgdaw/XJTU-SY_Bearing_Datasets.part05.rar/file"
+  },
+  "XJTU-SY_Bearing_Datasets.part06.rar": {
+   "publisher_checksum": "sha256:df1854821a9d481104476379f7bc045ea1e101427c6e36145cd7677dc7c4a684",
+   "sha256": "df1854821a9d481104476379f7bc045ea1e101427c6e36145cd7677dc7c4a684",
+   "size": 722155640,
+   "url": "mediafire:https://www.mediafire.com/file/ts2majip39fcnq1/XJTU-SY_Bearing_Datasets.part06.rar/file"
+  }
+ },
+ "raw_on_vault": false,
+ "role": "dev",
+ "sealed": false,
+ "source": {
+  "folder": "0m0g59yk1pmh5",
+  "include": "\\.part\\d+\\.rar$",
+  "kind": "mediafire_folder"
+ },
+ "stage": "ssd",
+ "status": "complete",
+ "version": "mediafire-20190306"
+}

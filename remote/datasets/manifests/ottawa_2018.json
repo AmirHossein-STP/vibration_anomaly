@@ -1,0 +1,393 @@
+{
+ "citation": "Huang & Baddour, Bearing vibration data collected under time-varying rotational speed conditions, Data in Brief 21, 2018",
+ "condensed": {},
+ "dataset": "ottawa_2018",
+ "history": [
+  {
+   "at": "2026-10-21T22:09:14Z",
+   "by": "payesh-20-947",
+   "event": "raw verified"
+  },
+  {
+   "at": "2026-10-21T22:09:14Z",
+   "by": "payesh-20-947",
+   "event": "complete"
+  }
+ ],
+ "license": "CC BY 4.0",
+ "notes": null,
+ "raw": {
+  "B-A-1.mat": {
+   "publisher_checksum": "sha256:2d6ed6f02289faaadb4a4a7f52ac4167245673f1a9156c9bcdc7040c28bda42b",
+   "sha256": "2d6ed6f02289faaadb4a4a7f52ac4167245673f1a9156c9bcdc7040c28bda42b",
+   "size": 12497757,
+   "url": "https://data.mendeley.com/public-files/datasets/v43hmbwxpm/files/d980145e-1695-473a-908c-f02d8ebdaf1c/file_downloaded"
+  },
+  "B-A-2.mat": {
+   "publisher_checksum": "sha256:7d33d188aee76f8cdc5a67ec1ee5654616e4a89d5ef0be82b0c6708ada06189a",
+   "sha256": "7d33d188aee76f8cdc5a67ec1ee5654616e4a89d5ef0be82b0c6708ada06189a",
+   "size": 12557333,
+   "url": "https://data.mendeley.com/public-files/datasets/v43hmbwxpm/files/320eaaf5-9fc1-411e-9a0d-c542a5b2bd54/file_downloaded"
+  },
+  "B-A-3.mat": {
+   "publisher_checksum": "sha256:38438ab22af5a6ffcccfe8c1b77329155b68f14a93f8be5ef1e719bf2541df44",
+   "sha256": "38438ab22af5a6ffcccfe8c1b77329155b68f14a93f8be5ef1e719bf2541df44",
+   "size": 12516711,
+   "url": "https://data.mendeley.com/public-files/datasets/v43hmbwxpm/files/d080f0b6-410d-4ee7-b061-04249f23ac28/file_downloaded"
+  },
+  "B-B-1.mat": {
+   "publisher_checksum": "sha256:a32dd2e7fc513dc14214667a54c8faa381de65625cdff7fc8bcf82a480c244aa",
+   "sha256": "a32dd2e7fc513dc14214667a54c8faa381de65625cdff7fc8bcf82a480c244aa",
+   "size": 12496164,
+   "url": "https://data.mendeley.com/public-files/datasets/v43hmbwxpm/files/22723f54-69b6-45b8-9dd1-ef496a4ee780/file_downloaded"
+  },
+  "B-B-2.mat": {
+   "publisher_checksum": "sha256:ed5b0231d96c89b5ccc845e39f4d40ea174d130b16516196f573c5cebf0a4dbb",
+   "sha256": "ed5b0231d96c89b5ccc845e39f4d40ea174d130b16516196f573c5cebf0a4dbb",
+   "size": 12257242,
+   "url": "https://data.mendeley.com/public-files/datasets/v43hmbwxpm/files/3cfbd3aa-36f2-4918-9559-76208ec2d684/file_downloaded"
+  },
+  "B-B-3.mat": {
+   "publisher_checksum": "sha256:6b1b0a7aaa8f6997e1d43a52633bbf777501c16a806b2ced635398eebfcf5a63",
+   "sha256": "6b1b0a7aaa8f6997e1d43a52633bbf777501c16a806b2ced635398eebfcf5a63",
+   "size": 13053987,
+   "url": "https://data.mendeley.com/public-files/datasets/v43hmbwxpm/files/8e16ad2d-c1d1-4d93-a548-e32ad05b4e36/file_downloaded"
+  },
+  "B-C-1.mat": {
+   "publisher_checksum": "sha256:0880e80ec993faa2a6c1ea7597c67eed35ee481443e8b3921d9e7fd81aa8bb22",
+   "sha256": "0880e80ec993faa2a6c1ea7597c67eed35ee481443e8b3921d9e7fd81aa8bb22",
+   "size": 12444075,
+   "url": "https://data.mendeley.com/public-files/datasets/v43hmbwxpm/files/1c8465d5-d8cc-4142-8d98-9e6a92f19780/file_downloaded"
+  },
+  "B-C-2.mat": {
+   "publisher_checksum": "sha256:6cb0bc5bd708272f8565df9961582a3821b616c49013a0e32d674e7d3936d85a",
+   "sha256": "6cb0bc5bd708272f8565df9961582a3821b616c49013a0e32d674e7d3936d85a",
+   "size": 12442515,
+   "url": "https://data.mendeley.com/public-files/datasets/v43hmbwxpm/files/bab38b79-d86a-44f8-807d-5715cc2c34d3/file_downloaded"
+  },
+  "B-C-3.mat": {
+   "publisher_checksum": "sha256:1a7656b7977ca63a9fc140a8f3cb86d489bbf5c08b1f9ddf1ae4e799ea067a7e",
+   "sha256": "1a7656b7977ca63a9fc140a8f3cb86d489bbf5c08b1f9ddf1ae4e799ea067a7e",
+   "size": 12261942,
+   "url": "https://data.mendeley.com/public-files/datasets/v43hmbwxpm/files/5bec0389-f473-413d-bd57-1c0525de28e0/file_downloaded"
+  },
+  "B-D-1.mat": {
+   "publisher_checksum": "sha256:929a4b8acd8cc15c57f749ebdbca8d32fdf9058d85ffdf58d2ded52212063171",
+   "sha256": "929a4b8acd8cc15c57f749ebdbca8d32fdf9058d85ffdf58d2ded52212063171",
+   "size": 12216026,
+   "url": "https://data.mendeley.com/public-files/datasets/v43hmbwxpm/files/9a25debb-4173-4f2b-9fad-ba067b247c1a/file_downloaded"
+  },
+  "B-D-2.mat": {
+   "publisher_checksum": "sha256:7e4c3b7eb2c14de860685810d3b514fe54937f4f50f25b3fce53a98512300061",
+   "sha256": "7e4c3b7eb2c14de860685810d3b514fe54937f4f50f25b3fce53a98512300061",
+   "size": 12416517,
+   "url": "https://data.mendeley.com/public-files/datasets/v43hmbwxpm/files/6c93c2b1-f572-4267-9242-2cef0d592b8a/file_downloaded"
+  },
+  "B-D-3.mat": {
+   "publisher_checksum": "sha256:2e4294a537de9f1279233ac8ec7bc3f22ca67bc25aff98cf2d506e90cddd1891",
+   "sha256": "2e4294a537de9f1279233ac8ec7bc3f22ca67bc25aff98cf2d506e90cddd1891",
+   "size": 13362372,
+   "url": "https://data.mendeley.com/public-files/datasets/v43hmbwxpm/files/fdef7577-00f7-4b1e-a460-6b16ae90610a/file_downloaded"
+  },
+  "C-A-1.mat": {
+   "publisher_checksum": "sha256:146525ae4ab79120278184663c93a8dc259e30de20a456e4783cd6187099d9e1",
+   "sha256": "146525ae4ab79120278184663c93a8dc259e30de20a456e4783cd6187099d9e1",
+   "size": 14265890,
+   "url": "https://data.mendeley.com/public-files/datasets/v43hmbwxpm/files/baf8b4f2-6fe9-4b86-aff4-19f4afa44c6e/file_downloaded"
+  },
+  "C-A-2.mat": {
+   "publisher_checksum": "sha256:28ee571643faff6c9ea9bd9047401a54478f0fc483ed09bc390aadf12f78644d",
+   "sha256": "28ee571643faff6c9ea9bd9047401a54478f0fc483ed09bc390aadf12f78644d",
+   "size": 14334362,
+   "url": "https://data.mendeley.com/public-files/datasets/v43hmbwxpm/files/cbd6f7ed-9ee4-46de-8d86-6182e64d5c71/file_downloaded"
+  },
+  "C-A-3.mat": {
+   "publisher_checksum": "sha256:9a3de68901a45c5fbeb6e209f3569d19d9f3d4302bc277475c88d1ca8a104227",
+   "sha256": "9a3de68901a45c5fbeb6e209f3569d19d9f3d4302bc277475c88d1ca8a104227",
+   "size": 14301014,
+   "url": "https://data.mendeley.com/public-files/datasets/v43hmbwxpm/files/ba9d3cbd-9d9f-40a9-ac3f-425b60f5294a/file_downloaded"
+  },
+  "C-B-1.mat": {
+   "publisher_checksum": "sha256:7ec911e4838ef636d66a1cca5a95e29dd957c68689cda49438e68492624a5a57",
+   "sha256": "7ec911e4838ef636d66a1cca5a95e29dd957c68689cda49438e68492624a5a57",
+   "size": 14078923,
+   "url": "https://data.mendeley.com/public-files/datasets/v43hmbwxpm/files/235c76f8-aea0-4d0d-9589-b705a46a82a1/file_downloaded"
+  },
+  "C-B-2.mat": {
+   "publisher_checksum": "sha256:0565a6bab7d7b9d8289acde79d879808dd7efa1f9ba3d058f8b5bd0307d0980a",
+   "sha256": "0565a6bab7d7b9d8289acde79d879808dd7efa1f9ba3d058f8b5bd0307d0980a",
+   "size": 14210135,
+   "url": "https://data.mendeley.com/public-files/datasets/v43hmbwxpm/files/a4468f73-9604-4caa-9ea8-e417088ab94f/file_downloaded"
+  },
+  "C-B-3.mat": {
+   "publisher_checksum": "sha256:36791f7e0733c5b5e4c69b8936cd5b41c5b39041d715cc6e568c8f203566db23",
+   "sha256": "36791f7e0733c5b5e4c69b8936cd5b41c5b39041d715cc6e568c8f203566db23",
+   "size": 14256102,
+   "url": "https://data.mendeley.com/public-files/datasets/v43hmbwxpm/files/ae864211-1419-4922-ba75-5bfbf58f5682/file_downloaded"
+  },
+  "C-C-1.mat": {
+   "publisher_checksum": "sha256:db470192db1bd260530adff672caee691058e3d5538e6ba2b3b48404203b2985",
+   "sha256": "db470192db1bd260530adff672caee691058e3d5538e6ba2b3b48404203b2985",
+   "size": 13602293,
+   "url": "https://data.mendeley.com/public-files/datasets/v43hmbwxpm/files/d1be5514-7f47-4b4f-b639-c170b164e3e4/file_downloaded"
+  },
+  "C-C-2.mat": {
+   "publisher_checksum": "sha256:922adaa6e070e053b09273dcb3369cacb2754d849aa4d2a058f1acf6ce13dff6",
+   "sha256": "922adaa6e070e053b09273dcb3369cacb2754d849aa4d2a058f1acf6ce13dff6",
+   "size": 13673879,
+   "url": "https://data.mendeley.com/public-files/datasets/v43hmbwxpm/files/0cb8a228-dd1f-48c6-9d8f-523840ca00c3/file_downloaded"
+  },
+  "C-C-3.mat": {
+   "publisher_checksum": "sha256:1006e4f1bdd18be00ca66602146aa124bf18fa8587b0621993a0150054bc276a",
+   "sha256": "1006e4f1bdd18be00ca66602146aa124bf18fa8587b0621993a0150054bc276a",
+   "size": 13975131,
+   "url": "https://data.mendeley.com/public-files/datasets/v43hmbwxpm/files/0378d464-2b2a-42d5-bed3-459587f353a2/file_downloaded"
+  },
+  "C-D-1.mat": {
+   "publisher_checksum": "sha256:86dedf18476cace5ae913d92201fa88a40feb6ac747625f3c0f559979e057dc8",
+   "sha256": "86dedf18476cace5ae913d92201fa88a40feb6ac747625f3c0f559979e057dc8",
+   "size": 14029439,
+   "url": "https://data.mendeley.com/public-files/datasets/v43hmbwxpm/files/9ec13264-8cbf-4e31-ae51-fd37db8acfb7/file_downloaded"
+  },
+  "C-D-2.mat": {
+   "publisher_checksum": "sha256:d7701c35f51dbd3c9be18e31a61a7d510014ca873ffe8d4b194e23d85c3975d6",
+   "sha256": "d7701c35f51dbd3c9be18e31a61a7d510014ca873ffe8d4b194e23d85c3975d6",
+   "size": 14147080,
+   "url": "https://data.mendeley.com/public-files/datasets/v43hmbwxpm/files/7d9ecf41-4803-40f7-b63b-921041f1ed5b/file_downloaded"
+  },
+  "C-D-3.mat": {
+   "publisher_checksum": "sha256:37bb3a2c0d444f70f5df82d57f37e71b91159b6a45c74b8f992fa6e268dc6026",
+   "sha256": "37bb3a2c0d444f70f5df82d57f37e71b91159b6a45c74b8f992fa6e268dc6026",
+   "size": 14210810,
+   "url": "https://data.mendeley.com/public-files/datasets/v43hmbwxpm/files/c345a6ca-832e-4578-b27c-df3c17c0b1c3/file_downloaded"
+  },
+  "H-A-1.mat": {
+   "publisher_checksum": "sha256:a113089dac7969eaf3e2adc563aa724a523f5d7ef4b3dd957bdf111ac1d84257",
+   "sha256": "a113089dac7969eaf3e2adc563aa724a523f5d7ef4b3dd957bdf111ac1d84257",
+   "size": 11909642,
+   "url": "https://data.mendeley.com/public-files/datasets/v43hmbwxpm/files/5aa2ec96-ba06-4b64-b6bf-92c805c90ac5/file_downloaded"
+  },
+  "H-A-2.mat": {
+   "publisher_checksum": "sha256:fe103e4777f0a8bc964d05079180de56c3ba0fdbaf492879deee9d5b7e547372",
+   "sha256": "fe103e4777f0a8bc964d05079180de56c3ba0fdbaf492879deee9d5b7e547372",
+   "size": 12163512,
+   "url": "https://data.mendeley.com/public-files/datasets/v43hmbwxpm/files/a57cd02d-2501-4c98-abcd-6e013b0d9a33/file_downloaded"
+  },
+  "H-A-3.mat": {
+   "publisher_checksum": "sha256:9f8b6a3f4b80ef479f8a522d4d04f150174de777b27e8bc5cc35c3f61c8dc187",
+   "sha256": "9f8b6a3f4b80ef479f8a522d4d04f150174de777b27e8bc5cc35c3f61c8dc187",
+   "size": 12167580,
+   "url": "https://data.mendeley.com/public-files/datasets/v43hmbwxpm/files/0a30fff0-b14d-4253-bee6-194702518d88/file_downloaded"
+  },
+  "H-B-1.mat": {
+   "publisher_checksum": "sha256:c32bdb51290ccde19adca328b2c17944acabdcf4ee977ff7358892502795d1ab",
+   "sha256": "c32bdb51290ccde19adca328b2c17944acabdcf4ee977ff7358892502795d1ab",
+   "size": 12182954,
+   "url": "https://data.mendeley.com/public-files/datasets/v43hmbwxpm/files/38211e5a-627a-41c0-b85b-ff4d60ae216e/file_downloaded"
+  },
+  "H-B-2.mat": {
+   "publisher_checksum": "sha256:993fed480dc7f5b9f24da8670f94a0bf15804e292de61e6590adb5773bf0b1a6",
+   "sha256": "993fed480dc7f5b9f24da8670f94a0bf15804e292de61e6590adb5773bf0b1a6",
+   "size": 11858198,
+   "url": "https://data.mendeley.com/public-files/datasets/v43hmbwxpm/files/63684aea-01a0-49d5-85f9-7db891c53183/file_downloaded"
+  },
+  "H-B-3.mat": {
+   "publisher_checksum": "sha256:7c4fa4a9babe8eba73b6cfe9f6c1005a2b2ddd54f53f63e4817f959e94c06db4",
+   "sha256": "7c4fa4a9babe8eba73b6cfe9f6c1005a2b2ddd54f53f63e4817f959e94c06db4",
+   "size": 12281532,
+   "url": "https://data.mendeley.com/public-files/datasets/v43hmbwxpm/files/7d67332c-cb3a-4f5c-8c1f-3a20a4b195cd/file_downloaded"
+  },
+  "H-C-1.mat": {
+   "publisher_checksum": "sha256:1467325c6d257bdbc1680370d73795ddaa23602f5065b24f79a8e293071fc038",
+   "sha256": "1467325c6d257bdbc1680370d73795ddaa23602f5065b24f79a8e293071fc038",
+   "size": 12167895,
+   "url": "https://data.mendeley.com/public-files/datasets/v43hmbwxpm/files/ec53b7bb-17ac-4412-97dc-5a21cad74c78/file_downloaded"
+  },
+  "H-C-2.mat": {
+   "publisher_checksum": "sha256:af9257068f271d10b57b3edaa866997abeadc0e6f7a093ba051d66171832b010",
+   "sha256": "af9257068f271d10b57b3edaa866997abeadc0e6f7a093ba051d66171832b010",
+   "size": 12040818,
+   "url": "https://data.mendeley.com/public-files/datasets/v43hmbwxpm/files/4f315c96-25a2-4f7b-a81e-3cc4cb4154fb/file_downloaded"
+  },
+  "H-C-3.mat": {
+   "publisher_checksum": "sha256:7c9563fb685fbaeb4f0f7564f2a2854ba28c33e0ce8e6901a4ad05e4ea6d6b40",
+   "sha256": "7c9563fb685fbaeb4f0f7564f2a2854ba28c33e0ce8e6901a4ad05e4ea6d6b40",
+   "size": 12074455,
+   "url": "https://data.mendeley.com/public-files/datasets/v43hmbwxpm/files/3670fd9c-0132-4d5d-a843-4344576532ce/file_downloaded"
+  },
+  "H-D-1.mat": {
+   "publisher_checksum": "sha256:668b7a9d5790e3c2585dd7b4dbaf8377e57338299787c44518a21df7070086c5",
+   "sha256": "668b7a9d5790e3c2585dd7b4dbaf8377e57338299787c44518a21df7070086c5",
+   "size": 11890850,
+   "url": "https://data.mendeley.com/public-files/datasets/v43hmbwxpm/files/ae395eb8-5f1b-4767-aa38-e5dbe504665b/file_downloaded"
+  },
+  "H-D-2.mat": {
+   "publisher_checksum": "sha256:2c177cc27e773ef854e5638673249a150861ef2bd7a693e0cee8b5c7844815a8",
+   "sha256": "2c177cc27e773ef854e5638673249a150861ef2bd7a693e0cee8b5c7844815a8",
+   "size": 11843015,
+   "url": "https://data.mendeley.com/public-files/datasets/v43hmbwxpm/files/b0c28668-9bb7-4657-9aca-3fc8c3d8a9b7/file_downloaded"
+  },
+  "H-D-3.mat": {
+   "publisher_checksum": "sha256:dcce9be19f89f56dc2dda6928e982c6617a6c9d5b6262c7714c0a1fb9e568e86",
+   "sha256": "dcce9be19f89f56dc2dda6928e982c6617a6c9d5b6262c7714c0a1fb9e568e86",
+   "size": 12464414,
+   "url": "https://data.mendeley.com/public-files/datasets/v43hmbwxpm/files/8ac844b2-926c-470a-af72-76243ec36beb/file_downloaded"
+  },
+  "I-A-1.mat": {
+   "publisher_checksum": "sha256:496a14c3caf62d28169ff2567e9aaf5c7913c03c648ad73651b410cd09316ea7",
+   "sha256": "496a14c3caf62d28169ff2567e9aaf5c7913c03c648ad73651b410cd09316ea7",
+   "size": 15517304,
+   "url": "https://data.mendeley.com/public-files/datasets/v43hmbwxpm/files/92bd5694-07ff-4b89-8b9b-5fc20f12954d/file_downloaded"
+  },
+  "I-A-2.mat": {
+   "publisher_checksum": "sha256:38ab920d5c92fd085949b877b9d1aac2251bf0ddc247ce1afac7df6b62df1c44",
+   "sha256": "38ab920d5c92fd085949b877b9d1aac2251bf0ddc247ce1afac7df6b62df1c44",
+   "size": 15828147,
+   "url": "https://data.mendeley.com/public-files/datasets/v43hmbwxpm/files/7dcaca2b-c407-44d3-8457-5f3ad20431be/file_downloaded"
+  },
+  "I-A-3.mat": {
+   "publisher_checksum": "sha256:22ffb437f4d491df11abad868c998385f8c86a4ed5ad82c3e8755675d20b0a74",
+   "sha256": "22ffb437f4d491df11abad868c998385f8c86a4ed5ad82c3e8755675d20b0a74",
+   "size": 15902200,
+   "url": "https://data.mendeley.com/public-files/datasets/v43hmbwxpm/files/f880eb2f-a9fd-42c2-8bca-ee87b97a90c3/file_downloaded"
+  },
+  "I-B-1.mat": {
+   "publisher_checksum": "sha256:b6d2d338c839e48ca2c16d8f16885bc7508ce7b5e5c90ead9738c4357c19cab8",
+   "sha256": "b6d2d338c839e48ca2c16d8f16885bc7508ce7b5e5c90ead9738c4357c19cab8",
+   "size": 15064234,
+   "url": "https://data.mendeley.com/public-files/datasets/v43hmbwxpm/files/f03b9e0b-f493-4a1e-9145-bd5817613d8b/file_downloaded"
+  },
+  "I-B-2.mat": {
+   "publisher_checksum": "sha256:92f4e49aeef4cb2d093583d2e2632fc08f62f4ddc1e97a4b955a45611262d781",
+   "sha256": "92f4e49aeef4cb2d093583d2e2632fc08f62f4ddc1e97a4b955a45611262d781",
+   "size": 15622518,
+   "url": "https://data.mendeley.com/public-files/datasets/v43hmbwxpm/files/3b404b74-e145-4957-bdb8-085eb384cde6/file_downloaded"
+  },
+  "I-B-3.mat": {
+   "publisher_checksum": "sha256:a252adc89b65cb51febf055d14945e740b9790ba345db4c58c317804b5582f60",
+   "sha256": "a252adc89b65cb51febf055d14945e740b9790ba345db4c58c317804b5582f60",
+   "size": 15779273,
+   "url": "https://data.mendeley.com/public-files/datasets/v43hmbwxpm/files/d2e61dc3-e9e7-426e-8c43-452835424fa4/file_downloaded"
+  },
+  "I-C-1.mat": {
+   "publisher_checksum": "sha256:c053ce37a9378e891c9d8818e3e1220dc38c778275a87fd72379b7c6720d82d1",
+   "sha256": "c053ce37a9378e891c9d8818e3e1220dc38c778275a87fd72379b7c6720d82d1",
+   "size": 16037573,
+   "url": "https://data.mendeley.com/public-files/datasets/v43hmbwxpm/files/39fb272c-e841-4b22-bdb7-36c6062724e0/file_downloaded"
+  },
+  "I-C-2.mat": {
+   "publisher_checksum": "sha256:fb584ba8cdd3edcdec142117f773a38a0bb4aac67a8d58e578ec063b6de96892",
+   "sha256": "fb584ba8cdd3edcdec142117f773a38a0bb4aac67a8d58e578ec063b6de96892",
+   "size": 15830613,
+   "url": "https://data.mendeley.com/public-files/datasets/v43hmbwxpm/files/6deed005-b5c5-44fe-8675-8f670a960e4e/file_downloaded"
+  },
+  "I-C-3.mat": {
+   "publisher_checksum": "sha256:0d28d3d928eb14bb6fd3734791c080079d91ca3f5fb88a8e8befa95f19103538",
+   "sha256": "0d28d3d928eb14bb6fd3734791c080079d91ca3f5fb88a8e8befa95f19103538",
+   "size": 15440285,
+   "url": "https://data.mendeley.com/public-files/datasets/v43hmbwxpm/files/d726c43c-8ad5-45f1-983e-60fd10419fe9/file_downloaded"
+  },
+  "I-D-1.mat": {
+   "publisher_checksum": "sha256:fd7eeec30039496bb59ecf37f1bd1738baa0f8154530e152c1efe8a64a7ff86c",
+   "sha256": "fd7eeec30039496bb59ecf37f1bd1738baa0f8154530e152c1efe8a64a7ff86c",
+   "size": 15818168,
+   "url": "https://data.mendeley.com/public-files/datasets/v43hmbwxpm/files/59965bb8-0604-4056-860b-ce69a835b251/file_downloaded"
+  },
+  "I-D-2.mat": {
+   "publisher_checksum": "sha256:7c4df92ab3c1012589395016ad315f770f4886ba719962a9f1b08963dc057b78",
+   "sha256": "7c4df92ab3c1012589395016ad315f770f4886ba719962a9f1b08963dc057b78",
+   "size": 15884588,
+   "url": "https://data.mendeley.com/public-files/datasets/v43hmbwxpm/files/6cd76391-2ea8-41f5-b7bd-2779715c9298/file_downloaded"
+  },
+  "I-D-3.mat": {
+   "publisher_checksum": "sha256:2fc484d86ed53745207dd541e160a1d0d433adff511f3e7f49a53af79d09e6fb",
+   "sha256": "2fc484d86ed53745207dd541e160a1d0d433adff511f3e7f49a53af79d09e6fb",
+   "size": 15896601,
+   "url": "https://data.mendeley.com/public-files/datasets/v43hmbwxpm/files/dcb30d7f-1ccb-4011-bc6c-ed46c9d5dcb9/file_downloaded"
+  },
+  "O-A-1.mat": {
+   "publisher_checksum": "sha256:f07716f39f8fb93ea73465e40dc415b0252eefcf5797591b079139ce66ff1040",
+   "sha256": "f07716f39f8fb93ea73465e40dc415b0252eefcf5797591b079139ce66ff1040",
+   "size": 12484063,
+   "url": "https://data.mendeley.com/public-files/datasets/v43hmbwxpm/files/9760929d-b46f-4744-a36a-26b11b02d1af/file_downloaded"
+  },
+  "O-A-2.mat": {
+   "publisher_checksum": "sha256:b44dd1494f344841799d9988fbae7e59c3eb263c64547f48643552edac8aec84",
+   "sha256": "b44dd1494f344841799d9988fbae7e59c3eb263c64547f48643552edac8aec84",
+   "size": 12237232,
+   "url": "https://data.mendeley.com/public-files/datasets/v43hmbwxpm/files/22c2ea62-c246-45dd-85ee-2be026797a2d/file_downloaded"
+  },
+  "O-A-3.mat": {
+   "publisher_checksum": "sha256:e569af9fe9c7acfa9ba072841b365ca33e8db4b7eb875ba07fa5a8b3c4aa1f6c",
+   "sha256": "e569af9fe9c7acfa9ba072841b365ca33e8db4b7eb875ba07fa5a8b3c4aa1f6c",
+   "size": 12314003,
+   "url": "https://data.mendeley.com/public-files/datasets/v43hmbwxpm/files/dad7fe76-5166-4845-a01c-b20e6300b823/file_downloaded"
+  },
+  "O-B-1.mat": {
+   "publisher_checksum": "sha256:8bd90233c8c4ae24c45d29394ca432eeca609dc9cb8c4935ea0a07b229e1fab9",
+   "sha256": "8bd90233c8c4ae24c45d29394ca432eeca609dc9cb8c4935ea0a07b229e1fab9",
+   "size": 12099142,
+   "url": "https://data.mendeley.com/public-files/datasets/v43hmbwxpm/files/1569123b-945a-47d0-a0d4-5b0faa417d4d/file_downloaded"
+  },
+  "O-B-2.mat": {
+   "publisher_checksum": "sha256:017a8546aef8658ebfd29902eb53c7c4f6f4f1b99e5b4c624dfc525f4584fb32",
+   "sha256": "017a8546aef8658ebfd29902eb53c7c4f6f4f1b99e5b4c624dfc525f4584fb32",
+   "size": 12082036,
+   "url": "https://data.mendeley.com/public-files/datasets/v43hmbwxpm/files/36ce5b08-d917-4691-924f-f03d46ece64b/file_downloaded"
+  },
+  "O-B-3.mat": {
+   "publisher_checksum": "sha256:500492f1724631661eaafc199993276cb8f6c43d5cd233ae1291bbd824857a20",
+   "sha256": "500492f1724631661eaafc199993276cb8f6c43d5cd233ae1291bbd824857a20",
+   "size": 12205953,
+   "url": "https://data.mendeley.com/public-files/datasets/v43hmbwxpm/files/9fddaba2-d322-4b5b-9883-ea6ef8b8aca1/file_downloaded"
+  },
+  "O-C-1.mat": {
+   "publisher_checksum": "sha256:5974da12daaf36de2706d4b770b7e5e22fd3a4100c106895a0bb1b85f327a5e4",
+   "sha256": "5974da12daaf36de2706d4b770b7e5e22fd3a4100c106895a0bb1b85f327a5e4",
+   "size": 12108677,
+   "url": "https://data.mendeley.com/public-files/datasets/v43hmbwxpm/files/caee8f4b-1efd-4152-849e-f3f38bad8ea3/file_downloaded"
+  },
+  "O-C-2.mat": {
+   "publisher_checksum": "sha256:1417f07c7b71378d668aac3055f042b4ce64e375a4ca8b8dcd532e5641f2b80a",
+   "sha256": "1417f07c7b71378d668aac3055f042b4ce64e375a4ca8b8dcd532e5641f2b80a",
+   "size": 12334994,
+   "url": "https://data.mendeley.com/public-files/datasets/v43hmbwxpm/files/837346ed-561d-4eaa-8ad9-f93779cc99f8/file_downloaded"
+  },
+  "O-C-3.mat": {
+   "publisher_checksum": "sha256:1767194ad9c39e9832ddcc02457e2869500e47444fb4687735937ca6ee0266a0",
+   "sha256": "1767194ad9c39e9832ddcc02457e2869500e47444fb4687735937ca6ee0266a0",
+   "size": 12233133,
+   "url": "https://data.mendeley.com/public-files/datasets/v43hmbwxpm/files/fca2a881-6d0f-4c62-9689-7e7398cfeaf9/file_downloaded"
+  },
+  "O-D-1.mat": {
+   "publisher_checksum": "sha256:e20e4bfccf548d9f22e65443fb27b9695233d7328d28cbaa02d236b86f1a4fc1",
+   "sha256": "e20e4bfccf548d9f22e65443fb27b9695233d7328d28cbaa02d236b86f1a4fc1",
+   "size": 12591498,
+   "url": "https://data.mendeley.com/public-files/datasets/v43hmbwxpm/files/54c37625-1580-4f52-ba32-18933471e867/file_downloaded"
+  },
+  "O-D-2.mat": {
+   "publisher_checksum": "sha256:2fdf58eb7e11734eb69b9e2c62518ccb57908c3fe0a558dfb4d3ce8028399858",
+   "sha256": "2fdf58eb7e11734eb69b9e2c62518ccb57908c3fe0a558dfb4d3ce8028399858",
+   "size": 12313071,
+   "url": "https://data.mendeley.com/public-files/datasets/v43hmbwxpm/files/92c0c330-679f-4d06-b8ff-1f90ff66b849/file_downloaded"
+  },
+  "O-D-3.mat": {
+   "publisher_checksum": "sha256:3946be312a5420186a40452eba16e447b7bbfe041a017c303c2239d47a5862cf",
+   "sha256": "3946be312a5420186a40452eba16e447b7bbfe041a017c303c2239d47a5862cf",
+   "size": 12326700,
+   "url": "https://data.mendeley.com/public-files/datasets/v43hmbwxpm/files/d39af1c6-2b28-4402-a367-6272b517c65c/file_downloaded"
+  }
+ },
+ "raw_on_vault": true,
+ "role": "dev",
+ "sealed": false,
+ "source": {
+  "dataset": "v43hmbwxpm",
+  "include": "\\.mat$",
+  "kind": "mendeley",
+  "version": 2
+ },
+ "stage": "vault",
+ "status": "complete",
+ "version": "mendeley-v43hmbwxpm-v2"
+}

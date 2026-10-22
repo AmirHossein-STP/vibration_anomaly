@@ -1,0 +1,124 @@
+# Dataset registry: what lives on the vault, where it comes from, and how it
+# is checked. Read by remote/datasets/fetch.py ON THE SERVER; every source
+# below was probed from the rented box on 2026-10-22 (see remote/README.md
+# "Sources"). Order of `sources` is the order they are tried.
+#
+# Source kinds (resolved by fetch.py into a file list with sizes and a
+# publisher-side checksum wherever the host offers one):
+#   github_tree       repo + ref + regex over paths; checksum = git blob sha1
+#   mendeley          dataset id (+ version); checksum = sha256
+#   zenodo            record id; checksum = md5
+#   mediafire_folder  folder key; checksum = sha256
+#   url               explicit list of {url, name}; no publisher checksum
+#
+# `stage: vault`  files land directly in <vault>/datasets/<name>/<version>/raw
+# `stage: ssd`    files land in ~/work/scratch (the big ephemeral SSD), are
+#                 condensed into <vault>/.../condensed by `condense`, then
+#                 deleted -- used where raw would not fit in 32 GB
+# `role: sealed`  downloaded and checksummed, never extracted (MASTER_PLAN §4.3)
+#
+# NOT reachable from the box (2026-10-22), do not add as sources:
+#   Kaggle / Google Cloud Storage / Google Drive -- "service not available in
+#   your location"; KAt DataCenter (uni-paderborn.de) -- 503 / no route;
+#   engineering.case.edu (CWRU) -- timeout.
+
+datasets:
+
+  cwru:
+    version: srigas-npz-main
+    role: dev
+    stage: vault
+    expected_gb: 0.70
+    license: "CWRU Bearing Data Center, free for research; npz conversion by srigas (GitHub)"
+    citation: "Case Western Reserve University Bearing Data Center, https://engineering.case.edu/bearingdatacenter"
+    layout: flat            # basename only: <rpm>_<fault>_<size>_<end>.npz, as data/raw expects
+    sources:
+      - kind: github_tree
+        repo: srigas/CWRU_Bearing_NumPy
+        ref: main
+        include: '^Data/.*\.npz$'
+
+  paderborn:
+    version: zenodo-15845309
+    role: dev
+    stage: ssd
+    expected_gb: 3.6        # condensed v1 (~0.45) + v2 (~3.1); raw 5.2 GB rar stays on the SSD
+    license: "CC BY-NC 4.0 (KAt DataCenter); Zenodo mirror lists CC BY 4.0"
+    citation: "Lessmeier et al., Condition Monitoring of Bearing Damage in Electromechanical Drive Systems..., PHME 2016"
+    notes: >-
+      The Zenodo mirror has 31 of the 32 bearing codes: KA08 is missing.
+      KA08 v1 is copied from the laptop's Kaggle-built store with
+      `box data push`, so v1 stays complete; v2 has no KA08.
+    sources:
+      - kind: zenodo
+        record: 15845309
+        include: '^K[ABI]?\d+\.rar$'
+    condense: condense_pu
+
+  xjtu_sy:
+    version: mediafire-20190306
+    role: dev
+    stage: ssd
+    expected_gb: 2.5        # condensed float32; raw 4.4 GB multi-part rar stays on the SSD
+    license: "Free for research, cite the paper below"
+    citation: "Wang, Lei, Li, Li, A Hybrid Prognostics Approach for Estimating RUL of Rolling Element Bearings, IEEE Trans. Reliab. 69(1), 2020"
+    sources:
+      - kind: mediafire_folder
+        folder: 0m0g59yk1pmh5         # the author's "Data" folder (README of WangBiaoXJTU/xjtu-sy-bearing-datasets)
+        include: '\.part\d+\.rar$'
+    condense: condense_xjtu
+
+  ottawa_2018:
+    version: mendeley-v43hmbwxpm-v2
+    role: dev
+    stage: vault
+    expected_gb: 0.81
+    license: "CC BY 4.0"
+    citation: "Huang & Baddour, Bearing vibration data collected under time-varying rotational speed conditions, Data in Brief 21, 2018"
+    sources:
+      - kind: mendeley
+        dataset: v43hmbwxpm
+        version: 2
+        include: '\.mat$'
+
+  ottawa_2023:
+    version: mendeley-y2px5tg92h-v5
+    role: dev
+    stage: vault
+    expected_gb: 0.31
+    license: "CC BY 4.0"
+    citation: "Sehri, Dumond, Bouchard, UORED-VAFCLS, Mendeley Data v5, doi:10.17632/y2px5tg92h.5"
+    notes: "Only the 60 .mat files; the .csv/.xlsx copies and spectrogram zips are the same data in bulkier forms."
+    sources:
+      - kind: mendeley
+        dataset: y2px5tg92h
+        version: 5
+        include: '\.mat$'
+
+  mfpt:
+    version: mathworks-github-master
+    role: dev
+    stage: vault
+    expected_gb: 0.05
+    license: "See license.txt in the mirror (MFPT Society data)"
+    citation: "Society for Machinery Failure Prevention Technology, Fault Data Sets, https://mfpt.org/fault-data-sets/"
+    notes: "The 20 test-rig sets (3 baseline, 3+7 outer, 7 inner). The three real-world sets are not in this mirror."
+    sources:
+      - kind: github_tree
+        repo: mathworks/RollingElementBearingFaultDiagnosis-Data
+        ref: master
+        include: '\.(mat|md|txt)$'
+
+  ims:
+    version: nasa-legacy-ims-zip
+    role: sealed
+    stage: vault
+    expected_gb: 1.1
+    license: "NASA PCoE data repository, public"
+    citation: "J. Lee, H. Qiu, G. Yu, J. Lin, Rexnord Technical Services (2007), IMS, Univ. of Cincinnati, Bearing Data Set, NASA PCoE Data Repository"
+    sources:
+      - kind: url
+        files:
+          - name: IMS.zip
+            url: "https://data.nasa.gov/docs/legacy/IMS.zip"       # 5.9 MB/s when up; timed out later the same day
+            mirrors: ["https://phm-datasets.s3.amazonaws.com/NASA/4.+Bearings.zip"]  # PCoE bundle, 1.08 GB

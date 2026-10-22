@@ -1,0 +1,209 @@
+#!/usr/bin/env bash
+# box: drive the rented GPU server + persistent vault from the laptop.
+# Runbook: remote/README.md. Settings: remote/box.conf. Current IP: remote/.box.env.
+#
+#   box up <ip> [--init-vault]   make a fresh rental ready (< 3 min)
+#   box push                     ship the working tree's code (incl. uncommitted)
+#   box run [--no-push] NAME -- CMD...   detached run with a full record
+#   box status | logs RUN [-f]   state of the box / tail a run's log (RUN: id, part of one, or "last")
+#   box stage NAME[:PART]...     vault -> SSD, linked where the code looks
+#   box data list|fetch|verify|manifests|push ...   datasets (see `box data`)
+#   box pull [--all]             vault results -> local outputs/ (evidence only unless --all)
+#   box down                     final sync, pull, unmount; then the rental may end
+#   box ssh [CMD...] | tunnel PORT
+set -euo pipefail
+HERE="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
+REPO="$(cd "$HERE/.." && pwd)"
+# shellcheck source=box.conf
+source "$HERE/box.conf"
+ENV_FILE="$HERE/.box.env"
+KNOWN="$HERE/.known_hosts"
+BOX_IP=""
+# shellcheck disable=SC1090
+[ -f "$ENV_FILE" ] && source "$ENV_FILE"
+
+SSH_OPTS=(-o BatchMode=yes -o ConnectTimeout=20 -o ServerAliveInterval=15 -o ServerAliveCountMax=8
+          -o UserKnownHostsFile="$KNOWN" -o StrictHostKeyChecking=accept-new -o LogLevel=ERROR
+          # one multiplexed connection for everything: notes/11 saw sshd stop
+          # accepting NEW connections while a transfer ran
+          -o ControlMaster=auto -o ControlPath="$HOME/.ssh/cm-box-%C" -o ControlPersist=30m)
+RSYNC_RSH="ssh ${SSH_OPTS[*]}"
+REMOTE_ENV="PROJECT=$PROJECT VAULT_MNT=$VAULT_MNT VAULT_LABEL=$VAULT_LABEL SYNC_INTERVAL=$SYNC_INTERVAL UV_VERSION=$UV_VERSION"
+RREPO="work/$PROJECT"            # relative to the remote home
+# ~ (not relative paths): fetch also runs inside `box run`, whose cwd is the checkout
+FETCH="~/work/venv/bin/python -I ~/$RREPO/remote/datasets/fetch.py --vault $VAULT_MNT --scratch ~/work/scratch --repo ~/$RREPO"
+
+die() { echo "box: $*" >&2; exit 1; }
+host() { [ -n "$BOX_IP" ] || die "no box yet: run 'remote/box up <ip>'"; echo "$REMOTE_USER@$BOX_IP"; }
+
+# Retry only on connection failure (ssh exit 255), never on a failed remote
+# command; non-idempotent calls (run) use rssh_once.
+rssh() {
+  local n rc h; h=$(host)
+  for n in 1 2 3 4; do
+    rc=0; ssh "${SSH_OPTS[@]}" "$h" "$@" || rc=$?
+    [ $rc -ne 255 ] && return $rc
+    echo "box: ssh connection failed, retry $n/3 in $((n * 5))s" >&2; sleep $((n * 5))
+  done
+  return 255
+}
+rssh_once() { ssh "${SSH_OPTS[@]}" "$(host)" "$@"; }
+in_repo() { echo "cd $RREPO && export $REMOTE_ENV && $*"; }   # remote command line, run inside the checkout
+
+cmd_push() {
+  local tmp n=0; tmp=$(mktemp -d)
+  cd "$REPO"
+  local sha branch dirty=false
+  sha=$(git rev-parse HEAD); branch=$(git rev-parse --abbrev-ref HEAD)
+  [ -n "$(git status --porcelain)" ] && dirty=true
+  printf '{"commit": "%s", "branch": "%s", "dirty": %s, "pushed_at": "%s", "pushed_from": "%s"}\n' \
+    "$sha" "$branch" "$dirty" "$(date -u +%FT%TZ)" "$(hostname -s)" > "$tmp/.box_provenance.json"
+  { git diff HEAD --binary; git ls-files -o --exclude-standard | sed 's/^/untracked: /'; } > "$tmp/.box_diff.patch"
+  # tracked + untracked-but-not-ignored files, minus data/results trees, minus deleted files
+  : > "$tmp/files"
+  while IFS= read -r -d '' f; do
+    top=${f%%/*}
+    case " $CODE_EXCLUDE " in *" $top "*) [ "$top" != "$f" ] && continue ;; esac
+    [ -f "$f" ] || continue
+    printf '%s\0' "$f" >> "$tmp/files"; n=$((n + 1))
+  done < <(git ls-files -z -co --exclude-standard)
+  # two steps: bsdtar applies a later -C to the -T list as well
+  COPYFILE_DISABLE=1 tar cf "$tmp/code.tar" --null -T "$tmp/files"
+  COPYFILE_DISABLE=1 tar rf "$tmp/code.tar" -C "$tmp" .box_provenance.json .box_diff.patch
+  gzip -c "$tmp/code.tar" > "$tmp/code.tgz"
+  rssh "set -e; rm -rf work/.incoming; mkdir -p work/.incoming $RREPO; tar xzf - --warning=no-unknown-keyword -C work/.incoming; \
+        rsync -a --delete --exclude=/outputs --exclude=/data --exclude=__pycache__ work/.incoming/ $RREPO/" < "$tmp/code.tgz"
+  echo "pushed $n files ($(du -h "$tmp/code.tgz" | cut -f1)), commit ${sha:0:9}$([ "$dirty" = true ] && echo ' + uncommitted changes')"
+  rm -rf "$tmp"
+}
+
+cmd_up() {
+  local ip=${1:-} init=""
+  [ -n "$ip" ] || die "usage: box up <ip> [--init-vault]"
+  [ "${2:-}" = "--init-vault" ] && init="--init-vault"
+  local t0; t0=$(date +%s)
+  ssh -O exit -o ControlPath="$HOME/.ssh/cm-box-%C" "$REMOTE_USER@$ip" 2>/dev/null || true
+  echo "BOX_IP=$ip" > "$ENV_FILE"; BOX_IP=$ip
+  rm -f "$KNOWN"            # IPs are recycled between rentals; each box has a new host key
+  if ! rssh true 2>/dev/null; then
+    cat >&2 <<EOF
+box: cannot log in to $REMOTE_USER@$ip with your SSH key.
+  The provider normally installs ~/.ssh/id_ed25519.pub at rent time. If it did not,
+  install it once with the rental password:
+      ! ssh-copy-id -i ~/.ssh/id_ed25519.pub -o UserKnownHostsFile=$KNOWN $REMOTE_USER@$ip
+  then rerun: remote/box up $ip $init
+EOF
+    exit 1
+  fi
+  echo "== code"; cmd_push
+  echo "== bootstrap"
+  rssh "$(in_repo "STAGE_DEFAULT='$STAGE_DEFAULT' bash remote/server/bootstrap.sh $init")"
+  echo; cmd_status
+  echo; echo "box up: ready in $(( $(date +%s) - t0 ))s. Before the rental ends: remote/box down"
+}
+
+cmd_run() {
+  local push=1
+  [ "${1:-}" = "--no-push" ] && { push=0; shift; }
+  local name=${1:-}; shift || true
+  [ -n "$name" ] && [ "${1:-}" = "--" ] || die "usage: box run [--no-push] NAME -- CMD..."
+  shift
+  [ $push -eq 1 ] && cmd_push >/dev/null
+  local q; q=$(printf '%q ' "$@")
+  local id; id=$(rssh_once "$(in_repo "bash remote/server/run.sh $(printf %q "$name") -- $q")")
+  echo "started $id"
+  echo "  log:    remote/box logs $id -f"
+  echo "  status: remote/box status"
+}
+
+resolve_run() {  # remote shell snippet that sets $rd to the run dir matching $1
+  local pat=$1
+  [ "$pat" = last ] && pat=""
+  echo "rd=\$(ls -1d work/runs/*$(printf %q "$pat")*/ 2>/dev/null | tail -1); [ -n \"\$rd\" ] || { echo 'no such run' >&2; exit 1; }"
+}
+
+cmd_logs() {
+  local run=${1:-last} follow=""
+  [ "${2:-}" = "-f" ] && follow="-f"
+  rssh "$(resolve_run "$run"); echo \"== \$rd\"; cat \$rd/cmd.txt; tail -n 60 $follow \$rd/log; [ -f \$rd/exit_code ] && echo \"== exit \$(cat \$rd/exit_code)\" || true"
+}
+
+cmd_status() { rssh "$(in_repo bash remote/server/status.sh)"; }
+
+cmd_stage() { [ $# -gt 0 ] || die "usage: box stage NAME[:PART]..."; rssh "$(in_repo bash remote/server/stage.sh "$@")"; }
+
+cmd_pull() {
+  local all=0 excl=()
+  [ "${1:-}" = "--all" ] && all=1
+  # Evidence (json, csv, logs, figures) comes home; model binaries and caches
+  # stay on the vault unless --all (the .gitignore keeps them out of git either way).
+  [ $all -eq 0 ] && excl=(--exclude='*.pt' --exclude='*.npz' --exclude='*.npy' --exclude='*.pkl' --exclude='*.joblib')
+  local h; h=$(host)
+  mkdir -p "$REPO/outputs/remote_runs"
+  rsync -az --update ${excl[@]+"${excl[@]}"} -e "$RSYNC_RSH" "$h:$VAULT_MNT/projects/$PROJECT/outputs/" "$REPO/outputs/"
+  rsync -az ${excl[@]+"${excl[@]}"} -e "$RSYNC_RSH" "$h:$VAULT_MNT/projects/$PROJECT/runs/" "$REPO/outputs/remote_runs/"
+  echo "pulled vault results -> outputs/ and outputs/remote_runs/ $([ $all -eq 1 ] && echo '(including binaries)')"
+}
+
+cmd_down() {
+  echo "== final sync"
+  rssh "$(in_repo "bash remote/server/syncd.sh --stop; bash remote/server/syncd.sh --once")"
+  echo "== pull"; cmd_pull
+  echo "== unmount"
+  rssh "sync; cd /; sudo umount $VAULT_MNT && echo 'vault unmounted cleanly'"
+  echo; echo "box down: SAFE TO END THE RENTAL (runs still going on the box were not stopped; their results after this point are lost)"
+}
+
+cmd_data() {
+  local sub=${1:-}; shift || true
+  case "$sub" in
+    list) rssh "$FETCH list" ;;
+    fetch)
+      [ $# -gt 0 ] || die "usage: box data fetch NAME...|all [--jobs N] [--force]"
+      # long: runs as a detached box run (log, exit code, survives ssh drops)
+      cmd_run "fetch-$(printf %s "$1" | tr -c 'A-Za-z0-9_-' -)" -- bash -c "$FETCH fetch $*" ;;
+    verify)
+      [ $# -gt 0 ] || set -- all
+      rssh "$FETCH verify $* --against $RREPO/remote/datasets/manifests" ;;
+    manifests)
+      # vault MANIFEST.json files -> remote/datasets/manifests/<name>.json (commit these)
+      local tmp; tmp=$(mktemp -d)
+      rsync -am --include='*/' --include='MANIFEST.json' --exclude='*' -e "$RSYNC_RSH" "$(host):$VAULT_MNT/datasets/" "$tmp/"
+      mkdir -p "$HERE/datasets/manifests"
+      for m in "$tmp"/*/*/MANIFEST.json; do
+        [ -f "$m" ] || continue
+        n=$(basename "$(dirname "$(dirname "$m")")")
+        cp "$m" "$HERE/datasets/manifests/$n.json"; echo "  $n.json"
+      done
+      rm -rf "$tmp"
+      echo "updated remote/datasets/manifests/ -- review and commit" ;;
+    push)
+      # private / laptop-only data -> vault (slow uplink; rsync sends only deltas)
+      [ $# -eq 2 ] || die "usage: box data push LOCAL_PATH VAULT_RELATIVE_DEST   e.g. datasets/turbo_site1/2026-11/raw/"
+      rssh "mkdir -p $VAULT_MNT/$(printf %q "$2")"
+      rsync -az --partial --progress -e "$RSYNC_RSH" "$1" "$(host):$VAULT_MNT/$2" ;;
+    *) cat <<EOF
+box data list                     registry vs vault
+box data fetch NAME...|all        download on the server into the vault (detached run)
+box data verify [NAME...|all]     re-hash vault files; compare with committed manifests
+box data manifests                copy vault manifests into remote/datasets/manifests/
+box data push LOCAL DEST          upload laptop data to \$VAULT/DEST (e.g. private recordings)
+EOF
+       [ -z "$sub" ] || exit 2 ;;
+  esac
+}
+
+case "${1:-}" in
+  up) shift; cmd_up "$@" ;;
+  push) cmd_push ;;
+  run) shift; cmd_run "$@" ;;
+  status) cmd_status ;;
+  logs) shift; cmd_logs "$@" ;;
+  stage) shift; cmd_stage "$@" ;;
+  data) shift; cmd_data "$@" ;;
+  pull) shift; cmd_pull "$@" ;;
+  down) cmd_down ;;
+  ssh) shift; if [ $# -eq 0 ]; then ssh -t "${SSH_OPTS[@]}" "$(host)" "cd $RREPO 2>/dev/null; exec bash -l"; else rssh "$@"; fi ;;
+  tunnel) shift; p=${1:?usage: box tunnel PORT}; echo "localhost:$p -> box:$p (Ctrl-C to stop)"; ssh -N -L "$p:localhost:$p" "${SSH_OPTS[@]}" "$(host)" ;;
+  *) sed -n '2,15p' "$0" | sed 's/^# \{0,1\}//'; exit 2 ;;
+esac
