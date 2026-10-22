@@ -51,4 +51,5 @@ anticipated (MASTER_PLAN §7). That is reported prominently, before any claim, i
 in MASTER_PLAN §1.
 
 ## 4. Unsealing record
-(written at unsealing: the commit and the time)
+- Frozen system: commit `e7c01a3eee93d00c2b0c7b1b25a915ca663f5629` (notes/22 §8). Detection = geometry-free (primary), six-line reported alongside.
+- Unsealed on the box with `fetch.py unseal ims --commit e7c01a3eee93 --confirm WP11` right after this note was committed.

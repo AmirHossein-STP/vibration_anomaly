@@ -86,4 +86,6 @@ To be decided by WP13 (notes/23): the geometry-free fallback, or level/kurtosis 
 `METHOD_VERSION = "1.1"`. v1.0 models are refused and must be recalibrated.
 
 ## 8. Freeze record
-(empty until WP18)
+**Frozen 2026-10-22 at commit `e7c01a3eee93d00c2b0c7b1b25a915ca663f5629`** (method v1.1, `bearing` service). Everything WP18 scores
+on IMS is this code. Any later change to `method.py`, the feature modules, `bearings.py` or the
+`bearing` service is a new version, and the IMS numbers do not apply to it.
