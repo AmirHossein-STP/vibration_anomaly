@@ -1,0 +1,43 @@
+{
+ "citation": "Nectoux et al., PRONOSTIA: an experimental platform for bearings accelerated degradation tests, IEEE PHM 2012",
+ "condensed": {},
+ "dataset": "femto",
+ "history": [
+  {
+   "at": "2026-10-22T06:09:50Z",
+   "by": "payesh-20-947",
+   "event": "raw verified"
+  },
+  {
+   "at": "2026-10-22T06:09:50Z",
+   "by": "payesh-20-947",
+   "event": "complete"
+  }
+ ],
+ "license": "NASA PCoE data repository, public",
+ "notes": "17 run-to-failure bearings, 3 constant conditions, 0.1 s at 25.6 kHz every 10 s. Archive kept unextracted; WP16 (notes/26) extracts on the SSD.",
+ "raw": {
+  "FEMTO_Bearing.zip": {
+   "publisher_checksum": null,
+   "sha256": "e21bb22bd8d54fd18ebe98b4b4e094c0c40469bda19811a2a642d5cc84ebd81f",
+   "size": 1157035288,
+   "url": "https://phm-datasets.s3.amazonaws.com/NASA/10.+FEMTO+Bearing.zip"
+  }
+ },
+ "raw_on_vault": true,
+ "role": "dev",
+ "sealed": false,
+ "source": {
+  "files": [
+   {
+    "name": "FEMTO_Bearing.zip",
+    "size": 1157035288,
+    "url": "https://phm-datasets.s3.amazonaws.com/NASA/10.+FEMTO+Bearing.zip"
+   }
+  ],
+  "kind": "url"
+ },
+ "stage": "vault",
+ "status": "complete",
+ "version": "nasa-s3-10-femto-bearing"
+}

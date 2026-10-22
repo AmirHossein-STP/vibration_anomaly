@@ -22,19 +22,27 @@ from domain_adaptation.data import public_datasets as pdx
 from domain_adaptation.data.cwru_loader import build_cwru_catalog
 from domain_adaptation.data.pu_loader import PreparedPUStore
 from domain_adaptation.features.envelope import CWRU_6205, PU_6203
+from domain_adaptation.bearings import lookup
+from domain_adaptation.features.cot import cot_envelope_order_features
+from domain_adaptation.features.envelope import FEATURE_NAMES, envelope_order_features
 from domain_adaptation.features.geofree import BIN_NAMES, geofree_features, geofree_features_cot
+from domain_adaptation.method import CPW_SES
 from domain_adaptation.features.physics_v2 import V2_NAMES, v2_features, v2_features_cot
 from envelope_cache import CWRU_RAW, PU_CODES, PU_STORE
 from wp5_cache import COT_HOP_REVS, COT_REVS, COT_SPR, GEOMETRY, HOP, ROOTS, WIN, fingerprint as wp5_fp, to_12k
 
-DATASETS = ["cwru", "pu", "ottawa_2018", "ottawa_2023", "mfpt", "xjtu_sy"]
+DATASETS = ["cwru", "pu", "ottawa_2018", "ottawa_2023", "mfpt", "xjtu_sy", "hust"]
 META = ["dataset", "unit", "condition", "recording", "label", "state", "damage_mode", "win", "t0", "rpm",
         "channel", "minute"]
 SOURCES = [Path(p) for p in ("src/domain_adaptation/features/physics_v2.py", "src/domain_adaptation/features/cot.py",
                              "src/domain_adaptation/features/geofree.py", "scripts/analysis/v2_cache.py")]
 # feature set -> (constant-speed fn, order-tracked fn, column names, default output dir)
 FEATURE_SETS = {"v2": (v2_features, v2_features_cot, V2_NAMES, Path("outputs/wp3/cache")),
-                "geofree": (geofree_features, geofree_features_cot, BIN_NAMES, Path("outputs/wp13/cache"))}
+                "geofree": (geofree_features, geofree_features_cot, BIN_NAMES, Path("outputs/wp13/cache")),
+                # method v1.0's own features (six lines among them), for the Phase 2 datasets
+                "cpw": (lambda x, fs, rpm, g: envelope_order_features(x, fs, rpm, g, **CPW_SES),
+                        lambda x, fs, ph, g, spr: cot_envelope_order_features(x, fs, ph, g, spr, **CPW_SES),
+                        FEATURE_NAMES, Path("outputs/phase2/cache"))}
 
 
 def fingerprint(dataset: str, fset: str = "v2") -> str:
@@ -96,6 +104,9 @@ def _job(args) -> list[dict]:
         rec = pdx.Recording("pu", code, cond, f"{code}_{run}", label, "healthy" if label == 0 else "faulty",
                             12000.0, sig, rpm=rpm)
         return rows_of(rec, PU_6203, mode, fset)
+    if dataset == "hust":   # one geometry per bearing type, from the catalog
+        return [r for rec in pdx.hust(Path("data/hust"), only=key)
+                for r in rows_of(rec, lookup(rec.meta["bearing"]), "", fset)]
     g, root = GEOMETRY[dataset], ROOTS[dataset]
     if dataset == "xjtu_sy":
         bearing, ch = key
@@ -114,6 +125,8 @@ def keys(dataset: str) -> list:
                 for r in pcat.itertuples()]
     if dataset == "xjtu_sy":
         return [(b, ch) for b in pdx.xjtu_bearings(ROOTS[dataset]).bearing for ch in (0, 1)]
+    if dataset == "hust":
+        return sorted(p.stem for p in Path("data/hust").glob("*.mat"))
     root = ROOTS[dataset]
     return sorted(p.stem for p in (root.rglob("*.mat") if dataset == "mfpt" else root.glob("*.mat")))
 

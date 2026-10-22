@@ -30,8 +30,10 @@ import scipy.io
 
 from domain_adaptation.features.envelope import BearingGeometry
 
-HEALTHY, INNER, OUTER, BALL, CAGE, COMBINED = 0, 1, 2, 3, 4, 5
-LABEL_NAMES = {0: "healthy", 1: "inner", 2: "outer", 3: "ball", 4: "cage", 5: "combined"}
+HEALTHY, INNER, OUTER, BALL, CAGE, COMBINED, INNER_BALL, OUTER_BALL = 0, 1, 2, 3, 4, 5, 6, 7
+LABEL_NAMES = {0: "healthy", 1: "inner", 2: "outer", 3: "ball", 4: "cage", 5: "combined", 6: "inner+ball",
+               7: "outer+ball"}
+RACE_INVOLVING = (1, 2, 5, 6, 7)
 
 OTTAWA18_ER16K = BearingGeometry("ER16K", n_balls=9, ball_diameter=0.3125, pitch_diameter=1.516)
 OTTAWA23_6203 = BearingGeometry("6203ZZ / 203KD", n_balls=8, ball_diameter=6.77, pitch_diameter=28.5)
@@ -181,3 +183,30 @@ def xjtu_records(root: Path, bearing: str, channel: int = 0):
                         signal=np.asarray(arr[minute, :, channel], dtype=np.float64), rpm=float(row.rpm),
                         meta={"minute": minute + 1, "n_minutes": int(row.n_minutes), "failed": row.failed,
                               "channel": "horizontal" if channel == 0 else "vertical"})
+
+
+# --- HUST (Thuan & Hong 2023): 5 bearing types, constant speed per file ------
+
+HUST_RE = re.compile(r"^(?P<h>N|IO|IB|OB|I|O|B)(?P<type>[4-8])0(?P<load>[024])\.mat$")
+HUST_LABEL = {"N": HEALTHY, "I": INNER, "O": OUTER, "B": BALL, "IO": COMBINED, "IB": INNER_BALL, "OB": OUTER_BALL}
+
+
+def hust(root: Path, only: str | None = None):
+    """`data` = 10 s at 51.2 kHz (vertical accelerometer on the bearing), `fs` =
+    measured shaft frequency in Hz. Unit = bearing type (one physical bearing per
+    type and state)."""
+    for p in sorted(Path(root).glob("*.mat")):
+        if only is not None and p.stem != only:
+            continue
+        m = HUST_RE.match(p.name)
+        if not m:
+            continue
+        d = scipy.io.loadmat(p)
+        shaft_hz = float(np.asarray(d["fs"]).ravel()[0])
+        if not 5 < shaft_hz < 100:
+            raise ValueError(f"{p.name}: implausible shaft speed {shaft_hz} Hz")
+        btype = f"620{m['type']}"
+        yield Recording("hust", unit=btype, condition=f"{int(m['load']) * 100}W", recording=p.stem,
+                        label=HUST_LABEL[m["h"]], state="healthy" if m["h"] == "N" else "faulty",
+                        fs=51200.0, signal=np.asarray(d["data"], dtype=np.float64).ravel(), rpm=60.0 * shaft_hz,
+                        meta={"bearing": f"KG {btype} (HUST)", "load_W": int(m["load"]) * 100})

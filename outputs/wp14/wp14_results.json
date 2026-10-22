@@ -1,0 +1,540 @@
+{
+ "gate": true,
+ "geo_wins": true,
+ "typing": 0.8280701754385965,
+ "results": {
+  "six_line": {
+   "6204": {
+    "auc_race": 0.9818160265528686,
+    "auc_race_min": 0.9480796586059743,
+    "fa": 0.08771929824561403,
+    "fa_worst": 0.15789473684210525,
+    "recall_race": 0.9340034063914661,
+    "recall_inner": 1.0,
+    "recall_outer": 1.0,
+    "recall_combined": 1.0,
+    "recall_outer+ball": 0.5790849673202615,
+    "typing": 1.0,
+    "folds": [
+     {
+      "load": "0W",
+      "fa": 0.10526315789473684,
+      "recall_race": 0.8783783783783784,
+      "auc_race": 0.9480796586059743,
+      "recall_inner": 1.0,
+      "recall_outer": 1.0,
+      "recall_combined": 1.0,
+      "recall_outer+ball": 0.47058823529411764,
+      "typing_hits": 38,
+      "typing_n": 38
+     },
+     {
+      "load": "200W",
+      "fa": 0.15789473684210525,
+      "recall_race": 0.9833333333333333,
+      "auc_race": 0.9973684210526315,
+      "recall_inner": 1.0,
+      "recall_outer": 1.0,
+      "recall_combined": 1.0,
+      "recall_outer+ball": 0.6666666666666666,
+      "typing_hits": 38,
+      "typing_n": 38
+     },
+     {
+      "load": "400W",
+      "fa": 0.0,
+      "recall_race": 0.9402985074626866,
+      "auc_race": 1.0,
+      "recall_inner": 1.0,
+      "recall_outer": 1.0,
+      "recall_combined": 1.0,
+      "recall_outer+ball": 0.6,
+      "typing_hits": 38,
+      "typing_n": 38
+     }
+    ]
+   },
+   "6205": {
+    "auc_race": 0.4535549399815328,
+    "auc_race_min": 0.2083102493074792,
+    "fa": 0.3333333333333333,
+    "fa_worst": 1.0,
+    "recall_race": 0.17192982456140352,
+    "recall_inner": 0.08771929824561403,
+    "recall_outer": 0.4385964912280702,
+    "recall_ball": 0.0,
+    "recall_combined": 0.0,
+    "recall_inner+ball": 0.3333333333333333,
+    "recall_outer+ball": 0.0,
+    "typing": 0.8070175438596491,
+    "folds": [
+     {
+      "load": "0W",
+      "fa": 0.0,
+      "recall_race": 0.0,
+      "auc_race": 0.6659279778393351,
+      "recall_inner": 0.0,
+      "recall_outer": 0.0,
+      "recall_ball": 0.0,
+      "recall_combined": 0.0,
+      "recall_inner+ball": 0.0,
+      "recall_outer+ball": 0.0,
+      "typing_hits": 32,
+      "typing_n": 38
+     },
+     {
+      "load": "200W",
+      "fa": 0.0,
+      "recall_race": 0.06315789473684211,
+      "auc_race": 0.48642659279778394,
+      "recall_inner": 0.0,
+      "recall_outer": 0.3157894736842105,
+      "recall_ball": 0.0,
+      "recall_combined": 0.0,
+      "recall_inner+ball": 0.0,
+      "recall_outer+ball": 0.0,
+      "typing_hits": 29,
+      "typing_n": 38
+     },
+     {
+      "load": "400W",
+      "fa": 1.0,
+      "recall_race": 0.45263157894736844,
+      "auc_race": 0.2083102493074792,
+      "recall_inner": 0.2631578947368421,
+      "recall_outer": 1.0,
+      "recall_ball": 0.0,
+      "recall_combined": 0.0,
+      "recall_inner+ball": 1.0,
+      "recall_outer+ball": 0.0,
+      "typing_hits": 31,
+      "typing_n": 38
+     }
+    ]
+   },
+   "6206": {
+    "auc_race": 0.8829101261926745,
+    "auc_race_min": 0.8288088642659279,
+    "fa": 0.03508771929824561,
+    "fa_worst": 0.05263157894736842,
+    "recall_race": 0.7345394736842105,
+    "recall_inner": 1.0,
+    "recall_outer": 0.7192982456140351,
+    "recall_ball": 0.0,
+    "recall_combined": 1.0,
+    "recall_inner+ball": 0.13333333333333333,
+    "recall_outer+ball": 0.8245614035087719,
+    "typing": 0.8947368421052632,
+    "folds": [
+     {
+      "load": "0W",
+      "fa": 0.0,
+      "recall_race": 0.65625,
+      "auc_race": 0.9495614035087718,
+      "recall_inner": 1.0,
+      "recall_outer": 0.3684210526315789,
+      "recall_ball": 0.0,
+      "recall_combined": 1.0,
+      "recall_inner+ball": 0.4,
+      "recall_outer+ball": 0.5263157894736842,
+      "typing_hits": 30,
+      "typing_n": 38
+     },
+     {
+      "load": "200W",
+      "fa": 0.05263157894736842,
+      "recall_race": 0.7684210526315789,
+      "auc_race": 0.8288088642659279,
+      "recall_inner": 1.0,
+      "recall_outer": 0.8947368421052632,
+      "recall_ball": 0.0,
+      "recall_combined": 1.0,
+      "recall_inner+ball": 0.0,
+      "recall_outer+ball": 0.9473684210526315,
+      "typing_hits": 37,
+      "typing_n": 38
+     },
+     {
+      "load": "400W",
+      "fa": 0.05263157894736842,
+      "recall_race": 0.7789473684210526,
+      "auc_race": 0.8703601108033241,
+      "recall_inner": 1.0,
+      "recall_outer": 0.8947368421052632,
+      "recall_ball": 0.0,
+      "recall_combined": 1.0,
+      "recall_inner+ball": 0.0,
+      "recall_outer+ball": 1.0,
+      "typing_hits": 35,
+      "typing_n": 38
+     }
+    ]
+   },
+   "6207": {
+    "auc_race": 0.9534626038781164,
+    "auc_race_min": 0.930747922437673,
+    "fa": 0.07017543859649122,
+    "fa_worst": 0.21052631578947367,
+    "recall_race": 0.8807017543859649,
+    "recall_inner": 0.5964912280701754,
+    "recall_outer": 0.9824561403508771,
+    "recall_ball": 0.3859649122807018,
+    "recall_combined": 0.9649122807017544,
+    "recall_inner+ball": 1.0,
+    "recall_outer+ball": 0.8596491228070176,
+    "typing": 0.8157894736842105,
+    "folds": [
+     {
+      "load": "0W",
+      "fa": 0.0,
+      "recall_race": 0.8631578947368421,
+      "auc_race": 0.932409972299169,
+      "recall_inner": 0.5263157894736842,
+      "recall_outer": 1.0,
+      "recall_ball": 0.6842105263157895,
+      "recall_combined": 0.8947368421052632,
+      "recall_inner+ball": 1.0,
+      "recall_outer+ball": 0.8947368421052632,
+      "typing_hits": 33,
+      "typing_n": 38
+     },
+     {
+      "load": "200W",
+      "fa": 0.0,
+      "recall_race": 0.7894736842105263,
+      "auc_race": 0.930747922437673,
+      "recall_inner": 0.2631578947368421,
+      "recall_outer": 1.0,
+      "recall_ball": 0.0,
+      "recall_combined": 1.0,
+      "recall_inner+ball": 1.0,
+      "recall_outer+ball": 0.6842105263157895,
+      "typing_hits": 27,
+      "typing_n": 38
+     },
+     {
+      "load": "400W",
+      "fa": 0.21052631578947367,
+      "recall_race": 0.9894736842105263,
+      "auc_race": 0.997229916897507,
+      "recall_inner": 1.0,
+      "recall_outer": 0.9473684210526315,
+      "recall_ball": 0.47368421052631576,
+      "recall_combined": 1.0,
+      "recall_inner+ball": 1.0,
+      "recall_outer+ball": 1.0,
+      "typing_hits": 33,
+      "typing_n": 38
+     }
+    ]
+   },
+   "6208": {
+    "auc_race": 0.8365216446689479,
+    "auc_race_min": 0.7412742382271469,
+    "fa": 0.017543859649122806,
+    "fa_worst": 0.05263157894736842,
+    "recall_race": 0.6666666666666666,
+    "recall_inner": 0.9649122807017544,
+    "recall_outer": 0.2456140350877193,
+    "recall_ball": 0.0,
+    "recall_combined": 0.9824561403508771,
+    "recall_inner+ball": 1.0,
+    "recall_outer+ball": 0.0,
+    "typing": 0.6228070175438597,
+    "folds": [
+     {
+      "load": "0W",
+      "fa": 0.0,
+      "recall_race": 0.6,
+      "auc_race": 0.8326869806094183,
+      "recall_inner": 0.8947368421052632,
+      "recall_outer": 0.15789473684210525,
+      "recall_ball": 0.0,
+      "recall_combined": 0.9473684210526315,
+      "recall_inner+ball": 1.0,
+      "recall_outer+ball": 0.0,
+      "typing_hits": 25,
+      "typing_n": 38
+     },
+     {
+      "load": "200W",
+      "fa": 0.05263157894736842,
+      "recall_race": 0.6,
+      "auc_race": 0.7412742382271469,
+      "recall_inner": 1.0,
+      "recall_outer": 0.0,
+      "recall_ball": 0.0,
+      "recall_combined": 1.0,
+      "recall_inner+ball": 1.0,
+      "recall_outer+ball": 0.0,
+      "typing_hits": 26,
+      "typing_n": 38
+     },
+     {
+      "load": "400W",
+      "fa": 0.0,
+      "recall_race": 0.8,
+      "auc_race": 0.9356037151702787,
+      "recall_inner": 1.0,
+      "recall_outer": 0.5789473684210527,
+      "recall_ball": 0.0,
+      "recall_combined": 1.0,
+      "recall_inner+ball": 1.0,
+      "recall_outer+ball": 0.0,
+      "typing_hits": 20,
+      "typing_n": 38
+     }
+    ]
+   }
+  },
+  "geometry_free": {
+   "6204": {
+    "auc_race": 0.9844354566664072,
+    "auc_race_min": 0.9573257467994309,
+    "fa": 0.0,
+    "fa_worst": 0.0,
+    "recall_race": 0.8899489041280085,
+    "recall_inner": 1.0,
+    "recall_outer": 1.0,
+    "recall_combined": 1.0,
+    "recall_outer+ball": 0.1784313725490196,
+    "folds": [
+     {
+      "load": "0W",
+      "fa": 0.0,
+      "recall_race": 0.8243243243243243,
+      "auc_race": 0.9573257467994309,
+      "recall_inner": 1.0,
+      "recall_outer": 1.0,
+      "recall_combined": 1.0,
+      "recall_outer+ball": 0.23529411764705882
+     },
+     {
+      "load": "200W",
+      "fa": 0.0,
+      "recall_race": 0.95,
+      "auc_race": 0.999122807017544,
+      "recall_inner": 1.0,
+      "recall_outer": 1.0,
+      "recall_combined": 1.0,
+      "recall_outer+ball": 0.0
+     },
+     {
+      "load": "400W",
+      "fa": 0.0,
+      "recall_race": 0.8955223880597015,
+      "auc_race": 0.9968578161822467,
+      "recall_inner": 1.0,
+      "recall_outer": 1.0,
+      "recall_combined": 1.0,
+      "recall_outer+ball": 0.3
+     }
+    ]
+   },
+   "6205": {
+    "auc_race": 0.7734072022160664,
+    "auc_race_min": 0.5667590027700831,
+    "fa": 0.17543859649122806,
+    "fa_worst": 0.5263157894736842,
+    "recall_race": 0.2771929824561403,
+    "recall_inner": 0.0,
+    "recall_outer": 0.6491228070175438,
+    "recall_ball": 0.2807017543859649,
+    "recall_combined": 0.0,
+    "recall_inner+ball": 0.3333333333333333,
+    "recall_outer+ball": 0.40350877192982454,
+    "folds": [
+     {
+      "load": "0W",
+      "fa": 0.0,
+      "recall_race": 0.22105263157894736,
+      "auc_race": 0.894736842105263,
+      "recall_inner": 0.0,
+      "recall_outer": 0.9473684210526315,
+      "recall_ball": 0.0,
+      "recall_combined": 0.0,
+      "recall_inner+ball": 0.0,
+      "recall_outer+ball": 0.15789473684210525
+     },
+     {
+      "load": "200W",
+      "fa": 0.0,
+      "recall_race": 0.08421052631578947,
+      "auc_race": 0.8587257617728532,
+      "recall_inner": 0.0,
+      "recall_outer": 0.0,
+      "recall_ball": 0.0,
+      "recall_combined": 0.0,
+      "recall_inner+ball": 0.0,
+      "recall_outer+ball": 0.42105263157894735
+     },
+     {
+      "load": "400W",
+      "fa": 0.5263157894736842,
+      "recall_race": 0.5263157894736842,
+      "auc_race": 0.5667590027700831,
+      "recall_inner": 0.0,
+      "recall_outer": 1.0,
+      "recall_ball": 0.8421052631578947,
+      "recall_combined": 0.0,
+      "recall_inner+ball": 1.0,
+      "recall_outer+ball": 0.631578947368421
+     }
+    ]
+   },
+   "6206": {
+    "auc_race": 0.9342605417051401,
+    "auc_race_min": 0.8936403508771931,
+    "fa": 0.0,
+    "fa_worst": 0.0,
+    "recall_race": 0.5951754385964912,
+    "recall_inner": 0.9824561403508771,
+    "recall_outer": 0.3333333333333333,
+    "recall_ball": 0.25874125874125875,
+    "recall_combined": 0.9473684210526315,
+    "recall_inner+ball": 0.3333333333333333,
+    "recall_outer+ball": 0.3859649122807018,
+    "folds": [
+     {
+      "load": "0W",
+      "fa": 0.0,
+      "recall_race": 0.375,
+      "auc_race": 0.8936403508771931,
+      "recall_inner": 1.0,
+      "recall_outer": 0.0,
+      "recall_ball": 0.0,
+      "recall_combined": 0.8421052631578947,
+      "recall_inner+ball": 0.0,
+      "recall_outer+ball": 0.05263157894736842
+     },
+     {
+      "load": "200W",
+      "fa": 0.0,
+      "recall_race": 0.7789473684210526,
+      "auc_race": 0.9562326869806094,
+      "recall_inner": 1.0,
+      "recall_outer": 0.3684210526315789,
+      "recall_ball": 0.5454545454545454,
+      "recall_combined": 1.0,
+      "recall_inner+ball": 0.9473684210526315,
+      "recall_outer+ball": 0.5789473684210527
+     },
+     {
+      "load": "400W",
+      "fa": 0.0,
+      "recall_race": 0.631578947368421,
+      "auc_race": 0.9529085872576177,
+      "recall_inner": 0.9473684210526315,
+      "recall_outer": 0.631578947368421,
+      "recall_ball": 0.23076923076923078,
+      "recall_combined": 1.0,
+      "recall_inner+ball": 0.05263157894736842,
+      "recall_outer+ball": 0.5263157894736842
+     }
+    ]
+   },
+   "6207": {
+    "auc_race": 0.9325946445060018,
+    "auc_race_min": 0.8952908587257619,
+    "fa": 0.0,
+    "fa_worst": 0.0,
+    "recall_race": 0.7473684210526316,
+    "recall_inner": 0.21052631578947367,
+    "recall_outer": 0.9824561403508771,
+    "recall_ball": 0.5789473684210527,
+    "recall_combined": 0.9298245614035089,
+    "recall_inner+ball": 0.9649122807017544,
+    "recall_outer+ball": 0.6491228070175438,
+    "folds": [
+     {
+      "load": "0W",
+      "fa": 0.0,
+      "recall_race": 0.7894736842105263,
+      "auc_race": 0.8952908587257619,
+      "recall_inner": 0.3684210526315789,
+      "recall_outer": 1.0,
+      "recall_ball": 0.5789473684210527,
+      "recall_combined": 0.7894736842105263,
+      "recall_inner+ball": 1.0,
+      "recall_outer+ball": 0.7894736842105263
+     },
+     {
+      "load": "200W",
+      "fa": 0.0,
+      "recall_race": 0.6210526315789474,
+      "auc_race": 0.9235457063711909,
+      "recall_inner": 0.0,
+      "recall_outer": 1.0,
+      "recall_ball": 0.2631578947368421,
+      "recall_combined": 1.0,
+      "recall_inner+ball": 0.8947368421052632,
+      "recall_outer+ball": 0.21052631578947367
+     },
+     {
+      "load": "400W",
+      "fa": 0.0,
+      "recall_race": 0.8315789473684211,
+      "auc_race": 0.9789473684210526,
+      "recall_inner": 0.2631578947368421,
+      "recall_outer": 0.9473684210526315,
+      "recall_ball": 0.8947368421052632,
+      "recall_combined": 1.0,
+      "recall_inner+ball": 1.0,
+      "recall_outer+ball": 0.9473684210526315
+     }
+    ]
+   },
+   "6208": {
+    "auc_race": 0.8448862093313779,
+    "auc_race_min": 0.807202216066482,
+    "fa": 0.03508771929824561,
+    "fa_worst": 0.10526315789473684,
+    "recall_race": 0.6456140350877193,
+    "recall_inner": 0.8596491228070176,
+    "recall_outer": 0.14035087719298245,
+    "recall_ball": 0.5079365079365079,
+    "recall_combined": 0.9649122807017544,
+    "recall_inner+ball": 1.0,
+    "recall_outer+ball": 0.25925925925925924,
+    "folds": [
+     {
+      "load": "0W",
+      "fa": 0.0,
+      "recall_race": 0.5789473684210527,
+      "auc_race": 0.8271468144044322,
+      "recall_inner": 0.9473684210526315,
+      "recall_outer": 0.05263157894736842,
+      "recall_ball": 0.6666666666666666,
+      "recall_combined": 0.8947368421052632,
+      "recall_inner+ball": 1.0,
+      "recall_outer+ball": 0.0
+     },
+     {
+      "load": "200W",
+      "fa": 0.0,
+      "recall_race": 0.5578947368421052,
+      "auc_race": 0.807202216066482,
+      "recall_inner": 0.631578947368421,
+      "recall_outer": 0.15789473684210525,
+      "recall_ball": 0.14285714285714285,
+      "recall_combined": 1.0,
+      "recall_inner+ball": 1.0,
+      "recall_outer+ball": 0.0
+     },
+     {
+      "load": "400W",
+      "fa": 0.10526315789473684,
+      "recall_race": 0.8,
+      "auc_race": 0.9003095975232199,
+      "recall_inner": 1.0,
+      "recall_outer": 0.21052631578947367,
+      "recall_ball": 0.7142857142857143,
+      "recall_combined": 1.0,
+      "recall_inner+ball": 1.0,
+      "recall_outer+ball": 0.7777777777777778
+     }
+    ]
+   }
+  }
+ }
+}
