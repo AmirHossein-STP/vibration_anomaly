@@ -95,16 +95,20 @@ def train(model: nn.Module, train_sets: dict[str, list[dict]], seed: int) -> nn.
     names = [d for d, fs in train_sets.items() if fs]
     model.train()
     for step in range(STEPS):
-        loss = 0.0
+        zs, mus, sds = [], [], []
         for _ in range(EPISODES):
             fs = train_sets[names[rng.integers(len(names))]]
             e = fs[rng.integers(len(fs))]
             neg = e["neg"][torch.from_numpy(rng.integers(len(e["neg"]), size=PER_SIDE)).to(DEV)]
             pos = e["pos"][torch.from_numpy(rng.integers(len(e["pos"]), size=PER_SIDE)).to(DEV)]
-            s = model(torch.cat([neg, pos]), e["mu"], e["logsd"])
-            loss = loss + F.softplus(-(s[PER_SIDE:, None] - s[None, :PER_SIDE])).mean()
+            zs.append(torch.cat([neg, pos]))
+            mus.append(e["mu"].expand(2 * PER_SIDE, -1))
+            sds.append(e["logsd"].expand(2 * PER_SIDE, -1))
+        # one forward pass for all episodes: the models score each window independently
+        s = model(torch.cat(zs), torch.cat(mus), torch.cat(sds)).view(EPISODES, 2 * PER_SIDE)
+        loss = F.softplus(-(s[:, PER_SIDE:, None] - s[:, None, :PER_SIDE])).mean()
         opt.zero_grad()
-        (loss / EPISODES).backward()
+        loss.backward()
         opt.step()
     model.eval()
     return model
