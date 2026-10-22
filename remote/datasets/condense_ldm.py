@@ -1,5 +1,6 @@
 """Condense one Paderborn LDM run-to-failure bearing (time-varying load and
-speed) from the lossless int16 repack at 128 kHz to 12 kHz, the rate every
+speed) from the lossless int16 repack (128 kHz for B01-B09, 64 kHz from B10)
+to 12 kHz, the rate every
 analysis here uses. Called per bearing by fetch.py's `stream` stage, so the
 50 GB set never has to fit on the vault or the SSD at once.
 
@@ -27,7 +28,8 @@ from pathlib import Path
 import numpy as np
 from scipy.signal import resample_poly
 
-UP, DOWN, CHUNK = 3, 32, 32
+CHUNK = 32
+RATIOS = {128000: (3, 32), 64000: (3, 16)}   # B01-B09 at 128 kHz, B10-B17 at 64 kHz (description PDF §2)
 
 
 def main() -> None:
@@ -38,8 +40,10 @@ def main() -> None:
     a = ap.parse_args()
 
     meta = json.loads((a.raw_dir / "meta.json").read_text())
-    if int(meta["sampling_rate_hz"]) != 128000:
-        raise SystemExit(f"expected 128 kHz, meta says {meta['sampling_rate_hz']}")
+    fs_in = int(meta["sampling_rate_hz"])
+    if fs_in not in RATIOS:
+        raise SystemExit(f"unexpected sampling rate {fs_in} Hz (expected 128 or 64 kHz)")
+    UP, DOWN = RATIOS[fs_in]
     codes = np.load(a.raw_dir / "vibration.npy", mmap_mode="r", allow_pickle=False)
     n_rec, n_ch, n = codes.shape
     step = np.asarray(meta["step_volts"], dtype=np.float64)[:, None]
@@ -58,7 +62,7 @@ def main() -> None:
     out.flush()
     del out
 
-    meta.update({"fs_hz": 12000, "condensed_from_hz": 128000, "resample": "scipy resample_poly 3/32 on volts",
+    meta.update({"fs_hz": 12000, "condensed_from_hz": fs_in, "resample": f"scipy resample_poly {UP}/{DOWN} on volts",
                  "records": n_rec, "samples_per_record": n_out, "clipped_samples": clipped,
                  "file": "vibration_12k.npy"})
     (a.out / "meta.json").write_text(json.dumps(meta, indent=1))

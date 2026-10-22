@@ -1,0 +1,189 @@
+{
+ "ships": true,
+ "rows_ok": {
+  "cwru": true,
+  "pu:N09_M07_F10": true,
+  "pu:N15 (worst)": true,
+  "ottawa_2018": true,
+  "ottawa_2023:own": true,
+  "mfpt": true
+ },
+ "results": {
+  "cwru": {
+   "geofree": {
+    "folds": 4.0,
+    "fa_mean": 0.08576760791950666,
+    "fa_worst": 0.10256410256410256,
+    "recall_race": 0.9162679425837321,
+    "recall_race_sd": 0.004784688995215336,
+    "auc_race": 0.9512500601774418,
+    "auc_race_min": 0.9414935497547089,
+    "rec_detect_race": 0.9090909090909091,
+    "rec_fa": 0.0,
+    "recall_inner": 0.9901315789473685,
+    "recall_outer": 0.8740601503759399,
+    "recall_race_faulty": 0.9162679425837321,
+    "typing_dominant_on_line": 0.8497477145104848
+   },
+   "d_xf_auc": 0.9287809680880965
+  },
+  "pu:N09_M07_F10": {
+   "geofree": {
+    "folds": 6.0,
+    "fa_mean": 0.20119047619047623,
+    "fa_worst": 0.4785714285714286,
+    "recall_race": 0.8678571428571429,
+    "recall_race_sd": 0.03169669359019197,
+    "auc_race": 0.9192571119356833,
+    "auc_race_min": 0.855278293135436,
+    "rec_detect_race": 0.9015151515151515,
+    "rec_fa": 0.0,
+    "recall_inner": 0.8785714285714287,
+    "recall_outer": 0.855,
+    "recall_race_faulty": 0.8678571428571429,
+    "typing_dominant_on_line": 0.33254934048215595
+   },
+   "d_xf_auc": 0.9013945578231293
+  },
+  "pu:N15_M01_F10": {
+   "geofree": {
+    "folds": 6.0,
+    "fa_mean": 0.19120229652144546,
+    "fa_worst": 0.3900709219858156,
+    "recall_race": 0.799372701708847,
+    "recall_race_sd": 0.03160336607770294,
+    "auc_race": 0.8979785283529053,
+    "auc_race_min": 0.8430564568462038,
+    "rec_detect_race": 0.8515151515151516,
+    "rec_fa": 0.0,
+    "recall_inner": 0.8694015061434799,
+    "recall_outer": 0.7152380952380953,
+    "recall_race_faulty": 0.799372701708847,
+    "typing_dominant_on_line": 0.5860609567883626
+   },
+   "d_xf_auc": 0.8489560095649676
+  },
+  "pu:N15_M07_F04": {
+   "geofree": {
+    "folds": 6.0,
+    "fa_mean": 0.17976190476190476,
+    "fa_worst": 0.5428571428571428,
+    "recall_race": 0.772225827384815,
+    "recall_race_sd": 0.03841529716954495,
+    "auc_race": 0.9015242112419269,
+    "auc_race_min": 0.765722629090572,
+    "rec_detect_race": 0.7999999999999999,
+    "rec_fa": 0.16666666666666666,
+    "recall_inner": 0.8359096313912008,
+    "recall_outer": 0.6957142857142857,
+    "recall_race_faulty": 0.772225827384815,
+    "typing_dominant_on_line": 0.6446916427331497
+   },
+   "d_xf_auc": 0.8587427767992337
+  },
+  "pu:N15_M07_F10": {
+   "geofree": {
+    "folds": 6.0,
+    "fa_mean": 0.2130952380952381,
+    "fa_worst": 0.45714285714285713,
+    "recall_race": 0.7544372294372295,
+    "recall_race_sd": 0.036390103231519554,
+    "auc_race": 0.8786294063079777,
+    "auc_race_min": 0.803603896103896,
+    "rec_detect_race": 0.7606060606060604,
+    "rec_fa": 0.0,
+    "recall_inner": 0.8307539682539683,
+    "recall_outer": 0.6628571428571428,
+    "recall_race_faulty": 0.7544372294372295,
+    "typing_dominant_on_line": 0.6383151374481759
+   },
+   "d_xf_auc": 0.8376777983920842
+  },
+  "ottawa_2018": {
+   "geofree": {
+    "folds": 12.0,
+    "fa_mean": 0.09461214310285516,
+    "fa_worst": 0.2777777777777778,
+    "recall_race": 0.9960876369327072,
+    "recall_race_sd": 0.001155788647693227,
+    "auc_race": 0.9976138488231688,
+    "auc_race_min": 0.9942488262910798,
+    "rec_detect_race": 1.0,
+    "rec_fa": 0.0,
+    "recall_inner": 1.0,
+    "recall_outer": 0.9922118380062307,
+    "recall_ball": 0.2507751937984496,
+    "recall_combined": 0.6678459119496855,
+    "recall_race_faulty": 0.9960876369327072,
+    "typing_dominant_on_line": 0.8163938216796153,
+    "auc_bc": 0.6527266581867345,
+    "auc_bc_min": 0.5764705882352941
+   },
+   "d_xf_auc": 0.9224278870870753
+  },
+  "ottawa_2023": {
+   "geofree": {
+    "folds": 20.0,
+    "fa_mean": 0.09736842105263158,
+    "fa_worst": 1.0,
+    "recall_race": 0.5026315789473684,
+    "recall_race_sd": 0.3984136750265205,
+    "auc_race": 0.8247922437673131,
+    "auc_race_min": 0.0734072022160665,
+    "rec_detect_race": 0.5,
+    "rec_fa": 0.05,
+    "recall_inner": 0.24736842105263154,
+    "recall_race_developing": 0.5473684210526316,
+    "recall_race_faulty": 0.4578947368421053,
+    "recall_outer": 0.7578947368421053,
+    "recall_ball": 0.2,
+    "recall_cage": 0.010526315789473684,
+    "typing_dominant_on_line": 0.5563888888888888,
+    "auc_bc": 0.500415512465374,
+    "auc_bc_min": 0.0775623268698061
+   },
+   "d_xf_auc": 0.7123268698060942
+  },
+  "ottawa_2023:own": {
+   "geofree": {
+    "folds": 20.0,
+    "fa_mean": 0.016666666666666666,
+    "fa_worst": 0.3333333333333333,
+    "recall_race": 0.2710526315789473,
+    "recall_race_sd": 0.34290280405028234,
+    "auc_race": 0.971345029239766,
+    "auc_race_min": 0.8391812865497076,
+    "rec_detect_race": 0.35,
+    "rec_fa": 0.0,
+    "recall_inner": 0.24210526315789474,
+    "recall_race_developing": 0.2736842105263158,
+    "recall_race_faulty": 0.26842105263157895,
+    "recall_outer": 0.3,
+    "recall_ball": 0.021052631578947368,
+    "recall_cage": 0.1473684210526316,
+    "typing_dominant_on_line": 0.6642857142857143,
+    "auc_bc": 0.7725146198830409,
+    "auc_bc_min": 0.47953216374269003
+   },
+   "d_xf_auc": 0.9298245614035088
+  },
+  "mfpt": {
+   "geofree": {
+    "folds": 3.0,
+    "fa_mean": 0.0,
+    "fa_worst": 0.0,
+    "recall_race": 0.7346278317152103,
+    "recall_race_sd": 0.15694958774086915,
+    "auc_race": 0.9961753456899087,
+    "auc_race_min": 0.9955869373345101,
+    "rec_detect_race": 0.8039215686274509,
+    "rec_fa": 0.0,
+    "recall_inner": 1.0,
+    "recall_outer": 0.5980392156862745,
+    "recall_race_faulty": 0.7346278317152103,
+    "typing_dominant_on_line": 0.9529411764705883
+   },
+   "d_xf_auc": 1.0
+  }
+ }
+}

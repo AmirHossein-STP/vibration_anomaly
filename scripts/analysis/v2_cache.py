@@ -22,6 +22,7 @@ from domain_adaptation.data import public_datasets as pdx
 from domain_adaptation.data.cwru_loader import build_cwru_catalog
 from domain_adaptation.data.pu_loader import PreparedPUStore
 from domain_adaptation.features.envelope import CWRU_6205, PU_6203
+from domain_adaptation.features.geofree import BIN_NAMES, geofree_features, geofree_features_cot
 from domain_adaptation.features.physics_v2 import V2_NAMES, v2_features, v2_features_cot
 from envelope_cache import CWRU_RAW, PU_CODES, PU_STORE
 from wp5_cache import COT_HOP_REVS, COT_REVS, COT_SPR, GEOMETRY, HOP, ROOTS, WIN, fingerprint as wp5_fp, to_12k
@@ -30,11 +31,14 @@ DATASETS = ["cwru", "pu", "ottawa_2018", "ottawa_2023", "mfpt", "xjtu_sy"]
 META = ["dataset", "unit", "condition", "recording", "label", "state", "damage_mode", "win", "t0", "rpm",
         "channel", "minute"]
 SOURCES = [Path(p) for p in ("src/domain_adaptation/features/physics_v2.py", "src/domain_adaptation/features/cot.py",
-                             "scripts/analysis/v2_cache.py")]
+                             "src/domain_adaptation/features/geofree.py", "scripts/analysis/v2_cache.py")]
+# feature set -> (constant-speed fn, order-tracked fn, column names, default output dir)
+FEATURE_SETS = {"v2": (v2_features, v2_features_cot, V2_NAMES, Path("outputs/wp3/cache")),
+                "geofree": (geofree_features, geofree_features_cot, BIN_NAMES, Path("outputs/wp13/cache"))}
 
 
-def fingerprint(dataset: str) -> str:
-    h = hashlib.sha256(b"".join(p.read_bytes() for p in SOURCES))
+def fingerprint(dataset: str, fset: str = "v2") -> str:
+    h = hashlib.sha256(b"".join(p.read_bytes() for p in SOURCES) + fset.encode())
     if dataset == "pu":
         h.update((PU_STORE / "manifest.csv").read_bytes())
     elif dataset == "cwru":
@@ -44,31 +48,28 @@ def fingerprint(dataset: str) -> str:
     return h.hexdigest()[:12]
 
 
-def cache_path(out: Path, dataset: str) -> Path:
-    return out / f"{dataset}_v2_{fingerprint(dataset)}.csv.gz"
+def cache_path(out: Path, dataset: str, fset: str = "v2") -> Path:
+    return out / f"{dataset}_{fset}_{fingerprint(dataset, fset)}.csv.gz"
 
 
-def load_v2(dataset: str, out: Path = Path("outputs/wp3/cache")) -> pd.DataFrame:
-    p = cache_path(out, dataset)
+def load_v2(dataset: str, out: Path | None = None, fset: str = "v2") -> pd.DataFrame:
+    p = cache_path(out or FEATURE_SETS[fset][3], dataset, fset)
     if not p.is_file():
         raise FileNotFoundError(f"{p} missing or stale: run scripts/analysis/v2_cache.py on the box")
     return pd.read_csv(p)
 
 
-def windows_const(sig, fs, rpm, g):
-    for i, s in enumerate(range(0, len(sig) - WIN + 1, HOP)):
-        yield i, s / fs, rpm, v2_features(sig[s:s + WIN], fs, rpm, g)
-
-
-def rows_of(rec: pdx.Recording, g, damage_mode: str = "") -> list[dict]:
+def rows_of(rec: pdx.Recording, g, damage_mode: str = "", fset: str = "v2") -> list[dict]:
+    const_fn, cot_fn, _, _ = FEATURE_SETS[fset]
     sig, fs = to_12k(rec.signal, rec.fs)
     base = {"dataset": rec.dataset, "unit": rec.unit, "condition": rec.condition, "recording": rec.recording,
             "label": rec.label, "state": rec.state, "damage_mode": damage_mode,
             "channel": rec.meta.get("channel", ""), "minute": rec.meta.get("minute", -1)}
     out = []
     if rec.phase_revs is None:
-        for i, t0, rpm, f in windows_const(sig, fs, rec.rpm, g):
-            out.append({**base, "win": i, "t0": round(t0, 4), "rpm": rpm, **f})
+        for i, s in enumerate(range(0, len(sig) - WIN + 1, HOP)):
+            out.append({**base, "win": i, "t0": round(s / fs, 4), "rpm": rec.rpm,
+                        **const_fn(sig[s:s + WIN], fs, rec.rpm, g)})
         return out
     phase = np.interp(np.arange(len(sig)) / fs, np.arange(len(rec.phase_revs)) / rec.fs, rec.phase_revs)
     starts = np.searchsorted(phase, phase[0] + np.arange(0, phase[-1] - phase[0], COT_HOP_REVS))
@@ -77,30 +78,30 @@ def rows_of(rec: pdx.Recording, g, damage_mode: str = "") -> list[dict]:
         if b >= len(sig):
             break
         out.append({**base, "win": i, "t0": round(a / fs, 4), "rpm": 60.0 * COT_REVS / ((b - a) / fs),
-                    **v2_features_cot(sig[a:b], fs, phase[a:b], g, COT_SPR)})
+                    **cot_fn(sig[a:b], fs, phase[a:b], g, COT_SPR)})
     return out
 
 
 def _job(args) -> list[dict]:
-    dataset, key = args
+    dataset, key, fset = args
     if dataset == "cwru":
         path, rpm, label = key
         sig = np.asarray(np.load(path)["DE"]).squeeze().astype(np.float64)
         rec = pdx.Recording("cwru", Path(path).stem, str(rpm), Path(path).stem + "_0", label,
                             "healthy" if label == 0 else "faulty", 12000.0, sig, rpm=rpm)
-        return rows_of(rec, CWRU_6205, "none" if label == 0 else "artificial")
+        return rows_of(rec, CWRU_6205, "none" if label == 0 else "artificial", fset)
     if dataset == "pu":
         code, cond, run, rpm, label, mode = key
         sig = np.asarray(PreparedPUStore(PU_STORE).load(code, cond, run)).squeeze().astype(np.float64)
         rec = pdx.Recording("pu", code, cond, f"{code}_{run}", label, "healthy" if label == 0 else "faulty",
                             12000.0, sig, rpm=rpm)
-        return rows_of(rec, PU_6203, mode)
+        return rows_of(rec, PU_6203, mode, fset)
     g, root = GEOMETRY[dataset], ROOTS[dataset]
     if dataset == "xjtu_sy":
         bearing, ch = key
-        return [r for rec in pdx.xjtu_records(root, bearing, ch) for r in rows_of(rec, g)]
+        return [r for rec in pdx.xjtu_records(root, bearing, ch) for r in rows_of(rec, g, "", fset)]
     loader = {"ottawa_2018": pdx.ottawa2018, "ottawa_2023": pdx.ottawa2023, "mfpt": pdx.mfpt}[dataset]
-    return [r for rec in loader(root, only=key) for r in rows_of(rec, g)]
+    return [r for rec in loader(root, only=key) for r in rows_of(rec, g, "", fset)]
 
 
 def keys(dataset: str) -> list:
@@ -121,19 +122,22 @@ def main():
     ap = argparse.ArgumentParser()
     ap.add_argument("--datasets", nargs="*", default=DATASETS)
     ap.add_argument("--jobs", type=int, default=8)
-    ap.add_argument("--out", type=Path, default=Path("outputs/wp3/cache"))
+    ap.add_argument("--set", default="v2", choices=list(FEATURE_SETS))
+    ap.add_argument("--out", type=Path, default=None)
     a = ap.parse_args()
+    a.out = a.out or FEATURE_SETS[a.set][3]
+    names = FEATURE_SETS[a.set][2]
     a.out.mkdir(parents=True, exist_ok=True)
     for d in a.datasets:
-        p = cache_path(a.out, d)
+        p = cache_path(a.out, d, a.set)
         if p.is_file():
             print(f"[{d}] current: {p}"); continue
         t0 = time.time()
         rows = []
         with ProcessPoolExecutor(a.jobs) as ex:
-            for part in ex.map(_job, [(d, k) for k in keys(d)], chunksize=4):
+            for part in ex.map(_job, [(d, k, a.set) for k in keys(d)], chunksize=4):
                 rows += part
-        pd.DataFrame(rows)[META + V2_NAMES].to_csv(p, index=False, float_format="%.7g")
+        pd.DataFrame(rows)[META + names].to_csv(p, index=False, float_format="%.7g")
         print(f"[{d}] {len(rows)} windows in {time.time() - t0:.0f} s -> {p}", flush=True)
 
 
