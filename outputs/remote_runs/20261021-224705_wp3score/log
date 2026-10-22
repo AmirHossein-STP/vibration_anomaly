@@ -1,0 +1,12 @@
+Traceback (most recent call last):
+  File "/home/homa/work/vibration_anomaly_detection/scripts/analysis/wp3_score.py", line 125, in <module>
+    main()
+  File "/home/homa/work/vibration_anomaly_detection/scripts/analysis/wp3_score.py", line 90, in main
+    results[key][arm] = evaluate(name, frame, fac, b, typing=True)
+  File "/home/homa/work/vibration_anomaly_detection/scripts/analysis/wp5_score.py", line 177, in evaluate
+    row.update(stats(fault))
+  File "/home/homa/work/vibration_anomaly_detection/scripts/analysis/wp3_score.py", line 60, in typer
+    pred = np.array([FAMILY_LABEL[names[i]] for i in fz.argmax(1)])
+  File "/home/homa/work/vibration_anomaly_detection/scripts/analysis/wp3_score.py", line 60, in <listcomp>
+    pred = np.array([FAMILY_LABEL[names[i]] for i in fz.argmax(1)])
+KeyError: 'bpfi_h1'

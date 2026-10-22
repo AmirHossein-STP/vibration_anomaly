@@ -11,6 +11,26 @@ and `PLAN.md` for how this plan differs from the original draft and why).
 (2026-10-15). It unifies the earlier per-experiment plans, which are now kept
 as the historical record.
 
+**Latest results (2026-10-22, MASTER_PLAN WP3/5/6/7/10, notes/17–21).** The healthy-referenced
+physics score was tested on four public datasets that played no part in choosing it. It needs
+no source data and no classifier: the fault-order peaks of the envelope spectrum, as z-scores
+against the machine's own healthy baseline.
+- It transfers: Ottawa 2018 with order tracking AUC 0.92, MFPT 1.00, Ottawa 2023 with each
+  bearing's own baseline 0.93. A CWRU-trained classifier does not (0.48 / 0.84 / 0.72).
+- A unit's own healthy history beats a fleet baseline (0.93 vs 0.71). Small calibration sets
+  need cross-fitted thresholds.
+- Physics typing names the failed race on 10/11 real run-to-failure bearings (XJTU-SY).
+- Limits found:
+  - On constant-speed run-to-failure, an RMS CUSUM is the better *trigger* (13/15 vs 9/15),
+    so physics becomes the *diagnosis*.
+  - Kurtosis wins on large impulsive faults but falls below chance on Paderborn's real damage.
+  - Ball/cage faults remain uncovered.
+  - A speed estimate from vibration is not good enough, so a keyphasor or encoder is required.
+  - Synthetic-fault sensitivity curves do not predict real detection.
+
+Rented-GPU work now runs through `remote/box` and a persistent data vault: see
+[`remote/README.md`](remote/README.md).
+
 **Three experiments live in this repo now.** Everything below this point is
 the original single-sensor CWRU vibration MVP (`src/vibration_ad/`). A
 second, independent experiment -- multi-sensor **fusion** anomaly
@@ -371,15 +391,25 @@ DAQ, unseen lab.
 >
 > | fit on CWRU only, calibrated on target HEALTHY windows alone | recall | FA | balanced acc |
 > |---|---|---|---|
-> | envelope-order features @10% target FA | **0.746 ± 0.012** | 10.1% | **0.823 ± 0.007** |
+> | envelope-order features @10% target FA, Paderborn 900 rpm | **0.746 ± 0.012** | 10.1% | **0.823 ± 0.007** |
+> | the same, Paderborn 1500 rpm (3 load conditions; threshold from other healthy units) | 0.29–0.51 | ~11% | — |
 > | every spectrogram variant tried | — | — | 0.499–0.505 (chance) |
 >
-> So zero-shot detection across rigs IS feasible; it just is not feasible by
-> learning a spectrogram end-to-end. Details, per-unit breakdown and the
-> honest limits are in `notes/13_envelope_order_features.md`.
+> So zero-shot detection across rigs IS feasible at 900 rpm; it just is not
+> feasible by learning a spectrogram end-to-end. **At 1500 rpm it is weak**,
+> and the drop is about speed, not load. No pre-registered mechanism
+> explains it (notes/15). Calibrated on other healthy bearings, the false
+> alarm rate is right on average but 2–4× too high on one healthy unit in
+> six (notes/14). Details and the honest limits are in
+> `notes/13_envelope_order_features.md`, `notes/14_wp1_recording_level.md`
+> and `notes/15_wp2_n15_variants.md`.
 
-Fault *typing* still does not transfer (3-class accuracy 0.378). The
-deployable claim remains detection, not diagnosis.
+Fault *typing* by a CWRU-trained classifier does not transfer (3-class
+accuracy 0.378). A label-free alternative, naming the race whose fault
+orders rose most above the healthy baseline, gets the race right on
+0.74–0.81 of faulty Paderborn windows (notes/16). Paderborn has now been
+used to develop it, so it is not a claim until other datasets confirm it.
+The deployable claim remains detection, not diagnosis.
 
 Paderborn reaches the server as a **437 MB condensed bundle** rather than
 the 9.7 GB raw dataset: same 2,559 runs and every bearing code, but keeping

@@ -1,0 +1,100 @@
+== paderborn (zenodo-15845309, role=dev, stage=ssd)
+  31 files, 5.19 GB; 31 to download (5.19 GB)
+  [1/31] ok K004.rar (6.6 MB/s overall)
+  [2/31] ok K001.rar (8.2 MB/s overall)
+  [3/31] ok KA06.rar (7.0 MB/s overall)
+  [4/31] ok K002.rar (8.7 MB/s overall)
+  [5/31] ok KA01.rar (10.4 MB/s overall)
+  [6/31] ok KA03.rar (12.3 MB/s overall)
+  [7/31] ok KI04.rar (14.2 MB/s overall)
+  [8/31] ok K005.rar (13.7 MB/s overall)
+  [9/31] ok KA05.rar (10.4 MB/s overall)
+  [10/31] ok KI03.rar (11.4 MB/s overall)
+  [11/31] ok K006.rar (10.9 MB/s overall)
+  [12/31] ok KA07.rar (11.5 MB/s overall)
+  [13/31] ok KA04.rar (11.7 MB/s overall)
+  [14/31] ok KI01.rar (11.2 MB/s overall)
+  [15/31] ok KA09.rar (11.9 MB/s overall)
+  [16/31] ok K003.rar (12.3 MB/s overall)
+  [17/31] ok KI07.rar (12.9 MB/s overall)
+  [18/31] ok KI05.rar (12.2 MB/s overall)
+  [19/31] ok KI08.rar (12.7 MB/s overall)
+  [20/31] ok KA15.rar (11.7 MB/s overall)
+  [21/31] ok KA22.rar (10.7 MB/s overall)
+  [22/31] ok KA30.rar (11.2 MB/s overall)
+  [23/31] ok KB23.rar (11.0 MB/s overall)
+  [24/31] ok KB24.rar (11.3 MB/s overall)
+  [25/31] ok KA16.rar (11.5 MB/s overall)
+  [26/31] ok KI18.rar (11.6 MB/s overall)
+  [27/31] ok KB27.rar (11.9 MB/s overall)
+  [28/31] ok KI17.rar (10.9 MB/s overall)
+  [29/31] ok KI14.rar (10.9 MB/s overall)
+  [30/31] ok KI16.rar (11.2 MB/s overall)
+  [31/31] ok KI21.rar (11.1 MB/s overall)
+  condensing: /home/homa/work/venv/bin/python /home/homa/work/vibration_anomaly_detection/remote/datasets/condense_pu.py --raw-dir /home/homa/work/scratch/paderborn/zenodo-15845309/raw --out /mnt/vault/datasets/paderborn/zenodo-15845309/condensed.partial --work /home/homa/work/scratch/paderborn/work --src /home/homa/work/vibration_anomaly_detection/src --jobs 7
+condensing 31 codes with 7 workers
+  KA01: 80 runs -> KA01.npz (13.7 MB)
+  K002: 80 runs -> K002.npz (13.7 MB)
+  K005: 80 runs -> K005.npz (13.6 MB)
+  K004: 80 runs -> K004.npz (13.6 MB)
+  K001: 80 runs -> K001.npz (13.7 MB)
+  K003: 80 runs -> K003.npz (13.7 MB)
+  K006: 80 runs -> K006.npz (13.7 MB)
+  K004: v1 80 runs, v2 80 runs
+  KA01: v1 80 runs, v2 80 runs
+  K002: v1 80 runs, v2 80 runs
+  K001: v1 80 runs, v2 80 runs
+  K005: v1 80 runs, v2 80 runs
+  K006: v1 80 runs, v2 80 runs
+  K003: v1 80 runs, v2 80 runs
+  KA03: 80 runs -> KA03.npz (13.7 MB)
+  KA04: 80 runs -> KA04.npz (13.7 MB)
+  KA05: 80 runs -> KA05.npz (13.7 MB)
+  KA09: 80 runs -> KA09.npz (13.7 MB)
+  KA07: 80 runs -> KA07.npz (13.7 MB)
+  KA15: 80 runs -> KA15.npz (13.6 MB)
+  KA06: 80 runs -> KA06.npz (13.6 MB)
+  KA03: v1 80 runs, v2 80 runs
+  KA04: v1 80 runs, v2 80 runs
+  KA15: v1 80 runs, v2 80 runs
+  KA05: v1 80 runs, v2 80 runs
+  KA09: v1 80 runs, v2 80 runs
+  KA06: v1 80 runs, v2 80 runs
+  KA07: v1 80 runs, v2 80 runs
+  KA16: 80 runs -> KA16.npz (13.7 MB)
+  KA22: 80 runs -> KA22.npz (13.6 MB)
+  KA30: 80 runs -> KA30.npz (13.6 MB)
+  KB23: 80 runs -> KB23.npz (13.7 MB)
+  KB27: 80 runs -> KB27.npz (13.6 MB)
+  KB24: 80 runs -> KB24.npz (13.7 MB)
+  KI01: 80 runs -> KI01.npz (13.7 MB)
+  KA16: v1 80 runs, v2 80 runs
+  KA22: v1 80 runs, v2 80 runs
+  KB24: v1 80 runs, v2 80 runs
+  KB23: v1 80 runs, v2 80 runs
+  KI01: v1 80 runs, v2 80 runs
+  KA30: v1 80 runs, v2 80 runs
+  KB27: v1 80 runs, v2 80 runs
+  KI03: 80 runs -> KI03.npz (13.6 MB)
+  KI04: 80 runs -> KI04.npz (13.6 MB)
+  KI05: 80 runs -> KI05.npz (13.7 MB)
+  KI07: 80 runs -> KI07.npz (13.7 MB)
+  KI08: 80 runs -> KI08.npz (13.7 MB)
+  KI16: 80 runs -> KI16.npz (13.7 MB)
+  KI14: 80 runs -> KI14.npz (13.6 MB)
+  KI03: v1 80 runs, v2 80 runs
+  KI04: v1 80 runs, v2 80 runs
+  KI05: v1 80 runs, v2 80 runs
+  KI07: v1 80 runs, v2 80 runs
+  KI16: v1 80 runs, v2 80 runs
+  KI08: v1 80 runs, v2 80 runs
+  KI14: v1 80 runs, v2 80 runs
+  KI17: 80 runs -> KI17.npz (13.7 MB)
+  KI18: 80 runs -> KI18.npz (13.7 MB)
+  KI21: 80 runs -> KI21.npz (13.6 MB)
+  KI17: v1 80 runs, v2 80 runs
+  KI18: v1 80 runs, v2 80 runs
+  KI21: v1 80 runs, v2 80 runs
+v1: 2480 runs, 31 codes
+v2: 2480 runs, 31 codes
+paderborn: complete -> /mnt/vault/datasets/paderborn/zenodo-15845309

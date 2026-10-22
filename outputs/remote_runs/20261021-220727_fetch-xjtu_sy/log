@@ -1,0 +1,27 @@
+== xjtu_sy (mediafire-20190306, role=dev, stage=ssd)
+  6 files, 4.44 GB; 6 to download (4.44 GB)
+  [1/6] ok XJTU-SY_Bearing_Datasets.part06.rar (14.0 MB/s overall)
+  [2/6] ok XJTU-SY_Bearing_Datasets.part01.rar (27.8 MB/s overall)
+  [3/6] ok XJTU-SY_Bearing_Datasets.part02.rar (39.3 MB/s overall)
+  [4/6] ok XJTU-SY_Bearing_Datasets.part04.rar (51.0 MB/s overall)
+  [5/6] ok XJTU-SY_Bearing_Datasets.part05.rar (62.2 MB/s overall)
+  [6/6] ok XJTU-SY_Bearing_Datasets.part03.rar (63.9 MB/s overall)
+  condensing: /home/homa/work/venv/bin/python /home/homa/work/vibration_anomaly_detection/remote/datasets/condense_xjtu.py --raw-dir /home/homa/work/scratch/xjtu_sy/mediafire-20190306/raw --out /mnt/vault/datasets/xjtu_sy/mediafire-20190306/condensed.partial --work /home/homa/work/scratch/xjtu_sy/work --src /home/homa/work/vibration_anomaly_detection/src --jobs 7
+extracting XJTU-SY_Bearing_Datasets.part01.rar (+ parts)
+  35Hz12kN/Bearing1_5: 52 minutes
+  35Hz12kN/Bearing1_1: 123 minutes
+  35Hz12kN/Bearing1_4: 122 minutes
+  35Hz12kN/Bearing1_2: 161 minutes
+  35Hz12kN/Bearing1_3: 158 minutes
+  37.5Hz11kN/Bearing2_2: 161 minutes
+  37.5Hz11kN/Bearing2_4: 42 minutes
+  37.5Hz11kN/Bearing2_5: 339 minutes
+  37.5Hz11kN/Bearing2_1: 491 minutes
+  40Hz10kN/Bearing3_3: 371 minutes
+  37.5Hz11kN/Bearing2_3: 533 minutes
+  40Hz10kN/Bearing3_5: 114 minutes
+  40Hz10kN/Bearing3_4: 1515 minutes
+  40Hz10kN/Bearing3_1: 2538 minutes
+  40Hz10kN/Bearing3_2: 2496 minutes
+15 bearings, 9216 minutes -> /mnt/vault/datasets/xjtu_sy/mediafire-20190306/condensed.partial
+xjtu_sy: complete -> /mnt/vault/datasets/xjtu_sy/mediafire-20190306

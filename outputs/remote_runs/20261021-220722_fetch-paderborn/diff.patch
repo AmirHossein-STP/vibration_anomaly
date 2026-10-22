@@ -1,0 +1,381 @@
+diff --git a/.gitignore b/.gitignore
+index fd076c7..88dab6f 100644
+--- a/.gitignore
++++ b/.gitignore
+@@ -73,3 +73,13 @@ outputs/server_rescue/**/.*.pt.*
+ data/pu/*
+ deploy/volumes/
+ deploy/.env
++outputs/envelope_cache/*
++
++# remote/box (see remote/README.md): the current rental's IP and host key
++# change every rental; pulled vault results follow the server_rescue rule
++# (evidence tracked, binaries not).
++remote/.box.env
++remote/.known_hosts
++outputs/remote_runs/**/*.pt
++outputs/remote_runs/**/*.npz
++outputs/remote_runs/**/*.npy
+diff --git a/MASTER_PLAN.md b/MASTER_PLAN.md
+index 781d89d..f16cada 100644
+--- a/MASTER_PLAN.md
++++ b/MASTER_PLAN.md
+@@ -67,15 +67,17 @@ under-powered), or **retracted**. Sources are in the last column.
+ | Errors are **per unit**, not random | False alarms concentrate on one healthy bearing: K002 under the spectrogram model, K005 under the envelope model | notes/13, GPU_SERVER_PLAN §2 |
+ | **Seed variance swamps single-run claims** | 6 identical-config runs: target recall 0.42–0.97 | GPU_SERVER_PLAN §1b |
+ | Thresholds must be set by the **false-alarm rate** you accept | Hydraulic: "best F1" percentiles carried 40–75% FA. At FPR ≤ 10%: valve F1 0.705, accumulator 0.683, pump 0.385 | HYDRAULIC_PLAN v6 |
++| Healthy-only calibration holds FA **on average over units, not per unit** | Threshold from 5 healthy PU units, FA on the 6th (conformal quantile, 10% target): mean 0.107–0.115 in all 4 conditions, worst unit 0.22–0.38. The offending unit changes with condition (K005 at N09, K002 at N15, K006 at F04) | notes/14 |
++| Recording verdict levels (bearing service) | Measured on held-out healthy units: `watch` at 25% flagged 23% of healthy recordings at N09, so the default is now **40%** (12.5%); `faulty` at 50% flags ~5% (kept). At N09, 9/11 real-damage units are judged faulty on ≥ half their recordings | notes/14 |
+ | Deployment plumbing works | serving_core `bearing` service on real PU data (900 rpm): `faulty` on 4% of healthy and 76% of real-damage recordings. Calibrate flagged K005. Same numbers on host and in Docker | DEPLOYMENT_PLAN §8 |
+ 
+ ### Indicative or open
+ 
+ | Claim | Why it is not established | Source |
+ |---|---|---|
+-| The method's performance at 1500 rpm | PU N15: balanced **0.685 ± 0.005**, recall@10% 0.469. **Unexplained**, and it runs against the obvious prediction (N15 is closer to CWRU's speed) | notes/13 |
+-| Fault typing transfers | 3-class 0.593 against a 0.353 majority baseline. Correct race on faulty windows: **60.8%** (chance 50%). Outer race is mostly read as inner | notes/13 |
+-| The bearing service's verdict levels (`watch` 25%, `faulty` 50% of windows) | Engineering defaults. The study only measured window-level rates | DEPLOYMENT_PLAN §8 |
++| The method's performance at 1500 rpm | PU N15: balanced **0.685 ± 0.005**, recall@10% 0.469 (notes/13). WP2 H-a: **all three N15 conditions are bad** (held-out-unit recall 0.48 / 0.51 / 0.29 vs 0.74 at N09), so it is speed, with low radial force (F04) as a second factor. H-b, H-c (nominal speed) and H-d as a drop-in **rejected** (notes/15). Post-hoc: v1 features hold less information at 1500 rpm (in-condition ceiling AUC 0.70–0.79 vs 0.94); CPW+SES features hold it (0.88–0.90) but the CWRU boundary inverts on them; order-peak features keep their direction everywhere, shape statistics and sidebands do not | notes/13, notes/14, notes/15 |
++| A **healthy-referenced physics score** (no source data, no classifier) detects across speeds | Max one-sided z of log fault-order peaks vs the machine's healthy baseline, on CPW+SES features: PU recall 0.746 at N09 (FA 0.112) and 0.66–0.68 at N15; held-out AUC 0.84–0.90 in all 4 conditions vs 0.61–0.89 for the CWRU model. Paderborn is spent for this choice; needs WP5 + vault | notes/16 |
++| Fault typing transfers | CWRU 3-class classifier: correct race on faulty windows **60.8%** (chance 50%), outer read as inner (notes/13). **Physics typing** (which race's peaks rose most vs healthy baseline, no learning): **0.74–0.81** in all 4 PU conditions, outer no longer masked. Same Paderborn caveat | notes/13, notes/16 |
+ | Hydraulic cooler 1.0 | `cooler_condition` correlates with campaign time (r = 0.88) | HYDRAULIC_PLAN |
+ | Hydraulic pump detector | ROC-AUC 0.656. Shipped opt-in only | HYDRAULIC_PLAN |
+ | Real-data behaviour of the `vibration` and `hydraulic` services | Verified on synthetic data only | DEPLOYMENT_PLAN §8 |
+@@ -338,6 +340,9 @@ In order. Each has a gate. **The compute line on each WP is binding.**
+   by data or changed.
+ - **Compute:** light only if cached window scores exist; regenerating features
+   is heavy → ask.
++- **Status 2026-10-15: done** (notes/14). Feature cache built locally with the
++  owner's approval (79 s). Gate met: per-unit table known; `watch` 0.25 → 0.40,
++  `faulty` 0.50 kept. Conformal quantile in the service itself is left to WP9.
+ 
+ ### WP2. Explain the 1500 rpm drop
+ Four hypotheses, tested cheapest and most discriminating first. No band or
+@@ -357,6 +362,13 @@ dataset and judged on all PU conditions.
+ - **Compute:** heavy (PU feature extraction ×4 conditions × variants) → ask.
+   Re-extracting the speed channel uses `scripts/build_kaggle_notebook_prepare_pu.py`
+   (Kaggle).
++- **Status 2026-10-15: H-a done** from the WP1 cache (notes/14 §4): speed is
++  the primary factor, radial force a second one.
++- **Status 2026-10-15: H-b, H-c (nominal speed), H-d (CPW+SES) done, none
++  explains the drop** (notes/15). Gate outcome: N15 is a documented limit for
++  now. Open: H-c with measured speed (Kaggle re-extraction). Two follow-ups
++  were pre-registered in notes/15 §3: a peaks-only arm in WP3, and
++  healthy-referenced CPW+SES scoring in WP4.
+ 
+ ### WP3. Feature set v2
+ - Extend `src/domain_adaptation/features/envelope.py` (keep v1 reproducible
+@@ -388,6 +400,11 @@ dataset and judged on all PU conditions.
+   losing recall. Typing beats 60.8% race accuracy, or is dropped from the
+   claims.
+ - **Compute:** heavy if features must be regenerated → ask.
++- **Status 2026-10-15: done on Paderborn** (notes/16), from the WP2 caches.
++  Gate: (b)/(c) **fail** on v1 features (worst-unit FA rises). Typing
++  **passes** (0.74–0.81). Unplanned but pre-registered arm (d), the
++  healthy-referenced physics score, is the new primary candidate. It needs
++  confirmation on WP5 datasets because Paderborn is spent for this choice.
+ 
+ ### WP5. Multi-source with new public datasets
+ - **XJTU-SY:** 15 run-to-failure bearings, 3 operating conditions, known
+@@ -563,6 +580,9 @@ In `src/serving_core/services/bearing.py`, using the registry in
+ | `DEPLOYMENT_PLAN.md` | History, **except §8**, which still describes what `src/serving_core/` implements |
+ | `notes/12_reproduction_investigation.md` | Evidence: why spectrogram transfer fails |
+ | `notes/13_envelope_order_features.md` | Evidence: the envelope-order result |
++| `notes/14_wp1_recording_level.md` | Evidence: WP1 recording/unit-level scoring, verdict levels, WP2 H-a |
++| `notes/15_wp2_n15_variants.md` | Evidence: WP2 feature variants, the 1500 rpm diagnostic |
++| `notes/16_wp4_healthy_referenced.md` | Evidence: WP4 healthy-referenced scoring, physics typing |
+ | `notes/11_gpu_server_runbook.md`, `ephemeral_server_manual.md` | How to use a rented server |
+ | `reports/turbomachinery_roadmap.html` | Non-technical summary (L0–L5). To be updated at WP11 |
+ | `deploy/README.md`, `deploy/runbooks/` | Operator documentation |
+diff --git a/README.md b/README.md
+index 8d28933..81370f4 100644
+--- a/README.md
++++ b/README.md
+@@ -371,15 +371,25 @@ DAQ, unseen lab.
+ >
+ > | fit on CWRU only, calibrated on target HEALTHY windows alone | recall | FA | balanced acc |
+ > |---|---|---|---|
+-> | envelope-order features @10% target FA | **0.746 ± 0.012** | 10.1% | **0.823 ± 0.007** |
++> | envelope-order features @10% target FA, Paderborn 900 rpm | **0.746 ± 0.012** | 10.1% | **0.823 ± 0.007** |
++> | the same, Paderborn 1500 rpm (3 load conditions; threshold from other healthy units) | 0.29–0.51 | ~11% | — |
+ > | every spectrogram variant tried | — | — | 0.499–0.505 (chance) |
+ >
+-> So zero-shot detection across rigs IS feasible; it just is not feasible by
+-> learning a spectrogram end-to-end. Details, per-unit breakdown and the
+-> honest limits are in `notes/13_envelope_order_features.md`.
+-
+-Fault *typing* still does not transfer (3-class accuracy 0.378). The
+-deployable claim remains detection, not diagnosis.
++> So zero-shot detection across rigs IS feasible at 900 rpm; it just is not
++> feasible by learning a spectrogram end-to-end. **At 1500 rpm it is weak**,
++> and the drop is about speed, not load. No pre-registered mechanism
++> explains it (notes/15). Calibrated on other healthy bearings, the false
++> alarm rate is right on average but 2–4× too high on one healthy unit in
++> six (notes/14). Details and the honest limits are in
++> `notes/13_envelope_order_features.md`, `notes/14_wp1_recording_level.md`
++> and `notes/15_wp2_n15_variants.md`.
++
++Fault *typing* by a CWRU-trained classifier does not transfer (3-class
++accuracy 0.378). A label-free alternative, naming the race whose fault
++orders rose most above the healthy baseline, gets the race right on
++0.74–0.81 of faulty Paderborn windows (notes/16). Paderborn has now been
++used to develop it, so it is not a claim until other datasets confirm it.
++The deployable claim remains detection, not diagnosis.
+ 
+ Paderborn reaches the server as a **437 MB condensed bundle** rather than
+ the 9.7 GB raw dataset: same 2,559 runs and every bearing code, but keeping
+diff --git a/deploy/runbooks/bearing.md b/deploy/runbooks/bearing.md
+index 38d44c9..f63d148 100644
+--- a/deploy/runbooks/bearing.md
++++ b/deploy/runbooks/bearing.md
+@@ -31,8 +31,8 @@ add healthy data covering normal operating conditions first.
+ cp new_*.npy <DATA_DIR>/bearing/in/               # optional per-file speed: new_1.npy.meta.json  ->  {"rpm": 1480, "fs_hz": 25600}
+ ./ad bearing infer --archive
+ ```
+-Read `out/<date>/<job>/results.csv`. Columns: `verdict` (`healthy` < 25% windows flagged <= `watch` < 50% <= `faulty`), `flagged_fraction`, `score` (median), `rpm`, `fs_hz`.
+-The 25% / 50% levels are engineering defaults (`verdict:` in the config), not validated limits for your machine.
++Read `out/<date>/<job>/results.csv`. Columns: `verdict` (`healthy` < 40% windows flagged <= `watch` < 50% <= `faulty`), `flagged_fraction`, `score` (median), `rpm`, `fs_hz`.
++The 40% / 50% levels were measured on Paderborn (notes/14): with a threshold from other healthy bearings, about 10% of a NEW healthy bearing's recordings read `watch` and 5% `faulty` on average, but one healthy bearing in six alarmed far more. They are a starting point, not validated limits for your machine (`verdict:` in the config).
+ 
+ ## Messages you may see
+ | Message | Meaning / action |
+diff --git a/scripts/analysis/README.md b/scripts/analysis/README.md
+index 886aaee..0364ccd 100644
+--- a/scripts/analysis/README.md
++++ b/scripts/analysis/README.md
+@@ -18,6 +18,11 @@ quoted from a single run is uninterpretable, so every claim in
+ | `summarize_arms.py` | F1 and balanced accuracy per arm -- used to separate "worse discrimination" from "more conservative threshold" when recall AND false alarms move together |
+ | `per_unit.py` | per-bearing-unit recall/false-alarm spread, plus per-recording detection. The deployment-relevant error bar: a deployed system sees one machine, not eight seeds |
+ | `ensemble.py` | majority vote over seeds -- the only label-free lever available, since target recall cannot be selected for without target fault labels |
++| `envelope_cache.py` | MASTER_PLAN WP1/WP2: envelope-order features for CWRU + all four Paderborn conditions, once, to a fingerprinted cache (the heavy step) |
++| `wp1_rescore.py` | MASTER_PLAN WP1: recording- and unit-level detection from that cache, held-out-unit calibration, verdict levels (notes/14) |
++| `wp2_n15.py` | MASTER_PLAN WP2: the pre-registered comparison of feature variants for the 1500 rpm drop (notes/15) |
++| `wp2_oracle.py` | WP2 post-hoc diagnostic: is the information missing from the features, or does the CWRU boundary miss it (uses PU labels; diagnosis only) |
++| `wp4_healthy_ref.py` | MASTER_PLAN WP4: healthy-referenced normalisation arms, the healthy-only physics score, physics typing (notes/16) |
+ 
+ Run them from the repo root with the outputs present, e.g.
+ 
+diff --git a/src/domain_adaptation/data/pu_loader.py b/src/domain_adaptation/data/pu_loader.py
+index 1f06919..a80f6e1 100644
+--- a/src/domain_adaptation/data/pu_loader.py
++++ b/src/domain_adaptation/data/pu_loader.py
+@@ -85,19 +85,31 @@ class UnreadableMatFile(RuntimeError):
+     """
+ 
+ 
+-def load_vibration_signal(mat_path: str | Path, channel: str = "vibration_1") -> np.ndarray:
+-    """Extract one channel's 1D array from a PU .mat file."""
++def _read_channels(mat_path: str | Path) -> list[dict]:
+     try:
+         data = scipy.io.loadmat(str(mat_path), simplify_cells=True)
+     except Exception as exc:  # scipy raises bare TypeError/ValueError with no file context
+         raise UnreadableMatFile(f"{mat_path}: scipy could not parse this .mat ({type(exc).__name__}: {exc})") from exc
+     key = next(k for k in data if not k.startswith("__"))
+-    channels = data[key]["Y"]
+-    for ch in channels:
+-        if ch["Name"] == channel:
+-            return np.asarray(ch["Data"], dtype=np.float64).ravel()
+-    available = [ch["Name"] for ch in channels]
+-    raise KeyError(f"{mat_path}: channel {channel!r} not found (has: {available})")
++    return data[key]["Y"]
++
++
++def load_vibration_signal(mat_path: str | Path, channel: str = "vibration_1") -> np.ndarray:
++    """Extract one channel's 1D array from a PU .mat file."""
++    return load_channels(mat_path, [channel])[channel]
++
++
++def load_channels(mat_path: str | Path, wanted: list[str]) -> dict[str, np.ndarray]:
++    """Several channels from one parse of the file -- the v2 condensed store
++    (remote/datasets/condense_pu.py) keeps speed, torque and force beside
++    vibration_1, and loadmat is the slow part."""
++    channels = _read_channels(mat_path)
++    by_name = {ch["Name"]: ch for ch in channels}
++    missing = [w for w in wanted if w not in by_name]
++    if missing:
++        available = [ch["Name"] for ch in channels]
++        raise KeyError(f"{mat_path}: channel {missing[0]!r} not found (has: {available})")
++    return {w: np.asarray(by_name[w]["Data"], dtype=np.float64).ravel() for w in wanted}
+ 
+ 
+ def build_pu_catalog(root_dir: str | Path, codes: list[str], native_fs_hz: int = 64000) -> pd.DataFrame:
+diff --git a/src/domain_adaptation/features/envelope.py b/src/domain_adaptation/features/envelope.py
+index 6a627aa..51e03da 100644
+--- a/src/domain_adaptation/features/envelope.py
++++ b/src/domain_adaptation/features/envelope.py
+@@ -95,7 +95,9 @@ PU_6203 = BearingGeometry("6203", n_balls=8, ball_diameter=6.75, pitch_diameter=
+ def envelope_spectrum(
+     signal: np.ndarray,
+     fs_hz: float,
+-    band_hz: tuple[float, float] = (1500.0, 5500.0),
++    band_hz: tuple[float, float] | None = (1500.0, 5500.0),
++    whiten: bool = False,
++    squared: bool = False,
+ ) -> tuple[np.ndarray, np.ndarray]:
+     """Band-pass -> Hilbert envelope -> magnitude spectrum of the envelope.
+ 
+@@ -107,16 +109,29 @@ def envelope_spectrum(
+     1.5-5.5 kHz covers the usable high-frequency region where bearing
+     resonances live and shaft/imbalance harmonics do not.
+ 
++    MASTER_PLAN WP2 H-d alternative, label-free: `whiten=True, band_hz=None,
++    squared=True` is cepstrum pre-whitening + squared envelope spectrum
++    (Borghesani et al. 2013): flattening the spectrum's magnitude removes the
++    rig's resonance shape, so no band has to be chosen at all.
++
+     Returns (freqs_hz, magnitude) for the envelope, DC removed.
+     """
+-    nyq = fs_hz / 2.0
+-    lo, hi = band_hz[0] / nyq, min(band_hz[1] / nyq, 0.99)
+-    if not 0 < lo < hi < 1:
+-        raise ValueError(f"band {band_hz} invalid for fs={fs_hz}")
+-    sos = butter(4, [lo, hi], btype="bandpass", output="sos")
+-    banded = sosfiltfilt(sos, signal)
++    if whiten:
++        X = np.fft.rfft(signal)
++        signal = np.fft.irfft(X / (np.abs(X) + 1e-12), n=len(signal))
++    if band_hz is None:
++        banded = signal
++    else:
++        nyq = fs_hz / 2.0
++        lo, hi = band_hz[0] / nyq, min(band_hz[1] / nyq, 0.99)
++        if not 0 < lo < hi < 1:
++            raise ValueError(f"band {band_hz} invalid for fs={fs_hz}")
++        sos = butter(4, [lo, hi], btype="bandpass", output="sos")
++        banded = sosfiltfilt(sos, signal)
+ 
+     env = np.abs(hilbert(banded))
++    if squared:
++        env = env ** 2
+     env = env - env.mean()          # the DC term dwarfs every fault peak
+     window = np.hanning(len(env))
+     spec = np.abs(np.fft.rfft(env * window))
+@@ -141,9 +156,13 @@ def envelope_order_features(
+     fs_hz: float,
+     rpm: float,
+     geometry: BearingGeometry,
+-    band_hz: tuple[float, float] = (1500.0, 5500.0),
++    band_hz: tuple[float, float] | None = (1500.0, 5500.0),
+     n_harmonics: int = 3,
+     tol_orders: float = 0.08,
++    tol_rel: float | None = None,
++    norm: str = "sum",
++    whiten: bool = False,
++    squared: bool = False,
+ ) -> dict[str, float]:
+     """A small, physically-named feature vector comparable ACROSS rigs.
+ 
+@@ -152,22 +171,37 @@ def envelope_order_features(
+     hard the rig is driven -- divides out. That matters more here than
+     usual: the two datasets were recorded years apart on different
+     equipment, and absolute amplitude carries no shared meaning.
++
++    The defaults are v1, the version every published number used. The
++    other arguments are the MASTER_PLAN WP2 variants, each fixed a priori:
++    `tol_rel` (H-c) makes the peak window a fraction of the order it reads,
++    so a speed error moves every harmonic by the same relative amount it is
++    allowed; `norm="median"` (H-b) divides by the reference band's median
++    instead of its sum, which does not grow with the number of bins the
++    band holds; `whiten`/`squared`/`band_hz=None` (H-d), see
++    envelope_spectrum.
+     """
++    if norm not in ("sum", "median"):
++        raise ValueError(f"norm must be 'sum' or 'median', got {norm!r}")
+     shaft_hz = rpm / 60.0
+-    freqs, spec = envelope_spectrum(signal, fs_hz, band_hz)
++    freqs, spec = envelope_spectrum(signal, fs_hz, band_hz, whiten=whiten, squared=squared)
+     orders = freqs / shaft_hz
+ 
+     # Reference band: everything the bearing could plausibly produce, used
+     # to normalize. Starts above 0.5 to exclude the shaft-rate peak, which
+     # is imbalance/misalignment and present on healthy machines too.
+     ref = (orders >= 0.5) & (orders <= 12.0)
+-    total = float(spec[ref].sum()) + 1e-12
++    total = float(spec[ref].sum() if norm == "sum" else np.median(spec[ref])) + 1e-12
++    # relative windows narrower than one order bin (the cage order) would
++    # read a single bin or none, so they are floored at one bin either side
++    bin_orders = (freqs[1] - freqs[0]) / shaft_hz
++    tol = (lambda c: max(tol_rel * c, bin_orders)) if tol_rel else (lambda c: tol_orders)
+ 
+     feats: dict[str, float] = {}
+     for label, base in (("bpfo", geometry.bpfo), ("bpfi", geometry.bpfi)):
+         harmonics = []
+         for h in range(1, n_harmonics + 1):
+-            e = _band_energy(orders, spec, base * h, tol_orders) / total
++            e = _band_energy(orders, spec, base * h, tol(base * h)) / total
+             feats[f"{label}_h{h}"] = e
+             harmonics.append(e)
+         feats[f"{label}_sum"] = float(np.sum(harmonics))
+@@ -176,9 +210,9 @@ def envelope_order_features(
+     # peaks carry shaft-rate sidebands; outer-race defects are stationary
+     # and do not. This is the main geometric cue separating the two.
+     feats["bpfi_sidebands"] = sum(
+-        _band_energy(orders, spec, geometry.bpfi + s, tol_orders) / total for s in (-1.0, 1.0)
++        _band_energy(orders, spec, geometry.bpfi + s, tol(geometry.bpfi + s)) / total for s in (-1.0, 1.0)
+     )
+-    feats["ftf"] = _band_energy(orders, spec, geometry.ftf, tol_orders) / total
++    feats["ftf"] = _band_energy(orders, spec, geometry.ftf, tol(geometry.ftf)) / total
+ 
+     # Shape statistics of the envelope spectrum: impulsiveness rises with
+     # localized damage regardless of which race it is on, so these help the
+diff --git a/src/serving_core/services/bearing.py b/src/serving_core/services/bearing.py
+index e5fdc5e..dc4c630 100644
+--- a/src/serving_core/services/bearing.py
++++ b/src/serving_core/services/bearing.py
+@@ -145,7 +145,9 @@ class BearingService(Service):
+             "band_hz": [1500.0, 5500.0],   # resonance band for the envelope; fixed a priori in the study
+             "calibration": {"target_false_alarm": 0.10, "min_windows": 200,
+                             "min_recordings_warn": 3, "max_windows_per_file": 600},
+-            "verdict": {"watch_fraction": 0.25, "faulty_fraction": 0.5},
++            # MASTER_PLAN WP1 (notes/14): at 0.25, a quarter of held-out healthy recordings
++            # read as watch; 0.40 keeps that near 10%. 0.5 kept ~5% healthy recordings faulty.
++            "verdict": {"watch_fraction": 0.40, "faulty_fraction": 0.5},
+         }
+ 
+     def validate_config(self, cfg: dict) -> list[str]:
+untracked: ephemeral_server_manual.md
+untracked: notes/14_wp1_recording_level.md
+untracked: notes/15_wp2_n15_variants.md
+untracked: notes/16_wp4_healthy_referenced.md
+untracked: outputs/wp1/wp1_report.md
+untracked: outputs/wp1/wp1_results.json
+untracked: outputs/wp2/wp2_report.md
+untracked: outputs/wp2/wp2_results.json
+untracked: outputs/wp4/wp4_report.md
+untracked: outputs/wp4/wp4_results.json
+untracked: papers/1-s2.0-S0952197621001421-am.pdf
+untracked: papers/142875.pdf
+untracked: papers/A_New_Multiple_Source_Domain_Adaptation_Fault_Diagnosis_Method_Between_Different_Rotating_Machines.pdf
+untracked: remote/box
+untracked: remote/box.conf
+untracked: remote/datasets/condense_pu.py
+untracked: remote/datasets/condense_xjtu.py
+untracked: remote/datasets/cwru_de12.txt
+untracked: remote/datasets/fetch.py
+untracked: remote/datasets/registry.yaml
+untracked: remote/datasets/safe_extract.py
+untracked: remote/requirements-server.in
+untracked: remote/requirements-server.txt
+untracked: remote/server/VAULT.md
+untracked: remote/server/_env.sh
+untracked: remote/server/bootstrap.sh
+untracked: remote/server/mount_vault.sh
+untracked: remote/server/run.sh
+untracked: remote/server/stage.sh
+untracked: remote/server/status.sh
+untracked: remote/server/syncd.sh
+untracked: reports/001_Internal Reports.docx
+untracked: reports/IRANYekanX_Fonts/IRANYekanX-Black.ttf
+untracked: reports/IRANYekanX_Fonts/IRANYekanX-Bold.ttf
+untracked: reports/IRANYekanX_Fonts/IRANYekanX-ExtraBlack.ttf
+untracked: reports/IRANYekanX_Fonts/IRANYekanX-ExtraBold.ttf
+untracked: reports/IRANYekanX_Fonts/IRANYekanX-Heavy.ttf
+untracked: reports/IRANYekanX_Fonts/IRANYekanX-Light.ttf
+untracked: reports/IRANYekanX_Fonts/IRANYekanX-Regular.ttf
+untracked: reports/R01_vibration_autoencoder_CWRU.pdf
+untracked: reports/turbomachinery_roadmap.html
+untracked: scripts/analysis/envelope_cache.py
+untracked: scripts/analysis/wp1_rescore.py
+untracked: scripts/analysis/wp2_n15.py
+untracked: scripts/analysis/wp2_oracle.py
+untracked: scripts/analysis/wp4_healthy_ref.py

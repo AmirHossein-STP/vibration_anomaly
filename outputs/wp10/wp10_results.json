@@ -1,0 +1,112 @@
+{
+ "ottawa_2018": {
+  "estimate": {
+   "n": 1129,
+   "median_abs_pct": 0.4221586992170234,
+   "within_1pct": 0.79185119574845,
+   "within_2pct": 0.8724534986713907,
+   "octave_errors": 0.07528786536758193
+  }
+ },
+ "pu": {
+  "estimate": {
+   "n": 15682,
+   "median_abs_pct": 3.586946549040931,
+   "within_1pct": 0.1321260043361816,
+   "within_2pct": 0.3182629766611402,
+   "octave_errors": 0.0
+  },
+  "nominal": {
+   "n": 15682,
+   "median_abs_pct": 0.031959591384622676,
+   "within_1pct": 0.9996811631169493,
+   "within_2pct": 0.9996811631169493,
+   "octave_errors": 0.0
+  },
+  "by_condition": {
+   "N09_M07_F10": {
+    "estimate": {
+     "n": 3920,
+     "median_abs_pct": 8.354996169475088,
+     "within_1pct": 0.08035714285714286,
+     "within_2pct": 0.19744897959183674,
+     "octave_errors": 0.0
+    },
+    "nominal": {
+     "n": 3920,
+     "median_abs_pct": 0.038852894009255845,
+     "within_1pct": 0.9987244897959183,
+     "within_2pct": 0.9987244897959183,
+     "octave_errors": 0.0
+    }
+   },
+   "N15_M01_F10": {
+    "estimate": {
+     "n": 3922,
+     "median_abs_pct": 2.851691048784372,
+     "within_1pct": 0.14584395716471188,
+     "within_2pct": 0.34854665986741457,
+     "octave_errors": 0.0
+    },
+    "nominal": {
+     "n": 3922,
+     "median_abs_pct": 0.029464380640931154,
+     "within_1pct": 1.0,
+     "within_2pct": 1.0,
+     "octave_errors": 0.0
+    }
+   },
+   "N15_M07_F04": {
+    "estimate": {
+     "n": 3921,
+     "median_abs_pct": 2.5408659062886585,
+     "within_1pct": 0.16526396327467482,
+     "within_2pct": 0.3914817648559041,
+     "octave_errors": 0.0
+    },
+    "nominal": {
+     "n": 3921,
+     "median_abs_pct": 0.031668686770824905,
+     "within_1pct": 1.0,
+     "within_2pct": 1.0,
+     "octave_errors": 0.0
+    }
+   },
+   "N15_M07_F10": {
+    "estimate": {
+     "n": 3919,
+     "median_abs_pct": 2.91223141282424,
+     "within_1pct": 0.13702475121204388,
+     "within_2pct": 0.3355447818321,
+     "octave_errors": 0.0
+    },
+    "nominal": {
+     "n": 3919,
+     "median_abs_pct": 0.030101827842132778,
+     "within_1pct": 1.0,
+     "within_2pct": 1.0,
+     "octave_errors": 0.0
+    }
+   }
+  }
+ },
+ "downstream_ottawa_2018": {
+  "true": {
+   "auc_race": 0.8040865436565051,
+   "recall_race": 0.6548410938654841,
+   "fa_mean": 0.08771929824561403
+  },
+  "est": {
+   "auc_race": 0.6609705311566673,
+   "recall_race": 0.479490022172949,
+   "fa_mean": 0.09210526315789473
+  },
+  "cot_encoder_notes17": {
+   "auc_race": 0.922
+  }
+ },
+ "readings": {
+  "estimator_adequate": false,
+  "cot_worth_encoder": true
+ }
+}

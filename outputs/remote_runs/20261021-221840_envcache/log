@@ -1,0 +1,22 @@
+[v1] 48 CWRU files, 2319 Paderborn runs; 8 worker(s)
+  250/2319 runs, 2 s
+  500/2319 runs, 2 s
+  750/2319 runs, 3 s
+  1000/2319 runs, 4 s
+  1250/2319 runs, 4 s
+  1500/2319 runs, 5 s
+  1750/2319 runs, 6 s
+  2000/2319 runs, 7 s
+  2250/2319 runs, 7 s
+wrote 17346 windows to outputs/envelope_cache/envelope_windows_842b36b7db5d.csv.gz in 9 s
+[hd_cpw_ses] 48 CWRU files, 2319 Paderborn runs; 8 worker(s)
+  250/2319 runs, 1 s
+  500/2319 runs, 1 s
+  750/2319 runs, 2 s
+  1000/2319 runs, 2 s
+  1250/2319 runs, 2 s
+  1500/2319 runs, 3 s
+  1750/2319 runs, 3 s
+  2000/2319 runs, 4 s
+  2250/2319 runs, 5 s
+wrote 17346 windows to outputs/envelope_cache/envelope_windows_hd_cpw_ses_52a124f89f44.csv.gz in 6 s

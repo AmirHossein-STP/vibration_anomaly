@@ -1,0 +1,1 @@
+python3 scripts/analysis/wp10_speed.py --jobs 8 

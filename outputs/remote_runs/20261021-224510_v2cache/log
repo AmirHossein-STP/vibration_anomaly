@@ -1,0 +1,6 @@
+[cwru] 1112 windows in 0 s -> outputs/wp3/cache/cwru_v2_73973f625f0b.csv.gz
+[pu] 16234 windows in 5 s -> outputs/wp3/cache/pu_v2_25e033e3b30c.csv.gz
+[ottawa_2018] 1077 windows in 3 s -> outputs/wp3/cache/ottawa_2018_v2_38fdc75b0cd9.csv.gz
+[ottawa_2023] 1140 windows in 1 s -> outputs/wp3/cache/ottawa_2023_v2_2d561c770089.csv.gz
+[mfpt] 136 windows in 0 s -> outputs/wp3/cache/mfpt_v2_72a158eb6eae.csv.gz
+[xjtu_sy] 18432 windows in 23 s -> outputs/wp3/cache/xjtu_sy_v2_c51b0df34ffb.csv.gz

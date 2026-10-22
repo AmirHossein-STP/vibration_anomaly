@@ -14,6 +14,22 @@ It folds in:
 - three papers supplied for this revision (`papers/`), plus three more found
   while writing it (§2).
 
+**Status 2026-10-22 (one autonomous session on the rented box; owner instruction:
+"run the plan, don't ask").** Done: WP5, WP7 (on XJTU-SY), WP3 (v1 stays), the WP10
+speed-estimator validation, and the WP6 sensitivity curve (rejected). The current method:
+- **detect** with the healthy-referenced CPW+SES physics score (arm d), against each unit's
+  *own* healthy baseline, with cross-fitted conformal thresholds;
+- **trigger slow trends** with an own-baseline CUSUM on a level feature where speed and load
+  are constant;
+- **diagnose** with physics typing.
+
+Open next:
+- WP9: productise cross-fitted calibration and per-unit baselines;
+- WP6 arms A–E, with a generator validated against real damage;
+- WP10 documents: inventory template, data-collection spec, L0 module;
+- WP3 leftovers: unknown-geometry mode, AWGN curve;
+- WP11 (IMS, sealed) only after freezing.
+
 Decisions recorded with the owner on 2026-10-15:
 
 | Question | Decision |
@@ -22,6 +38,7 @@ Decisions recorded with the owner on 2026-10-15:
 | More public datasets? | **Yes**: XJTU-SY and Ottawa for development. **IMS is sealed** as the final exam (WP11). |
 | Hydraulic (ZeMA) subproject | **Frozen** as the reference template for process-sensor fusion. No new research until real pump process data exists. |
 | Where does computation run? | **Not on the local Mac.** Every heavy step asks the owner first (§5). |
+| (2026-10-22) Autonomy | For the 2026-10-22 session only: heavy steps ran on the rented box without asking, each pre-registered in notes/17–21 before it was run. |
 
 ---
 
@@ -67,15 +84,20 @@ under-powered), or **retracted**. Sources are in the last column.
 | Errors are **per unit**, not random | False alarms concentrate on one healthy bearing: K002 under the spectrogram model, K005 under the envelope model | notes/13, GPU_SERVER_PLAN §2 |
 | **Seed variance swamps single-run claims** | 6 identical-config runs: target recall 0.42–0.97 | GPU_SERVER_PLAN §1b |
 | Thresholds must be set by the **false-alarm rate** you accept | Hydraulic: "best F1" percentiles carried 40–75% FA. At FPR ≤ 10%: valve F1 0.705, accumulator 0.683, pump 0.385 | HYDRAULIC_PLAN v6 |
+| Healthy-only calibration holds FA **on average over units, not per unit** | Threshold from 5 healthy PU units, FA on the 6th (conformal quantile, 10% target): mean 0.107–0.115 in all 4 conditions, worst unit 0.22–0.38. The offending unit changes with condition (K005 at N09, K002 at N15, K006 at F04) | notes/14 |
+| Recording verdict levels (bearing service) | Measured on held-out healthy units: `watch` at 25% flagged 23% of healthy recordings at N09, so the default is now **40%** (12.5%); `faulty` at 50% flags ~5% (kept). At N09, 9/11 real-damage units are judged faulty on ≥ half their recordings | notes/14 |
 | Deployment plumbing works | serving_core `bearing` service on real PU data (900 rpm): `faulty` on 4% of healthy and 76% of real-damage recordings. Calibrate flagged K005. Same numbers on host and in Docker | DEPLOYMENT_PLAN §8 |
 
 ### Indicative or open
 
 | Claim | Why it is not established | Source |
 |---|---|---|
-| The method's performance at 1500 rpm | PU N15: balanced **0.685 ± 0.005**, recall@10% 0.469. **Unexplained**, and it runs against the obvious prediction (N15 is closer to CWRU's speed) | notes/13 |
-| Fault typing transfers | 3-class 0.593 against a 0.353 majority baseline. Correct race on faulty windows: **60.8%** (chance 50%). Outer race is mostly read as inner | notes/13 |
-| The bearing service's verdict levels (`watch` 25%, `faulty` 50% of windows) | Engineering defaults. The study only measured window-level rates | DEPLOYMENT_PLAN §8 |
+| The method's performance at 1500 rpm | PU N15: balanced **0.685 ± 0.005**, recall@10% 0.469 (notes/13). WP2 H-a: **all three N15 conditions are bad** (held-out-unit recall 0.48 / 0.51 / 0.29 vs 0.74 at N09), so it is speed, with low radial force (F04) as a second factor. H-b, H-c (nominal speed) and H-d as a drop-in **rejected** (notes/15). Post-hoc: v1 features hold less information at 1500 rpm (in-condition ceiling AUC 0.70–0.79 vs 0.94); CPW+SES features hold it (0.88–0.90) but the CWRU boundary inverts on them; order-peak features keep their direction everywhere, shape statistics and sidebands do not | notes/13, notes/14, notes/15 |
+| A **healthy-referenced physics score** (no source data, no classifier) detects across speeds | Max one-sided z of log fault-order peaks vs the machine's healthy baseline, on CPW+SES features: PU recall 0.746 at N09 (FA 0.112) and 0.66–0.68 at N15; held-out AUC 0.84–0.90 in all 4 conditions vs 0.61–0.89 for the CWRU model. Paderborn is spent for this choice; needs WP5 + vault | notes/16 |
+| Healthy-referenced physics score transfers to rigs never tuned on (WP5) | Frozen arm d, CPW+SES: Ottawa 2018 AUC **0.92** (CWRU classifier 0.48), MFPT **1.00** (0.84), Ottawa 2023 own-unit baseline **0.93** (0.72). Gate as pre-registered PARTIAL: FA overshoot with tiny calibration sets (fixed post hoc by cross-fitting) and a fleet baseline on Ottawa 2023 (0.71) | notes/17 |
+| No single statistic wins everywhere; the physics score is the robust one | Own-baseline kurtosis: AUC 0.99–1.00 on Ottawa 2018/2023, MFPT, CWRU, but **0.33–0.45** on Paderborn real damage. RMS: confounded by speed (Ottawa 2018 0.81) and fails on Paderborn. Physics score ≥ 0.84 everywhere with an own/same-model baseline. Max-fusion (dK) loses 0.08–0.11 on Paderborn: rejected | notes/18 §6 |
+| A unit's own healthy baseline beats a fleet baseline | Ottawa 2023 (each bearing healthy → faulty): AUC 0.71 → 0.93, worst-unit FA 1.00 → 0.78 (0.22 cross-fitted). One dataset | notes/17 |
+| Fault typing transfers | CWRU 3-class classifier: correct race on faulty windows **60.8%** (chance 50%), outer read as inner (notes/13). **Physics typing** (which race's peaks rose most vs healthy baseline, no learning): **0.74–0.81** in all 4 PU conditions, outer no longer masked. Same Paderborn caveat | notes/13, notes/16 |
 | Hydraulic cooler 1.0 | `cooler_condition` correlates with campaign time (r = 0.88) | HYDRAULIC_PLAN |
 | Hydraulic pump detector | ROC-AUC 0.656. Shipped opt-in only | HYDRAULIC_PLAN |
 | Real-data behaviour of the `vibration` and `hydraulic` services | Verified on synthetic data only | DEPLOYMENT_PLAN §8 |
@@ -223,7 +245,7 @@ speed. Revised here in three ways (marked **new**).
 | **L3** Synthetic faults in real healthy data | Train on "real healthy" vs "real healthy + simulated fault". The machine's own sound is in both classes, so only the fault can be learned. **New: also a per-machine sensitivity estimate** (below) | Healthy data, geometry | WP6 |
 | **L4** Fleet comparison | Identical units at the same operating point. One that drifts from its siblings is flagged | Several identical units | Designed. Needs real units |
 | **L5** Trend and change-point | Slow rise over weeks beats one bad reading | Months of L1–L3 history | WP7 on run-to-failure data |
-| **Decision layer** (**new: explicit**) | Window → recording aggregation; sequential test (CUSUM) across recordings; per-unit calibrated threshold; an explanation naming the dominant fault family | Calibration recordings | WP1, WP7, WP9 |
+| **Decision layer** (**new: explicit**) | Window → recording aggregation; sequential test (CUSUM) across recordings; per-unit calibrated threshold; an explanation naming the dominant fault family. **Revised 2026-10-22 (notes/18):** trigger = own-baseline CUSUM on a level feature (RMS / L0); physics score = diagnosis, and also a trigger where speed or load varies | Calibration recordings | WP1, WP7 done on XJTU-SY, WP9 |
 
 ### Why merge L1 and L2
 The current model standardises features with *source* statistics, then shifts
@@ -338,6 +360,9 @@ In order. Each has a gate. **The compute line on each WP is binding.**
   by data or changed.
 - **Compute:** light only if cached window scores exist; regenerating features
   is heavy → ask.
+- **Status 2026-10-15: done** (notes/14). Feature cache built locally with the
+  owner's approval (79 s). Gate met: per-unit table known; `watch` 0.25 → 0.40,
+  `faulty` 0.50 kept. Conformal quantile in the service itself is left to WP9.
 
 ### WP2. Explain the 1500 rpm drop
 Four hypotheses, tested cheapest and most discriminating first. No band or
@@ -357,6 +382,13 @@ dataset and judged on all PU conditions.
 - **Compute:** heavy (PU feature extraction ×4 conditions × variants) → ask.
   Re-extracting the speed channel uses `scripts/build_kaggle_notebook_prepare_pu.py`
   (Kaggle).
+- **Status 2026-10-15: H-a done** from the WP1 cache (notes/14 §4): speed is
+  the primary factor, radial force a second one.
+- **Status 2026-10-15: H-b, H-c (nominal speed), H-d (CPW+SES) done, none
+  explains the drop** (notes/15). Gate outcome: N15 is a documented limit for
+  now. Open: H-c with measured speed (Kaggle re-extraction). Two follow-ups
+  were pre-registered in notes/15 §3: a peaks-only arm in WP3, and
+  healthy-referenced CPW+SES scoring in WP4.
 
 ### WP3. Feature set v2
 - Extend `src/domain_adaptation/features/envelope.py` (keep v1 reproducible
@@ -374,6 +406,14 @@ dataset and judged on all PU conditions.
 - **Gate:** v2 beats v1 on leave-one-dataset-out at equal or lower FA, or v1
   stays.
 - **Compute:** heavy → ask.
+- **Status 2026-10-22: done, v1 stays** (notes/19). v2 adds harmonics to 5, BPFI sidebands,
+  and the BSF and FTF families, with family-mean aggregation.
+  - It improves ball/cage AUC on Ottawa 2023 (+0.13 to +0.14).
+  - It loses race AUC on Paderborn 1500 rpm (−0.10 to −0.19), Ottawa 2018 and MFPT, and it
+    degrades typing.
+  - The naive max over all lines wins on 3 datasets and loses on Paderborn.
+  - Ball and cage stay a documented gap. Unknown-geometry mode, stability selection and the AWGN
+    curve were not run (time). Open.
 
 ### WP4. Healthy-referenced normalisation and physics typing
 - Compare three scalings:
@@ -388,6 +428,11 @@ dataset and judged on all PU conditions.
   losing recall. Typing beats 60.8% race accuracy, or is dropped from the
   claims.
 - **Compute:** heavy if features must be regenerated → ask.
+- **Status 2026-10-15: done on Paderborn** (notes/16), from the WP2 caches.
+  Gate: (b)/(c) **fail** on v1 features (worst-unit FA rises). Typing
+  **passes** (0.74–0.81). Unplanned but pre-registered arm (d), the
+  healthy-referenced physics score, is the new primary candidate. It needs
+  confirmation on WP5 datasets because Paderborn is spent for this choice.
 
 ### WP5. Multi-source with new public datasets
 - **XJTU-SY:** 15 run-to-failure bearings, 3 operating conditions, known
@@ -405,6 +450,19 @@ dataset and judged on all PU conditions.
   exist, with the same rules as §4.
 - **Compute:** heavy (downloads, condensing, features) → **ask, including the
   download route**.
+- **Status 2026-10-22: done** (notes/17). The box downloaded every dataset onto the vault
+  (`remote/README.md`): XJTU-SY, Ottawa 2018 and 2023, and MFPT added, IMS sealed.
+  - Frozen arm d (CPW+SES physics score) gate as pre-registered: **PARTIAL**.
+    - Ottawa 2018 passes (AUC 0.92, with computed order tracking).
+    - MFPT gives AUC 1.00 but FA 0.18.
+    - Ottawa 2023 against a fleet baseline gives AUC 0.71.
+  - Two causes, both now fixed in the method:
+    - small-sample calibration bias → cross-fitted calibration scores (FA back to ≤ 0.10);
+    - unit-to-unit spread → each unit's own healthy baseline (Ottawa 2023 AUC 0.71 → 0.93).
+  - The CWRU classifier fails on every new rig (AUC 0.48–0.84).
+  - Physics typing transfers: 0.63–1.00, and 10/11 on XJTU-SY run-to-failure.
+  - The XJTU-SY timing criterion fails against a plain RMS 3σ rule. The per-minute score is too
+    noisy for a 3-in-a-row alarm, which is WP7's decision-layer job.
 
 ### WP6. L3: synthetic faults in real healthy data
 Read Wang/Taal/Fink 2022 in full first. Ask the owner for any paper that cannot
@@ -432,6 +490,13 @@ Arms, all on identical test data and all with 5 seeds:
 - **Also produce** the per-machine sensitivity curve (§3), and check whether
   it predicts which real faults were caught.
 - **Compute:** heavy → ask.
+- **Status 2026-10-22: sensitivity curve done; it does NOT predict** (notes/21).
+  - Spearman ρ = +0.20 between synthetic a50 and real recall across Ottawa 2023's 10 race
+    bearings (criterion ≤ −0.5). It is not shipped as a sensitivity estimate.
+  - The curve's floor is the unit's own false-alarm rate (Ottawa 2023 b02), and the untuned
+    impulse generator does not match real damage in this feature space.
+  - Arms A–E (training on synthetic faults) are not run yet. They should start from a generator
+    checked against real signatures (Wang/Taal/Fink 2022).
 
 ### WP7. Decision layer and trend (L5)
 - Window → recording aggregation; CUSUM/sequential test over recordings.
@@ -442,6 +507,15 @@ Arms, all on identical test data and all with 5 seeds:
 - **Gate:** a lead-time/FA trade-off curve exists and its operating point is
   chosen by an FA budget, not by lead time.
 - **Compute:** heavy → ask.
+- **Status 2026-10-22: done on XJTU-SY** (notes/18). The curve exists, and the operating point
+  is FA budget 0, set leave one bearing out on healthy minutes only.
+  - An own-baseline **RMS CUSUM detects 13/15** bearings (median lead 84 min).
+  - The best physics detector (**CUSUM**) detects **9/15**, though earlier in relative life
+    (0.34 vs 0.28).
+  - Pre-registered reading: **RMS stays the trigger and physics is the diagnosis** at constant
+    speed and load. The decision layer in §3 is revised accordingly.
+  - False alarms per day cannot be bounded tightly with 20-minute baselines. The pilot must
+    record days of healthy data per unit.
 
 ### WP8. Learned models, only inside the physics representation
 - A small 1D CNN on the sub-band envelope order spectrum, optionally with
@@ -495,6 +569,14 @@ In `src/serving_core/services/bearing.py`, using the registry in
   - the sensitivity curve is acceptable.
 - **Compute:** light (code, docs). The speed-estimator validation is heavy →
   ask.
+- **Status 2026-10-22: speed-estimator validation done** (notes/20).
+  - Harmonic-sum estimate from vibration: 0.42% median error on Ottawa 2018 (7.5% octave
+    locks), but 2.5–8% on Paderborn.
+  - Downstream it costs 0.14 AUC against encoder speed, and constant speed per window costs
+    0.12 against order tracking.
+  - **A synchronous speed signal (keyphasor/encoder), or for speed-controlled drives the
+    logged setpoint, is now a hard pilot requirement.**
+  - Inventory template, data-collection spec document and the L0 module are not written yet. Open.
 
 ### WP11. Final exam and write-up
 - Freeze the method: features, scaling, threshold rule, decision layer. Record
@@ -537,12 +619,16 @@ In `src/serving_core/services/bearing.py`, using the registry in
 
 ## 8. Logistics
 
-- **Compute:** see the §5 rule. Rented GPU/CPU boxes follow
-  `ephemeral_server_manual.md` and `notes/11_gpu_server_runbook.md`. Results
-  are pulled continuously because the box is deleted at subscription end.
-- **Data routes:**
-  - Kaggle → laptop → server was needed before (the server reached Kaggle
-    ~830× slower than other hosts). Condensing happens on Kaggle or the server.
+- **Compute:** see the §5 rule. Rented boxes are driven by `remote/box`
+  (runbook: `remote/README.md`): `box up <ip>` makes a fresh rental ready in
+  ~30 s, results sync to the persistent vault every 60 s, `box down` before the
+  rental ends. Every rental is Ubuntu 22.04 with CUDA 12.8, PyTorch, TensorFlow
+  and Docker preinstalled.
+- **Data routes (2026-10-22):** the box downloads every public dataset itself,
+  straight onto the vault (`box data fetch`), from GitHub, Zenodo, MediaFire,
+  Mendeley and NASA. Kaggle/Google are **unreachable from the box** ("not
+  available in your location"), so the old Kaggle → laptop → server route is
+  retired. Large raw sets (Paderborn, XJTU-SY) are condensed on the box's SSD.
   - Each dataset sits in its own directory and is treated as untrusted. Scripts
     live elsewhere and are run with paths as arguments.
 - **Papers:** `papers/` holds the three supplied PDFs (untracked). Anything
@@ -563,6 +649,15 @@ In `src/serving_core/services/bearing.py`, using the registry in
 | `DEPLOYMENT_PLAN.md` | History, **except §8**, which still describes what `src/serving_core/` implements |
 | `notes/12_reproduction_investigation.md` | Evidence: why spectrogram transfer fails |
 | `notes/13_envelope_order_features.md` | Evidence: the envelope-order result |
-| `notes/11_gpu_server_runbook.md`, `ephemeral_server_manual.md` | How to use a rented server |
+| `notes/14_wp1_recording_level.md` | Evidence: WP1 recording/unit-level scoring, verdict levels, WP2 H-a |
+| `notes/15_wp2_n15_variants.md` | Evidence: WP2 feature variants, the 1500 rpm diagnostic |
+| `notes/16_wp4_healthy_referenced.md` | Evidence: WP4 healthy-referenced scoring, physics typing |
+| `notes/17_wp5_new_datasets.md` | Evidence: WP5, the frozen physics score on Ottawa 2018/2023, MFPT, XJTU-SY; cross-fitted calibration; own vs fleet baseline |
+| `notes/18_wp7_decision_layer.md` | Evidence: WP7 decision layer (lead time at an FA budget); RMS/kurtosis vs physics; the rejected fusion |
+| `notes/19_wp3_feature_v2.md` | Evidence: WP3 feature v2 (rejected; v1 stays) |
+| `notes/20_wp10_speed_from_vibration.md` | Evidence: WP10 speed estimator validation; the speed-signal requirement |
+| `notes/21_wp6_sensitivity_curve.md` | Evidence: WP6 synthetic-fault sensitivity curve (does not predict real detection) |
+| `remote/README.md` | **How to use a rented server** (`remote/box`), the vault, the dataset registry |
+| `notes/11_gpu_server_runbook.md`, `ephemeral_server_manual.md` | History: the hand-run server setup |
 | `reports/turbomachinery_roadmap.html` | Non-technical summary (L0–L5). To be updated at WP11 |
 | `deploy/README.md`, `deploy/runbooks/` | Operator documentation |

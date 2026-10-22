@@ -1,0 +1,705 @@
+diff --git a/.gitignore b/.gitignore
+index fd076c7..88dab6f 100644
+--- a/.gitignore
++++ b/.gitignore
+@@ -73,3 +73,13 @@ outputs/server_rescue/**/.*.pt.*
+ data/pu/*
+ deploy/volumes/
+ deploy/.env
++outputs/envelope_cache/*
++
++# remote/box (see remote/README.md): the current rental's IP and host key
++# change every rental; pulled vault results follow the server_rescue rule
++# (evidence tracked, binaries not).
++remote/.box.env
++remote/.known_hosts
++outputs/remote_runs/**/*.pt
++outputs/remote_runs/**/*.npz
++outputs/remote_runs/**/*.npy
+diff --git a/MASTER_PLAN.md b/MASTER_PLAN.md
+index 781d89d..5fb24d7 100644
+--- a/MASTER_PLAN.md
++++ b/MASTER_PLAN.md
+@@ -67,15 +67,20 @@ under-powered), or **retracted**. Sources are in the last column.
+ | Errors are **per unit**, not random | False alarms concentrate on one healthy bearing: K002 under the spectrogram model, K005 under the envelope model | notes/13, GPU_SERVER_PLAN §2 |
+ | **Seed variance swamps single-run claims** | 6 identical-config runs: target recall 0.42–0.97 | GPU_SERVER_PLAN §1b |
+ | Thresholds must be set by the **false-alarm rate** you accept | Hydraulic: "best F1" percentiles carried 40–75% FA. At FPR ≤ 10%: valve F1 0.705, accumulator 0.683, pump 0.385 | HYDRAULIC_PLAN v6 |
++| Healthy-only calibration holds FA **on average over units, not per unit** | Threshold from 5 healthy PU units, FA on the 6th (conformal quantile, 10% target): mean 0.107–0.115 in all 4 conditions, worst unit 0.22–0.38. The offending unit changes with condition (K005 at N09, K002 at N15, K006 at F04) | notes/14 |
++| Recording verdict levels (bearing service) | Measured on held-out healthy units: `watch` at 25% flagged 23% of healthy recordings at N09, so the default is now **40%** (12.5%); `faulty` at 50% flags ~5% (kept). At N09, 9/11 real-damage units are judged faulty on ≥ half their recordings | notes/14 |
+ | Deployment plumbing works | serving_core `bearing` service on real PU data (900 rpm): `faulty` on 4% of healthy and 76% of real-damage recordings. Calibrate flagged K005. Same numbers on host and in Docker | DEPLOYMENT_PLAN §8 |
+ 
+ ### Indicative or open
+ 
+ | Claim | Why it is not established | Source |
+ |---|---|---|
+-| The method's performance at 1500 rpm | PU N15: balanced **0.685 ± 0.005**, recall@10% 0.469. **Unexplained**, and it runs against the obvious prediction (N15 is closer to CWRU's speed) | notes/13 |
+-| Fault typing transfers | 3-class 0.593 against a 0.353 majority baseline. Correct race on faulty windows: **60.8%** (chance 50%). Outer race is mostly read as inner | notes/13 |
+-| The bearing service's verdict levels (`watch` 25%, `faulty` 50% of windows) | Engineering defaults. The study only measured window-level rates | DEPLOYMENT_PLAN §8 |
++| The method's performance at 1500 rpm | PU N15: balanced **0.685 ± 0.005**, recall@10% 0.469 (notes/13). WP2 H-a: **all three N15 conditions are bad** (held-out-unit recall 0.48 / 0.51 / 0.29 vs 0.74 at N09), so it is speed, with low radial force (F04) as a second factor. H-b, H-c (nominal speed) and H-d as a drop-in **rejected** (notes/15). Post-hoc: v1 features hold less information at 1500 rpm (in-condition ceiling AUC 0.70–0.79 vs 0.94); CPW+SES features hold it (0.88–0.90) but the CWRU boundary inverts on them; order-peak features keep their direction everywhere, shape statistics and sidebands do not | notes/13, notes/14, notes/15 |
++| A **healthy-referenced physics score** (no source data, no classifier) detects across speeds | Max one-sided z of log fault-order peaks vs the machine's healthy baseline, on CPW+SES features: PU recall 0.746 at N09 (FA 0.112) and 0.66–0.68 at N15; held-out AUC 0.84–0.90 in all 4 conditions vs 0.61–0.89 for the CWRU model. Paderborn is spent for this choice; needs WP5 + vault | notes/16 |
++| Healthy-referenced physics score transfers to rigs never tuned on (WP5) | Frozen arm d, CPW+SES: Ottawa 2018 AUC **0.92** (CWRU classifier 0.48), MFPT **1.00** (0.84), Ottawa 2023 own-unit baseline **0.93** (0.72). Gate as pre-registered PARTIAL: FA overshoot with tiny calibration sets (fixed post hoc by cross-fitting) and a fleet baseline on Ottawa 2023 (0.71) | notes/17 |
++| No single statistic wins everywhere; the physics score is the robust one | Own-baseline kurtosis: AUC 0.99–1.00 on Ottawa 2018/2023, MFPT, CWRU, but **0.33–0.45** on Paderborn real damage. RMS: confounded by speed (Ottawa 2018 0.81) and fails on Paderborn. Physics score ≥ 0.84 everywhere with an own/same-model baseline. Max-fusion (dK) loses 0.08–0.11 on Paderborn: rejected | notes/18 §6 |
++| A unit's own healthy baseline beats a fleet baseline | Ottawa 2023 (each bearing healthy → faulty): AUC 0.71 → 0.93, worst-unit FA 1.00 → 0.78 (0.22 cross-fitted). One dataset | notes/17 |
++| Fault typing transfers | CWRU 3-class classifier: correct race on faulty windows **60.8%** (chance 50%), outer read as inner (notes/13). **Physics typing** (which race's peaks rose most vs healthy baseline, no learning): **0.74–0.81** in all 4 PU conditions, outer no longer masked. Same Paderborn caveat | notes/13, notes/16 |
+ | Hydraulic cooler 1.0 | `cooler_condition` correlates with campaign time (r = 0.88) | HYDRAULIC_PLAN |
+ | Hydraulic pump detector | ROC-AUC 0.656. Shipped opt-in only | HYDRAULIC_PLAN |
+ | Real-data behaviour of the `vibration` and `hydraulic` services | Verified on synthetic data only | DEPLOYMENT_PLAN §8 |
+@@ -223,7 +228,7 @@ speed. Revised here in three ways (marked **new**).
+ | **L3** Synthetic faults in real healthy data | Train on "real healthy" vs "real healthy + simulated fault". The machine's own sound is in both classes, so only the fault can be learned. **New: also a per-machine sensitivity estimate** (below) | Healthy data, geometry | WP6 |
+ | **L4** Fleet comparison | Identical units at the same operating point. One that drifts from its siblings is flagged | Several identical units | Designed. Needs real units |
+ | **L5** Trend and change-point | Slow rise over weeks beats one bad reading | Months of L1–L3 history | WP7 on run-to-failure data |
+-| **Decision layer** (**new: explicit**) | Window → recording aggregation; sequential test (CUSUM) across recordings; per-unit calibrated threshold; an explanation naming the dominant fault family | Calibration recordings | WP1, WP7, WP9 |
++| **Decision layer** (**new: explicit**) | Window → recording aggregation; sequential test (CUSUM) across recordings; per-unit calibrated threshold; an explanation naming the dominant fault family. **Revised 2026-10-22 (notes/18):** trigger = own-baseline CUSUM on a level feature (RMS / L0); physics score = diagnosis, and also a trigger where speed or load varies | Calibration recordings | WP1, WP7 done on XJTU-SY, WP9 |
+ 
+ ### Why merge L1 and L2
+ The current model standardises features with *source* statistics, then shifts
+@@ -338,6 +343,9 @@ In order. Each has a gate. **The compute line on each WP is binding.**
+   by data or changed.
+ - **Compute:** light only if cached window scores exist; regenerating features
+   is heavy → ask.
++- **Status 2026-10-15: done** (notes/14). Feature cache built locally with the
++  owner's approval (79 s). Gate met: per-unit table known; `watch` 0.25 → 0.40,
++  `faulty` 0.50 kept. Conformal quantile in the service itself is left to WP9.
+ 
+ ### WP2. Explain the 1500 rpm drop
+ Four hypotheses, tested cheapest and most discriminating first. No band or
+@@ -357,6 +365,13 @@ dataset and judged on all PU conditions.
+ - **Compute:** heavy (PU feature extraction ×4 conditions × variants) → ask.
+   Re-extracting the speed channel uses `scripts/build_kaggle_notebook_prepare_pu.py`
+   (Kaggle).
++- **Status 2026-10-15: H-a done** from the WP1 cache (notes/14 §4): speed is
++  the primary factor, radial force a second one.
++- **Status 2026-10-15: H-b, H-c (nominal speed), H-d (CPW+SES) done, none
++  explains the drop** (notes/15). Gate outcome: N15 is a documented limit for
++  now. Open: H-c with measured speed (Kaggle re-extraction). Two follow-ups
++  were pre-registered in notes/15 §3: a peaks-only arm in WP3, and
++  healthy-referenced CPW+SES scoring in WP4.
+ 
+ ### WP3. Feature set v2
+ - Extend `src/domain_adaptation/features/envelope.py` (keep v1 reproducible
+@@ -388,6 +403,11 @@ dataset and judged on all PU conditions.
+   losing recall. Typing beats 60.8% race accuracy, or is dropped from the
+   claims.
+ - **Compute:** heavy if features must be regenerated → ask.
++- **Status 2026-10-15: done on Paderborn** (notes/16), from the WP2 caches.
++  Gate: (b)/(c) **fail** on v1 features (worst-unit FA rises). Typing
++  **passes** (0.74–0.81). Unplanned but pre-registered arm (d), the
++  healthy-referenced physics score, is the new primary candidate. It needs
++  confirmation on WP5 datasets because Paderborn is spent for this choice.
+ 
+ ### WP5. Multi-source with new public datasets
+ - **XJTU-SY:** 15 run-to-failure bearings, 3 operating conditions, known
+@@ -405,6 +425,19 @@ dataset and judged on all PU conditions.
+   exist, with the same rules as §4.
+ - **Compute:** heavy (downloads, condensing, features) → **ask, including the
+   download route**.
++- **Status 2026-10-22: done** (notes/17). The box downloaded every dataset onto the vault
++  (`remote/README.md`): XJTU-SY, Ottawa 2018 and 2023, and MFPT added, IMS sealed.
++  - Frozen arm d (CPW+SES physics score) gate as pre-registered: **PARTIAL**.
++    - Ottawa 2018 passes (AUC 0.92, with computed order tracking).
++    - MFPT gives AUC 1.00 but FA 0.18.
++    - Ottawa 2023 against a fleet baseline gives AUC 0.71.
++  - Two causes, both now fixed in the method:
++    - small-sample calibration bias → cross-fitted calibration scores (FA back to ≤ 0.10);
++    - unit-to-unit spread → each unit's own healthy baseline (Ottawa 2023 AUC 0.71 → 0.93).
++  - The CWRU classifier fails on every new rig (AUC 0.48–0.84).
++  - Physics typing transfers: 0.63–1.00, and 10/11 on XJTU-SY run-to-failure.
++  - The XJTU-SY timing criterion fails against a plain RMS 3σ rule. The per-minute score is too
++    noisy for a 3-in-a-row alarm, which is WP7's decision-layer job.
+ 
+ ### WP6. L3: synthetic faults in real healthy data
+ Read Wang/Taal/Fink 2022 in full first. Ask the owner for any paper that cannot
+@@ -442,6 +475,15 @@ Arms, all on identical test data and all with 5 seeds:
+ - **Gate:** a lead-time/FA trade-off curve exists and its operating point is
+   chosen by an FA budget, not by lead time.
+ - **Compute:** heavy → ask.
++- **Status 2026-10-22: done on XJTU-SY** (notes/18). The curve exists, and the operating point
++  is FA budget 0, set leave one bearing out on healthy minutes only.
++  - An own-baseline **RMS CUSUM detects 13/15** bearings (median lead 84 min).
++  - The best physics detector (**CUSUM**) detects **9/15**, though earlier in relative life
++    (0.34 vs 0.28).
++  - Pre-registered reading: **RMS stays the trigger and physics is the diagnosis** at constant
++    speed and load. The decision layer in §3 is revised accordingly.
++  - False alarms per day cannot be bounded tightly with 20-minute baselines. The pilot must
++    record days of healthy data per unit.
+ 
+ ### WP8. Learned models, only inside the physics representation
+ - A small 1D CNN on the sub-band envelope order spectrum, optionally with
+@@ -537,12 +579,16 @@ In `src/serving_core/services/bearing.py`, using the registry in
+ 
+ ## 8. Logistics
+ 
+-- **Compute:** see the §5 rule. Rented GPU/CPU boxes follow
+-  `ephemeral_server_manual.md` and `notes/11_gpu_server_runbook.md`. Results
+-  are pulled continuously because the box is deleted at subscription end.
+-- **Data routes:**
+-  - Kaggle → laptop → server was needed before (the server reached Kaggle
+-    ~830× slower than other hosts). Condensing happens on Kaggle or the server.
++- **Compute:** see the §5 rule. Rented boxes are driven by `remote/box`
++  (runbook: `remote/README.md`): `box up <ip>` makes a fresh rental ready in
++  ~30 s, results sync to the persistent vault every 60 s, `box down` before the
++  rental ends. Every rental is Ubuntu 22.04 with CUDA 12.8, PyTorch, TensorFlow
++  and Docker preinstalled.
++- **Data routes (2026-10-22):** the box downloads every public dataset itself,
++  straight onto the vault (`box data fetch`), from GitHub, Zenodo, MediaFire,
++  Mendeley and NASA. Kaggle/Google are **unreachable from the box** ("not
++  available in your location"), so the old Kaggle → laptop → server route is
++  retired. Large raw sets (Paderborn, XJTU-SY) are condensed on the box's SSD.
+   - Each dataset sits in its own directory and is treated as untrusted. Scripts
+     live elsewhere and are run with paths as arguments.
+ - **Papers:** `papers/` holds the three supplied PDFs (untracked). Anything
+@@ -563,6 +609,10 @@ In `src/serving_core/services/bearing.py`, using the registry in
+ | `DEPLOYMENT_PLAN.md` | History, **except §8**, which still describes what `src/serving_core/` implements |
+ | `notes/12_reproduction_investigation.md` | Evidence: why spectrogram transfer fails |
+ | `notes/13_envelope_order_features.md` | Evidence: the envelope-order result |
+-| `notes/11_gpu_server_runbook.md`, `ephemeral_server_manual.md` | How to use a rented server |
++| `notes/14_wp1_recording_level.md` | Evidence: WP1 recording/unit-level scoring, verdict levels, WP2 H-a |
++| `notes/15_wp2_n15_variants.md` | Evidence: WP2 feature variants, the 1500 rpm diagnostic |
++| `notes/16_wp4_healthy_referenced.md` | Evidence: WP4 healthy-referenced scoring, physics typing |
++| `remote/README.md` | **How to use a rented server** (`remote/box`), the vault, the dataset registry |
++| `notes/11_gpu_server_runbook.md`, `ephemeral_server_manual.md` | History: the hand-run server setup |
+ | `reports/turbomachinery_roadmap.html` | Non-technical summary (L0–L5). To be updated at WP11 |
+ | `deploy/README.md`, `deploy/runbooks/` | Operator documentation |
+diff --git a/README.md b/README.md
+index 8d28933..81370f4 100644
+--- a/README.md
++++ b/README.md
+@@ -371,15 +371,25 @@ DAQ, unseen lab.
+ >
+ > | fit on CWRU only, calibrated on target HEALTHY windows alone | recall | FA | balanced acc |
+ > |---|---|---|---|
+-> | envelope-order features @10% target FA | **0.746 ± 0.012** | 10.1% | **0.823 ± 0.007** |
++> | envelope-order features @10% target FA, Paderborn 900 rpm | **0.746 ± 0.012** | 10.1% | **0.823 ± 0.007** |
++> | the same, Paderborn 1500 rpm (3 load conditions; threshold from other healthy units) | 0.29–0.51 | ~11% | — |
+ > | every spectrogram variant tried | — | — | 0.499–0.505 (chance) |
+ >
+-> So zero-shot detection across rigs IS feasible; it just is not feasible by
+-> learning a spectrogram end-to-end. Details, per-unit breakdown and the
+-> honest limits are in `notes/13_envelope_order_features.md`.
+-
+-Fault *typing* still does not transfer (3-class accuracy 0.378). The
+-deployable claim remains detection, not diagnosis.
++> So zero-shot detection across rigs IS feasible at 900 rpm; it just is not
++> feasible by learning a spectrogram end-to-end. **At 1500 rpm it is weak**,
++> and the drop is about speed, not load. No pre-registered mechanism
++> explains it (notes/15). Calibrated on other healthy bearings, the false
++> alarm rate is right on average but 2–4× too high on one healthy unit in
++> six (notes/14). Details and the honest limits are in
++> `notes/13_envelope_order_features.md`, `notes/14_wp1_recording_level.md`
++> and `notes/15_wp2_n15_variants.md`.
++
++Fault *typing* by a CWRU-trained classifier does not transfer (3-class
++accuracy 0.378). A label-free alternative, naming the race whose fault
++orders rose most above the healthy baseline, gets the race right on
++0.74–0.81 of faulty Paderborn windows (notes/16). Paderborn has now been
++used to develop it, so it is not a claim until other datasets confirm it.
++The deployable claim remains detection, not diagnosis.
+ 
+ Paderborn reaches the server as a **437 MB condensed bundle** rather than
+ the 9.7 GB raw dataset: same 2,559 runs and every bearing code, but keeping
+diff --git a/deploy/runbooks/bearing.md b/deploy/runbooks/bearing.md
+index 38d44c9..f63d148 100644
+--- a/deploy/runbooks/bearing.md
++++ b/deploy/runbooks/bearing.md
+@@ -31,8 +31,8 @@ add healthy data covering normal operating conditions first.
+ cp new_*.npy <DATA_DIR>/bearing/in/               # optional per-file speed: new_1.npy.meta.json  ->  {"rpm": 1480, "fs_hz": 25600}
+ ./ad bearing infer --archive
+ ```
+-Read `out/<date>/<job>/results.csv`. Columns: `verdict` (`healthy` < 25% windows flagged <= `watch` < 50% <= `faulty`), `flagged_fraction`, `score` (median), `rpm`, `fs_hz`.
+-The 25% / 50% levels are engineering defaults (`verdict:` in the config), not validated limits for your machine.
++Read `out/<date>/<job>/results.csv`. Columns: `verdict` (`healthy` < 40% windows flagged <= `watch` < 50% <= `faulty`), `flagged_fraction`, `score` (median), `rpm`, `fs_hz`.
++The 40% / 50% levels were measured on Paderborn (notes/14): with a threshold from other healthy bearings, about 10% of a NEW healthy bearing's recordings read `watch` and 5% `faulty` on average, but one healthy bearing in six alarmed far more. They are a starting point, not validated limits for your machine (`verdict:` in the config).
+ 
+ ## Messages you may see
+ | Message | Meaning / action |
+diff --git a/notes/11_gpu_server_runbook.md b/notes/11_gpu_server_runbook.md
+index d5c8c96..78a321e 100644
+--- a/notes/11_gpu_server_runbook.md
++++ b/notes/11_gpu_server_runbook.md
+@@ -1,3 +1,5 @@
++> **Superseded 2026-10-22 by [remote/README.md](../remote/README.md).** Kept as history; its traps are carried over there. Since 2026-10-22 the box downloads datasets itself onto the persistent vault, and Kaggle is unreachable from the box ("not available in your location").
++
+ # GPU server runbook (185.13.231.x, rented per minute)
+ 
+ Written after two rentals on 2026-09-17, the first of which was deleted
+diff --git a/scripts/23_server_setup.sh b/scripts/23_server_setup.sh
+index b54ddde..1ab6c03 100755
+--- a/scripts/23_server_setup.sh
++++ b/scripts/23_server_setup.sh
+@@ -1,95 +1,6 @@
+ #!/usr/bin/env bash
+-# One-time provisioning for the GPU server, to be run ON the server.
+-#
+-# Everything this project has done so far ran on Kaggle CPU kernels with a
+-# ~142-minute turnaround, which forced several compromises (small CNN
+-# instead of ResNet-18, 12kHz common rate, trimmed source conditions,
+-# single seeds, no sweeps -- see DOMAIN_ADAPTATION_PLAN.md). This script
+-# sets up the box that lets those be revisited.
+-#
+-# Assumes: Linux, NVIDIA driver already installed (check with nvidia-smi),
+-# python3 >= 3.10, and a Kaggle API token for the dataset downloads.
+-# Re-runnable: every step skips work that is already done.
+-set -euo pipefail
+-
+-PROJECT_DIR="${PROJECT_DIR:-$HOME/vibration_anomaly_detection}"
+-DATA_DIR="${DATA_DIR:-$PROJECT_DIR/data}"
+-VENV="$PROJECT_DIR/.venv"
+-
+-echo "=== 1. GPU check ==="
+-if ! command -v nvidia-smi >/dev/null; then
+-  echo "nvidia-smi not found -- install the NVIDIA driver first. Aborting." >&2
+-  exit 1
+-fi
+-nvidia-smi --query-gpu=name,memory.total,driver_version --format=csv
+-
+-echo "=== 2. venv ==="
+-[ -d "$VENV" ] || python3 -m venv "$VENV"
+-"$VENV/bin/python" -m pip install -q --upgrade pip
+-
+-echo "=== 3. PyTorch with CUDA ==="
+-# Unlike the dev laptop (an Intel Mac, where PyPI caps torch at 2.2.2 and it
+-# cannot even import against numpy 2.x), a Linux box gets current CUDA
+-# wheels. This is also what finally makes the torch-dependent tests runnable
+-# outside a Kaggle kernel.
+-if ! "$VENV/bin/python" -c "import torch" 2>/dev/null; then
+-  "$VENV/bin/pip" install -q torch --index-url https://download.pytorch.org/whl/cu124
+-fi
+-"$VENV/bin/python" - <<'EOF'
+-import torch
+-print(f"  torch {torch.__version__}  cuda={torch.cuda.is_available()}")
+-if torch.cuda.is_available():
+-    print(f"  device: {torch.cuda.get_device_name(0)}  "
+-          f"{torch.cuda.get_device_properties(0).total_memory / 1024**3:.0f} GB")
+-else:
+-    raise SystemExit("ERROR: torch cannot see the GPU -- check driver/CUDA match")
+-EOF
+-
+-echo "=== 4. project deps ==="
+-"$VENV/bin/pip" install -q -r "$PROJECT_DIR/requirements.txt"
+-"$VENV/bin/pip" install -q -e "$PROJECT_DIR"
+-
+-echo "=== 5. datasets ==="
+-# Paderborn arrives CONDENSED, not raw. scripts/build_kaggle_notebook_prepare_pu.py
+-# runs on Kaggle (free, data already mounted there) and reduces the 9.7 GB
+-# dataset to ~437 MB by keeping only the vibration_1 channel at 12 kHz --
+-# the rest is six unused channels at a rate the pipeline downsamples anyway.
+-# That is ~22x less paid transfer, and it covers EVERY bearing code and
+-# operating condition, so no config change sends us back for more.
+-mkdir -p "$DATA_DIR"
+-PREPARED="$DATA_DIR/paderborn_prepared"
+-if [ ! -f "$PREPARED/manifest.csv" ]; then
+-  echo "  pulling condensed Paderborn (~437 MB, 32 archives)..."
+-  "$VENV/bin/kaggle" kernels output aghzuzu/prepare-paderborn-subset -p "$PREPARED" --force
+-fi
+-if [ -f "$PREPARED/manifest.csv" ]; then
+-  echo "  Paderborn: $(wc -l < "$PREPARED/manifest.csv") manifest rows, $(du -sh "$PREPARED" | cut -f1)"
+-else
+-  echo "  WARNING: condensed Paderborn missing -- rerun the prepare-paderborn-subset kernel" >&2
+-fi
+-
+-# CWRU is NOT downloaded: the laptop already holds it converted to .npz
+-# (179 MB, 64 files), which is ~10x smaller than the .mat form on Kaggle and
+-# skips the conversion step. Copy it up before running this:
+-#   scp -r data/raw <server>:$PROJECT_DIR/data/raw
+-if [ -d "$DATA_DIR/raw" ] && [ "$(ls -1 "$DATA_DIR/raw"/*.npz 2>/dev/null | wc -l)" -ge 64 ]; then
+-  echo "  CWRU: $(ls -1 "$DATA_DIR/raw"/*.npz | wc -l) .npz files present"
+-else
+-  echo "  WARNING: CWRU not found at $DATA_DIR/raw -- scp it from the laptop:" >&2
+-  echo "    scp -r data/raw <server>:$DATA_DIR/raw" >&2
+-fi
+-
+-echo "=== 6. smoke test ==="
+-cd "$PROJECT_DIR" && "$VENV/bin/python" -m pytest -q
+-
+-cat <<EOF
+-
+-Setup complete.
+-  project : $PROJECT_DIR
+-  venv    : $VENV
+-  data    : $DATA_DIR
+-
+-Unlike the laptop, torch works here -- so the ~10 tests that have been
+-skipping since day one now actually run, and model changes no longer need a
+-142-minute Kaggle round trip to verify.
+-EOF
++# Superseded 2026-10-22. Rented-server setup is now one command from the laptop:
++#   remote/box up <ip>            (first rental with a blank volume: --init-vault)
++# See remote/README.md. The old version of this script is in git history.
++echo "Superseded: run 'remote/box up <ip>' from the laptop (see remote/README.md)." >&2
++exit 1
+diff --git a/scripts/analysis/README.md b/scripts/analysis/README.md
+index 886aaee..0364ccd 100644
+--- a/scripts/analysis/README.md
++++ b/scripts/analysis/README.md
+@@ -18,6 +18,11 @@ quoted from a single run is uninterpretable, so every claim in
+ | `summarize_arms.py` | F1 and balanced accuracy per arm -- used to separate "worse discrimination" from "more conservative threshold" when recall AND false alarms move together |
+ | `per_unit.py` | per-bearing-unit recall/false-alarm spread, plus per-recording detection. The deployment-relevant error bar: a deployed system sees one machine, not eight seeds |
+ | `ensemble.py` | majority vote over seeds -- the only label-free lever available, since target recall cannot be selected for without target fault labels |
++| `envelope_cache.py` | MASTER_PLAN WP1/WP2: envelope-order features for CWRU + all four Paderborn conditions, once, to a fingerprinted cache (the heavy step) |
++| `wp1_rescore.py` | MASTER_PLAN WP1: recording- and unit-level detection from that cache, held-out-unit calibration, verdict levels (notes/14) |
++| `wp2_n15.py` | MASTER_PLAN WP2: the pre-registered comparison of feature variants for the 1500 rpm drop (notes/15) |
++| `wp2_oracle.py` | WP2 post-hoc diagnostic: is the information missing from the features, or does the CWRU boundary miss it (uses PU labels; diagnosis only) |
++| `wp4_healthy_ref.py` | MASTER_PLAN WP4: healthy-referenced normalisation arms, the healthy-only physics score, physics typing (notes/16) |
+ 
+ Run them from the repo root with the outputs present, e.g.
+ 
+diff --git a/src/domain_adaptation/data/pu_loader.py b/src/domain_adaptation/data/pu_loader.py
+index 1f06919..a80f6e1 100644
+--- a/src/domain_adaptation/data/pu_loader.py
++++ b/src/domain_adaptation/data/pu_loader.py
+@@ -85,19 +85,31 @@ class UnreadableMatFile(RuntimeError):
+     """
+ 
+ 
+-def load_vibration_signal(mat_path: str | Path, channel: str = "vibration_1") -> np.ndarray:
+-    """Extract one channel's 1D array from a PU .mat file."""
++def _read_channels(mat_path: str | Path) -> list[dict]:
+     try:
+         data = scipy.io.loadmat(str(mat_path), simplify_cells=True)
+     except Exception as exc:  # scipy raises bare TypeError/ValueError with no file context
+         raise UnreadableMatFile(f"{mat_path}: scipy could not parse this .mat ({type(exc).__name__}: {exc})") from exc
+     key = next(k for k in data if not k.startswith("__"))
+-    channels = data[key]["Y"]
+-    for ch in channels:
+-        if ch["Name"] == channel:
+-            return np.asarray(ch["Data"], dtype=np.float64).ravel()
+-    available = [ch["Name"] for ch in channels]
+-    raise KeyError(f"{mat_path}: channel {channel!r} not found (has: {available})")
++    return data[key]["Y"]
++
++
++def load_vibration_signal(mat_path: str | Path, channel: str = "vibration_1") -> np.ndarray:
++    """Extract one channel's 1D array from a PU .mat file."""
++    return load_channels(mat_path, [channel])[channel]
++
++
++def load_channels(mat_path: str | Path, wanted: list[str]) -> dict[str, np.ndarray]:
++    """Several channels from one parse of the file -- the v2 condensed store
++    (remote/datasets/condense_pu.py) keeps speed, torque and force beside
++    vibration_1, and loadmat is the slow part."""
++    channels = _read_channels(mat_path)
++    by_name = {ch["Name"]: ch for ch in channels}
++    missing = [w for w in wanted if w not in by_name]
++    if missing:
++        available = [ch["Name"] for ch in channels]
++        raise KeyError(f"{mat_path}: channel {missing[0]!r} not found (has: {available})")
++    return {w: np.asarray(by_name[w]["Data"], dtype=np.float64).ravel() for w in wanted}
+ 
+ 
+ def build_pu_catalog(root_dir: str | Path, codes: list[str], native_fs_hz: int = 64000) -> pd.DataFrame:
+diff --git a/src/domain_adaptation/features/envelope.py b/src/domain_adaptation/features/envelope.py
+index 6a627aa..51e03da 100644
+--- a/src/domain_adaptation/features/envelope.py
++++ b/src/domain_adaptation/features/envelope.py
+@@ -95,7 +95,9 @@ PU_6203 = BearingGeometry("6203", n_balls=8, ball_diameter=6.75, pitch_diameter=
+ def envelope_spectrum(
+     signal: np.ndarray,
+     fs_hz: float,
+-    band_hz: tuple[float, float] = (1500.0, 5500.0),
++    band_hz: tuple[float, float] | None = (1500.0, 5500.0),
++    whiten: bool = False,
++    squared: bool = False,
+ ) -> tuple[np.ndarray, np.ndarray]:
+     """Band-pass -> Hilbert envelope -> magnitude spectrum of the envelope.
+ 
+@@ -107,16 +109,29 @@ def envelope_spectrum(
+     1.5-5.5 kHz covers the usable high-frequency region where bearing
+     resonances live and shaft/imbalance harmonics do not.
+ 
++    MASTER_PLAN WP2 H-d alternative, label-free: `whiten=True, band_hz=None,
++    squared=True` is cepstrum pre-whitening + squared envelope spectrum
++    (Borghesani et al. 2013): flattening the spectrum's magnitude removes the
++    rig's resonance shape, so no band has to be chosen at all.
++
+     Returns (freqs_hz, magnitude) for the envelope, DC removed.
+     """
+-    nyq = fs_hz / 2.0
+-    lo, hi = band_hz[0] / nyq, min(band_hz[1] / nyq, 0.99)
+-    if not 0 < lo < hi < 1:
+-        raise ValueError(f"band {band_hz} invalid for fs={fs_hz}")
+-    sos = butter(4, [lo, hi], btype="bandpass", output="sos")
+-    banded = sosfiltfilt(sos, signal)
++    if whiten:
++        X = np.fft.rfft(signal)
++        signal = np.fft.irfft(X / (np.abs(X) + 1e-12), n=len(signal))
++    if band_hz is None:
++        banded = signal
++    else:
++        nyq = fs_hz / 2.0
++        lo, hi = band_hz[0] / nyq, min(band_hz[1] / nyq, 0.99)
++        if not 0 < lo < hi < 1:
++            raise ValueError(f"band {band_hz} invalid for fs={fs_hz}")
++        sos = butter(4, [lo, hi], btype="bandpass", output="sos")
++        banded = sosfiltfilt(sos, signal)
+ 
+     env = np.abs(hilbert(banded))
++    if squared:
++        env = env ** 2
+     env = env - env.mean()          # the DC term dwarfs every fault peak
+     window = np.hanning(len(env))
+     spec = np.abs(np.fft.rfft(env * window))
+@@ -141,9 +156,13 @@ def envelope_order_features(
+     fs_hz: float,
+     rpm: float,
+     geometry: BearingGeometry,
+-    band_hz: tuple[float, float] = (1500.0, 5500.0),
++    band_hz: tuple[float, float] | None = (1500.0, 5500.0),
+     n_harmonics: int = 3,
+     tol_orders: float = 0.08,
++    tol_rel: float | None = None,
++    norm: str = "sum",
++    whiten: bool = False,
++    squared: bool = False,
+ ) -> dict[str, float]:
+     """A small, physically-named feature vector comparable ACROSS rigs.
+ 
+@@ -152,22 +171,37 @@ def envelope_order_features(
+     hard the rig is driven -- divides out. That matters more here than
+     usual: the two datasets were recorded years apart on different
+     equipment, and absolute amplitude carries no shared meaning.
++
++    The defaults are v1, the version every published number used. The
++    other arguments are the MASTER_PLAN WP2 variants, each fixed a priori:
++    `tol_rel` (H-c) makes the peak window a fraction of the order it reads,
++    so a speed error moves every harmonic by the same relative amount it is
++    allowed; `norm="median"` (H-b) divides by the reference band's median
++    instead of its sum, which does not grow with the number of bins the
++    band holds; `whiten`/`squared`/`band_hz=None` (H-d), see
++    envelope_spectrum.
+     """
++    if norm not in ("sum", "median"):
++        raise ValueError(f"norm must be 'sum' or 'median', got {norm!r}")
+     shaft_hz = rpm / 60.0
+-    freqs, spec = envelope_spectrum(signal, fs_hz, band_hz)
++    freqs, spec = envelope_spectrum(signal, fs_hz, band_hz, whiten=whiten, squared=squared)
+     orders = freqs / shaft_hz
+ 
+     # Reference band: everything the bearing could plausibly produce, used
+     # to normalize. Starts above 0.5 to exclude the shaft-rate peak, which
+     # is imbalance/misalignment and present on healthy machines too.
+     ref = (orders >= 0.5) & (orders <= 12.0)
+-    total = float(spec[ref].sum()) + 1e-12
++    total = float(spec[ref].sum() if norm == "sum" else np.median(spec[ref])) + 1e-12
++    # relative windows narrower than one order bin (the cage order) would
++    # read a single bin or none, so they are floored at one bin either side
++    bin_orders = (freqs[1] - freqs[0]) / shaft_hz
++    tol = (lambda c: max(tol_rel * c, bin_orders)) if tol_rel else (lambda c: tol_orders)
+ 
+     feats: dict[str, float] = {}
+     for label, base in (("bpfo", geometry.bpfo), ("bpfi", geometry.bpfi)):
+         harmonics = []
+         for h in range(1, n_harmonics + 1):
+-            e = _band_energy(orders, spec, base * h, tol_orders) / total
++            e = _band_energy(orders, spec, base * h, tol(base * h)) / total
+             feats[f"{label}_h{h}"] = e
+             harmonics.append(e)
+         feats[f"{label}_sum"] = float(np.sum(harmonics))
+@@ -176,9 +210,9 @@ def envelope_order_features(
+     # peaks carry shaft-rate sidebands; outer-race defects are stationary
+     # and do not. This is the main geometric cue separating the two.
+     feats["bpfi_sidebands"] = sum(
+-        _band_energy(orders, spec, geometry.bpfi + s, tol_orders) / total for s in (-1.0, 1.0)
++        _band_energy(orders, spec, geometry.bpfi + s, tol(geometry.bpfi + s)) / total for s in (-1.0, 1.0)
+     )
+-    feats["ftf"] = _band_energy(orders, spec, geometry.ftf, tol_orders) / total
++    feats["ftf"] = _band_energy(orders, spec, geometry.ftf, tol(geometry.ftf)) / total
+ 
+     # Shape statistics of the envelope spectrum: impulsiveness rises with
+     # localized damage regardless of which race it is on, so these help the
+diff --git a/src/serving_core/services/bearing.py b/src/serving_core/services/bearing.py
+index e5fdc5e..dc4c630 100644
+--- a/src/serving_core/services/bearing.py
++++ b/src/serving_core/services/bearing.py
+@@ -145,7 +145,9 @@ class BearingService(Service):
+             "band_hz": [1500.0, 5500.0],   # resonance band for the envelope; fixed a priori in the study
+             "calibration": {"target_false_alarm": 0.10, "min_windows": 200,
+                             "min_recordings_warn": 3, "max_windows_per_file": 600},
+-            "verdict": {"watch_fraction": 0.25, "faulty_fraction": 0.5},
++            # MASTER_PLAN WP1 (notes/14): at 0.25, a quarter of held-out healthy recordings
++            # read as watch; 0.40 keeps that near 10%. 0.5 kept ~5% healthy recordings faulty.
++            "verdict": {"watch_fraction": 0.40, "faulty_fraction": 0.5},
+         }
+ 
+     def validate_config(self, cfg: dict) -> list[str]:
+untracked: ephemeral_server_manual.md
+untracked: notes/14_wp1_recording_level.md
+untracked: notes/15_wp2_n15_variants.md
+untracked: notes/16_wp4_healthy_referenced.md
+untracked: notes/17_wp5_new_datasets.md
+untracked: notes/18_wp7_decision_layer.md
+untracked: notes/19_wp3_feature_v2.md
+untracked: outputs/remote_runs/20261021-220718_fetch-cwru/cmd.txt
+untracked: outputs/remote_runs/20261021-220718_fetch-cwru/diff.patch
+untracked: outputs/remote_runs/20261021-220718_fetch-cwru/duration_s
+untracked: outputs/remote_runs/20261021-220718_fetch-cwru/env.txt
+untracked: outputs/remote_runs/20261021-220718_fetch-cwru/exit_code
+untracked: outputs/remote_runs/20261021-220718_fetch-cwru/git.json
+untracked: outputs/remote_runs/20261021-220718_fetch-cwru/log
+untracked: outputs/remote_runs/20261021-220718_fetch-cwru/pid
+untracked: outputs/remote_runs/20261021-220722_fetch-paderborn/cmd.txt
+untracked: outputs/remote_runs/20261021-220722_fetch-paderborn/diff.patch
+untracked: outputs/remote_runs/20261021-220722_fetch-paderborn/duration_s
+untracked: outputs/remote_runs/20261021-220722_fetch-paderborn/env.txt
+untracked: outputs/remote_runs/20261021-220722_fetch-paderborn/exit_code
+untracked: outputs/remote_runs/20261021-220722_fetch-paderborn/git.json
+untracked: outputs/remote_runs/20261021-220722_fetch-paderborn/log
+untracked: outputs/remote_runs/20261021-220722_fetch-paderborn/pid
+untracked: outputs/remote_runs/20261021-220727_fetch-xjtu_sy/cmd.txt
+untracked: outputs/remote_runs/20261021-220727_fetch-xjtu_sy/diff.patch
+untracked: outputs/remote_runs/20261021-220727_fetch-xjtu_sy/duration_s
+untracked: outputs/remote_runs/20261021-220727_fetch-xjtu_sy/env.txt
+untracked: outputs/remote_runs/20261021-220727_fetch-xjtu_sy/exit_code
+untracked: outputs/remote_runs/20261021-220727_fetch-xjtu_sy/git.json
+untracked: outputs/remote_runs/20261021-220727_fetch-xjtu_sy/log
+untracked: outputs/remote_runs/20261021-220727_fetch-xjtu_sy/pid
+untracked: outputs/remote_runs/20261021-220836_fetch-ottawa_2018/cmd.txt
+untracked: outputs/remote_runs/20261021-220836_fetch-ottawa_2018/diff.patch
+untracked: outputs/remote_runs/20261021-220836_fetch-ottawa_2018/duration_s
+untracked: outputs/remote_runs/20261021-220836_fetch-ottawa_2018/env.txt
+untracked: outputs/remote_runs/20261021-220836_fetch-ottawa_2018/exit_code
+untracked: outputs/remote_runs/20261021-220836_fetch-ottawa_2018/git.json
+untracked: outputs/remote_runs/20261021-220836_fetch-ottawa_2018/log
+untracked: outputs/remote_runs/20261021-220836_fetch-ottawa_2018/pid
+untracked: outputs/remote_runs/20261021-221834_smoke/cmd.txt
+untracked: outputs/remote_runs/20261021-221834_smoke/diff.patch
+untracked: outputs/remote_runs/20261021-221834_smoke/duration_s
+untracked: outputs/remote_runs/20261021-221834_smoke/env.txt
+untracked: outputs/remote_runs/20261021-221834_smoke/exit_code
+untracked: outputs/remote_runs/20261021-221834_smoke/git.json
+untracked: outputs/remote_runs/20261021-221834_smoke/log
+untracked: outputs/remote_runs/20261021-221834_smoke/pid
+untracked: outputs/remote_runs/20261021-221840_envcache/cmd.txt
+untracked: outputs/remote_runs/20261021-221840_envcache/diff.patch
+untracked: outputs/remote_runs/20261021-221840_envcache/duration_s
+untracked: outputs/remote_runs/20261021-221840_envcache/env.txt
+untracked: outputs/remote_runs/20261021-221840_envcache/exit_code
+untracked: outputs/remote_runs/20261021-221840_envcache/git.json
+untracked: outputs/remote_runs/20261021-221840_envcache/log
+untracked: outputs/remote_runs/20261021-221840_envcache/pid
+untracked: outputs/remote_runs/20261021-222434_wp5cache/cmd.txt
+untracked: outputs/remote_runs/20261021-222434_wp5cache/diff.patch
+untracked: outputs/remote_runs/20261021-222434_wp5cache/duration_s
+untracked: outputs/remote_runs/20261021-222434_wp5cache/env.txt
+untracked: outputs/remote_runs/20261021-222434_wp5cache/exit_code
+untracked: outputs/remote_runs/20261021-222434_wp5cache/git.json
+untracked: outputs/remote_runs/20261021-222434_wp5cache/log
+untracked: outputs/remote_runs/20261021-222434_wp5cache/pid
+untracked: outputs/remote_runs/20261021-222706_wp5score/cmd.txt
+untracked: outputs/remote_runs/20261021-222706_wp5score/diff.patch
+untracked: outputs/remote_runs/20261021-222706_wp5score/duration_s
+untracked: outputs/remote_runs/20261021-222706_wp5score/env.txt
+untracked: outputs/remote_runs/20261021-222706_wp5score/exit_code
+untracked: outputs/remote_runs/20261021-222706_wp5score/git.json
+untracked: outputs/remote_runs/20261021-222706_wp5score/log
+untracked: outputs/remote_runs/20261021-222706_wp5score/pid
+untracked: outputs/remote_runs/20261021-222828_wp5score/cmd.txt
+untracked: outputs/remote_runs/20261021-222828_wp5score/diff.patch
+untracked: outputs/remote_runs/20261021-222828_wp5score/duration_s
+untracked: outputs/remote_runs/20261021-222828_wp5score/env.txt
+untracked: outputs/remote_runs/20261021-222828_wp5score/exit_code
+untracked: outputs/remote_runs/20261021-222828_wp5score/git.json
+untracked: outputs/remote_runs/20261021-222828_wp5score/log
+untracked: outputs/remote_runs/20261021-222828_wp5score/pid
+untracked: outputs/remote_runs/20261021-223038_wp7xjtu/cmd.txt
+untracked: outputs/remote_runs/20261021-223038_wp7xjtu/diff.patch
+untracked: outputs/remote_runs/20261021-223038_wp7xjtu/duration_s
+untracked: outputs/remote_runs/20261021-223038_wp7xjtu/env.txt
+untracked: outputs/remote_runs/20261021-223038_wp7xjtu/exit_code
+untracked: outputs/remote_runs/20261021-223038_wp7xjtu/git.json
+untracked: outputs/remote_runs/20261021-223038_wp7xjtu/log
+untracked: outputs/remote_runs/20261021-223038_wp7xjtu/pid
+untracked: outputs/remote_runs/20261021-223425_wp7decision/cmd.txt
+untracked: outputs/remote_runs/20261021-223425_wp7decision/diff.patch
+untracked: outputs/remote_runs/20261021-223425_wp7decision/duration_s
+untracked: outputs/remote_runs/20261021-223425_wp7decision/env.txt
+untracked: outputs/remote_runs/20261021-223425_wp7decision/exit_code
+untracked: outputs/remote_runs/20261021-223425_wp7decision/git.json
+untracked: outputs/remote_runs/20261021-223425_wp7decision/log
+untracked: outputs/remote_runs/20261021-223425_wp7decision/pid
+untracked: outputs/wp1/wp1_report.md
+untracked: outputs/wp1/wp1_results.json
+untracked: outputs/wp2/wp2_report.md
+untracked: outputs/wp2/wp2_results.json
+untracked: outputs/wp4/wp4_report.md
+untracked: outputs/wp4/wp4_results.json
+untracked: outputs/wp5/cache/mfpt_hd_cpw_ses_537010f901f7.csv.gz
+untracked: outputs/wp5/cache/mfpt_hd_cpw_ses_537010f901f7.json
+untracked: outputs/wp5/cache/mfpt_v1_8c83a031e202.csv.gz
+untracked: outputs/wp5/cache/mfpt_v1_8c83a031e202.json
+untracked: outputs/wp5/cache/ottawa_2018_hd_cpw_ses_2ed7d5ca08d7.csv.gz
+untracked: outputs/wp5/cache/ottawa_2018_hd_cpw_ses_2ed7d5ca08d7.json
+untracked: outputs/wp5/cache/ottawa_2018_v1_67626054bd93.csv.gz
+untracked: outputs/wp5/cache/ottawa_2018_v1_67626054bd93.json
+untracked: outputs/wp5/cache/ottawa_2023_hd_cpw_ses_20f515bea340.csv.gz
+untracked: outputs/wp5/cache/ottawa_2023_hd_cpw_ses_20f515bea340.json
+untracked: outputs/wp5/cache/ottawa_2023_v1_38183370ce17.csv.gz
+untracked: outputs/wp5/cache/ottawa_2023_v1_38183370ce17.json
+untracked: outputs/wp5/cache/xjtu_sy_hd_cpw_ses_f7f3fcd9b2e5.csv.gz
+untracked: outputs/wp5/cache/xjtu_sy_hd_cpw_ses_f7f3fcd9b2e5.json
+untracked: outputs/wp5/cache/xjtu_sy_v1_5a0e5480d55b.csv.gz
+untracked: outputs/wp5/cache/xjtu_sy_v1_5a0e5480d55b.json
+untracked: outputs/wp5/wp5_report.md
+untracked: outputs/wp5/wp5_results.json
+untracked: outputs/wp7/wp7_decision_horizontal.png
+untracked: outputs/wp7/wp7_decision_report.md
+untracked: outputs/wp7/wp7_decision_results.json
+untracked: outputs/wp7/wp7_xjtu_report.md
+untracked: outputs/wp7/wp7_xjtu_results.json
+untracked: outputs/wp7/xjtu_horizontal.png
+untracked: outputs/wp7/xjtu_vertical.png
+untracked: papers/1-s2.0-S0952197621001421-am.pdf
+untracked: papers/142875.pdf
+untracked: papers/A_New_Multiple_Source_Domain_Adaptation_Fault_Diagnosis_Method_Between_Different_Rotating_Machines.pdf
+untracked: papers/xjtu_sy_dataset_interpretation_zh.pdf
+untracked: remote/README.md
+untracked: remote/box
+untracked: remote/box.conf
+untracked: remote/datasets/condense_pu.py
+untracked: remote/datasets/condense_xjtu.py
+untracked: remote/datasets/cwru_de12.txt
+untracked: remote/datasets/fetch.py
+untracked: remote/datasets/manifests/cwru.json
+untracked: remote/datasets/manifests/ims.json
+untracked: remote/datasets/manifests/mfpt.json
+untracked: remote/datasets/manifests/ottawa_2018.json
+untracked: remote/datasets/manifests/ottawa_2023.json
+untracked: remote/datasets/manifests/paderborn.json
+untracked: remote/datasets/manifests/xjtu_sy.json
+untracked: remote/datasets/registry.yaml
+untracked: remote/datasets/safe_extract.py
+untracked: remote/requirements-server.in
+untracked: remote/requirements-server.txt
+untracked: remote/server/VAULT.md
+untracked: remote/server/_env.sh
+untracked: remote/server/bootstrap.sh
+untracked: remote/server/mount_vault.sh
+untracked: remote/server/run.sh
+untracked: remote/server/stage.sh
+untracked: remote/server/status.sh
+untracked: remote/server/syncd.sh
+untracked: reports/001_Internal Reports.docx
+untracked: reports/IRANYekanX_Fonts/IRANYekanX-Black.ttf
+untracked: reports/IRANYekanX_Fonts/IRANYekanX-Bold.ttf
+untracked: reports/IRANYekanX_Fonts/IRANYekanX-ExtraBlack.ttf
+untracked: reports/IRANYekanX_Fonts/IRANYekanX-ExtraBold.ttf
+untracked: reports/IRANYekanX_Fonts/IRANYekanX-Heavy.ttf
+untracked: reports/IRANYekanX_Fonts/IRANYekanX-Light.ttf
+untracked: reports/IRANYekanX_Fonts/IRANYekanX-Regular.ttf
+untracked: reports/R01_vibration_autoencoder_CWRU.pdf
+untracked: reports/turbomachinery_roadmap.html
+untracked: scripts/analysis/envelope_cache.py
+untracked: scripts/analysis/td_cache.py
+untracked: scripts/analysis/v2_cache.py
+untracked: scripts/analysis/wp1_rescore.py
+untracked: scripts/analysis/wp2_n15.py
+untracked: scripts/analysis/wp2_oracle.py
+untracked: scripts/analysis/wp4_healthy_ref.py
+untracked: scripts/analysis/wp5_cache.py
+untracked: scripts/analysis/wp5_score.py
+untracked: scripts/analysis/wp7_decision.py
+untracked: scripts/analysis/wp7_xjtu.py
+untracked: src/domain_adaptation/data/public_datasets.py
+untracked: src/domain_adaptation/features/cot.py
+untracked: src/domain_adaptation/features/physics_v2.py
+untracked: tests/test_cot.py
+untracked: tests/test_remote_fetch.py

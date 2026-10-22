@@ -1,0 +1,8 @@
+[ottawa_2018/v1] 1077 windows from 60 recordings in 3 s -> outputs/wp5/cache/ottawa_2018_v1_67626054bd93.csv.gz
+[ottawa_2018/hd_cpw_ses] 1077 windows from 60 recordings in 3 s -> outputs/wp5/cache/ottawa_2018_hd_cpw_ses_2ed7d5ca08d7.csv.gz
+[ottawa_2023/v1] 1140 windows from 60 recordings in 1 s -> outputs/wp5/cache/ottawa_2023_v1_38183370ce17.csv.gz
+[ottawa_2023/hd_cpw_ses] 1140 windows from 60 recordings in 1 s -> outputs/wp5/cache/ottawa_2023_hd_cpw_ses_20f515bea340.csv.gz
+[mfpt/v1] 136 windows from 20 recordings in 0 s -> outputs/wp5/cache/mfpt_v1_8c83a031e202.csv.gz
+[mfpt/hd_cpw_ses] 136 windows from 20 recordings in 0 s -> outputs/wp5/cache/mfpt_hd_cpw_ses_537010f901f7.csv.gz
+[xjtu_sy/v1] 18432 windows from 9216 recordings in 11 s -> outputs/wp5/cache/xjtu_sy_v1_5a0e5480d55b.csv.gz
+[xjtu_sy/hd_cpw_ses] 18432 windows from 9216 recordings in 8 s -> outputs/wp5/cache/xjtu_sy_hd_cpw_ses_f7f3fcd9b2e5.csv.gz

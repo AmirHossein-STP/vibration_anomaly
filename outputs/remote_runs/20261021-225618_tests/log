@@ -1,0 +1,64 @@
+........................................................................ [ 69%]
+...........F...................                                          [100%]
+=================================== FAILURES ===================================
+_______________ test_full_cycle_calibrate_promote_infer_rollback _______________
+
+env = (<function env.<locals>.run at 0x7f18a39f8e50>, PosixPath('/tmp/pytest-of-homa/pytest-1/test_full_cycle_calibrate_prom0/data/bearing'), PosixPath('/tmp/pytest-of-homa/pytest-1/test_full_cycle_calibrate_prom0/models/bearing'))
+
+    def test_full_cycle_calibrate_promote_infer_rollback(env):
+        run, base, models = env
+        for i in range(10):
+            np.save(base / "train" / f"h{i}.npy", healthy(i))
+        rc, out, err = run("calibrate")
+        assert rc == 0, err
+        v1 = version_from(out)
+        assert Registry(models).active() is None             # train/calibrate never activate
+        np.save(base / "in" / "new_healthy.npy", healthy(100))
+        rc, out, err = run("infer")
+        assert rc == 2 and "No active model" in err            # inputs but no model
+        assert run("promote", v1)[0] == 2                      # no tty and no --yes -> refuses
+        assert run("promote", v1, "--yes")[0] == 0
+        (base / "in" / "new_healthy.npy").rename(base / "new_healthy_tmp.npy")
+        rc, out, err = run("infer")
+        assert rc == 0 and "Nothing to do" in out              # empty in/ is not an error
+        (base / "new_healthy_tmp.npy").rename(base / "in" / "new_healthy.npy")
+        np.save(base / "in" / "new_faulty.npy", faulty(101))
+        np.save(base / "in" / "broken.npy", np.array([1.0, np.nan] * 40000))
+        rc, out, err = run("infer", "--archive")
+        assert rc == 1                                         # finished, one input rejected
+        job = sorted((base / "out").glob("*/infer-*"))[-1]
+        res = json.loads((job / "results.json").read_text())
+        by = {r["file"]: r for r in res["rows"]}
+        assert by["broken.npy"]["status"] == "error" and "NaN" in by["broken.npy"]["message"]
+        assert by["new_faulty.npy"]["flagged_fraction"] > by["new_healthy.npy"]["flagged_fraction"] + 0.3
+        assert by["new_faulty.npy"]["verdict"] in ("watch", "faulty")
+        assert (job / "results.csv").is_file() and (job / "manifest.json").is_file() and (job / "run.log").is_file()
+        assert (base / "out" / "score_log.csv").is_file()
+        assert (base / "in" / "broken.npy").exists()           # failed files stay
+        assert not (base / "in" / "new_faulty.npy").exists()   # scored files are archived
+        # second candidate, promote, then roll back
+>       rc, out, _ = run("calibrate"); v2 = version_from(out)
+
+tests/test_serving_core.py:89: 
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ 
+
+out = ''
+
+    def version_from(out):
+>       return out.split("Candidate model:")[1].split()[0]
+E       IndexError: list index out of range
+
+tests/test_serving_core.py:54: IndexError
+=============================== warnings summary ===============================
+tests/test_hydraulic_smoke.py::test_raw_time_correlation_detects_perfect_correlation
+  /home/homa/work/venv/lib/python3.10/site-packages/numpy/lib/_function_base_impl.py:2999: RuntimeWarning: invalid value encountered in divide
+    c /= stddev[:, None]
+
+tests/test_hydraulic_smoke.py::test_raw_time_correlation_detects_perfect_correlation
+  /home/homa/work/venv/lib/python3.10/site-packages/numpy/lib/_function_base_impl.py:3000: RuntimeWarning: invalid value encountered in divide
+    c /= stddev[None, :]
+
+-- Docs: https://docs.pytest.org/en/stable/how-to/capture-warnings.html
+=========================== short test summary info ============================
+FAILED tests/test_serving_core.py::test_full_cycle_calibrate_promote_infer_rollback
+1 failed, 102 passed, 2 warnings in 25.63s

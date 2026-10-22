@@ -73,3 +73,18 @@ outputs/server_rescue/**/.*.pt.*
 data/pu/*
 deploy/volumes/
 deploy/.env
+outputs/envelope_cache/*
+
+# remote/box (see remote/README.md): the current rental's IP and host key
+# change every rental; pulled vault results follow the server_rescue rule
+# (evidence tracked, binaries not).
+remote/.box.env
+remote/.known_hosts
+outputs/remote_runs/**/*.pt
+outputs/remote_runs/**/*.npz
+outputs/remote_runs/**/*.npy
+# Window-feature caches built on the box (regenerable in seconds there; the
+# vault keeps a copy under projects/<project>/outputs/)
+outputs/wp3/cache/
+outputs/wp5/cache/
+outputs/wp10/*.csv.gz
