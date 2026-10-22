@@ -1,0 +1,99 @@
+.....F.................................................................. [ 57%]
+.....................................................                    [100%]
+=================================== FAILURES ===================================
+_________________ test_service_reproduces_wp5_own_unit_numbers _________________
+
+tmp_path = PosixPath('/tmp/pytest-of-homa/pytest-6/test_service_reproduces_wp5_ow0')
+capsys = <_pytest.capture.CaptureFixture object at 0x7f56ead1a140>
+
+    def test_service_reproduces_wp5_own_unit_numbers(tmp_path, capsys):
+        import sys
+        sys.path.insert(0, "scripts/analysis")
+        from domain_adaptation.data.public_datasets import ottawa2023
+        from wp5_cache import to_12k
+    
+        data, models = tmp_path / "data", tmp_path / "models"
+        run = lambda *a: main(["bearing", "--data-root", str(data), "--models-root", str(models), *a])
+        run("init")
+        base = data / "bearing"
+        (base / "config" / "service.yaml").write_text(
+            'fs_hz: 12000\nbearing: {designation: "NSK 6203ZZ"}\ncalibration: {min_windows: 9}\n')
+        held = {}
+        for b in BEARINGS:
+            h = next(ottawa2023(DATA, only=f"H_{b}_0"))
+            sig, fs = to_12k(h.signal, h.fs)
+            assert fs == 12000
+            (base / "train" / f"b{b:02d}").mkdir(parents=True)
+            _save(base / "train" / f"b{b:02d}" / "healthy_first5s.npy", sig[:60000], h.rpm)   # windows t0 0..4 s
+            (base / "in" / f"b{b:02d}").mkdir(parents=True)
+            _save(base / "in" / f"b{b:02d}" / "healthy_last5s.npy", sig[60000:], h.rpm)       # windows t0 5..9 s
+            letter = "I" if b <= 5 else "O"
+            for st in (1, 2):
+                r = next(ottawa2023(DATA, only=f"{letter}_{b}_{st}"))
+                _save(base / "in" / f"b{b:02d}" / f"{letter}_{b}_{st}.npy", to_12k(r.signal, r.fs)[0], r.rpm)
+            held[b] = letter
+        assert run("calibrate") == 0
+        out = capsys.readouterr().out
+        v = out.split("Candidate model:")[1].split()[0]
+        assert run("promote", v, "--yes") == 0
+        assert run("infer") == 0
+        job = sorted((base / "out").glob("*/infer-*"))[-1]
+        rows = json.loads((job / "results.json").read_text())["rows"]
+        ref = {f["fold"]: f for f in json.loads(WP5.read_text())["results"]["ottawa_2023:own"]["d_xf"]["folds"]}
+        for b in BEARINGS:
+            unit = f"b{b:02d}"
+            mine = [r for r in rows if r["unit"] == unit]
+            h = next(r for r in mine if r["file"] == "healthy_last5s.npy")
+            faults = [r for r in mine if r["file"] != "healthy_last5s.npy"]
+            recall = sum(r["n_windows_flagged"] for r in faults) / sum(r["n_windows"] for r in faults)
+            want = ref[f"ott23_b{b:02d}"]
+            assert h["flagged_fraction"] == pytest.approx(want["fa"], abs=1e-4)
+            assert recall == pytest.approx(want["recall_race"], abs=1e-9)
+>           assert h["threshold"] == pytest.approx(want["thr"], abs=1e-9)
+E           assert 2.5390479475525725 == 2.5390471521831444 ± 1.0e-09
+E             
+E             comparison failed
+E             Obtained: 2.5390479475525725
+E             Expected: 2.5390471521831444 ± 1.0e-09
+
+tests/test_bearing_replay.py:70: AssertionError
+----------------------------- Captured stdout call -----------------------------
+Version 20261022T063346-f76258  (calibrate, created 2026-10-22T06:33:46Z)
+  method v1.0: 3 unit(s) calibrated
+  unit b01: 1 recording(s), 9 windows, detector six_line (NSK 6203ZZ, BPFO 3.050 / BPFI 4.950), healthy flagged (cross-fitted) worst 0% -> reads clean
+  unit b06: 1 recording(s), 9 windows, detector six_line (NSK 6203ZZ, BPFO 3.050 / BPFI 4.950), healthy flagged (cross-fitted) worst 0% -> reads clean
+  unit b10: 1 recording(s), 9 windows, detector six_line (NSK 6203ZZ, BPFO 3.050 / BPFI 4.950), healthy flagged (cross-fitted) worst 0% -> reads clean
+  WARNING: unit b01: baseline is 0 min; >= 30 min of healthy operation per operating state is recommended (notes/26)
+  WARNING: unit b01: only 1 healthy recording(s); the trend statistics use window spread instead of recording-to-recording spread -- add recordings from different days/conditions
+  WARNING: unit b06: baseline is 0 min; >= 30 min of healthy operation per operating state is recommended (notes/26)
+  WARNING: unit b06: only 1 healthy recording(s); the trend statistics use window spread instead of recording-to-recording spread -- add recordings from different days/conditions
+  WARNING: unit b10: baseline is 0 min; >= 30 min of healthy operation per operating state is recommended (notes/26)
+  WARNING: unit b10: only 1 healthy recording(s); the trend statistics use window spread instead of recording-to-recording spread -- add recordings from different days/conditions
+  currently active: none
+Active model is now 20261022T063346-f76258
+job infer-20261022T063346-3ab0: 9/9 files ok, model 20261022T063346-f76258
+results: /tmp/pytest-of-homa/pytest-6/test_service_reproduces_wp5_ow0/data/bearing/out/2026-10-22/infer-20261022T063346-3ab0/results.csv  (and results.json, manifest.json, run.log)
+----------------------------- Captured stderr call -----------------------------
+2026-10-22T06:33:46Z INFO service=bearing model=20261022T063346-f76258 inputs=9 image=dev
+2026-10-22T06:33:46Z INFO I_1_1.npy -> faulty
+2026-10-22T06:33:46Z INFO I_1_2.npy -> faulty
+2026-10-22T06:33:46Z INFO healthy_last5s.npy -> healthy
+2026-10-22T06:33:46Z INFO O_6_1.npy -> faulty
+2026-10-22T06:33:46Z INFO O_6_2.npy -> faulty
+2026-10-22T06:33:46Z INFO healthy_last5s.npy -> healthy
+2026-10-22T06:33:46Z INFO O_10_1.npy -> faulty
+2026-10-22T06:33:46Z INFO O_10_2.npy -> faulty
+2026-10-22T06:33:46Z INFO healthy_last5s.npy -> healthy
+=============================== warnings summary ===============================
+tests/test_hydraulic_smoke.py::test_raw_time_correlation_detects_perfect_correlation
+  /home/homa/work/venv/lib/python3.10/site-packages/numpy/lib/_function_base_impl.py:2999: RuntimeWarning: invalid value encountered in divide
+    c /= stddev[:, None]
+
+tests/test_hydraulic_smoke.py::test_raw_time_correlation_detects_perfect_correlation
+  /home/homa/work/venv/lib/python3.10/site-packages/numpy/lib/_function_base_impl.py:3000: RuntimeWarning: invalid value encountered in divide
+    c /= stddev[None, :]
+
+-- Docs: https://docs.pytest.org/en/stable/how-to/capture-warnings.html
+=========================== short test summary info ============================
+FAILED tests/test_bearing_replay.py::test_service_reproduces_wp5_own_unit_numbers
+1 failed, 124 passed, 2 warnings in 63.58s (0:01:03)

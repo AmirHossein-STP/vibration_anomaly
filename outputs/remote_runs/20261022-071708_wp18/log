@@ -1,0 +1,13 @@
+unsealed copy at /home/homa/work/scratch/ims_unsealed (logged in /mnt/vault/datasets/ims/nasa-legacy-ims-zip/UNSEAL_LOG)
+Traceback (most recent call last):
+  File "/home/homa/work/vibration_anomaly_detection/scripts/analysis/wp18_ims.py", line 166, in <module>
+    main()
+  File "/home/homa/work/vibration_anomaly_detection/scripts/analysis/wp18_ims.py", line 151, in main
+    tests = find_tests()
+  File "/home/homa/work/vibration_anomaly_detection/scripts/analysis/wp18_ims.py", line 43, in find_tests
+    extract_rar(rar, dest)
+  File "/home/homa/work/vibration_anomaly_detection/remote/datasets/safe_extract.py", line 48, in extract_rar
+    subprocess.run(["unrar", "x", "-o+", "-idq", "--", str(archive), str(dest) + "/"], check=True)
+  File "/usr/lib/python3.10/subprocess.py", line 526, in run
+    raise CalledProcessError(retcode, process.args,
+subprocess.CalledProcessError: Command '['unrar', 'x', '-o+', '-idq', '--', '/home/homa/work/scratch/ims_unsealed/IMS/__MACOSX/IMS/._1st_test.rar', '/home/homa/work/scratch/ims_unsealed/rar/._1st_test/']' returned non-zero exit status 1.

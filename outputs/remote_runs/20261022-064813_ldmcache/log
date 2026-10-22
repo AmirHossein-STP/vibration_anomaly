@@ -1,0 +1,62 @@
+/home/homa/work/vibration_anomaly_detection/src/domain_adaptation/features/envelope.py:221: RuntimeWarning: Mean of empty slice.
+  feats["env_kurtosis"] = float(((band - band.mean()) ** 4).mean() / (band.std() ** 4 + 1e-12))
+/home/homa/work/venv/lib/python3.10/site-packages/numpy/_core/_methods.py:147: RuntimeWarning: invalid value encountered in scalar divide
+  ret = ret.dtype.type(ret / rcount)
+/home/homa/work/venv/lib/python3.10/site-packages/numpy/_core/_methods.py:227: RuntimeWarning: Degrees of freedom <= 0 for slice
+  ret = _var(a, axis=axis, dtype=dtype, out=out, ddof=ddof,
+/home/homa/work/venv/lib/python3.10/site-packages/numpy/_core/_methods.py:184: RuntimeWarning: invalid value encountered in divide
+  arrmean = um.true_divide(arrmean, div, out=arrmean,
+/home/homa/work/venv/lib/python3.10/site-packages/numpy/_core/_methods.py:219: RuntimeWarning: invalid value encountered in scalar divide
+  ret = ret.dtype.type(ret / rcount)
+/home/homa/work/vibration_anomaly_detection/src/domain_adaptation/features/envelope.py:221: RuntimeWarning: Mean of empty slice.
+  feats["env_kurtosis"] = float(((band - band.mean()) ** 4).mean() / (band.std() ** 4 + 1e-12))
+/home/homa/work/venv/lib/python3.10/site-packages/numpy/_core/_methods.py:147: RuntimeWarning: invalid value encountered in scalar divide
+  ret = ret.dtype.type(ret / rcount)
+/home/homa/work/venv/lib/python3.10/site-packages/numpy/_core/_methods.py:227: RuntimeWarning: Degrees of freedom <= 0 for slice
+  ret = _var(a, axis=axis, dtype=dtype, out=out, ddof=ddof,
+/home/homa/work/venv/lib/python3.10/site-packages/numpy/_core/_methods.py:184: RuntimeWarning: invalid value encountered in divide
+  arrmean = um.true_divide(arrmean, div, out=arrmean,
+/home/homa/work/venv/lib/python3.10/site-packages/numpy/_core/_methods.py:219: RuntimeWarning: invalid value encountered in scalar divide
+  ret = ret.dtype.type(ret / rcount)
+concurrent.futures.process._RemoteTraceback: 
+"""
+Traceback (most recent call last):
+  File "/usr/lib/python3.10/concurrent/futures/process.py", line 246, in _process_worker
+    r = call_item.fn(*call_item.args, **call_item.kwargs)
+  File "/usr/lib/python3.10/concurrent/futures/process.py", line 205, in _process_chunk
+    return [fn(*args) for args in chunk]
+  File "/usr/lib/python3.10/concurrent/futures/process.py", line 205, in <listcomp>
+    return [fn(*args) for args in chunk]
+  File "/home/homa/work/vibration_anomaly_detection/scripts/analysis/v2_cache.py", line 112, in _job
+    return [r for rec in pdx.ldm_records(Path("data/paderborn_ldm"), bearing, ch) for r in rows_of(rec, g, "", fset)]
+  File "/home/homa/work/vibration_anomaly_detection/scripts/analysis/v2_cache.py", line 112, in <listcomp>
+    return [r for rec in pdx.ldm_records(Path("data/paderborn_ldm"), bearing, ch) for r in rows_of(rec, g, "", fset)]
+  File "/home/homa/work/vibration_anomaly_detection/scripts/analysis/v2_cache.py", line 82, in rows_of
+    **const_fn(sig[s:s + WIN], fs, rec.rpm, g), **td(sig[s:s + WIN])})
+  File "/home/homa/work/vibration_anomaly_detection/scripts/analysis/v2_cache.py", line 43, in <lambda>
+    "cpw": (lambda x, fs, rpm, g: envelope_order_features(x, fs, rpm, g, **CPW_SES),
+  File "/home/homa/work/vibration_anomaly_detection/src/domain_adaptation/features/envelope.py", line 222, in envelope_order_features
+    feats["env_crest"] = float(band.max() / (np.sqrt((band ** 2).mean()) + 1e-12))
+  File "/home/homa/work/venv/lib/python3.10/site-packages/numpy/_core/_methods.py", line 45, in _amax
+    return umr_maximum(a, axis, None, out, keepdims, initial, where)
+ValueError: zero-size array to reduction operation maximum which has no identity
+"""
+
+The above exception was the direct cause of the following exception:
+
+Traceback (most recent call last):
+  File "/home/homa/work/vibration_anomaly_detection/scripts/analysis/v2_cache.py", line 168, in <module>
+    main()
+  File "/home/homa/work/vibration_anomaly_detection/scripts/analysis/v2_cache.py", line 159, in main
+    for part in ex.map(_job, [(d, k, a.set) for k in keys(d)], chunksize=4):
+  File "/usr/lib/python3.10/concurrent/futures/process.py", line 575, in _chain_from_iterable_of_lists
+    for element in iterable:
+  File "/usr/lib/python3.10/concurrent/futures/_base.py", line 621, in result_iterator
+    yield _result_or_cancel(fs.pop())
+  File "/usr/lib/python3.10/concurrent/futures/_base.py", line 319, in _result_or_cancel
+    return fut.result(timeout)
+  File "/usr/lib/python3.10/concurrent/futures/_base.py", line 451, in result
+    return self.__get_result()
+  File "/usr/lib/python3.10/concurrent/futures/_base.py", line 403, in __get_result
+    raise self._exception
+ValueError: zero-size array to reduction operation maximum which has no identity

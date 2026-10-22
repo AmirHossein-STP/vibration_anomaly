@@ -1,0 +1,10 @@
+reference outputs/wp5/wp5_results.json: snapshot before re-run
+reference outputs/wp7/wp7_decision_results.json: snapshot before re-run
+compared 10749 numbers; 0 differ
+  wp5 results/ottawa_2018/d_xf/summary/auc_race = 0.9224278870870753
+  wp5 results/ottawa_2023:own/d_xf/summary/auc_race = 0.9298245614035088
+  wp5 results/mfpt/d_xf/summary/auc_race = 1.0
+  wp5 results/pu:N09_M07_F10/d_xf/summary/auc_race = 0.9013945578231293
+  wp7 horizontal/rms_cusum/detected = 13
+  wp7 horizontal/phys_cusum/detected = 9
+WP12 PARITY: PASS

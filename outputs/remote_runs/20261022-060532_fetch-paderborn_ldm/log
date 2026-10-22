@@ -1,0 +1,53 @@
+== paderborn_ldm (hf-int16-repack-of-zenodo-10805042, role=dev, stage=stream)
+  [B01] 5 files, 0.31 GB
+  B01: 377 records x 2 ch -> 12 kHz (0 clipped samples)
+  [B01] condensed -> /mnt/vault/datasets/paderborn_ldm/hf-int16-repack-of-zenodo-10805042/condensed/B01
+  [B02] 5 files, 0.91 GB
+  B02: 1116 records x 2 ch -> 12 kHz (0 clipped samples)
+  [B02] condensed -> /mnt/vault/datasets/paderborn_ldm/hf-int16-repack-of-zenodo-10805042/condensed/B02
+  [B03] 5 files, 0.50 GB
+  B03: 614 records x 2 ch -> 12 kHz (0 clipped samples)
+  [B03] condensed -> /mnt/vault/datasets/paderborn_ldm/hf-int16-repack-of-zenodo-10805042/condensed/B03
+  [B04] 5 files, 0.91 GB
+  B04: 1114 records x 2 ch -> 12 kHz (0 clipped samples)
+  [B04] condensed -> /mnt/vault/datasets/paderborn_ldm/hf-int16-repack-of-zenodo-10805042/condensed/B04
+  [B05] 5 files, 0.47 GB
+  B05: 572 records x 2 ch -> 12 kHz (0 clipped samples)
+  [B05] condensed -> /mnt/vault/datasets/paderborn_ldm/hf-int16-repack-of-zenodo-10805042/condensed/B05
+  [B06] 5 files, 10.62 GB
+  B06: 12965 records x 2 ch -> 12 kHz (0 clipped samples)
+  [B06] condensed -> /mnt/vault/datasets/paderborn_ldm/hf-int16-repack-of-zenodo-10805042/condensed/B06
+  [B07] 5 files, 5.24 GB
+  B07: 6393 records x 2 ch -> 12 kHz (0 clipped samples)
+  [B07] condensed -> /mnt/vault/datasets/paderborn_ldm/hf-int16-repack-of-zenodo-10805042/condensed/B07
+  [B08] 5 files, 1.50 GB
+  B08: 1827 records x 2 ch -> 12 kHz (0 clipped samples)
+  [B08] condensed -> /mnt/vault/datasets/paderborn_ldm/hf-int16-repack-of-zenodo-10805042/condensed/B08
+  [B09] 5 files, 1.49 GB
+  B09: 1813 records x 2 ch -> 12 kHz (0 clipped samples)
+  [B09] condensed -> /mnt/vault/datasets/paderborn_ldm/hf-int16-repack-of-zenodo-10805042/condensed/B09
+  [B10] 5 files, 1.32 GB
+  B10: 3224 records x 2 ch -> 12 kHz (0 clipped samples)
+  [B10] condensed -> /mnt/vault/datasets/paderborn_ldm/hf-int16-repack-of-zenodo-10805042/condensed/B10
+  [B11] 5 files, 0.80 GB
+  B11: 1953 records x 2 ch -> 12 kHz (0 clipped samples)
+  [B11] condensed -> /mnt/vault/datasets/paderborn_ldm/hf-int16-repack-of-zenodo-10805042/condensed/B11
+  [B12] 5 files, 0.31 GB
+  B12: 767 records x 2 ch -> 12 kHz (0 clipped samples)
+  [B12] condensed -> /mnt/vault/datasets/paderborn_ldm/hf-int16-repack-of-zenodo-10805042/condensed/B12
+  [B13] 5 files, 7.96 GB
+  B13: 19417 records x 2 ch -> 12 kHz (0 clipped samples)
+  [B13] condensed -> /mnt/vault/datasets/paderborn_ldm/hf-int16-repack-of-zenodo-10805042/condensed/B13
+  [B14] 5 files, 5.05 GB
+  B14: 12317 records x 2 ch -> 12 kHz (0 clipped samples)
+  [B14] condensed -> /mnt/vault/datasets/paderborn_ldm/hf-int16-repack-of-zenodo-10805042/condensed/B14
+  [B15] 5 files, 9.25 GB
+  B15: 22567 records x 2 ch -> 12 kHz (0 clipped samples)
+  [B15] condensed -> /mnt/vault/datasets/paderborn_ldm/hf-int16-repack-of-zenodo-10805042/condensed/B15
+  [B16] 5 files, 2.41 GB
+  B16: 5891 records x 2 ch -> 12 kHz (0 clipped samples)
+  [B16] condensed -> /mnt/vault/datasets/paderborn_ldm/hf-int16-repack-of-zenodo-10805042/condensed/B16
+  [B17] 5 files, 1.12 GB
+  B17: 2733 records x 2 ch -> 12 kHz (0 clipped samples)
+  [B17] condensed -> /mnt/vault/datasets/paderborn_ldm/hf-int16-repack-of-zenodo-10805042/condensed/B17
+paderborn_ldm: complete -> /mnt/vault/datasets/paderborn_ldm/hf-int16-repack-of-zenodo-10805042

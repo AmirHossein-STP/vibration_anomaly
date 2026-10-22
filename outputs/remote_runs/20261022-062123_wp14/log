@@ -1,0 +1,18 @@
+Traceback (most recent call last):
+  File "/home/homa/work/vibration_anomaly_detection/scripts/analysis/wp14_hust.py", line 102, in <module>
+    main()
+  File "/home/homa/work/vibration_anomaly_detection/scripts/analysis/wp14_hust.py", line 96, in main
+    (a.out / "wp14_results.json").write_text(json.dumps({"gate": gate, "geo_wins": geo_wins, "typing": typing,
+  File "/usr/lib/python3.10/json/__init__.py", line 238, in dumps
+    **kw).encode(obj)
+  File "/usr/lib/python3.10/json/encoder.py", line 201, in encode
+    chunks = list(chunks)
+  File "/usr/lib/python3.10/json/encoder.py", line 431, in _iterencode
+    yield from _iterencode_dict(o, _current_indent_level)
+  File "/usr/lib/python3.10/json/encoder.py", line 405, in _iterencode_dict
+    yield from chunks
+  File "/usr/lib/python3.10/json/encoder.py", line 405, in _iterencode_dict
+    yield from chunks
+  File "/usr/lib/python3.10/json/encoder.py", line 376, in _iterencode_dict
+    raise TypeError(f'keys must be str, int, float, bool or None, '
+TypeError: keys must be str, int, float, bool or None, not int64

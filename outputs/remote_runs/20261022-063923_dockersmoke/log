@@ -1,0 +1,13 @@
+2026-10-22T06:40:30Z INFO calibrate start: service=bearing candidate=20261022T064030-064070
+2026-10-22T06:40:41Z INFO service=bearing model=20261022T064030-064070 inputs=4 image=dev
+2026-10-22T06:40:41Z INFO bad.npy -> faulty
+2026-10-22T06:40:41Z INFO ok.npy -> healthy
+2026-10-22T06:40:41Z INFO bad.npy -> faulty
+2026-10-22T06:40:41Z INFO ok.npy -> healthy
+2026-10-22T06:40:44Z INFO calibrate start: service=bearing candidate=20261022T064044-064070
+file,status,verdict,score,flagged_fraction,n_windows,message,unit
+bad.npy,ok,faulty,3.0096731538829866,0.9565,23,TREND ALARM: sustained rise over this unit's baseline,fan_b
+ok.npy,ok,healthy,1.8982121649173473,0.0,23,TREND ALARM: sustained rise over this unit's baseline,fan_b
+bad.npy,ok,faulty,2.89703088900243,1.0,23,TREND ALARM: sustained rise over this unit's baseline,pump_a
+ok.npy,ok,healthy,0.9736751989274856,0.0435,23,TREND ALARM: sustained rise over this unit's baseline,pump_a
+SMOKE OK: image builds; calibrate -> promote -> infer -> rollback for 2 units

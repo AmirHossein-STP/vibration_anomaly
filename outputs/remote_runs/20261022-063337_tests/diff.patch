@@ -1,0 +1,4067 @@
+diff --git a/outputs/wp5/wp5_results.json b/outputs/wp5/wp5_results.json
+index 84d4b61..f596c9e 100644
+--- a/outputs/wp5/wp5_results.json
++++ b/outputs/wp5/wp5_results.json
+@@ -515,7 +515,9 @@
+      "recall_outer": 0.03271028037383177,
+      "recall_ball": 0.12093023255813956,
+      "recall_combined": 0.539308176100629,
+-     "recall_race_faulty": 0.06064162754303599
++     "recall_race_faulty": 0.06064162754303599,
++     "auc_bc": 0.5581737346101232,
++     "auc_bc_min": 0.48298653610771114
+     },
+     "folds": [
+      {
+@@ -530,6 +532,7 @@
+       "recall_combined": 0.5377358490566038,
+       "recall_race_faulty": 0.06103286384976526,
+       "auc_race": 0.4590505998956703,
++      "auc_bc": 0.5400516795865633,
+       "rec_detect_race": 0.0,
+       "rec_fa": 0.0
+      },
+@@ -545,6 +548,7 @@
+       "recall_combined": 0.5424528301886793,
+       "recall_race_faulty": 0.06103286384976526,
+       "auc_race": 0.4647887323943662,
++      "auc_bc": 0.5344186046511628,
+       "rec_detect_race": 0.0,
+       "rec_fa": 0.0
+      },
+@@ -560,6 +564,7 @@
+       "recall_combined": 0.5377358490566038,
+       "recall_race_faulty": 0.06103286384976526,
+       "auc_race": 0.4784037558685446,
++      "auc_bc": 0.5602325581395348,
+       "rec_detect_race": 0.0,
+       "rec_fa": 0.0
+      },
+@@ -575,6 +580,7 @@
+       "recall_combined": 0.5424528301886793,
+       "recall_race_faulty": 0.06103286384976526,
+       "auc_race": 0.4246478873239436,
++      "auc_bc": 0.4983720930232558,
+       "rec_detect_race": 0.0,
+       "rec_fa": 0.0
+      },
+@@ -590,6 +596,7 @@
+       "recall_combined": 0.5377358490566038,
+       "recall_race_faulty": 0.06103286384976526,
+       "auc_race": 0.5133940900303784,
++      "auc_bc": 0.5934336525307797,
+       "rec_detect_race": 0.0,
+       "rec_fa": 0.0
+      },
+@@ -605,6 +612,7 @@
+       "recall_combined": 0.5377358490566038,
+       "recall_race_faulty": 0.06103286384976526,
+       "auc_race": 0.42570422535211266,
++      "auc_bc": 0.5023255813953489,
+       "rec_detect_race": 0.0,
+       "rec_fa": 0.0
+      },
+@@ -620,6 +628,7 @@
+       "recall_combined": 0.5424528301886793,
+       "recall_race_faulty": 0.06103286384976526,
+       "auc_race": 0.44044971583889303,
++      "auc_bc": 0.5111383108935129,
+       "rec_detect_race": 0.0,
+       "rec_fa": 0.0
+      },
+@@ -635,6 +644,7 @@
+       "recall_combined": 0.5377358490566038,
+       "recall_race_faulty": 0.05868544600938967,
+       "auc_race": 0.5689880020865936,
++      "auc_bc": 0.6506459948320414,
+       "rec_detect_race": 0.0,
+       "rec_fa": 0.0
+      },
+@@ -650,6 +660,7 @@
+       "recall_combined": 0.5424528301886793,
+       "recall_race_faulty": 0.06103286384976526,
+       "auc_race": 0.4035087719298246,
++      "auc_bc": 0.48298653610771114,
+       "rec_detect_race": 0.0,
+       "rec_fa": 0.0
+      },
+@@ -665,6 +676,7 @@
+       "recall_combined": 0.5377358490566038,
+       "recall_race_faulty": 0.06103286384976526,
+       "auc_race": 0.5494338580502623,
++      "auc_bc": 0.6259917920656635,
+       "rec_detect_race": 0.0,
+       "rec_fa": 0.0
+      },
+@@ -680,6 +692,7 @@
+       "recall_combined": 0.5377358490566038,
+       "recall_race_faulty": 0.05868544600938967,
+       "auc_race": 0.46326981496824077,
++      "auc_bc": 0.5507523939808482,
+       "rec_detect_race": 0.0,
+       "rec_fa": 0.0
+      },
+@@ -695,6 +708,7 @@
+       "recall_combined": 0.5377358490566038,
+       "recall_race_faulty": 0.06103286384976526,
+       "auc_race": 0.5782060785767235,
++      "auc_bc": 0.6477356181150551,
+       "rec_detect_race": 0.0,
+       "rec_fa": 0.0
+      }
+@@ -716,7 +730,9 @@
+      "recall_ball": 0.26240310077519385,
+      "recall_combined": 1.0,
+      "recall_race_faulty": 0.5312989045383412,
+-     "typing": 0.6705790297339593
++     "typing": 0.6705790297339593,
++     "auc_bc": 0.5877681178550572,
++     "auc_bc_min": 0.5081395348837209
+     },
+     "folds": [
+      {
+@@ -731,6 +747,7 @@
+       "recall_combined": 1.0,
+       "recall_race_faulty": 0.5305164319248826,
+       "auc_race": 0.6542775169535733,
++      "auc_bc": 0.5242894056847545,
+       "rec_detect_race": 0.5,
+       "rec_fa": 0.0,
+       "typing": 0.6690140845070423
+@@ -747,6 +764,7 @@
+       "recall_combined": 1.0,
+       "recall_race_faulty": 0.5305164319248826,
+       "auc_race": 0.6607981220657277,
++      "auc_bc": 0.5081395348837209,
+       "rec_detect_race": 0.5,
+       "rec_fa": 0.0,
+       "typing": 0.6690140845070423
+@@ -763,6 +781,7 @@
+       "recall_combined": 1.0,
+       "recall_race_faulty": 0.5305164319248826,
+       "auc_race": 0.6857981220657278,
++      "auc_bc": 0.5634883720930233,
+       "rec_detect_race": 0.5,
+       "rec_fa": 0.0,
+       "typing": 0.6690140845070423
+@@ -779,6 +798,7 @@
+       "recall_combined": 1.0,
+       "recall_race_faulty": 0.5422535211267606,
+       "auc_race": 0.7161971830985916,
++      "auc_bc": 0.6004651162790697,
+       "rec_detect_race": 0.5,
+       "rec_fa": 0.0,
+       "typing": 0.6713615023474179
+@@ -795,6 +815,7 @@
+       "recall_combined": 1.0,
+       "recall_race_faulty": 0.528169014084507,
+       "auc_race": 0.7132007732670533,
++      "auc_bc": 0.627906976744186,
+       "rec_detect_race": 0.5,
+       "rec_fa": 0.0,
+       "typing": 0.6690140845070423
+@@ -811,6 +832,7 @@
+       "recall_combined": 1.0,
+       "recall_race_faulty": 0.528169014084507,
+       "auc_race": 0.6705399061032863,
++      "auc_bc": 0.543953488372093,
+       "rec_detect_race": 0.5,
+       "rec_fa": 0.0,
+       "typing": 0.6737089201877934
+@@ -827,6 +849,7 @@
+       "recall_combined": 1.0,
+       "recall_race_faulty": 0.5328638497652582,
+       "auc_race": 0.6737089201877933,
++      "auc_bc": 0.5627906976744187,
+       "rec_detect_race": 0.5,
+       "rec_fa": 0.0,
+       "typing": 0.6737089201877934
+@@ -843,6 +866,7 @@
+       "recall_combined": 1.0,
+       "recall_race_faulty": 0.528169014084507,
+       "auc_race": 0.7510432968179448,
++      "auc_bc": 0.7113695090439277,
+       "rec_detect_race": 0.5,
+       "rec_fa": 0.0,
+       "typing": 0.6713615023474179
+@@ -859,6 +883,7 @@
+       "recall_combined": 1.0,
+       "recall_race_faulty": 0.5305164319248826,
+       "auc_race": 0.7190511489992587,
++      "auc_bc": 0.6198286413708691,
+       "rec_detect_race": 0.5,
+       "rec_fa": 0.0,
+       "typing": 0.6666666666666666
+@@ -875,6 +900,7 @@
+       "recall_combined": 1.0,
+       "recall_race_faulty": 0.5305164319248826,
+       "auc_race": 0.6984258492129247,
++      "auc_bc": 0.5797537619699042,
+       "rec_detect_race": 0.5,
+       "rec_fa": 0.0,
+       "typing": 0.6713615023474179
+@@ -891,6 +917,7 @@
+       "recall_combined": 1.0,
+       "recall_race_faulty": 0.5375586854460094,
+       "auc_race": 0.6662524164595416,
++      "auc_bc": 0.5485636114911081,
+       "rec_detect_race": 0.5,
+       "rec_fa": 0.0,
+       "typing": 0.6737089201877934
+@@ -907,6 +934,7 @@
+       "recall_combined": 1.0,
+       "recall_race_faulty": 0.5258215962441315,
+       "auc_race": 0.7393130714109217,
++      "auc_bc": 0.6626682986536109,
+       "rec_detect_race": 0.5,
+       "rec_fa": 0.0,
+       "typing": 0.6690140845070423
+@@ -929,7 +957,9 @@
+      "recall_ball": 0.13294573643410854,
+      "recall_combined": 0.8934748427672955,
+      "recall_race_faulty": 0.7668231611893584,
+-     "typing": 0.630281690140845
++     "typing": 0.630281690140845,
++     "auc_bc": 0.5313326360055787,
++     "auc_bc_min": 0.37279069767441864
+     },
+     "folds": [
+      {
+@@ -944,6 +974,7 @@
+       "recall_combined": 0.8962264150943396,
+       "recall_race_faulty": 0.7699530516431925,
+       "auc_race": 0.9238393322900366,
++      "auc_bc": 0.586046511627907,
+       "rec_detect_race": 0.7083333333333334,
+       "rec_fa": 0.0,
+       "typing": 0.636150234741784
+@@ -960,6 +991,7 @@
+       "recall_combined": 0.9198113207547169,
+       "recall_race_faulty": 0.8075117370892019,
+       "auc_race": 0.8794600938967136,
++      "auc_bc": 0.46302325581395354,
+       "rec_detect_race": 0.9166666666666666,
+       "rec_fa": 0.0,
+       "typing": 0.6291079812206573
+@@ -976,6 +1008,7 @@
+       "recall_combined": 0.8867924528301887,
+       "recall_race_faulty": 0.7535211267605634,
+       "auc_race": 0.9509389671361502,
++      "auc_bc": 0.5651162790697675,
+       "rec_detect_race": 0.7083333333333334,
+       "rec_fa": 0.0,
+       "typing": 0.6314553990610329
+@@ -992,6 +1025,7 @@
+       "recall_combined": 0.9056603773584906,
+       "recall_race_faulty": 0.7910798122065728,
+       "auc_race": 0.8778169014084506,
++      "auc_bc": 0.37279069767441864,
+       "rec_detect_race": 0.7916666666666666,
+       "rec_fa": 0.0,
+       "typing": 0.6314553990610329
+@@ -1008,6 +1042,7 @@
+       "recall_combined": 0.8962264150943396,
+       "recall_race_faulty": 0.7699530516431925,
+       "auc_race": 0.9497376415354875,
++      "auc_bc": 0.5556771545827633,
+       "rec_detect_race": 0.7083333333333334,
+       "rec_fa": 0.0,
+       "typing": 0.6267605633802817
+@@ -1024,6 +1059,7 @@
+       "recall_combined": 0.8820754716981132,
+       "recall_race_faulty": 0.7464788732394366,
+       "auc_race": 0.9122065727699531,
++      "auc_bc": 0.5081395348837209,
+       "rec_detect_race": 0.7083333333333334,
+       "rec_fa": 0.0,
+       "typing": 0.6314553990610329
+@@ -1040,6 +1076,7 @@
+       "recall_combined": 0.8867924528301887,
+       "recall_race_faulty": 0.7511737089201878,
+       "auc_race": 0.9219174697306648,
++      "auc_bc": 0.4643818849449205,
+       "rec_detect_race": 0.7083333333333334,
+       "rec_fa": 0.0,
+       "typing": 0.6291079812206573
+@@ -1056,6 +1093,7 @@
+       "recall_combined": 0.8915094339622641,
+       "recall_race_faulty": 0.755868544600939,
+       "auc_race": 0.9520083463745437,
++      "auc_bc": 0.5749354005167959,
+       "rec_detect_race": 0.7083333333333334,
+       "rec_fa": 0.0,
+       "typing": 0.6267605633802817
+@@ -1072,6 +1110,7 @@
+       "recall_combined": 0.8915094339622641,
+       "recall_race_faulty": 0.7676056338028169,
+       "auc_race": 0.9240177909562639,
++      "auc_bc": 0.605140758873929,
+       "rec_detect_race": 0.7083333333333334,
+       "rec_fa": 0.0,
+       "typing": 0.6314553990610329
+@@ -1088,6 +1127,7 @@
+       "recall_combined": 0.8962264150943396,
+       "recall_race_faulty": 0.7746478873239436,
+       "auc_race": 0.9261253797293565,
++      "auc_bc": 0.559781121751026,
+       "rec_detect_race": 0.7083333333333334,
+       "rec_fa": 0.0,
+       "typing": 0.6267605633802817
+@@ -1104,6 +1144,7 @@
+       "recall_combined": 0.8962264150943396,
+       "recall_race_faulty": 0.7816901408450704,
+       "auc_race": 0.9125932062966031,
++      "auc_bc": 0.521203830369357,
+       "rec_detect_race": 0.7083333333333334,
+       "rec_fa": 0.0,
+       "typing": 0.6291079812206573
+@@ -1120,6 +1161,7 @@
+       "recall_combined": 0.8726415094339622,
+       "recall_race_faulty": 0.7323943661971831,
+       "auc_race": 0.938472942920682,
++      "auc_bc": 0.5997552019583844,
+       "rec_detect_race": 0.7083333333333334,
+       "rec_fa": 0.0,
+       "typing": 0.6338028169014085
+@@ -1142,7 +1184,9 @@
+      "recall_ball": 0.12441860465116279,
+      "recall_combined": 0.8867924528301887,
+      "recall_race_faulty": 0.7566510172143975,
+-     "typing": 0.630281690140845
++     "typing": 0.630281690140845,
++     "auc_bc": 0.5313326360055787,
++     "auc_bc_min": 0.37279069767441864
+     },
+     "folds": [
+      {
+@@ -1157,6 +1201,7 @@
+       "recall_combined": 0.8726415094339622,
+       "recall_race_faulty": 0.7394366197183099,
+       "auc_race": 0.9238393322900366,
++      "auc_bc": 0.586046511627907,
+       "rec_detect_race": 0.7083333333333334,
+       "rec_fa": 0.0,
+       "typing": 0.636150234741784
+@@ -1173,6 +1218,7 @@
+       "recall_combined": 0.910377358490566,
+       "recall_race_faulty": 0.8051643192488263,
+       "auc_race": 0.8794600938967136,
++      "auc_bc": 0.46302325581395354,
+       "rec_detect_race": 0.9166666666666666,
+       "rec_fa": 0.0,
+       "typing": 0.6291079812206573
+@@ -1189,6 +1235,7 @@
+       "recall_combined": 0.8867924528301887,
+       "recall_race_faulty": 0.7535211267605634,
+       "auc_race": 0.9509389671361502,
++      "auc_bc": 0.5651162790697675,
+       "rec_detect_race": 0.7083333333333334,
+       "rec_fa": 0.0,
+       "typing": 0.6314553990610329
+@@ -1205,6 +1252,7 @@
+       "recall_combined": 0.8962264150943396,
+       "recall_race_faulty": 0.7723004694835681,
+       "auc_race": 0.8778169014084506,
++      "auc_bc": 0.37279069767441864,
+       "rec_detect_race": 0.7083333333333334,
+       "rec_fa": 0.0,
+       "typing": 0.6314553990610329
+@@ -1221,6 +1269,7 @@
+       "recall_combined": 0.8867924528301887,
+       "recall_race_faulty": 0.7535211267605634,
+       "auc_race": 0.9497376415354875,
++      "auc_bc": 0.5556771545827633,
+       "rec_detect_race": 0.7083333333333334,
+       "rec_fa": 0.0,
+       "typing": 0.6267605633802817
+@@ -1237,6 +1286,7 @@
+       "recall_combined": 0.8773584905660378,
+       "recall_race_faulty": 0.7417840375586855,
+       "auc_race": 0.9122065727699531,
++      "auc_bc": 0.5081395348837209,
+       "rec_detect_race": 0.7083333333333334,
+       "rec_fa": 0.0,
+       "typing": 0.6314553990610329
+@@ -1253,6 +1303,7 @@
+       "recall_combined": 0.8867924528301887,
+       "recall_race_faulty": 0.7511737089201878,
+       "auc_race": 0.9219174697306648,
++      "auc_bc": 0.4643818849449205,
+       "rec_detect_race": 0.7083333333333334,
+       "rec_fa": 0.0,
+       "typing": 0.6291079812206573
+@@ -1269,6 +1320,7 @@
+       "recall_combined": 0.8867924528301887,
+       "recall_race_faulty": 0.7511737089201878,
+       "auc_race": 0.9520083463745437,
++      "auc_bc": 0.5749354005167959,
+       "rec_detect_race": 0.7083333333333334,
+       "rec_fa": 0.0,
+       "typing": 0.6267605633802817
+@@ -1285,6 +1337,7 @@
+       "recall_combined": 0.8915094339622641,
+       "recall_race_faulty": 0.755868544600939,
+       "auc_race": 0.9240177909562639,
++      "auc_bc": 0.605140758873929,
+       "rec_detect_race": 0.7083333333333334,
+       "rec_fa": 0.0,
+       "typing": 0.6314553990610329
+@@ -1301,6 +1354,7 @@
+       "recall_combined": 0.8915094339622641,
+       "recall_race_faulty": 0.7652582159624414,
+       "auc_race": 0.9261253797293565,
++      "auc_bc": 0.559781121751026,
+       "rec_detect_race": 0.7083333333333334,
+       "rec_fa": 0.0,
+       "typing": 0.6267605633802817
+@@ -1317,6 +1371,7 @@
+       "recall_combined": 0.8962264150943396,
+       "recall_race_faulty": 0.7699530516431925,
+       "auc_race": 0.9125932062966031,
++      "auc_bc": 0.521203830369357,
+       "rec_detect_race": 0.7083333333333334,
+       "rec_fa": 0.0,
+       "typing": 0.6291079812206573
+@@ -1333,6 +1388,7 @@
+       "recall_combined": 0.8584905660377359,
+       "recall_race_faulty": 0.7206572769953051,
+       "auc_race": 0.938472942920682,
++      "auc_bc": 0.5997552019583844,
+       "rec_detect_race": 0.7083333333333334,
+       "rec_fa": 0.0,
+       "typing": 0.6338028169014085
+@@ -1354,7 +1410,9 @@
+      "recall_outer": 0.06503115264797506,
+      "recall_ball": 0.5189922480620156,
+      "recall_combined": 1.0,
+-     "recall_race_faulty": 0.530320813771518
++     "recall_race_faulty": 0.530320813771518,
++     "auc_bc": 0.8424336205310358,
++     "auc_bc_min": 0.43084455324357407
+     },
+     "folds": [
+      {
+@@ -1369,6 +1427,7 @@
+       "recall_combined": 1.0,
+       "recall_race_faulty": 0.5234741784037559,
+       "auc_race": 0.9281429316640585,
++      "auc_bc": 0.9640826873385013,
+       "rec_detect_race": 0.5,
+       "rec_fa": 0.0
+      },
+@@ -1384,6 +1443,7 @@
+       "recall_combined": 1.0,
+       "recall_race_faulty": 0.5234741784037559,
+       "auc_race": 0.7987089201877935,
++      "auc_bc": 0.8458139534883721,
+       "rec_detect_race": 0.5,
+       "rec_fa": 0.0
+      },
+@@ -1399,6 +1459,7 @@
+       "recall_combined": 1.0,
+       "recall_race_faulty": 0.5234741784037559,
+       "auc_race": 0.8273474178403756,
++      "auc_bc": 0.8783720930232558,
+       "rec_detect_race": 0.5,
+       "rec_fa": 0.0
+      },
+@@ -1414,6 +1475,7 @@
+       "recall_combined": 1.0,
+       "recall_race_faulty": 0.5328638497652582,
+       "auc_race": 0.7492957746478873,
++      "auc_bc": 0.7837209302325582,
+       "rec_detect_race": 0.5,
+       "rec_fa": 0.0
+      },
+@@ -1429,6 +1491,7 @@
+       "recall_combined": 1.0,
+       "recall_race_faulty": 0.5234741784037559,
+       "auc_race": 0.8624689312344657,
++      "auc_bc": 0.9110807113543092,
+       "rec_detect_race": 0.5,
+       "rec_fa": 0.0
+      },
+@@ -1444,6 +1507,7 @@
+       "recall_combined": 1.0,
+       "recall_race_faulty": 0.5375586854460094,
+       "auc_race": 0.7190140845070423,
++      "auc_bc": 0.7437209302325581,
+       "rec_detect_race": 0.5,
+       "rec_fa": 0.0
+      },
+@@ -1459,6 +1523,7 @@
+       "recall_combined": 1.0,
+       "recall_race_faulty": 0.5234741784037559,
+       "auc_race": 0.7889794909809735,
++      "auc_bc": 0.8526315789473684,
+       "rec_detect_race": 0.5,
+       "rec_fa": 0.0
+      },
+@@ -1474,6 +1539,7 @@
+       "recall_combined": 1.0,
+       "recall_race_faulty": 0.5234741784037559,
+       "auc_race": 0.8377673448095982,
++      "auc_bc": 0.9041343669250645,
+       "rec_detect_race": 0.5,
+       "rec_fa": 0.0
+      },
+@@ -1489,6 +1555,7 @@
+       "recall_combined": 1.0,
+       "recall_race_faulty": 0.5234741784037559,
+       "auc_race": 0.8449468742278232,
++      "auc_bc": 0.9116279069767443,
+       "rec_detect_race": 0.5,
+       "rec_fa": 0.0
+      },
+@@ -1504,6 +1571,7 @@
+       "recall_combined": 1.0,
+       "recall_race_faulty": 0.5234741784037559,
+       "auc_race": 0.8987848660590997,
++      "auc_bc": 0.9436388508891929,
+       "rec_detect_race": 0.5,
+       "rec_fa": 0.0
+      },
+@@ -1519,6 +1587,7 @@
+       "recall_combined": 1.0,
+       "recall_race_faulty": 0.5234741784037559,
+       "auc_race": 0.891880695940348,
++      "auc_bc": 0.9395348837209303,
+       "rec_detect_race": 0.5,
+       "rec_fa": 0.0
+      },
+@@ -1534,6 +1603,7 @@
+       "recall_combined": 1.0,
+       "recall_race_faulty": 0.5821596244131455,
+       "auc_race": 0.5563380281690141,
++      "auc_bc": 0.43084455324357407,
+       "rec_detect_race": 0.5,
+       "rec_fa": 1.0
+      }
+@@ -1554,7 +1624,9 @@
+      "recall_outer": 0.9610591900311527,
+      "recall_ball": 0.14883720930232558,
+      "recall_combined": 1.0,
+-     "recall_race_faulty": 0.9804381846635369
++     "recall_race_faulty": 0.9804381846635369,
++     "auc_bc": 0.502098616544401,
++     "auc_bc_min": 0.1481028151774786
+     },
+     "folds": [
+      {
+@@ -1569,6 +1641,7 @@
+       "recall_combined": 1.0,
+       "recall_race_faulty": 0.9788732394366197,
+       "auc_race": 0.9997391757955139,
++      "auc_bc": 0.6666666666666667,
+       "rec_detect_race": 1.0,
+       "rec_fa": 0.0
+      },
+@@ -1584,6 +1657,7 @@
+       "recall_combined": 1.0,
+       "recall_race_faulty": 0.9788732394366197,
+       "auc_race": 0.9985915492957746,
++      "auc_bc": 0.4446511627906977,
+       "rec_detect_race": 1.0,
+       "rec_fa": 0.0
+      },
+@@ -1599,6 +1673,7 @@
+       "recall_combined": 1.0,
+       "recall_race_faulty": 0.9788732394366197,
+       "auc_race": 0.998474178403756,
++      "auc_bc": 0.5932558139534883,
+       "rec_detect_race": 1.0,
+       "rec_fa": 0.0
+      },
+@@ -1614,6 +1689,7 @@
+       "recall_combined": 1.0,
+       "recall_race_faulty": 0.9788732394366197,
+       "auc_race": 1.0,
++      "auc_bc": 0.8448837209302326,
+       "rec_detect_race": 1.0,
+       "rec_fa": 0.0
+      },
+@@ -1629,6 +1705,7 @@
+       "recall_combined": 1.0,
+       "recall_race_faulty": 0.9788732394366197,
+       "auc_race": 0.9979287489643744,
++      "auc_bc": 0.41668946648426813,
+       "rec_detect_race": 1.0,
+       "rec_fa": 0.0
+      },
+@@ -1644,6 +1721,7 @@
+       "recall_combined": 1.0,
+       "recall_race_faulty": 0.9788732394366197,
+       "auc_race": 0.9985915492957746,
++      "auc_bc": 0.5997674418604652,
+       "rec_detect_race": 1.0,
+       "rec_fa": 0.0
+      },
+@@ -1659,6 +1737,7 @@
+       "recall_combined": 1.0,
+       "recall_race_faulty": 0.9788732394366197,
+       "auc_race": 0.9966641957005189,
++      "auc_bc": 0.3505507955936353,
+       "rec_detect_race": 1.0,
+       "rec_fa": 0.0
+      },
+@@ -1674,6 +1753,7 @@
+       "recall_combined": 1.0,
+       "recall_race_faulty": 0.9812206572769953,
+       "auc_race": 0.9936098069900887,
++      "auc_bc": 0.5165374677002584,
+       "rec_detect_race": 1.0,
+       "rec_fa": 0.0
+      },
+@@ -1689,6 +1769,7 @@
+       "recall_combined": 1.0,
+       "recall_race_faulty": 0.9812206572769953,
+       "auc_race": 0.9941932295527551,
++      "auc_bc": 0.4927784577723378,
+       "rec_detect_race": 1.0,
+       "rec_fa": 0.0
+      },
+@@ -1704,6 +1785,7 @@
+       "recall_combined": 1.0,
+       "recall_race_faulty": 0.9812206572769953,
+       "auc_race": 0.9864678265672467,
++      "auc_bc": 0.35485636114911084,
+       "rec_detect_race": 1.0,
+       "rec_fa": 0.0
+      },
+@@ -1719,6 +1801,7 @@
+       "recall_combined": 1.0,
+       "recall_race_faulty": 0.9788732394366197,
+       "auc_race": 0.9994476663904999,
++      "auc_bc": 0.5964432284541723,
+       "rec_detect_race": 1.0,
+       "rec_fa": 0.0
+      },
+@@ -1734,6 +1817,7 @@
+       "recall_combined": 1.0,
+       "recall_race_faulty": 0.9906103286384976,
+       "auc_race": 0.956758092414134,
++      "auc_bc": 0.1481028151774786,
+       "rec_detect_race": 1.0,
+       "rec_fa": 1.0
+      }
+@@ -1754,7 +1838,9 @@
+      "recall_outer": 0.9684579439252335,
+      "recall_ball": 0.1806201550387597,
+      "recall_combined": 1.0,
+-     "recall_race_faulty": 0.9841549295774645
++     "recall_race_faulty": 0.9841549295774645,
++     "auc_bc": 0.5219136780239092,
++     "auc_bc_min": 0.23084455324357403
+     },
+     "folds": [
+      {
+@@ -1769,6 +1855,7 @@
+       "recall_combined": 1.0,
+       "recall_race_faulty": 0.9835680751173709,
+       "auc_race": 0.9981742305685968,
++      "auc_bc": 0.6532299741602068,
+       "rec_detect_race": 1.0,
+       "rec_fa": 0.0
+      },
+@@ -1784,6 +1871,7 @@
+       "recall_combined": 1.0,
+       "recall_race_faulty": 0.9835680751173709,
+       "auc_race": 0.9921361502347418,
++      "auc_bc": 0.4709302325581395,
+       "rec_detect_race": 1.0,
+       "rec_fa": 0.0
+      },
+@@ -1799,6 +1887,7 @@
+       "recall_combined": 1.0,
+       "recall_race_faulty": 0.9835680751173709,
+       "auc_race": 1.0,
++      "auc_bc": 0.6223255813953488,
+       "rec_detect_race": 1.0,
+       "rec_fa": 0.0
+      },
+@@ -1814,6 +1903,7 @@
+       "recall_combined": 1.0,
+       "recall_race_faulty": 0.9835680751173709,
+       "auc_race": 0.9977699530516433,
++      "auc_bc": 0.4869767441860465,
+       "rec_detect_race": 1.0,
+       "rec_fa": 0.0
+      },
+@@ -1829,6 +1919,7 @@
+       "recall_combined": 1.0,
+       "recall_race_faulty": 0.9812206572769953,
+       "auc_race": 1.0,
++      "auc_bc": 0.5989056087551299,
+       "rec_detect_race": 1.0,
+       "rec_fa": 0.0
+      },
+@@ -1844,6 +1935,7 @@
+       "recall_combined": 1.0,
+       "recall_race_faulty": 0.9812206572769953,
+       "auc_race": 0.998943661971831,
++      "auc_bc": 0.557906976744186,
+       "rec_detect_race": 1.0,
+       "rec_fa": 0.0
+      },
+@@ -1859,6 +1951,7 @@
+       "recall_combined": 1.0,
+       "recall_race_faulty": 0.9812206572769953,
+       "auc_race": 1.0,
++      "auc_bc": 0.49400244798041615,
+       "rec_detect_race": 1.0,
+       "rec_fa": 0.0
+      },
+@@ -1874,6 +1967,7 @@
+       "recall_combined": 1.0,
+       "recall_race_faulty": 0.9812206572769953,
+       "auc_race": 1.0,
++      "auc_bc": 0.5400516795865633,
+       "rec_detect_race": 1.0,
+       "rec_fa": 0.0
+      },
+@@ -1889,6 +1983,7 @@
+       "recall_combined": 1.0,
+       "recall_race_faulty": 0.9835680751173709,
+       "auc_race": 0.996046454163578,
++      "auc_bc": 0.5733170134638923,
+       "rec_detect_race": 1.0,
+       "rec_fa": 0.0
+      },
+@@ -1904,6 +1999,7 @@
+       "recall_combined": 1.0,
+       "recall_race_faulty": 0.9835680751173709,
+       "auc_race": 0.9942004971002485,
++      "auc_bc": 0.4673050615595075,
+       "rec_detect_race": 1.0,
+       "rec_fa": 0.0
+      },
+@@ -1919,6 +2015,7 @@
+       "recall_combined": 1.0,
+       "recall_race_faulty": 0.9835680751173709,
+       "auc_race": 0.9966859983429992,
++      "auc_bc": 0.5671682626538987,
+       "rec_detect_race": 1.0,
+       "rec_fa": 0.0
+      },
+@@ -1934,6 +2031,7 @@
+       "recall_combined": 1.0,
+       "recall_race_faulty": 1.0,
+       "auc_race": 0.9660242154682481,
++      "auc_bc": 0.23084455324357403,
+       "rec_detect_race": 1.0,
+       "rec_fa": 1.0
+      }
+@@ -1957,7 +2055,9 @@
+      "recall_race_faulty": 0.45789473684210524,
+      "recall_outer": 0.2578947368421053,
+      "recall_ball": 0.0,
+-     "recall_cage": 0.031578947368421054
++     "recall_cage": 0.031578947368421054,
++     "auc_bc": 0.3220221606648199,
++     "auc_bc_min": 0.011080332409972301
+     },
+     "folds": [
+      {
+@@ -1974,6 +2074,7 @@
+       "rec_fa": 0.0,
+       "recall_outer": NaN,
+       "recall_ball": NaN,
++      "auc_bc": NaN,
+       "recall_cage": NaN
+      },
+      {
+@@ -1990,6 +2091,7 @@
+       "rec_fa": 0.0,
+       "recall_outer": NaN,
+       "recall_ball": NaN,
++      "auc_bc": NaN,
+       "recall_cage": NaN
+      },
+      {
+@@ -2006,6 +2108,7 @@
+       "rec_fa": 0.0,
+       "recall_outer": NaN,
+       "recall_ball": NaN,
++      "auc_bc": NaN,
+       "recall_cage": NaN
+      },
+      {
+@@ -2022,6 +2125,7 @@
+       "rec_fa": 0.0,
+       "recall_outer": NaN,
+       "recall_ball": NaN,
++      "auc_bc": NaN,
+       "recall_cage": NaN
+      },
+      {
+@@ -2038,6 +2142,7 @@
+       "rec_fa": 0.0,
+       "recall_outer": NaN,
+       "recall_ball": NaN,
++      "auc_bc": NaN,
+       "recall_cage": NaN
+      },
+      {
+@@ -2054,6 +2159,7 @@
+       "rec_fa": 0.0,
+       "recall_outer": 0.0,
+       "recall_ball": NaN,
++      "auc_bc": NaN,
+       "recall_cage": NaN
+      },
+      {
+@@ -2070,6 +2176,7 @@
+       "rec_fa": 0.0,
+       "recall_outer": 0.0,
+       "recall_ball": NaN,
++      "auc_bc": NaN,
+       "recall_cage": NaN
+      },
+      {
+@@ -2086,6 +2193,7 @@
+       "rec_fa": 0.0,
+       "recall_outer": 0.0,
+       "recall_ball": NaN,
++      "auc_bc": NaN,
+       "recall_cage": NaN
+      },
+      {
+@@ -2102,6 +2210,7 @@
+       "rec_fa": 0.0,
+       "recall_outer": 0.2894736842105263,
+       "recall_ball": NaN,
++      "auc_bc": NaN,
+       "recall_cage": NaN
+      },
+      {
+@@ -2118,6 +2227,7 @@
+       "rec_fa": 1.0,
+       "recall_outer": 1.0,
+       "recall_ball": NaN,
++      "auc_bc": NaN,
+       "recall_cage": NaN
+      },
+      {
+@@ -2134,6 +2244,7 @@
+       "rec_fa": 0.0,
+       "recall_outer": NaN,
+       "recall_ball": 0.0,
++      "auc_bc": 0.011080332409972301,
+       "recall_cage": NaN
+      },
+      {
+@@ -2150,6 +2261,7 @@
+       "rec_fa": 0.0,
+       "recall_outer": NaN,
+       "recall_ball": 0.0,
++      "auc_bc": 0.278393351800554,
+       "recall_cage": NaN
+      },
+      {
+@@ -2166,6 +2278,7 @@
+       "rec_fa": 0.0,
+       "recall_outer": NaN,
+       "recall_ball": 0.0,
++      "auc_bc": 0.6911357340720221,
+       "recall_cage": NaN
+      },
+      {
+@@ -2182,6 +2295,7 @@
+       "rec_fa": 0.0,
+       "recall_outer": NaN,
+       "recall_ball": 0.0,
++      "auc_bc": 0.47091412742382277,
+       "recall_cage": NaN
+      },
+      {
+@@ -2198,6 +2312,7 @@
+       "rec_fa": 0.0,
+       "recall_outer": NaN,
+       "recall_ball": 0.0,
++      "auc_bc": 0.33518005540166207,
+       "recall_cage": NaN
+      },
+      {
+@@ -2214,6 +2329,7 @@
+       "rec_fa": 0.0,
+       "recall_outer": NaN,
+       "recall_ball": NaN,
++      "auc_bc": 0.314404432132964,
+       "recall_cage": 0.0
+      },
+      {
+@@ -2230,6 +2346,7 @@
+       "rec_fa": 0.0,
+       "recall_outer": NaN,
+       "recall_ball": NaN,
++      "auc_bc": 0.2673130193905817,
+       "recall_cage": 0.0
+      },
+      {
+@@ -2246,6 +2363,7 @@
+       "rec_fa": 0.0,
+       "recall_outer": NaN,
+       "recall_ball": NaN,
++      "auc_bc": 0.07617728531855956,
+       "recall_cage": 0.0
+      },
+      {
+@@ -2262,6 +2380,7 @@
+       "rec_fa": 0.0,
+       "recall_outer": NaN,
+       "recall_ball": NaN,
++      "auc_bc": 0.5706371191135734,
+       "recall_cage": 0.0
+      },
+      {
+@@ -2278,6 +2397,7 @@
+       "rec_fa": 1.0,
+       "recall_outer": NaN,
+       "recall_ball": NaN,
++      "auc_bc": 0.20498614958448755,
+       "recall_cage": 0.15789473684210525
+      }
+     ]
+@@ -2299,7 +2419,9 @@
+      "recall_outer": 0.6,
+      "recall_ball": 0.0,
+      "recall_cage": 0.005263157894736842,
+-     "typing": 0.8552631578947368
++     "typing": 0.8552631578947368,
++     "auc_bc": 0.2620498614958449,
++     "auc_bc_min": 0.0
+     },
+     "folds": [
+      {
+@@ -2317,6 +2439,7 @@
+       "typing": 1.0,
+       "recall_outer": NaN,
+       "recall_ball": NaN,
++      "auc_bc": NaN,
+       "recall_cage": NaN
+      },
+      {
+@@ -2334,6 +2457,7 @@
+       "typing": 0.7894736842105263,
+       "recall_outer": NaN,
+       "recall_ball": NaN,
++      "auc_bc": NaN,
+       "recall_cage": NaN
+      },
+      {
+@@ -2351,6 +2475,7 @@
+       "typing": 0.8947368421052632,
+       "recall_outer": NaN,
+       "recall_ball": NaN,
++      "auc_bc": NaN,
+       "recall_cage": NaN
+      },
+      {
+@@ -2368,6 +2493,7 @@
+       "typing": 1.0,
+       "recall_outer": NaN,
+       "recall_ball": NaN,
++      "auc_bc": NaN,
+       "recall_cage": NaN
+      },
+      {
+@@ -2385,6 +2511,7 @@
+       "typing": 1.0,
+       "recall_outer": NaN,
+       "recall_ball": NaN,
++      "auc_bc": NaN,
+       "recall_cage": NaN
+      },
+      {
+@@ -2402,6 +2529,7 @@
+       "typing": 1.0,
+       "recall_outer": 1.0,
+       "recall_ball": NaN,
++      "auc_bc": NaN,
+       "recall_cage": NaN
+      },
+      {
+@@ -2419,6 +2547,7 @@
+       "typing": 0.07894736842105263,
+       "recall_outer": 0.0,
+       "recall_ball": NaN,
++      "auc_bc": NaN,
+       "recall_cage": NaN
+      },
+      {
+@@ -2436,6 +2565,7 @@
+       "typing": 0.7894736842105263,
+       "recall_outer": 0.0,
+       "recall_ball": NaN,
++      "auc_bc": NaN,
+       "recall_cage": NaN
+      },
+      {
+@@ -2453,6 +2583,7 @@
+       "typing": 1.0,
+       "recall_outer": 1.0,
+       "recall_ball": NaN,
++      "auc_bc": NaN,
+       "recall_cage": NaN
+      },
+      {
+@@ -2470,6 +2601,7 @@
+       "typing": 1.0,
+       "recall_outer": 1.0,
+       "recall_ball": NaN,
++      "auc_bc": NaN,
+       "recall_cage": NaN
+      },
+      {
+@@ -2487,6 +2619,7 @@
+       "typing": NaN,
+       "recall_outer": NaN,
+       "recall_ball": 0.0,
++      "auc_bc": 0.368421052631579,
+       "recall_cage": NaN
+      },
+      {
+@@ -2504,6 +2637,7 @@
+       "typing": NaN,
+       "recall_outer": NaN,
+       "recall_ball": 0.0,
++      "auc_bc": 0.19529085872576177,
+       "recall_cage": NaN
+      },
+      {
+@@ -2521,6 +2655,7 @@
+       "typing": NaN,
+       "recall_outer": NaN,
+       "recall_ball": 0.0,
++      "auc_bc": 0.3074792243767313,
+       "recall_cage": NaN
+      },
+      {
+@@ -2538,6 +2673,7 @@
+       "typing": NaN,
+       "recall_outer": NaN,
+       "recall_ball": 0.0,
++      "auc_bc": 0.1371191135734072,
+       "recall_cage": NaN
+      },
+      {
+@@ -2555,6 +2691,7 @@
+       "typing": NaN,
+       "recall_outer": NaN,
+       "recall_ball": 0.0,
++      "auc_bc": 0.13988919667590027,
+       "recall_cage": NaN
+      },
+      {
+@@ -2572,6 +2709,7 @@
+       "typing": NaN,
+       "recall_outer": NaN,
+       "recall_ball": NaN,
++      "auc_bc": 0.5914127423822715,
+       "recall_cage": 0.0
+      },
+      {
+@@ -2589,6 +2727,7 @@
+       "typing": NaN,
+       "recall_outer": NaN,
+       "recall_ball": NaN,
++      "auc_bc": 0.0,
+       "recall_cage": 0.0
+      },
+      {
+@@ -2606,6 +2745,7 @@
+       "typing": NaN,
+       "recall_outer": NaN,
+       "recall_ball": NaN,
++      "auc_bc": 0.20775623268698062,
+       "recall_cage": 0.02631578947368421
+      },
+      {
+@@ -2623,6 +2763,7 @@
+       "typing": NaN,
+       "recall_outer": NaN,
+       "recall_ball": NaN,
++      "auc_bc": 0.4265927977839335,
+       "recall_cage": 0.0
+      },
+      {
+@@ -2640,6 +2781,7 @@
+       "typing": NaN,
+       "recall_outer": NaN,
+       "recall_ball": NaN,
++      "auc_bc": 0.24653739612188366,
+       "recall_cage": 0.0
+      }
+     ]
+@@ -2661,7 +2803,9 @@
+      "recall_outer": 0.6,
+      "recall_ball": 0.021052631578947368,
+      "recall_cage": 0.07368421052631578,
+-     "typing": 0.7473684210526317
++     "typing": 0.7473684210526317,
++     "auc_bc": 0.4652354570637119,
++     "auc_bc_min": 0.0997229916897507
+     },
+     "folds": [
+      {
+@@ -2679,6 +2823,7 @@
+       "typing": 1.0,
+       "recall_outer": NaN,
+       "recall_ball": NaN,
++      "auc_bc": NaN,
+       "recall_cage": NaN
+      },
+      {
+@@ -2696,6 +2841,7 @@
+       "typing": 0.7368421052631579,
+       "recall_outer": NaN,
+       "recall_ball": NaN,
++      "auc_bc": NaN,
+       "recall_cage": NaN
+      },
+      {
+@@ -2713,6 +2859,7 @@
+       "typing": 0.5263157894736842,
+       "recall_outer": NaN,
+       "recall_ball": NaN,
++      "auc_bc": NaN,
+       "recall_cage": NaN
+      },
+      {
+@@ -2730,6 +2877,7 @@
+       "typing": 0.5,
+       "recall_outer": NaN,
+       "recall_ball": NaN,
++      "auc_bc": NaN,
+       "recall_cage": NaN
+      },
+      {
+@@ -2747,6 +2895,7 @@
+       "typing": 0.8947368421052632,
+       "recall_outer": NaN,
+       "recall_ball": NaN,
++      "auc_bc": NaN,
+       "recall_cage": NaN
+      },
+      {
+@@ -2764,6 +2913,7 @@
+       "typing": 1.0,
+       "recall_outer": 1.0,
+       "recall_ball": NaN,
++      "auc_bc": NaN,
+       "recall_cage": NaN
+      },
+      {
+@@ -2781,6 +2931,7 @@
+       "typing": 0.2894736842105263,
+       "recall_outer": 0.0,
+       "recall_ball": NaN,
++      "auc_bc": NaN,
+       "recall_cage": NaN
+      },
+      {
+@@ -2798,6 +2949,7 @@
+       "typing": 0.5263157894736842,
+       "recall_outer": 0.0,
+       "recall_ball": NaN,
++      "auc_bc": NaN,
+       "recall_cage": NaN
+      },
+      {
+@@ -2815,6 +2967,7 @@
+       "typing": 1.0,
+       "recall_outer": 1.0,
+       "recall_ball": NaN,
++      "auc_bc": NaN,
+       "recall_cage": NaN
+      },
+      {
+@@ -2832,6 +2985,7 @@
+       "typing": 1.0,
+       "recall_outer": 1.0,
+       "recall_ball": NaN,
++      "auc_bc": NaN,
+       "recall_cage": NaN
+      },
+      {
+@@ -2849,6 +3003,7 @@
+       "typing": NaN,
+       "recall_outer": NaN,
+       "recall_ball": 0.0,
++      "auc_bc": 0.1398891966759003,
+       "recall_cage": NaN
+      },
+      {
+@@ -2866,6 +3021,7 @@
+       "typing": NaN,
+       "recall_outer": NaN,
+       "recall_ball": 0.0,
++      "auc_bc": 0.11495844875346262,
+       "recall_cage": NaN
+      },
+      {
+@@ -2883,6 +3039,7 @@
+       "typing": NaN,
+       "recall_outer": NaN,
+       "recall_ball": 0.10526315789473684,
++      "auc_bc": 0.5221606648199446,
+       "recall_cage": NaN
+      },
+      {
+@@ -2900,6 +3057,7 @@
+       "typing": NaN,
+       "recall_outer": NaN,
+       "recall_ball": 0.0,
++      "auc_bc": 0.0997229916897507,
+       "recall_cage": NaN
+      },
+      {
+@@ -2917,6 +3075,7 @@
+       "typing": NaN,
+       "recall_outer": NaN,
+       "recall_ball": 0.0,
++      "auc_bc": 0.26038781163434904,
+       "recall_cage": NaN
+      },
+      {
+@@ -2934,6 +3093,7 @@
+       "typing": NaN,
+       "recall_outer": NaN,
+       "recall_ball": NaN,
++      "auc_bc": 0.6481994459833795,
+       "recall_cage": 0.0
+      },
+      {
+@@ -2951,6 +3111,7 @@
+       "typing": NaN,
+       "recall_outer": NaN,
+       "recall_ball": NaN,
++      "auc_bc": 0.5581717451523546,
+       "recall_cage": 0.0
+      },
+      {
+@@ -2968,6 +3129,7 @@
+       "typing": NaN,
+       "recall_outer": NaN,
+       "recall_ball": NaN,
++      "auc_bc": 0.8130193905817175,
+       "recall_cage": 0.0
+      },
+      {
+@@ -2985,6 +3147,7 @@
+       "typing": NaN,
+       "recall_outer": NaN,
+       "recall_ball": NaN,
++      "auc_bc": 0.6024930747922438,
+       "recall_cage": 0.0
+      },
+      {
+@@ -3002,6 +3165,7 @@
+       "typing": NaN,
+       "recall_outer": NaN,
+       "recall_ball": NaN,
++      "auc_bc": 0.8933518005540166,
+       "recall_cage": 0.3684210526315789
+      }
+     ]
+@@ -3023,7 +3187,9 @@
+      "recall_outer": 0.6,
+      "recall_ball": 0.015789473684210527,
+      "recall_cage": 0.05263157894736842,
+-     "typing": 0.7473684210526317
++     "typing": 0.7473684210526317,
++     "auc_bc": 0.4652354570637119,
++     "auc_bc_min": 0.0997229916897507
+     },
+     "folds": [
+      {
+@@ -3041,6 +3207,7 @@
+       "typing": 1.0,
+       "recall_outer": NaN,
+       "recall_ball": NaN,
++      "auc_bc": NaN,
+       "recall_cage": NaN
+      },
+      {
+@@ -3058,6 +3225,7 @@
+       "typing": 0.7368421052631579,
+       "recall_outer": NaN,
+       "recall_ball": NaN,
++      "auc_bc": NaN,
+       "recall_cage": NaN
+      },
+      {
+@@ -3075,6 +3243,7 @@
+       "typing": 0.5263157894736842,
+       "recall_outer": NaN,
+       "recall_ball": NaN,
++      "auc_bc": NaN,
+       "recall_cage": NaN
+      },
+      {
+@@ -3092,6 +3261,7 @@
+       "typing": 0.5,
+       "recall_outer": NaN,
+       "recall_ball": NaN,
++      "auc_bc": NaN,
+       "recall_cage": NaN
+      },
+      {
+@@ -3109,6 +3279,7 @@
+       "typing": 0.8947368421052632,
+       "recall_outer": NaN,
+       "recall_ball": NaN,
++      "auc_bc": NaN,
+       "recall_cage": NaN
+      },
+      {
+@@ -3126,6 +3297,7 @@
+       "typing": 1.0,
+       "recall_outer": 1.0,
+       "recall_ball": NaN,
++      "auc_bc": NaN,
+       "recall_cage": NaN
+      },
+      {
+@@ -3143,6 +3315,7 @@
+       "typing": 0.2894736842105263,
+       "recall_outer": 0.0,
+       "recall_ball": NaN,
++      "auc_bc": NaN,
+       "recall_cage": NaN
+      },
+      {
+@@ -3160,6 +3333,7 @@
+       "typing": 0.5263157894736842,
+       "recall_outer": 0.0,
+       "recall_ball": NaN,
++      "auc_bc": NaN,
+       "recall_cage": NaN
+      },
+      {
+@@ -3177,6 +3351,7 @@
+       "typing": 1.0,
+       "recall_outer": 1.0,
+       "recall_ball": NaN,
++      "auc_bc": NaN,
+       "recall_cage": NaN
+      },
+      {
+@@ -3194,6 +3369,7 @@
+       "typing": 1.0,
+       "recall_outer": 1.0,
+       "recall_ball": NaN,
++      "auc_bc": NaN,
+       "recall_cage": NaN
+      },
+      {
+@@ -3211,6 +3387,7 @@
+       "typing": NaN,
+       "recall_outer": NaN,
+       "recall_ball": 0.0,
++      "auc_bc": 0.1398891966759003,
+       "recall_cage": NaN
+      },
+      {
+@@ -3228,6 +3405,7 @@
+       "typing": NaN,
+       "recall_outer": NaN,
+       "recall_ball": 0.0,
++      "auc_bc": 0.11495844875346262,
+       "recall_cage": NaN
+      },
+      {
+@@ -3245,6 +3423,7 @@
+       "typing": NaN,
+       "recall_outer": NaN,
+       "recall_ball": 0.07894736842105263,
++      "auc_bc": 0.5221606648199446,
+       "recall_cage": NaN
+      },
+      {
+@@ -3262,6 +3441,7 @@
+       "typing": NaN,
+       "recall_outer": NaN,
+       "recall_ball": 0.0,
++      "auc_bc": 0.0997229916897507,
+       "recall_cage": NaN
+      },
+      {
+@@ -3279,6 +3459,7 @@
+       "typing": NaN,
+       "recall_outer": NaN,
+       "recall_ball": 0.0,
++      "auc_bc": 0.26038781163434904,
+       "recall_cage": NaN
+      },
+      {
+@@ -3296,6 +3477,7 @@
+       "typing": NaN,
+       "recall_outer": NaN,
+       "recall_ball": NaN,
++      "auc_bc": 0.6481994459833795,
+       "recall_cage": 0.0
+      },
+      {
+@@ -3313,6 +3495,7 @@
+       "typing": NaN,
+       "recall_outer": NaN,
+       "recall_ball": NaN,
++      "auc_bc": 0.5581717451523546,
+       "recall_cage": 0.0
+      },
+      {
+@@ -3330,6 +3513,7 @@
+       "typing": NaN,
+       "recall_outer": NaN,
+       "recall_ball": NaN,
++      "auc_bc": 0.8130193905817175,
+       "recall_cage": 0.0
+      },
+      {
+@@ -3347,6 +3531,7 @@
+       "typing": NaN,
+       "recall_outer": NaN,
+       "recall_ball": NaN,
++      "auc_bc": 0.6024930747922438,
+       "recall_cage": 0.0
+      },
+      {
+@@ -3364,6 +3549,7 @@
+       "typing": NaN,
+       "recall_outer": NaN,
+       "recall_ball": NaN,
++      "auc_bc": 0.8933518005540166,
+       "recall_cage": 0.2631578947368421
+      }
+     ]
+@@ -3384,7 +3570,9 @@
+      "recall_race_faulty": 0.8842105263157893,
+      "recall_outer": 0.7315789473684211,
+      "recall_ball": 0.9,
+-     "recall_cage": 0.8473684210526315
++     "recall_cage": 0.8473684210526315,
++     "auc_bc": 1.0,
++     "auc_bc_min": 1.0
+     },
+     "folds": [
+      {
+@@ -3401,6 +3589,7 @@
+       "rec_fa": 0.0,
+       "recall_outer": NaN,
+       "recall_ball": NaN,
++      "auc_bc": NaN,
+       "recall_cage": NaN
+      },
+      {
+@@ -3417,6 +3606,7 @@
+       "rec_fa": 0.0,
+       "recall_outer": NaN,
+       "recall_ball": NaN,
++      "auc_bc": NaN,
+       "recall_cage": NaN
+      },
+      {
+@@ -3433,6 +3623,7 @@
+       "rec_fa": 0.0,
+       "recall_outer": NaN,
+       "recall_ball": NaN,
++      "auc_bc": NaN,
+       "recall_cage": NaN
+      },
+      {
+@@ -3449,6 +3640,7 @@
+       "rec_fa": 0.0,
+       "recall_outer": NaN,
+       "recall_ball": NaN,
++      "auc_bc": NaN,
+       "recall_cage": NaN
+      },
+      {
+@@ -3465,6 +3657,7 @@
+       "rec_fa": 0.0,
+       "recall_outer": NaN,
+       "recall_ball": NaN,
++      "auc_bc": NaN,
+       "recall_cage": NaN
+      },
+      {
+@@ -3481,6 +3674,7 @@
+       "rec_fa": 0.0,
+       "recall_outer": 1.0,
+       "recall_ball": NaN,
++      "auc_bc": NaN,
+       "recall_cage": NaN
+      },
+      {
+@@ -3497,6 +3691,7 @@
+       "rec_fa": 0.0,
+       "recall_outer": 1.0,
+       "recall_ball": NaN,
++      "auc_bc": NaN,
+       "recall_cage": NaN
+      },
+      {
+@@ -3513,6 +3708,7 @@
+       "rec_fa": 0.0,
+       "recall_outer": 0.02631578947368421,
+       "recall_ball": NaN,
++      "auc_bc": NaN,
+       "recall_cage": NaN
+      },
+      {
+@@ -3529,6 +3725,7 @@
+       "rec_fa": 1.0,
+       "recall_outer": 0.631578947368421,
+       "recall_ball": NaN,
++      "auc_bc": NaN,
+       "recall_cage": NaN
+      },
+      {
+@@ -3545,6 +3742,7 @@
+       "rec_fa": 0.0,
+       "recall_outer": 1.0,
+       "recall_ball": NaN,
++      "auc_bc": NaN,
+       "recall_cage": NaN
+      },
+      {
+@@ -3561,6 +3759,7 @@
+       "rec_fa": 0.0,
+       "recall_outer": NaN,
+       "recall_ball": 1.0,
++      "auc_bc": 1.0,
+       "recall_cage": NaN
+      },
+      {
+@@ -3577,6 +3776,7 @@
+       "rec_fa": 0.0,
+       "recall_outer": NaN,
+       "recall_ball": 1.0,
++      "auc_bc": 1.0,
+       "recall_cage": NaN
+      },
+      {
+@@ -3593,6 +3793,7 @@
+       "rec_fa": 1.0,
+       "recall_outer": NaN,
+       "recall_ball": 1.0,
++      "auc_bc": 1.0,
+       "recall_cage": NaN
+      },
+      {
+@@ -3609,6 +3810,7 @@
+       "rec_fa": 0.0,
+       "recall_outer": NaN,
+       "recall_ball": 1.0,
++      "auc_bc": 1.0,
+       "recall_cage": NaN
+      },
+      {
+@@ -3625,6 +3827,7 @@
+       "rec_fa": 0.0,
+       "recall_outer": NaN,
+       "recall_ball": 0.5,
++      "auc_bc": 1.0,
+       "recall_cage": NaN
+      },
+      {
+@@ -3641,6 +3844,7 @@
+       "rec_fa": 0.0,
+       "recall_outer": NaN,
+       "recall_ball": NaN,
++      "auc_bc": 1.0,
+       "recall_cage": 1.0
+      },
+      {
+@@ -3657,6 +3861,7 @@
+       "rec_fa": 0.0,
+       "recall_outer": NaN,
+       "recall_ball": NaN,
++      "auc_bc": 1.0,
+       "recall_cage": 1.0
+      },
+      {
+@@ -3673,6 +3878,7 @@
+       "rec_fa": 0.0,
+       "recall_outer": NaN,
+       "recall_ball": NaN,
++      "auc_bc": 1.0,
+       "recall_cage": 1.0
+      },
+      {
+@@ -3689,6 +3895,7 @@
+       "rec_fa": 0.0,
+       "recall_outer": NaN,
+       "recall_ball": NaN,
++      "auc_bc": 1.0,
+       "recall_cage": 0.23684210526315788
+      },
+      {
+@@ -3705,6 +3912,7 @@
+       "rec_fa": 0.0,
+       "recall_outer": NaN,
+       "recall_ball": NaN,
++      "auc_bc": 1.0,
+       "recall_cage": 1.0
+      }
+     ]
+@@ -3725,7 +3933,9 @@
+      "recall_race_faulty": 0.9263157894736842,
+      "recall_outer": 0.8368421052631578,
+      "recall_ball": 0.4052631578947368,
+-     "recall_cage": 0.3526315789473684
++     "recall_cage": 0.3526315789473684,
++     "auc_bc": 0.7601108033240996,
++     "auc_bc_min": 0.21329639889196678
+     },
+     "folds": [
+      {
+@@ -3742,6 +3952,7 @@
+       "rec_fa": 0.0,
+       "recall_outer": NaN,
+       "recall_ball": NaN,
++      "auc_bc": NaN,
+       "recall_cage": NaN
+      },
+      {
+@@ -3758,6 +3969,7 @@
+       "rec_fa": 0.0,
+       "recall_outer": NaN,
+       "recall_ball": NaN,
++      "auc_bc": NaN,
+       "recall_cage": NaN
+      },
+      {
+@@ -3774,6 +3986,7 @@
+       "rec_fa": 0.0,
+       "recall_outer": NaN,
+       "recall_ball": NaN,
++      "auc_bc": NaN,
+       "recall_cage": NaN
+      },
+      {
+@@ -3790,6 +4003,7 @@
+       "rec_fa": 0.0,
+       "recall_outer": NaN,
+       "recall_ball": NaN,
++      "auc_bc": NaN,
+       "recall_cage": NaN
+      },
+      {
+@@ -3806,6 +4020,7 @@
+       "rec_fa": 0.0,
+       "recall_outer": NaN,
+       "recall_ball": NaN,
++      "auc_bc": NaN,
+       "recall_cage": NaN
+      },
+      {
+@@ -3822,6 +4037,7 @@
+       "rec_fa": 0.0,
+       "recall_outer": 1.0,
+       "recall_ball": NaN,
++      "auc_bc": NaN,
+       "recall_cage": NaN
+      },
+      {
+@@ -3838,6 +4054,7 @@
+       "rec_fa": 0.0,
+       "recall_outer": 0.18421052631578946,
+       "recall_ball": NaN,
++      "auc_bc": NaN,
+       "recall_cage": NaN
+      },
+      {
+@@ -3854,6 +4071,7 @@
+       "rec_fa": 0.0,
+       "recall_outer": 1.0,
+       "recall_ball": NaN,
++      "auc_bc": NaN,
+       "recall_cage": NaN
+      },
+      {
+@@ -3870,6 +4088,7 @@
+       "rec_fa": 0.0,
+       "recall_outer": 1.0,
+       "recall_ball": NaN,
++      "auc_bc": NaN,
+       "recall_cage": NaN
+      },
+      {
+@@ -3886,6 +4105,7 @@
+       "rec_fa": 0.0,
+       "recall_outer": 1.0,
+       "recall_ball": NaN,
++      "auc_bc": NaN,
+       "recall_cage": NaN
+      },
+      {
+@@ -3902,6 +4122,7 @@
+       "rec_fa": 0.0,
+       "recall_outer": NaN,
+       "recall_ball": 1.0,
++      "auc_bc": 1.0,
+       "recall_cage": NaN
+      },
+      {
+@@ -3918,6 +4139,7 @@
+       "rec_fa": 0.0,
+       "recall_outer": NaN,
+       "recall_ball": 0.07894736842105263,
++      "auc_bc": 0.4376731301939058,
+       "recall_cage": NaN
+      },
+      {
+@@ -3934,6 +4156,7 @@
+       "rec_fa": 0.0,
+       "recall_outer": NaN,
+       "recall_ball": 0.2894736842105263,
++      "auc_bc": 0.4238227146814405,
+       "recall_cage": NaN
+      },
+      {
+@@ -3950,6 +4173,7 @@
+       "rec_fa": 0.0,
+       "recall_outer": NaN,
+       "recall_ball": 0.6578947368421053,
++      "auc_bc": 1.0,
+       "recall_cage": NaN
+      },
+      {
+@@ -3966,6 +4190,7 @@
+       "rec_fa": 0.0,
+       "recall_outer": NaN,
+       "recall_ball": 0.0,
++      "auc_bc": 0.21329639889196678,
+       "recall_cage": NaN
+      },
+      {
+@@ -3982,6 +4207,7 @@
+       "rec_fa": 1.0,
+       "recall_outer": NaN,
+       "recall_ball": NaN,
++      "auc_bc": 0.943213296398892,
+       "recall_cage": 1.0
+      },
+      {
+@@ -3998,6 +4224,7 @@
+       "rec_fa": 0.0,
+       "recall_outer": NaN,
+       "recall_ball": NaN,
++      "auc_bc": 0.6329639889196677,
+       "recall_cage": 0.0
+      },
+      {
+@@ -4014,6 +4241,7 @@
+       "rec_fa": 0.0,
+       "recall_outer": NaN,
+       "recall_ball": NaN,
++      "auc_bc": 0.9916897506925209,
+       "recall_cage": 0.7631578947368421
+      },
+      {
+@@ -4030,6 +4258,7 @@
+       "rec_fa": 0.0,
+       "recall_outer": NaN,
+       "recall_ball": NaN,
++      "auc_bc": 0.9653739612188366,
+       "recall_cage": 0.0
+      },
+      {
+@@ -4046,6 +4275,7 @@
+       "rec_fa": 0.0,
+       "recall_outer": NaN,
+       "recall_ball": NaN,
++      "auc_bc": 0.9930747922437673,
+       "recall_cage": 0.0
+      }
+     ]
+@@ -4066,7 +4296,9 @@
+      "recall_race_faulty": 0.8578947368421053,
+      "recall_outer": 0.8,
+      "recall_ball": 0.3052631578947368,
+-     "recall_cage": 0.3105263157894737
++     "recall_cage": 0.3105263157894737,
++     "auc_bc": 0.7470914127423823,
++     "auc_bc_min": 0.25346260387811637
+     },
+     "folds": [
+      {
+@@ -4083,6 +4315,7 @@
+       "rec_fa": 0.0,
+       "recall_outer": NaN,
+       "recall_ball": NaN,
++      "auc_bc": NaN,
+       "recall_cage": NaN
+      },
+      {
+@@ -4099,6 +4332,7 @@
+       "rec_fa": 0.0,
+       "recall_outer": NaN,
+       "recall_ball": NaN,
++      "auc_bc": NaN,
+       "recall_cage": NaN
+      },
+      {
+@@ -4115,6 +4349,7 @@
+       "rec_fa": 0.0,
+       "recall_outer": NaN,
+       "recall_ball": NaN,
++      "auc_bc": NaN,
+       "recall_cage": NaN
+      },
+      {
+@@ -4131,6 +4366,7 @@
+       "rec_fa": 1.0,
+       "recall_outer": NaN,
+       "recall_ball": NaN,
++      "auc_bc": NaN,
+       "recall_cage": NaN
+      },
+      {
+@@ -4147,6 +4383,7 @@
+       "rec_fa": 0.0,
+       "recall_outer": NaN,
+       "recall_ball": NaN,
++      "auc_bc": NaN,
+       "recall_cage": NaN
+      },
+      {
+@@ -4163,6 +4400,7 @@
+       "rec_fa": 0.0,
+       "recall_outer": 1.0,
+       "recall_ball": NaN,
++      "auc_bc": NaN,
+       "recall_cage": NaN
+      },
+      {
+@@ -4179,6 +4417,7 @@
+       "rec_fa": 0.0,
+       "recall_outer": 0.0,
+       "recall_ball": NaN,
++      "auc_bc": NaN,
+       "recall_cage": NaN
+      },
+      {
+@@ -4195,6 +4434,7 @@
+       "rec_fa": 0.0,
+       "recall_outer": 1.0,
+       "recall_ball": NaN,
++      "auc_bc": NaN,
+       "recall_cage": NaN
+      },
+      {
+@@ -4211,6 +4451,7 @@
+       "rec_fa": 0.0,
+       "recall_outer": 1.0,
+       "recall_ball": NaN,
++      "auc_bc": NaN,
+       "recall_cage": NaN
+      },
+      {
+@@ -4227,6 +4468,7 @@
+       "rec_fa": 0.0,
+       "recall_outer": 1.0,
+       "recall_ball": NaN,
++      "auc_bc": NaN,
+       "recall_cage": NaN
+      },
+      {
+@@ -4243,6 +4485,7 @@
+       "rec_fa": 0.0,
+       "recall_outer": NaN,
+       "recall_ball": 1.0,
++      "auc_bc": 1.0,
+       "recall_cage": NaN
+      },
+      {
+@@ -4259,6 +4502,7 @@
+       "rec_fa": 0.0,
+       "recall_outer": NaN,
+       "recall_ball": 0.0,
++      "auc_bc": 0.39750692520775627,
+       "recall_cage": NaN
+      },
+      {
+@@ -4275,6 +4519,7 @@
+       "rec_fa": 0.0,
+       "recall_outer": NaN,
+       "recall_ball": 0.02631578947368421,
++      "auc_bc": 0.4916897506925208,
+       "recall_cage": NaN
+      },
+      {
+@@ -4291,6 +4536,7 @@
+       "rec_fa": 0.0,
+       "recall_outer": NaN,
+       "recall_ball": 0.5,
++      "auc_bc": 0.9168975069252078,
+       "recall_cage": NaN
+      },
+      {
+@@ -4307,6 +4553,7 @@
+       "rec_fa": 0.0,
+       "recall_outer": NaN,
+       "recall_ball": 0.0,
++      "auc_bc": 0.25346260387811637,
+       "recall_cage": NaN
+      },
+      {
+@@ -4323,6 +4570,7 @@
+       "rec_fa": 1.0,
+       "recall_outer": NaN,
+       "recall_ball": NaN,
++      "auc_bc": 0.943213296398892,
+       "recall_cage": 1.0
+      },
+      {
+@@ -4339,6 +4587,7 @@
+       "rec_fa": 0.0,
+       "recall_outer": NaN,
+       "recall_ball": NaN,
++      "auc_bc": 0.7700831024930749,
+       "recall_cage": 0.0
+      },
+      {
+@@ -4355,6 +4604,7 @@
+       "rec_fa": 0.0,
+       "recall_outer": NaN,
+       "recall_ball": NaN,
++      "auc_bc": 0.9916897506925209,
+       "recall_cage": 0.5526315789473685
+      },
+      {
+@@ -4371,6 +4621,7 @@
+       "rec_fa": 0.0,
+       "recall_outer": NaN,
+       "recall_ball": NaN,
++      "auc_bc": 0.7382271468144044,
+       "recall_cage": 0.0
+      },
+      {
+@@ -4387,6 +4638,7 @@
+       "rec_fa": 0.0,
+       "recall_outer": NaN,
+       "recall_ball": NaN,
++      "auc_bc": 0.9681440443213296,
+       "recall_cage": 0.0
+      }
+     ]
+@@ -4409,7 +4661,9 @@
+      "recall_race_faulty": 0.6105263157894738,
+      "recall_outer": 0.5052631578947369,
+      "recall_ball": 0.042105263157894736,
+-     "recall_cage": 0.021052631578947368
++     "recall_cage": 0.021052631578947368,
++     "auc_bc": 0.318421052631579,
++     "auc_bc_min": 0.014619883040935675
+     },
+     "folds": [
+      {
+@@ -4426,6 +4680,7 @@
+       "rec_fa": 0.0,
+       "recall_outer": NaN,
+       "recall_ball": NaN,
++      "auc_bc": NaN,
+       "recall_cage": NaN
+      },
+      {
+@@ -4442,6 +4697,7 @@
+       "rec_fa": 0.0,
+       "recall_outer": NaN,
+       "recall_ball": NaN,
++      "auc_bc": NaN,
+       "recall_cage": NaN
+      },
+      {
+@@ -4458,6 +4714,7 @@
+       "rec_fa": 0.0,
+       "recall_outer": NaN,
+       "recall_ball": NaN,
++      "auc_bc": NaN,
+       "recall_cage": NaN
+      },
+      {
+@@ -4474,6 +4731,7 @@
+       "rec_fa": 0.0,
+       "recall_outer": NaN,
+       "recall_ball": NaN,
++      "auc_bc": NaN,
+       "recall_cage": NaN
+      },
+      {
+@@ -4490,6 +4748,7 @@
+       "rec_fa": 0.0,
+       "recall_outer": NaN,
+       "recall_ball": NaN,
++      "auc_bc": NaN,
+       "recall_cage": NaN
+      },
+      {
+@@ -4506,6 +4765,7 @@
+       "rec_fa": 0.0,
+       "recall_outer": 0.0,
+       "recall_ball": NaN,
++      "auc_bc": NaN,
+       "recall_cage": NaN
+      },
+      {
+@@ -4522,6 +4782,7 @@
+       "rec_fa": 0.0,
+       "recall_outer": 0.07894736842105263,
+       "recall_ball": NaN,
++      "auc_bc": NaN,
+       "recall_cage": NaN
+      },
+      {
+@@ -4538,6 +4799,7 @@
+       "rec_fa": 0.0,
+       "recall_outer": 0.5789473684210527,
+       "recall_ball": NaN,
++      "auc_bc": NaN,
+       "recall_cage": NaN
+      },
+      {
+@@ -4554,6 +4816,7 @@
+       "rec_fa": 0.0,
+       "recall_outer": 0.868421052631579,
+       "recall_ball": NaN,
++      "auc_bc": NaN,
+       "recall_cage": NaN
+      },
+      {
+@@ -4570,6 +4833,7 @@
+       "rec_fa": 0.0,
+       "recall_outer": 1.0,
+       "recall_ball": NaN,
++      "auc_bc": NaN,
+       "recall_cage": NaN
+      },
+      {
+@@ -4586,6 +4850,7 @@
+       "rec_fa": 0.0,
+       "recall_outer": NaN,
+       "recall_ball": 0.0,
++      "auc_bc": 0.014619883040935675,
+       "recall_cage": NaN
+      },
+      {
+@@ -4602,6 +4867,7 @@
+       "rec_fa": 0.0,
+       "recall_outer": NaN,
+       "recall_ball": 0.02631578947368421,
++      "auc_bc": 0.2894736842105263,
+       "recall_cage": NaN
+      },
+      {
+@@ -4618,6 +4884,7 @@
+       "rec_fa": 0.0,
+       "recall_outer": NaN,
+       "recall_ball": 0.18421052631578946,
++      "auc_bc": 0.6315789473684211,
+       "recall_cage": NaN
+      },
+      {
+@@ -4634,6 +4901,7 @@
+       "rec_fa": 0.0,
+       "recall_outer": NaN,
+       "recall_ball": 0.0,
++      "auc_bc": 0.4590643274853802,
+       "recall_cage": NaN
+      },
+      {
+@@ -4650,6 +4918,7 @@
+       "rec_fa": 0.0,
+       "recall_outer": NaN,
+       "recall_ball": 0.0,
++      "auc_bc": 0.41812865497076024,
+       "recall_cage": NaN
+      },
+      {
+@@ -4666,6 +4935,7 @@
+       "rec_fa": 0.0,
+       "recall_outer": NaN,
+       "recall_ball": NaN,
++      "auc_bc": 0.3654970760233918,
+       "recall_cage": 0.0
+      },
+      {
+@@ -4682,6 +4952,7 @@
+       "rec_fa": 0.0,
+       "recall_outer": NaN,
+       "recall_ball": NaN,
++      "auc_bc": 0.2105263157894737,
+       "recall_cage": 0.02631578947368421
+      },
+      {
+@@ -4698,6 +4969,7 @@
+       "rec_fa": 0.0,
+       "recall_outer": NaN,
+       "recall_ball": NaN,
++      "auc_bc": 0.05555555555555556,
+       "recall_cage": 0.0
+      },
+      {
+@@ -4714,6 +4986,7 @@
+       "rec_fa": 0.0,
+       "recall_outer": NaN,
+       "recall_ball": NaN,
++      "auc_bc": 0.5789473684210527,
+       "recall_cage": 0.02631578947368421
+      },
+      {
+@@ -4730,6 +5003,7 @@
+       "rec_fa": 0.0,
+       "recall_outer": NaN,
+       "recall_ball": NaN,
++      "auc_bc": 0.16081871345029242,
+       "recall_cage": 0.05263157894736842
+      }
+     ]
+@@ -4751,7 +5025,9 @@
+      "recall_outer": 0.8421052631578949,
+      "recall_ball": 0.23157894736842105,
+      "recall_cage": 0.6263157894736842,
+-     "typing": 0.7973684210526316
++     "typing": 0.7973684210526316,
++     "auc_bc": 0.5947368421052632,
++     "auc_bc_min": 0.25146198830409355
+     },
+     "folds": [
+      {
+@@ -4769,6 +5045,7 @@
+       "typing": 1.0,
+       "recall_outer": NaN,
+       "recall_ball": NaN,
++      "auc_bc": NaN,
+       "recall_cage": NaN
+      },
+      {
+@@ -4786,6 +5063,7 @@
+       "typing": 0.9736842105263158,
+       "recall_outer": NaN,
+       "recall_ball": NaN,
++      "auc_bc": NaN,
+       "recall_cage": NaN
+      },
+      {
+@@ -4803,6 +5081,7 @@
+       "typing": 0.3157894736842105,
+       "recall_outer": NaN,
+       "recall_ball": NaN,
++      "auc_bc": NaN,
+       "recall_cage": NaN
+      },
+      {
+@@ -4820,6 +5099,7 @@
+       "typing": 0.47368421052631576,
+       "recall_outer": NaN,
+       "recall_ball": NaN,
++      "auc_bc": NaN,
+       "recall_cage": NaN
+      },
+      {
+@@ -4837,6 +5117,7 @@
+       "typing": 1.0,
+       "recall_outer": NaN,
+       "recall_ball": NaN,
++      "auc_bc": NaN,
+       "recall_cage": NaN
+      },
+      {
+@@ -4854,6 +5135,7 @@
+       "typing": 1.0,
+       "recall_outer": 1.0,
+       "recall_ball": NaN,
++      "auc_bc": NaN,
+       "recall_cage": NaN
+      },
+      {
+@@ -4871,6 +5153,7 @@
+       "typing": 0.5263157894736842,
+       "recall_outer": 0.6578947368421053,
+       "recall_ball": NaN,
++      "auc_bc": NaN,
+       "recall_cage": NaN
+      },
+      {
+@@ -4888,6 +5171,7 @@
+       "typing": 0.6842105263157895,
+       "recall_outer": 0.5526315789473685,
+       "recall_ball": NaN,
++      "auc_bc": NaN,
+       "recall_cage": NaN
+      },
+      {
+@@ -4905,6 +5189,7 @@
+       "typing": 1.0,
+       "recall_outer": 1.0,
+       "recall_ball": NaN,
++      "auc_bc": NaN,
+       "recall_cage": NaN
+      },
+      {
+@@ -4922,6 +5207,7 @@
+       "typing": 1.0,
+       "recall_outer": 1.0,
+       "recall_ball": NaN,
++      "auc_bc": NaN,
+       "recall_cage": NaN
+      },
+      {
+@@ -4939,6 +5225,7 @@
+       "typing": NaN,
+       "recall_outer": NaN,
+       "recall_ball": 0.15789473684210525,
++      "auc_bc": 0.4619883040935673,
+       "recall_cage": NaN
+      },
+      {
+@@ -4956,6 +5243,7 @@
+       "typing": NaN,
+       "recall_outer": NaN,
+       "recall_ball": 0.18421052631578946,
++      "auc_bc": 0.25146198830409355,
+       "recall_cage": NaN
+      },
+      {
+@@ -4973,6 +5261,7 @@
+       "typing": NaN,
+       "recall_outer": NaN,
+       "recall_ball": 0.6052631578947368,
++      "auc_bc": 0.8421052631578947,
+       "recall_cage": NaN
+      },
+      {
+@@ -4990,6 +5279,7 @@
+       "typing": NaN,
+       "recall_outer": NaN,
+       "recall_ball": 0.10526315789473684,
++      "auc_bc": 0.42690058479532167,
+       "recall_cage": NaN
+      },
+      {
+@@ -5007,6 +5297,7 @@
+       "typing": NaN,
+       "recall_outer": NaN,
+       "recall_ball": 0.10526315789473684,
++      "auc_bc": 0.29239766081871343,
+       "recall_cage": NaN
+      },
+      {
+@@ -5024,6 +5315,7 @@
+       "typing": NaN,
+       "recall_outer": NaN,
+       "recall_ball": NaN,
++      "auc_bc": 0.6461988304093567,
+       "recall_cage": 0.631578947368421
+      },
+      {
+@@ -5041,6 +5333,7 @@
+       "typing": NaN,
+       "recall_outer": NaN,
+       "recall_ball": NaN,
++      "auc_bc": 0.8976608187134503,
+       "recall_cage": 0.7631578947368421
+      },
+      {
+@@ -5058,6 +5351,7 @@
+       "typing": NaN,
+       "recall_outer": NaN,
+       "recall_ball": NaN,
++      "auc_bc": 0.9269005847953216,
+       "recall_cage": 0.631578947368421
+      },
+      {
+@@ -5075,6 +5369,7 @@
+       "typing": NaN,
+       "recall_outer": NaN,
+       "recall_ball": NaN,
++      "auc_bc": 0.5058479532163742,
+       "recall_cage": 0.42105263157894735
+      },
+      {
+@@ -5092,6 +5387,7 @@
+       "typing": NaN,
+       "recall_outer": NaN,
+       "recall_ball": NaN,
++      "auc_bc": 0.695906432748538,
+       "recall_cage": 0.6842105263157895
+      }
+     ]
+@@ -5113,7 +5409,9 @@
+      "recall_outer": 0.8,
+      "recall_ball": 0.1789473684210526,
+      "recall_cage": 0.7105263157894737,
+-     "typing": 0.7736842105263158
++     "typing": 0.7736842105263158,
++     "auc_bc": 0.5657894736842106,
++     "auc_bc_min": 0.14912280701754388
+     },
+     "folds": [
+      {
+@@ -5131,6 +5429,7 @@
+       "typing": 1.0,
+       "recall_outer": NaN,
+       "recall_ball": NaN,
++      "auc_bc": NaN,
+       "recall_cage": NaN
+      },
+      {
+@@ -5148,6 +5447,7 @@
+       "typing": 1.0,
+       "recall_outer": NaN,
+       "recall_ball": NaN,
++      "auc_bc": NaN,
+       "recall_cage": NaN
+      },
+      {
+@@ -5165,6 +5465,7 @@
+       "typing": 0.47368421052631576,
+       "recall_outer": NaN,
+       "recall_ball": NaN,
++      "auc_bc": NaN,
+       "recall_cage": NaN
+      },
+      {
+@@ -5182,6 +5483,7 @@
+       "typing": 0.5,
+       "recall_outer": NaN,
+       "recall_ball": NaN,
++      "auc_bc": NaN,
+       "recall_cage": NaN
+      },
+      {
+@@ -5199,6 +5501,7 @@
+       "typing": 0.4473684210526316,
+       "recall_outer": NaN,
+       "recall_ball": NaN,
++      "auc_bc": NaN,
+       "recall_cage": NaN
+      },
+      {
+@@ -5216,6 +5519,7 @@
+       "typing": 1.0,
+       "recall_outer": 1.0,
+       "recall_ball": NaN,
++      "auc_bc": NaN,
+       "recall_cage": NaN
+      },
+      {
+@@ -5233,6 +5537,7 @@
+       "typing": 0.47368421052631576,
+       "recall_outer": 0.5263157894736842,
+       "recall_ball": NaN,
++      "auc_bc": NaN,
+       "recall_cage": NaN
+      },
+      {
+@@ -5250,6 +5555,7 @@
+       "typing": 0.8421052631578947,
+       "recall_outer": 0.47368421052631576,
+       "recall_ball": NaN,
++      "auc_bc": NaN,
+       "recall_cage": NaN
+      },
+      {
+@@ -5267,6 +5573,7 @@
+       "typing": 1.0,
+       "recall_outer": 1.0,
+       "recall_ball": NaN,
++      "auc_bc": NaN,
+       "recall_cage": NaN
+      },
+      {
+@@ -5284,6 +5591,7 @@
+       "typing": 1.0,
+       "recall_outer": 1.0,
+       "recall_ball": NaN,
++      "auc_bc": NaN,
+       "recall_cage": NaN
+      },
+      {
+@@ -5301,6 +5609,7 @@
+       "typing": NaN,
+       "recall_outer": NaN,
+       "recall_ball": 0.02631578947368421,
++      "auc_bc": 0.32748538011695905,
+       "recall_cage": NaN
+      },
+      {
+@@ -5318,6 +5627,7 @@
+       "typing": NaN,
+       "recall_outer": NaN,
+       "recall_ball": 0.02631578947368421,
++      "auc_bc": 0.3304093567251462,
+       "recall_cage": NaN
+      },
+      {
+@@ -5335,6 +5645,7 @@
+       "typing": NaN,
+       "recall_outer": NaN,
+       "recall_ball": 0.5,
++      "auc_bc": 0.543859649122807,
+       "recall_cage": NaN
+      },
+      {
+@@ -5352,6 +5663,7 @@
+       "typing": NaN,
+       "recall_outer": NaN,
+       "recall_ball": 0.0,
++      "auc_bc": 0.14912280701754388,
+       "recall_cage": NaN
+      },
+      {
+@@ -5369,6 +5681,7 @@
+       "typing": NaN,
+       "recall_outer": NaN,
+       "recall_ball": 0.34210526315789475,
++      "auc_bc": 0.2514619883040936,
+       "recall_cage": NaN
+      },
+      {
+@@ -5386,6 +5699,7 @@
+       "typing": NaN,
+       "recall_outer": NaN,
+       "recall_ball": NaN,
++      "auc_bc": 0.8128654970760234,
+       "recall_cage": 0.7894736842105263
+      },
+      {
+@@ -5403,6 +5717,7 @@
+       "typing": NaN,
+       "recall_outer": NaN,
+       "recall_ball": NaN,
++      "auc_bc": 0.7777777777777777,
+       "recall_cage": 0.7368421052631579
+      },
+      {
+@@ -5420,6 +5735,7 @@
+       "typing": NaN,
+       "recall_outer": NaN,
+       "recall_ball": NaN,
++      "auc_bc": 0.8479532163742689,
+       "recall_cage": 0.7631578947368421
+      },
+      {
+@@ -5437,6 +5753,7 @@
+       "typing": NaN,
+       "recall_outer": NaN,
+       "recall_ball": NaN,
++      "auc_bc": 0.631578947368421,
+       "recall_cage": 0.2631578947368421
+      },
+      {
+@@ -5454,6 +5771,7 @@
+       "typing": NaN,
+       "recall_outer": NaN,
+       "recall_ball": NaN,
++      "auc_bc": 0.9853801169590644,
+       "recall_cage": 1.0
+      }
+     ]
+@@ -5475,7 +5793,9 @@
+      "recall_outer": 0.6526315789473685,
+      "recall_ball": 0.02631578947368421,
+      "recall_cage": 0.5947368421052632,
+-     "typing": 0.7736842105263158
++     "typing": 0.7736842105263158,
++     "auc_bc": 0.5657894736842106,
++     "auc_bc_min": 0.14912280701754388
+     },
+     "folds": [
+      {
+@@ -5493,6 +5813,7 @@
+       "typing": 1.0,
+       "recall_outer": NaN,
+       "recall_ball": NaN,
++      "auc_bc": NaN,
+       "recall_cage": NaN
+      },
+      {
+@@ -5510,6 +5831,7 @@
+       "typing": 1.0,
+       "recall_outer": NaN,
+       "recall_ball": NaN,
++      "auc_bc": NaN,
+       "recall_cage": NaN
+      },
+      {
+@@ -5527,6 +5849,7 @@
+       "typing": 0.47368421052631576,
+       "recall_outer": NaN,
+       "recall_ball": NaN,
++      "auc_bc": NaN,
+       "recall_cage": NaN
+      },
+      {
+@@ -5544,6 +5867,7 @@
+       "typing": 0.5,
+       "recall_outer": NaN,
+       "recall_ball": NaN,
++      "auc_bc": NaN,
+       "recall_cage": NaN
+      },
+      {
+@@ -5561,6 +5885,7 @@
+       "typing": 0.4473684210526316,
+       "recall_outer": NaN,
+       "recall_ball": NaN,
++      "auc_bc": NaN,
+       "recall_cage": NaN
+      },
+      {
+@@ -5578,6 +5903,7 @@
+       "typing": 1.0,
+       "recall_outer": 1.0,
+       "recall_ball": NaN,
++      "auc_bc": NaN,
+       "recall_cage": NaN
+      },
+      {
+@@ -5595,6 +5921,7 @@
+       "typing": 0.47368421052631576,
+       "recall_outer": 0.2631578947368421,
+       "recall_ball": NaN,
++      "auc_bc": NaN,
+       "recall_cage": NaN
+      },
+      {
+@@ -5612,6 +5939,7 @@
+       "typing": 0.8421052631578947,
+       "recall_outer": 0.0,
+       "recall_ball": NaN,
++      "auc_bc": NaN,
+       "recall_cage": NaN
+      },
+      {
+@@ -5629,6 +5957,7 @@
+       "typing": 1.0,
+       "recall_outer": 1.0,
+       "recall_ball": NaN,
++      "auc_bc": NaN,
+       "recall_cage": NaN
+      },
+      {
+@@ -5646,6 +5975,7 @@
+       "typing": 1.0,
+       "recall_outer": 1.0,
+       "recall_ball": NaN,
++      "auc_bc": NaN,
+       "recall_cage": NaN
+      },
+      {
+@@ -5663,6 +5993,7 @@
+       "typing": NaN,
+       "recall_outer": NaN,
+       "recall_ball": 0.0,
++      "auc_bc": 0.32748538011695905,
+       "recall_cage": NaN
+      },
+      {
+@@ -5680,6 +6011,7 @@
+       "typing": NaN,
+       "recall_outer": NaN,
+       "recall_ball": 0.0,
++      "auc_bc": 0.3304093567251462,
+       "recall_cage": NaN
+      },
+      {
+@@ -5697,6 +6029,7 @@
+       "typing": NaN,
+       "recall_outer": NaN,
+       "recall_ball": 0.13157894736842105,
++      "auc_bc": 0.543859649122807,
+       "recall_cage": NaN
+      },
+      {
+@@ -5714,6 +6047,7 @@
+       "typing": NaN,
+       "recall_outer": NaN,
+       "recall_ball": 0.0,
++      "auc_bc": 0.14912280701754388,
+       "recall_cage": NaN
+      },
+      {
+@@ -5731,6 +6065,7 @@
+       "typing": NaN,
+       "recall_outer": NaN,
+       "recall_ball": 0.0,
++      "auc_bc": 0.2514619883040936,
+       "recall_cage": NaN
+      },
+      {
+@@ -5748,6 +6083,7 @@
+       "typing": NaN,
+       "recall_outer": NaN,
+       "recall_ball": NaN,
++      "auc_bc": 0.8128654970760234,
+       "recall_cage": 0.631578947368421
+      },
+      {
+@@ -5765,6 +6101,7 @@
+       "typing": NaN,
+       "recall_outer": NaN,
+       "recall_ball": NaN,
++      "auc_bc": 0.7777777777777777,
+       "recall_cage": 0.631578947368421
+      },
+      {
+@@ -5782,6 +6119,7 @@
+       "typing": NaN,
+       "recall_outer": NaN,
+       "recall_ball": NaN,
++      "auc_bc": 0.8479532163742689,
+       "recall_cage": 0.7105263157894737
+      },
+      {
+@@ -5799,6 +6137,7 @@
+       "typing": NaN,
+       "recall_outer": NaN,
+       "recall_ball": NaN,
++      "auc_bc": 0.631578947368421,
+       "recall_cage": 0.02631578947368421
+      },
+      {
+@@ -5816,6 +6155,7 @@
+       "typing": NaN,
+       "recall_outer": NaN,
+       "recall_ball": NaN,
++      "auc_bc": 0.9853801169590644,
+       "recall_cage": 0.9736842105263158
+      }
+     ]
+@@ -5836,7 +6176,9 @@
+      "recall_race_faulty": 0.9,
+      "recall_outer": 0.8,
+      "recall_ball": 1.0,
+-     "recall_cage": 1.0
++     "recall_cage": 1.0,
++     "auc_bc": 1.0,
++     "auc_bc_min": 1.0
+     },
+     "folds": [
+      {
+@@ -5853,6 +6195,7 @@
+       "rec_fa": 0.0,
+       "recall_outer": NaN,
+       "recall_ball": NaN,
++      "auc_bc": NaN,
+       "recall_cage": NaN
+      },
+      {
+@@ -5869,6 +6212,7 @@
+       "rec_fa": 0.0,
+       "recall_outer": NaN,
+       "recall_ball": NaN,
++      "auc_bc": NaN,
+       "recall_cage": NaN
+      },
+      {
+@@ -5885,6 +6229,7 @@
+       "rec_fa": 0.0,
+       "recall_outer": NaN,
+       "recall_ball": NaN,
++      "auc_bc": NaN,
+       "recall_cage": NaN
+      },
+      {
+@@ -5901,6 +6246,7 @@
+       "rec_fa": 0.0,
+       "recall_outer": NaN,
+       "recall_ball": NaN,
++      "auc_bc": NaN,
+       "recall_cage": NaN
+      },
+      {
+@@ -5917,6 +6263,7 @@
+       "rec_fa": 0.0,
+       "recall_outer": NaN,
+       "recall_ball": NaN,
++      "auc_bc": NaN,
+       "recall_cage": NaN
+      },
+      {
+@@ -5933,6 +6280,7 @@
+       "rec_fa": 0.0,
+       "recall_outer": 1.0,
+       "recall_ball": NaN,
++      "auc_bc": NaN,
+       "recall_cage": NaN
+      },
+      {
+@@ -5949,6 +6297,7 @@
+       "rec_fa": 0.0,
+       "recall_outer": 1.0,
+       "recall_ball": NaN,
++      "auc_bc": NaN,
+       "recall_cage": NaN
+      },
+      {
+@@ -5965,6 +6314,7 @@
+       "rec_fa": 0.0,
+       "recall_outer": 1.0,
+       "recall_ball": NaN,
++      "auc_bc": NaN,
+       "recall_cage": NaN
+      },
+      {
+@@ -5981,6 +6331,7 @@
+       "rec_fa": 0.0,
+       "recall_outer": 0.0,
+       "recall_ball": NaN,
++      "auc_bc": NaN,
+       "recall_cage": NaN
+      },
+      {
+@@ -5997,6 +6348,7 @@
+       "rec_fa": 0.0,
+       "recall_outer": 1.0,
+       "recall_ball": NaN,
++      "auc_bc": NaN,
+       "recall_cage": NaN
+      },
+      {
+@@ -6013,6 +6365,7 @@
+       "rec_fa": 0.0,
+       "recall_outer": NaN,
+       "recall_ball": 1.0,
++      "auc_bc": 1.0,
+       "recall_cage": NaN
+      },
+      {
+@@ -6029,6 +6382,7 @@
+       "rec_fa": 0.0,
+       "recall_outer": NaN,
+       "recall_ball": 1.0,
++      "auc_bc": 1.0,
+       "recall_cage": NaN
+      },
+      {
+@@ -6045,6 +6399,7 @@
+       "rec_fa": 0.0,
+       "recall_outer": NaN,
+       "recall_ball": 1.0,
++      "auc_bc": 1.0,
+       "recall_cage": NaN
+      },
+      {
+@@ -6061,6 +6416,7 @@
+       "rec_fa": 0.0,
+       "recall_outer": NaN,
+       "recall_ball": 1.0,
++      "auc_bc": 1.0,
+       "recall_cage": NaN
+      },
+      {
+@@ -6077,6 +6433,7 @@
+       "rec_fa": 0.0,
+       "recall_outer": NaN,
+       "recall_ball": 1.0,
++      "auc_bc": 1.0,
+       "recall_cage": NaN
+      },
+      {
+@@ -6093,6 +6450,7 @@
+       "rec_fa": 0.0,
+       "recall_outer": NaN,
+       "recall_ball": NaN,
++      "auc_bc": 1.0,
+       "recall_cage": 1.0
+      },
+      {
+@@ -6109,6 +6467,7 @@
+       "rec_fa": 0.0,
+       "recall_outer": NaN,
+       "recall_ball": NaN,
++      "auc_bc": 1.0,
+       "recall_cage": 1.0
+      },
+      {
+@@ -6125,6 +6484,7 @@
+       "rec_fa": 0.0,
+       "recall_outer": NaN,
+       "recall_ball": NaN,
++      "auc_bc": 1.0,
+       "recall_cage": 1.0
+      },
+      {
+@@ -6141,6 +6501,7 @@
+       "rec_fa": 0.0,
+       "recall_outer": NaN,
+       "recall_ball": NaN,
++      "auc_bc": 1.0,
+       "recall_cage": 1.0
+      },
+      {
+@@ -6157,6 +6518,7 @@
+       "rec_fa": 0.0,
+       "recall_outer": NaN,
+       "recall_ball": NaN,
++      "auc_bc": 1.0,
+       "recall_cage": 1.0
+      }
+     ]
+@@ -6177,7 +6539,9 @@
+      "recall_race_faulty": 0.8526315789473685,
+      "recall_outer": 1.0,
+      "recall_ball": 0.4631578947368421,
+-     "recall_cage": 0.3368421052631579
++     "recall_cage": 0.3368421052631579,
++     "auc_bc": 0.7669590643274853,
++     "auc_bc_min": 0.2807017543859649
+     },
+     "folds": [
+      {
+@@ -6194,6 +6558,7 @@
+       "rec_fa": 0.0,
+       "recall_outer": NaN,
+       "recall_ball": NaN,
++      "auc_bc": NaN,
+       "recall_cage": NaN
+      },
+      {
+@@ -6210,6 +6575,7 @@
+       "rec_fa": 0.0,
+       "recall_outer": NaN,
+       "recall_ball": NaN,
++      "auc_bc": NaN,
+       "recall_cage": NaN
+      },
+      {
+@@ -6226,6 +6592,7 @@
+       "rec_fa": 0.0,
+       "recall_outer": NaN,
+       "recall_ball": NaN,
++      "auc_bc": NaN,
+       "recall_cage": NaN
+      },
+      {
+@@ -6242,6 +6609,7 @@
+       "rec_fa": 0.0,
+       "recall_outer": NaN,
+       "recall_ball": NaN,
++      "auc_bc": NaN,
+       "recall_cage": NaN
+      },
+      {
+@@ -6258,6 +6626,7 @@
+       "rec_fa": 0.0,
+       "recall_outer": NaN,
+       "recall_ball": NaN,
++      "auc_bc": NaN,
+       "recall_cage": NaN
+      },
+      {
+@@ -6274,6 +6643,7 @@
+       "rec_fa": 0.0,
+       "recall_outer": 1.0,
+       "recall_ball": NaN,
++      "auc_bc": NaN,
+       "recall_cage": NaN
+      },
+      {
+@@ -6290,6 +6660,7 @@
+       "rec_fa": 0.0,
+       "recall_outer": 1.0,
+       "recall_ball": NaN,
++      "auc_bc": NaN,
+       "recall_cage": NaN
+      },
+      {
+@@ -6306,6 +6677,7 @@
+       "rec_fa": 0.0,
+       "recall_outer": 1.0,
+       "recall_ball": NaN,
++      "auc_bc": NaN,
+       "recall_cage": NaN
+      },
+      {
+@@ -6322,6 +6694,7 @@
+       "rec_fa": 0.0,
+       "recall_outer": 1.0,
+       "recall_ball": NaN,
++      "auc_bc": NaN,
+       "recall_cage": NaN
+      },
+      {
+@@ -6338,6 +6711,7 @@
+       "rec_fa": 0.0,
+       "recall_outer": 1.0,
+       "recall_ball": NaN,
++      "auc_bc": NaN,
+       "recall_cage": NaN
+      },
+      {
+@@ -6354,6 +6728,7 @@
+       "rec_fa": 0.0,
+       "recall_outer": NaN,
+       "recall_ball": 1.0,
++      "auc_bc": 1.0,
+       "recall_cage": NaN
+      },
+      {
+@@ -6370,6 +6745,7 @@
+       "rec_fa": 0.0,
+       "recall_outer": NaN,
+       "recall_ball": 0.07894736842105263,
++      "auc_bc": 0.4912280701754386,
+       "recall_cage": NaN
+      },
+      {
+@@ -6386,6 +6762,7 @@
+       "rec_fa": 0.0,
+       "recall_outer": NaN,
+       "recall_ball": 0.23684210526315788,
++      "auc_bc": 0.4035087719298246,
+       "recall_cage": NaN
+      },
+      {
+@@ -6402,6 +6779,7 @@
+       "rec_fa": 0.0,
+       "recall_outer": NaN,
+       "recall_ball": 1.0,
++      "auc_bc": 1.0,
+       "recall_cage": NaN
+      },
+      {
+@@ -6418,6 +6796,7 @@
+       "rec_fa": 0.0,
+       "recall_outer": NaN,
+       "recall_ball": 0.0,
++      "auc_bc": 0.2807017543859649,
+       "recall_cage": NaN
+      },
+      {
+@@ -6434,6 +6813,7 @@
+       "rec_fa": 0.0,
+       "recall_outer": NaN,
+       "recall_ball": NaN,
++      "auc_bc": 0.9152046783625731,
+       "recall_cage": 0.8421052631578947
+      },
+      {
+@@ -6450,6 +6830,7 @@
+       "rec_fa": 0.0,
+       "recall_outer": NaN,
+       "recall_ball": NaN,
++      "auc_bc": 0.5964912280701755,
+       "recall_cage": 0.0
+      },
+      {
+@@ -6466,6 +6847,7 @@
+       "rec_fa": 0.0,
+       "recall_outer": NaN,
+       "recall_ball": NaN,
++      "auc_bc": 1.0,
+       "recall_cage": 0.0
+      },
+      {
+@@ -6482,6 +6864,7 @@
+       "rec_fa": 0.0,
+       "recall_outer": NaN,
+       "recall_ball": NaN,
++      "auc_bc": 0.9824561403508771,
+       "recall_cage": 0.05263157894736842
+      },
+      {
+@@ -6498,6 +6881,7 @@
+       "rec_fa": 0.0,
+       "recall_outer": NaN,
+       "recall_ball": NaN,
++      "auc_bc": 1.0,
+       "recall_cage": 0.7894736842105263
+      }
+     ]
+@@ -6518,7 +6902,9 @@
+      "recall_race_faulty": 0.9,
+      "recall_outer": 0.9842105263157894,
+      "recall_ball": 0.4578947368421053,
+-     "recall_cage": 0.4842105263157895
++     "recall_cage": 0.4842105263157895,
++     "auc_bc": 0.775438596491228,
++     "auc_bc_min": 0.2543859649122807
+     },
+     "folds": [
+      {
+@@ -6535,6 +6921,7 @@
+       "rec_fa": 0.0,
+       "recall_outer": NaN,
+       "recall_ball": NaN,
++      "auc_bc": NaN,
+       "recall_cage": NaN
+      },
+      {
+@@ -6551,6 +6938,7 @@
+       "rec_fa": 0.0,
+       "recall_outer": NaN,
+       "recall_ball": NaN,
++      "auc_bc": NaN,
+       "recall_cage": NaN
+      },
+      {
+@@ -6567,6 +6955,7 @@
+       "rec_fa": 0.0,
+       "recall_outer": NaN,
+       "recall_ball": NaN,
++      "auc_bc": NaN,
+       "recall_cage": NaN
+      },
+      {
+@@ -6583,6 +6972,7 @@
+       "rec_fa": 0.0,
+       "recall_outer": NaN,
+       "recall_ball": NaN,
++      "auc_bc": NaN,
+       "recall_cage": NaN
+      },
+      {
+@@ -6599,6 +6989,7 @@
+       "rec_fa": 0.0,
+       "recall_outer": NaN,
+       "recall_ball": NaN,
++      "auc_bc": NaN,
+       "recall_cage": NaN
+      },
+      {
+@@ -6615,6 +7006,7 @@
+       "rec_fa": 0.0,
+       "recall_outer": 1.0,
+       "recall_ball": NaN,
++      "auc_bc": NaN,
+       "recall_cage": NaN
+      },
+      {
+@@ -6631,6 +7023,7 @@
+       "rec_fa": 0.0,
+       "recall_outer": 1.0,
+       "recall_ball": NaN,
++      "auc_bc": NaN,
+       "recall_cage": NaN
+      },
+      {
+@@ -6647,6 +7040,7 @@
+       "rec_fa": 0.0,
+       "recall_outer": 0.9210526315789473,
+       "recall_ball": NaN,
++      "auc_bc": NaN,
+       "recall_cage": NaN
+      },
+      {
+@@ -6663,6 +7057,7 @@
+       "rec_fa": 0.0,
+       "recall_outer": 1.0,
+       "recall_ball": NaN,
++      "auc_bc": NaN,
+       "recall_cage": NaN
+      },
+      {
+@@ -6679,6 +7074,7 @@
+       "rec_fa": 0.0,
+       "recall_outer": 1.0,
+       "recall_ball": NaN,
++      "auc_bc": NaN,
+       "recall_cage": NaN
+      },
+      {
+@@ -6695,6 +7091,7 @@
+       "rec_fa": 0.0,
+       "recall_outer": NaN,
+       "recall_ball": 1.0,
++      "auc_bc": 1.0,
+       "recall_cage": NaN
+      },
+      {
+@@ -6711,6 +7108,7 @@
+       "rec_fa": 0.0,
+       "recall_outer": NaN,
+       "recall_ball": 0.0,
++      "auc_bc": 0.5292397660818714,
+       "recall_cage": NaN
+      },
+      {
+@@ -6727,6 +7125,7 @@
+       "rec_fa": 0.0,
+       "recall_outer": NaN,
+       "recall_ball": 0.2894736842105263,
++      "auc_bc": 0.49415204678362573,
+       "recall_cage": NaN
+      },
+      {
+@@ -6743,6 +7142,7 @@
+       "rec_fa": 0.0,
+       "recall_outer": NaN,
+       "recall_ball": 1.0,
++      "auc_bc": 1.0,
+       "recall_cage": NaN
+      },
+      {
+@@ -6759,6 +7159,7 @@
+       "rec_fa": 0.0,
+       "recall_outer": NaN,
+       "recall_ball": 0.0,
++      "auc_bc": 0.2543859649122807,
+       "recall_cage": NaN
+      },
+      {
+@@ -6775,6 +7176,7 @@
+       "rec_fa": 0.0,
+       "recall_outer": NaN,
+       "recall_ball": NaN,
++      "auc_bc": 0.8830409356725146,
+       "recall_cage": 0.7368421052631579
+      },
+      {
+@@ -6791,6 +7193,7 @@
+       "rec_fa": 0.0,
+       "recall_outer": NaN,
+       "recall_ball": NaN,
++      "auc_bc": 0.7807017543859649,
+       "recall_cage": 0.18421052631578946
+      },
+      {
+@@ -6807,6 +7210,7 @@
+       "rec_fa": 0.0,
+       "recall_outer": NaN,
+       "recall_ball": NaN,
++      "auc_bc": 0.9093567251461988,
+       "recall_cage": 0.4473684210526316
+      },
+      {
+@@ -6823,6 +7227,7 @@
+       "rec_fa": 0.0,
+       "recall_outer": NaN,
+       "recall_ball": NaN,
++      "auc_bc": 0.9064327485380117,
+       "recall_cage": 0.05263157894736842
+      },
+      {
+@@ -6839,6 +7244,7 @@
+       "rec_fa": 0.0,
+       "recall_outer": NaN,
+       "recall_ball": NaN,
++      "auc_bc": 0.9970760233918128,
+       "recall_cage": 1.0
+      }
+     ]
+diff --git a/scripts/analysis/v2_cache.py b/scripts/analysis/v2_cache.py
+index c99b639..1c61409 100644
+--- a/scripts/analysis/v2_cache.py
++++ b/scripts/analysis/v2_cache.py
+@@ -29,9 +29,9 @@ from domain_adaptation.features.geofree import BIN_NAMES, geofree_features, geof
+ from domain_adaptation.method import CPW_SES
+ from domain_adaptation.features.physics_v2 import V2_NAMES, v2_features, v2_features_cot
+ from envelope_cache import CWRU_RAW, PU_CODES, PU_STORE
+-from wp5_cache import COT_HOP_REVS, COT_REVS, COT_SPR, GEOMETRY, HOP, ROOTS, WIN, fingerprint as wp5_fp, to_12k
++from wp5_cache import COT_HOP_REVS, COT_REVS, COT_SPR, GEOMETRY, HOP, ROOTS, WIN, fingerprint as wp5_fp, time_domain, to_12k
+ 
+-DATASETS = ["cwru", "pu", "ottawa_2018", "ottawa_2023", "mfpt", "xjtu_sy", "hust"]
++DATASETS = ["cwru", "pu", "ottawa_2018", "ottawa_2023", "mfpt", "xjtu_sy", "hust", "paderborn_ldm"]
+ META = ["dataset", "unit", "condition", "recording", "label", "state", "damage_mode", "win", "t0", "rpm",
+         "channel", "minute"]
+ SOURCES = [Path(p) for p in ("src/domain_adaptation/features/physics_v2.py", "src/domain_adaptation/features/cot.py",
+@@ -72,12 +72,14 @@ def rows_of(rec: pdx.Recording, g, damage_mode: str = "", fset: str = "v2") -> l
+     sig, fs = to_12k(rec.signal, rec.fs)
+     base = {"dataset": rec.dataset, "unit": rec.unit, "condition": rec.condition, "recording": rec.recording,
+             "label": rec.label, "state": rec.state, "damage_mode": damage_mode,
+-            "channel": rec.meta.get("channel", ""), "minute": rec.meta.get("minute", -1)}
++            "channel": rec.meta.get("channel", ""), "minute": rec.meta.get("minute", -1),
++            **rec.meta.get("extra", {})}
++    td = (lambda w: time_domain(w)) if fset == "cpw" else (lambda w: {})   # level stats ride with method features
+     out = []
+     if rec.phase_revs is None:
+         for i, s in enumerate(range(0, len(sig) - WIN + 1, HOP)):
+             out.append({**base, "win": i, "t0": round(s / fs, 4), "rpm": rec.rpm,
+-                        **const_fn(sig[s:s + WIN], fs, rec.rpm, g)})
++                        **const_fn(sig[s:s + WIN], fs, rec.rpm, g), **td(sig[s:s + WIN])})
+         return out
+     phase = np.interp(np.arange(len(sig)) / fs, np.arange(len(rec.phase_revs)) / rec.fs, rec.phase_revs)
+     starts = np.searchsorted(phase, phase[0] + np.arange(0, phase[-1] - phase[0], COT_HOP_REVS))
+@@ -104,6 +106,10 @@ def _job(args) -> list[dict]:
+         rec = pdx.Recording("pu", code, cond, f"{code}_{run}", label, "healthy" if label == 0 else "faulty",
+                             12000.0, sig, rpm=rpm)
+         return rows_of(rec, PU_6203, mode, fset)
++    if dataset == "paderborn_ldm":
++        bearing, ch = key
++        g = lookup("61806-2RS")
++        return [r for rec in pdx.ldm_records(Path("data/paderborn_ldm"), bearing, ch) for r in rows_of(rec, g, "", fset)]
+     if dataset == "hust":   # one geometry per bearing type, from the catalog
+         return [r for rec in pdx.hust(Path("data/hust"), only=key)
+                 for r in rows_of(rec, lookup(rec.meta["bearing"]), "", fset)]
+@@ -127,6 +133,8 @@ def keys(dataset: str) -> list:
+         return [(b, ch) for b in pdx.xjtu_bearings(ROOTS[dataset]).bearing for ch in (0, 1)]
+     if dataset == "hust":
+         return sorted(p.stem for p in Path("data/hust").glob("*.mat"))
++    if dataset == "paderborn_ldm":     # channel A (primary) and C
++        return [(b, ch) for b in pdx.ldm_bearings(Path("data/paderborn_ldm")) for ch in (0, 1)]
+     root = ROOTS[dataset]
+     return sorted(p.stem for p in (root.rglob("*.mat") if dataset == "mfpt" else root.glob("*.mat")))
+ 
+@@ -150,7 +158,9 @@ def main():
+         with ProcessPoolExecutor(a.jobs) as ex:
+             for part in ex.map(_job, [(d, k, a.set) for k in keys(d)], chunksize=4):
+                 rows += part
+-        pd.DataFrame(rows)[META + names].to_csv(p, index=False, float_format="%.7g")
++        df = pd.DataFrame(rows)
++        df = df[[c for c in df.columns if c not in names] + names]     # meta (+ dataset extras) first
++        df.to_csv(p, index=False, float_format="%.7g")
+         print(f"[{d}] {len(rows)} windows in {time.time() - t0:.0f} s -> {p}", flush=True)
+ 
+ 
+diff --git a/src/domain_adaptation/data/public_datasets.py b/src/domain_adaptation/data/public_datasets.py
+index 6a881a7..4641365 100644
+--- a/src/domain_adaptation/data/public_datasets.py
++++ b/src/domain_adaptation/data/public_datasets.py
+@@ -20,6 +20,7 @@ Geometry sources (notes/17 §3):
+ """
+ from __future__ import annotations
+ 
++import json
+ import re
+ from dataclasses import dataclass, field
+ from pathlib import Path
+@@ -210,3 +211,41 @@ def hust(root: Path, only: str | None = None):
+                         label=HUST_LABEL[m["h"]], state="healthy" if m["h"] == "N" else "faulty",
+                         fs=51200.0, signal=np.asarray(d["data"], dtype=np.float64).ravel(), rpm=60.0 * shaft_hz,
+                         meta={"bearing": f"KG {btype} (HUST)", "load_W": int(m["load"]) * 100})
++
++
++# --- Paderborn LDM run-to-failure (time-varying load and speed) --------------
++# Condensed store (remote/datasets/condense_ldm.py): <root>/<B>/vibration_12k.npy
++# int16 (records, 2, 19200) on the source volt grid, meta.json, <B>_operatingConditions.csv.
++
++LDM_DEFECTS = {   # description PDF, Table 3 (found after dismantling)
++    "B01": "IR,OR,B", "B02": "IR", "B03": "IR", "B04": "IR,B", "B05": "B", "B06": "IR,B", "B07": "IR",
++    "B08": "IR,B", "B09": "OR,B", "B10": "OR,B", "B11": "IR,OR,B", "B12": "IR,B", "B13": "IR,B", "B14": "B",
++    "B15": "IR,B", "B16": "IR,OR,B", "B17": "B",
++}
++LDM_OPCOLS = {"setDynLoad / N": "set_dyn_N", "peak_dynLoad / N": "peak_dyn_N", "setStatLoad / N": "set_stat_N",
++              "meanAbs_statLoad / N": "stat_N", "setSpeed / rpm": "set_rpm", "meanAbs_speed / rpm": "speed_rpm"}
++
++
++def ldm_bearings(root: Path) -> list[str]:
++    return sorted(p.name for p in Path(root).iterdir() if (p / "vibration_12k.npy").is_file())
++
++
++def ldm_records(root: Path, bearing: str, channel: int = 0):
++    """One Recording per record: 1.6 s at 12 kHz in g, rpm = the record's measured mean speed."""
++    bdir = Path(root) / bearing
++    meta = json.loads((bdir / "meta.json").read_text())
++    codes = np.load(bdir / "vibration_12k.npy", mmap_mode="r", allow_pickle=False)
++    op = pd.read_csv(bdir / f"{bearing}_operatingConditions.csv").rename(columns=LDM_OPCOLS)
++    if len(op) != codes.shape[0]:
++        raise ValueError(f"{bearing}: {len(op)} operating-condition rows for {codes.shape[0]} records")
++    step, offset, gpv = meta["step_volts"][channel], meta["offset_volts"][channel], meta["g_per_volt"]
++    for k in range(codes.shape[0]):
++        row = op.iloc[k]
++        sig = (offset + step * np.asarray(codes[k, channel], dtype=np.float64)) * gpv
++        yield Recording("paderborn_ldm", unit=bearing, condition="varying", recording=f"{k + 1:05d}", label=-1,
++                        state="run", fs=12000.0, signal=sig, rpm=float(row.speed_rpm),
++                        meta={"minute": k + 1, "channel": meta["channels"][channel],
++                              "extra": {"record": k + 1, "time": row.Time, "speed_rpm": float(row.speed_rpm),
++                                        "set_rpm": float(row.set_rpm), "stat_N": float(row.stat_N),
++                                        "set_stat_N": float(row.set_stat_N), "peak_dyn_N": float(row.peak_dyn_N),
++                                        "set_dyn_N": float(row.set_dyn_N), "defect": LDM_DEFECTS.get(bearing, "")}})
+diff --git a/src/serving_core/services/bearing.py b/src/serving_core/services/bearing.py
+index dc4c630..ba97fe1 100644
+--- a/src/serving_core/services/bearing.py
++++ b/src/serving_core/services/bearing.py
+@@ -1,199 +1,189 @@
+-"""Service `bearing` -- subproject 3: zero-shot bearing fault DETECTION.
+-
+-What is deployed is the method that was measured to cross machines:
+-envelope-order features (src/domain_adaptation/features/envelope.py) fed to a
+-logistic regression fitted on public labelled data (CWRU), with the decision
+-threshold set from the operator's own HEALTHY recordings. It is NOT the
+-spectrogram CNN / DANN of the original experiment -- that did not transfer
+-(see notes/12 and notes/13, and report R03).
+-
+-Two ideas to keep in mind when operating it:
+-
+-* `train` is rare. It refits the source classifier from a folder of labelled
+-  public CWRU files (`source/`). A fitted copy ships inside the image
+-  (assets/source_cwru.json), so most operators never run it.
+-* `calibrate` is the step an operator runs per machine. It reads healthy
+-  recordings from `train/`, writes the machine's bearing geometry and a
+-  threshold into a new candidate version, and reports whether the machine's
+-  healthy data already looks faulty (the "K002/K005" failure mode).
+-
+-Scope (do not oversell): detection only (healthy vs not healthy), rolling-element
+-bearings only, geometry and shaft speed must be known. Validated at 900 rpm on
+-Paderborn (balanced accuracy ~0.82) and weaker at 1500 rpm (~0.69). Fault TYPE
+-is deliberately not reported -- it does not transfer reliably.
++"""Service `bearing`: rolling-element bearing monitoring for a fleet of units,
++running method v1.0 (src/domain_adaptation/method.py; specification notes/22).
++
++What it does, per unit (one physical bearing position):
++* `calibrate` reads that unit's HEALTHY recordings from `train/<unit>/` (or
++  `train/` with a `unit` sidecar key, or `train/` for the default unit) and
++  stores its own baseline. No fault data, no source dataset, no training.
++* `infer` scores new recordings from `in/<unit>/` against that unit's
++  baseline: share of 1 s windows over the cross-fitted conformal threshold ->
++  verdict (healthy / watch / faulty), which race the rise points at
++  (typing), and per-unit CUSUM trend statistics across recordings.
++
++Bearing per unit: a catalog designation (src/domain_adaptation/bearings.py),
++explicit geometry, or manufacturer fault factors. With none of these the unit
++runs the geometry-free score (notes/23): detection without typing.
++
++Shaft speed per recording is REQUIRED (sidecar `rpm`, or `rpm` in the
++config / per unit); speed estimated from vibration is not adequate (notes/20).
++
++Not covered (notes/22 §5): ball and cage faults, machines without a speed
++signal, units without healthy history of their own.
+ """
+ from __future__ import annotations
+ 
++import csv
+ import json
+ from pathlib import Path
+ 
+ import numpy as np
+ 
++from domain_adaptation.bearings import FaultOrders, from_dims, from_factors, lookup
+ from domain_adaptation.data.transforms import resample_to_rate
+-from domain_adaptation.features.envelope import (
+-    CWRU_6205, FEATURE_NAMES, BearingGeometry, envelope_order_features,
++from domain_adaptation.features.envelope import BearingGeometry, envelope_order_features
++from domain_adaptation.features.geofree import BIN_CENTRES, BIN_NAMES, geofree_features
++from domain_adaptation.method import (
++    CPW_SES, CUSUM_K, HOP, LINES, METHOD_VERSION, OUTER, WIN, Baseline, default_groups, fit_baseline,
+ )
+-from serving_core.service import ConfigError, Context, Outcome, Service
++from serving_core.service import ConfigError, Context, NotSupported, Outcome, Service
+ from serving_core.signals import InputError, list_signal_files, load_signal, read_sidecar
+-from vibration_ad.data.windows import make_windows
++from serving_core.util import iso
+ 
+-FS_MODEL = 12000          # every signal is resampled to this before windowing
+-WIN = 12000               # 1 s: resolves ~0.07 order at 900 rpm
+-HOP = 6000
+-ASSET = Path(__file__).parent / "assets" / "source_cwru.json"
++FS_MODEL = 12000
++MIN_CUSUM_H = 5.0          # floor for a trend threshold set from a short baseline
++TREND_FILE = "bearing_trend.csv"
++TREND_COLUMNS = ["time", "unit", "file", "physics_z", "level_z", "cusum_physics", "cusum_level", "trend_alarm"]
+ 
+ 
+-# ───────────────────────── features ─────────────────────────
+-def geometry_from(d: dict) -> BearingGeometry:
+-    return BearingGeometry(
+-        name=str(d.get("name", "bearing")), n_balls=int(d["n_balls"]),
+-        ball_diameter=float(d["ball_diameter"]), pitch_diameter=float(d["pitch_diameter"]),
+-        contact_angle_deg=float(d.get("contact_angle_deg", 0.0)),
+-    )
+-
+-
+-def check_speed(rpm: float, geom: BearingGeometry, band_hz) -> None:
+-    """The 1 s window and 12 kHz rate limit which speeds are measurable."""
++# ───────────────────────── bearing and speed ─────────────────────────
++def resolve_bearing(d: dict | None) -> BearingGeometry | FaultOrders | None:
++    """Config `bearing:` block -> geometry, fault orders, or None (geometry-free)."""
++    d = d or {}
++    dims = [d.get(k) for k in ("n_balls", "ball_diameter", "pitch_diameter")]
++    if d.get("designation"):
++        try:
++            return lookup(str(d["designation"]))
++        except KeyError as e:
++            raise ConfigError(str(e).strip('"'))
++    if all(v is not None for v in dims):
++        return from_dims(int(dims[0]), float(dims[1]), float(dims[2]), float(d.get("contact_angle_deg") or 0.0),
++                         name=str(d.get("name") or "bearing"))
++    if d.get("bpfo") is not None and d.get("bpfi") is not None:
++        return from_factors(float(d["bpfo"]), float(d["bpfi"]), d.get("ftf"), d.get("bsf"), name=str(d.get("name") or "factors"))
++    if any(v is not None for v in dims) or d.get("bpfo") is not None or d.get("bpfi") is not None:
++        raise ConfigError("bearing: give a designation, OR n_balls + ball_diameter + pitch_diameter together, "
++                          "OR bpfo + bpfi (fault factors in orders) -- or nothing for the geometry-free mode")
++    return None
++
++
++def geometry_to_dict(g) -> dict | None:
++    if g is None:
++        return None
++    if isinstance(g, FaultOrders):
++        return {"kind": "factors", "name": g.name, "bpfo": g.bpfo, "bpfi": g.bpfi, "ftf": g.ftf, "bsf": g.bsf}
++    return {"kind": "dims", "name": g.name, "n_balls": g.n_balls, "ball_diameter": g.ball_diameter,
++            "pitch_diameter": g.pitch_diameter, "contact_angle_deg": g.contact_angle_deg, "bpfo": g.bpfo, "bpfi": g.bpfi}
++
++
++def geometry_from_dict(d: dict | None):
++    if d is None:
++        return None
++    if d["kind"] == "factors":
++        return FaultOrders(d["name"], d["bpfo"], d["bpfi"], d.get("ftf", float("nan")), d.get("bsf", float("nan")))
++    return BearingGeometry(d["name"], d["n_balls"], d["ball_diameter"], d["pitch_diameter"], d["contact_angle_deg"])
++
++
++def check_speed(rpm: float, geom) -> None:
++    """The 1 s window and 12 kHz rate bound the measurable speeds."""
+     shaft = rpm / 60.0
+     if shaft < 5:
+         raise InputError(f"rpm={rpm:g} is too low for 1 s analysis windows (need >= 300 rpm)")
+-    top = 3 * geom.bpfi * shaft + 2 * shaft
++    top = (3 * geom.bpfi + 1) * shaft if geom is not None else 15.5 * shaft
+     if top > FS_MODEL / 2 * 0.9:
+-        raise InputError(f"rpm={rpm:g} is too high: BPFI harmonics ({top:.0f} Hz) would pass the analysis range")
+-
+-
+-def window_features(signal: np.ndarray, fs_hz: float, rpm: float, geom: BearingGeometry,
+-                    band_hz, max_windows: int | None) -> tuple[np.ndarray, int]:
+-    """(features [n, 13], total windows available). Evenly subsamples long files."""
+-    if fs_hz < 2 * band_hz[1]:
+-        raise InputError(f"fs={fs_hz:g} Hz is too low for the {band_hz[0]:g}-{band_hz[1]:g} Hz analysis band")
+-    sig = resample_to_rate(signal, int(round(fs_hz)), FS_MODEL) if int(round(fs_hz)) != FS_MODEL else signal
+-    wins = make_windows(sig, WIN, HOP)
+-    if len(wins) == 0:
+-        raise InputError(f"too short: {len(sig) / FS_MODEL:.2f} s at {FS_MODEL} Hz after resampling, need >= {WIN / FS_MODEL:.0f} s")
+-    total = len(wins)
++        raise InputError(f"rpm={rpm:g} is too high: the fault lines ({top:.0f} Hz) would pass the 12 kHz analysis range")
++
++
++# ───────────────────────── features ─────────────────────────
++def window_features(signal: np.ndarray, fs_hz: float, rpm: float, geom, max_windows: int | None):
++    """-> (X [n, 6 lines or 135 bins], window start times, total windows, mean log RMS)."""
++    if not np.isfinite(signal).all():
++        raise InputError("signal contains NaN or infinite values")
++    fs_i = int(round(fs_hz))
++    sig = signal if fs_i == FS_MODEL else resample_to_rate(np.asarray(signal, dtype=np.float64), fs_i, FS_MODEL)
++    starts = np.arange(0, len(sig) - WIN + 1, HOP)
++    if len(starts) == 0:
++        raise InputError(f"too short: {len(sig) / FS_MODEL:.2f} s after resampling to {FS_MODEL} Hz; need >= 1 s")
++    total = len(starts)
+     if max_windows and total > max_windows:
+-        wins = wins[np.linspace(0, total - 1, max_windows).round().astype(int)]
+-    rows = [envelope_order_features(w, FS_MODEL, rpm, geom, tuple(band_hz)) for w in wins]
+-    return np.array([[r[n] for n in FEATURE_NAMES] for r in rows], dtype=np.float64), total
+-
+-
+-class SourceModel:
+-    """Standardiser + logistic regression, stored as plain JSON (no pickle)."""
+-
+-    def __init__(self, d: dict):
+-        self.d = d
+-        self.mean = np.array(d["mean"]); self.scale = np.array(d["scale"])
+-        self.coef = np.array(d["coef"]); self.intercept = float(d["intercept"])
+-        if d["feature_names"] != FEATURE_NAMES:
+-            raise ValueError("source model was fitted with different feature names than this code version")
+-
+-    def score(self, X: np.ndarray) -> np.ndarray:
+-        z = (X - self.mean) / self.scale
+-        return 1.0 / (1.0 + np.exp(-(z @ self.coef + self.intercept)))
+-
+-
+-def fit_source(source_dir: Path, per_file: int | None, log=None) -> tuple[dict, dict, list[Path]]:
+-    """Fit on the labelled CWRU folder. Returns (model dict, metrics, files used)."""
+-    from sklearn.linear_model import LogisticRegression
+-    from sklearn.model_selection import GroupKFold, cross_val_score
+-    from sklearn.preprocessing import StandardScaler
+-
+-    from domain_adaptation.data.cwru_loader import build_cwru_catalog
+-
+-    cat = build_cwru_catalog(source_dir, [1730, 1750, 1772], 1797)
+-    X, y, groups, used = [], [], [], []
+-    for i, r in enumerate(cat.itertuples()):
+-        z = np.load(r.filepath)
+-        sig = np.asarray(z["DE"]).squeeze().astype(np.float64)
+-        feats, _ = window_features(sig, 12000, float(r.rpm), CWRU_6205, (1500.0, 5500.0), per_file)
+-        X.append(feats); y += [int(r.universal_label > 0)] * len(feats); groups += [i] * len(feats)
+-        used.append(Path(r.filepath))
+-        if log and i % 10 == 0:
+-            log.info("source features: %d/%d files", i + 1, len(cat))
+-    X = np.vstack(X); y = np.array(y); groups = np.array(groups)
+-    sc = StandardScaler().fit(X)
+-    clf = LogisticRegression(max_iter=2000, class_weight="balanced").fit(sc.transform(X), y)
+-    # Honest in-domain check: folds split by FILE, not by window (windows of one
+-    # recording are near-duplicates and would leak).
+-    cv = cross_val_score(LogisticRegression(max_iter=2000, class_weight="balanced"),
+-                         sc.transform(X), y, cv=GroupKFold(n_splits=4), groups=groups, scoring="balanced_accuracy")
+-    model = {
+-        "feature_names": FEATURE_NAMES, "mean": sc.mean_.tolist(), "scale": sc.scale_.tolist(),
+-        "coef": clf.coef_[0].tolist(), "intercept": float(clf.intercept_[0]),
+-        "source": "CWRU DE12 (SKF 6205), healthy vs inner/outer race faults; ball faults excluded",
+-        "n_windows": int(len(y)), "n_files": len(used), "n_faulty_windows": int(y.sum()),
+-    }
+-    metrics = {"n_windows": int(len(y)), "n_files": len(used), "n_faulty_windows": int(y.sum()),
+-               "cwru_group_cv_balanced_accuracy_mean": float(cv.mean()), "cwru_group_cv_balanced_accuracy_std": float(cv.std())}
+-    return model, metrics, used
++        starts = starts[np.linspace(0, total - 1, max_windows).round().astype(int)]
++    rows, rms = [], []
++    for s in starts:
++        w = sig[s:s + WIN]
++        if geom is None:
++            f = geofree_features(w, FS_MODEL, rpm)
++            rows.append([f[n] for n in BIN_NAMES])
++        else:
++            f = envelope_order_features(w, FS_MODEL, rpm, geom, **CPW_SES)
++            rows.append([f[n] for n in LINES])
++        x = w - w.mean()
++        rms.append(np.sqrt((x ** 2).mean()) + 1e-12)
++    return np.asarray(rows), starts / FS_MODEL, total, float(np.mean(np.log(rms)))
++
++
++def _cusum_max(u: np.ndarray) -> float:
++    c, m = 0.0, 0.0
++    for x in u:
++        c = max(0.0, c + float(x) - CUSUM_K)
++        m = max(m, c)
++    return m
+ 
+ 
+ # ───────────────────────── the service ─────────────────────────
+ class BearingService(Service):
+     name = "bearing"
+-    description = "Rolling-element bearing fault detection (envelope-order features, healthy-only calibration)."
+-    extra_columns = ["rpm", "fs_hz", "score_p95", "threshold", "n_windows_flagged"]
++    description = f"Rolling-element bearing monitoring per unit, own healthy baseline (method v{METHOD_VERSION})."
++    extra_columns = ["unit", "detector", "fault_type", "dominant", "rpm", "fs_hz", "threshold", "n_windows_flagged",
++                     "physics_z", "level_z", "cusum_physics", "cusum_level", "trend_alarm"]
+ 
+     def default_config(self) -> dict:
+         return {
+-            "bearing": {"name": "my-bearing", "n_balls": None, "ball_diameter": None,
+-                        "pitch_diameter": None, "contact_angle_deg": 0.0},
+-            "fs_hz": None,          # sampling rate of your files (Hz); a sidecar can override per file
+-            "rpm": None,            # shaft speed; a sidecar `rpm` overrides per file
++            # The bearing of every unit unless `units` says otherwise. One of: a catalog
++            # `designation`; n_balls + ball_diameter + pitch_diameter (+ contact_angle_deg);
++            # bpfo + bpfi fault factors in orders. All empty -> geometry-free detection.
++            "bearing": {"designation": None, "name": None, "n_balls": None, "ball_diameter": None,
++                        "pitch_diameter": None, "contact_angle_deg": 0.0, "bpfo": None, "bpfi": None},
++            "units": {},            # unit -> {bearing: {...}, rpm, fs_hz} overrides
++            "default_unit": "unit1",  # files directly in train/ or in/ without a `unit` sidecar
++            "fs_hz": None,          # sampling rate (Hz); a sidecar `fs_hz` overrides per file
++            "rpm": None,            # shaft speed; a sidecar `rpm` overrides per file (REQUIRED one way or the other)
+             "signal_key": None,     # array name inside .npz files, if they hold several
+-            "band_hz": [1500.0, 5500.0],   # resonance band for the envelope; fixed a priori in the study
+-            "calibration": {"target_false_alarm": 0.10, "min_windows": 200,
++            "calibration": {"alpha": 0.10, "min_windows": 200, "recommended_windows": 1800,
+                             "min_recordings_warn": 3, "max_windows_per_file": 600},
+-            # MASTER_PLAN WP1 (notes/14): at 0.25, a quarter of held-out healthy recordings
+-            # read as watch; 0.40 keeps that near 10%. 0.5 kept ~5% healthy recordings faulty.
++            # notes/14: watch 0.40 keeps ~10% of healthy recordings at watch; faulty 0.50 ~5%.
+             "verdict": {"watch_fraction": 0.40, "faulty_fraction": 0.5},
+         }
+ 
+     def validate_config(self, cfg: dict) -> list[str]:
+         p = []
+-        b = cfg["bearing"]
+-        given = [b.get(k) for k in ("n_balls", "ball_diameter", "pitch_diameter")]
+-        if any(v is not None for v in given) and any(v is None for v in given):
+-            p.append("bearing: set n_balls, ball_diameter and pitch_diameter together")
+-        for k in ("n_balls", "ball_diameter", "pitch_diameter"):
+-            v = b.get(k)
+-            if v is not None and (not isinstance(v, (int, float)) or v <= 0):
+-                p.append(f"bearing.{k} must be a positive number")
+-        if b.get("n_balls") is not None and b["n_balls"] != int(b["n_balls"]):
+-            p.append("bearing.n_balls must be a whole number")
+-        if all(v is not None for v in given) and b["ball_diameter"] >= b["pitch_diameter"]:
+-            p.append("bearing: ball_diameter must be smaller than pitch_diameter (same unit)")
+-        band = cfg["band_hz"]
+-        if not (isinstance(band, list) and len(band) == 2 and 0 < band[0] < band[1] < FS_MODEL / 2):
+-            p.append(f"band_hz must be [low, high] with 0 < low < high < {FS_MODEL / 2:g}")
++        try:
++            resolve_bearing(cfg["bearing"])
++            for u, uc in (cfg.get("units") or {}).items():
++                if not isinstance(uc, dict):
++                    p.append(f"units.{u} must be a mapping"); continue
++                if "bearing" in uc:
++                    resolve_bearing(uc["bearing"])
++        except (ConfigError, ValueError) as e:
++            p.append(str(e))
+         c = cfg["calibration"]
+-        if not 0 < c["target_false_alarm"] < 0.5:
+-            p.append("calibration.target_false_alarm must be between 0 and 0.5")
++        if not 0 < c["alpha"] < 0.5:
++            p.append("calibration.alpha must be between 0 and 0.5")
+         v = cfg["verdict"]
+         if not 0 < v["watch_fraction"] < v["faulty_fraction"] <= 1:
+             p.append("verdict: need 0 < watch_fraction < faulty_fraction <= 1")
+         return p
+ 
+-    def add_train_args(self, p) -> None:
+-        p.add_argument("--source-dir", default=None,
+-                       help="folder of labelled CWRU .npz files (default: <data>/bearing/source)")
+-        p.add_argument("--windows-per-file", type=int, default=None, help="cap windows per source file")
+-
+-    def add_calibrate_args(self, p) -> None:
+-        p.add_argument("--base", default=None,
+-                       help="version whose source classifier to use (default: bundled CWRU model)")
+-
+     # ---- helpers -------------------------------------------------------
+-    def _file_params(self, path: Path, cfg: dict, fallback: dict | None = None) -> tuple[float, float, str | None]:
+-        side = read_sidecar(path)
+-        fs = side.get("fs_hz", cfg["fs_hz"] if cfg["fs_hz"] is not None else (fallback or {}).get("fs_hz"))
+-        rpm = side.get("rpm", cfg["rpm"] if cfg["rpm"] is not None else (fallback or {}).get("rpm"))
+-        key = side.get("signal_key", cfg["signal_key"])
++    def _unit_cfg(self, cfg: dict, unit: str) -> dict:
++        return (cfg.get("units") or {}).get(unit, {}) or {}
++
++    def _file_params(self, path: Path, cfg: dict, unit: str, fallback: dict | None = None) -> tuple[float, float, str | None]:
++        side, uc, fb = read_sidecar(path), self._unit_cfg(cfg, unit), fallback or {}
++        pick = lambda k: side.get(k, uc.get(k, cfg.get(k) if cfg.get(k) is not None else fb.get(k)))
++        fs, rpm, key = pick("fs_hz"), pick("rpm"), side.get("signal_key", cfg.get("signal_key") or fb.get("signal_key"))
+         if fs is None:
+-            raise InputError("sampling rate unknown: set `fs_hz` in config/service.yaml or `fs_hz` in a sidecar file")
++            raise InputError("sampling rate unknown: set `fs_hz` in config/service.yaml or a sidecar file")
+         if rpm is None:
+-            raise InputError("shaft speed unknown: set `rpm` in config/service.yaml or `rpm` in a sidecar file")
++            raise InputError("shaft speed unknown: set `rpm` (config, per unit, or a sidecar file); it is required")
+         try:
+             fs, rpm = float(fs), float(rpm)
+         except (TypeError, ValueError):
+@@ -202,148 +192,209 @@ class BearingService(Service):
+             raise InputError("fs_hz and rpm must be positive")
+         return fs, rpm, key
+ 
+-    # ---- train: refit the source classifier ------------------------------
++    def _unit_of(self, path: Path, top: Path, default: str) -> str:
++        side = read_sidecar(path)
++        if side.get("unit"):
++            return str(side["unit"])
++        return path.parent.name if path.parent != top else default
++
++    def _files_by_unit(self, top: Path, default: str) -> dict[str, list[Path]]:
++        out: dict[str, list[Path]] = {}
++        for f in self.list_inputs(top):
++            out.setdefault(self._unit_of(f, top, default), []).append(f)
++        return out
++
++    def list_inputs(self, in_dir: Path) -> list[Path]:
++        """Files in the folder and in one level of unit sub-folders (not processed/)."""
++        files = list_signal_files(in_dir)
++        if in_dir.is_dir():
++            for d in sorted(p for p in in_dir.iterdir() if p.is_dir() and p.name != "processed" and not p.name.startswith(".")):
++                files += list_signal_files(d)
++        return files
++
++    # ---- train: nothing to train --------------------------------------------
+     def train(self, ctx: Context) -> Outcome:
+-        src = Path(ctx.args.source_dir) if ctx.args.source_dir else ctx.layout.source_dir
+-        if not src.is_dir() or not any(src.glob("*.npz")):
+-            raise InputError(f"no labelled CWRU .npz files in {src}; put them there or pass --source-dir")
+-        ctx.log.info("fitting source classifier from %s", src)
+-        model, metrics, files = fit_source(src, ctx.args.windows_per_file, ctx.log)
+-        (ctx.version_dir / "source_model.json").write_text(json.dumps(model), encoding="utf8")
+-        cv = metrics["cwru_group_cv_balanced_accuracy_mean"]
+-        warns = ["This candidate has NO machine calibration yet: run `calibrate --base <this version>` before promoting."]
+-        if cv < 0.75:
+-            warns.append(f"in-domain CWRU balanced accuracy is only {cv:.2f} (the bundled model scores ~0.88 with folds split by file)")
+-        return Outcome(
+-            "train", metrics,
+-            [f"source classifier refitted on {metrics['n_files']} CWRU files / {metrics['n_windows']} windows",
+-             f"CWRU balanced accuracy, folds split by file: {cv:.3f} +- {metrics['cwru_group_cv_balanced_accuracy_std']:.3f}"],
+-            files, warns, extra_meta={"needs_calibration": True},
+-        )
+-
+-    # ---- calibrate: threshold from the machine's healthy recordings ---------
+-    def _source_json(self, ctx: Context) -> tuple[dict, str | None, list[Path]]:
+-        base = getattr(ctx.args, "base", None)
+-        if base:
+-            from serving_core.registry import Registry
+-            p = Registry(ctx.layout.models_dir).path(base) / "source_model.json"
+-            if not p.is_file():
+-                raise InputError(f"version {base} has no source_model.json")
+-            return json.loads(p.read_text(encoding="utf8")), base, []
+-        return json.loads(ASSET.read_text(encoding="utf8")), None, [ASSET]
++        raise NotSupported("bearing: method v1.0 has no training step (no fault data is used). "
++                           "Put each unit's healthy recordings in train/<unit>/ and run `calibrate`.")
+ 
++    # ---- calibrate: one baseline per unit ------------------------------------
+     def calibrate(self, ctx: Context) -> Outcome:
+-        cfg = ctx.config
+-        b = cfg["bearing"]
+-        if any(b.get(k) is None for k in ("n_balls", "ball_diameter", "pitch_diameter")):
+-            raise ConfigError("bearing geometry is required: fill bearing.n_balls, ball_diameter and pitch_diameter "
+-                              f"in {ctx.layout.config_file} (see the bearing's datasheet)")
+-        geom = geometry_from(b)
+-        src_json, parent, src_inputs = self._source_json(ctx)
+-        src = SourceModel(src_json)
+-        c = cfg["calibration"]
+-        files = list_signal_files(ctx.layout.train_dir)
+-        if not files:
+-            raise InputError(f"no healthy recordings in {ctx.layout.train_dir}")
+-        scores_by_file: dict[str, np.ndarray] = {}
+-        feats_all, used, skipped = [], [], []
+-        for f in files:
+-            try:
+-                fs, rpm, key = self._file_params(f, cfg)
+-                check_speed(rpm, geom, cfg["band_hz"])
+-                X, _ = window_features(load_signal(f, key), fs, rpm, geom, cfg["band_hz"], c["max_windows_per_file"])
+-            except InputError as e:
+-                skipped.append(f"{f.name}: {e}"); ctx.log.warning("skipped %s: %s", f.name, e); continue
+-            scores_by_file[f.name] = src.score(X); feats_all.append(X); used.append(f)
+-            ctx.log.info("%s: %d windows", f.name, len(X))
+-        n_win = sum(len(s) for s in scores_by_file.values())
+-        if n_win < c["min_windows"]:
+-            raise InputError(f"only {n_win} usable healthy windows (need >= {c['min_windows']}; 1 window = 1 s of signal). "
+-                             + (f"Skipped: {skipped}" if skipped else "Add more healthy recordings."))
+-        allscores = np.concatenate(list(scores_by_file.values()))
+-        thr = float(np.quantile(allscores, 1 - c["target_false_alarm"]))
+-        fracs = {n: float((s > thr).mean()) for n, s in scores_by_file.items()}
+-        watch, faulty = cfg["verdict"]["watch_fraction"], cfg["verdict"]["faulty_fraction"]
+-        worst = max(fracs.values())
+-
+-        warns = []
+-        if skipped:
+-            warns.append(f"{len(skipped)} file(s) skipped: " + "; ".join(skipped[:3]) + (" ..." if len(skipped) > 3 else ""))
+-        if len(used) < c["min_recordings_warn"]:
+-            warns.append(f"only {len(used)} healthy recording(s): false alarms were per-unit in the study, "
+-                         "so use several healthy recordings (different days / conditions) if you can")
+-        if worst >= watch:
+-            bad = [n for n, f in fracs.items() if f >= watch]
+-            warns.append(f"healthy recording(s) {bad} already reach {worst:.0%} flagged windows (WATCH starts at {watch:.0%}); "
+-                         "this machine's healthy baseline reads as abnormal. Do NOT rely on the verdicts: add healthy data "
+-                         "covering all normal operating conditions, or raise verdict.watch_fraction knowingly.")
+-        warns.append("threshold was set on the same healthy windows it is reported on (in-sample); "
+-                     "confirm with a LATER healthy recording via `infer` before trusting it")
+-
+-        cal = {
+-            "geometry": {"name": geom.name, "n_balls": geom.n_balls, "ball_diameter": geom.ball_diameter,
+-                         "pitch_diameter": geom.pitch_diameter, "contact_angle_deg": geom.contact_angle_deg},
+-            "fault_orders": {"bpfo": geom.bpfo, "bpfi": geom.bpfi, "ftf": geom.ftf},
+-            "band_hz": cfg["band_hz"], "threshold": thr, "target_false_alarm": c["target_false_alarm"],
+-            "verdict": cfg["verdict"], "max_windows_per_file": c["max_windows_per_file"],
+-            "default_fs_hz": cfg["fs_hz"], "default_rpm": cfg["rpm"], "signal_key": cfg["signal_key"],
+-            "healthy_score_quantiles": {str(q): float(np.quantile(allscores, q)) for q in (0.5, 0.9, 0.95, 0.99)},
+-        }
+-        (ctx.version_dir / "source_model.json").write_text(json.dumps(src_json), encoding="utf8")
+-        (ctx.version_dir / "calibration.json").write_text(json.dumps(cal, indent=2), encoding="utf8")
+-        metrics = {"n_recordings": len(used), "n_windows": n_win, "threshold": thr,
+-                   "healthy_flagged_fraction_by_file": fracs, "healthy_flagged_fraction_max": worst,
+-                   "healthy_flagged_fraction_mean": float(np.mean(list(fracs.values()))),
+-                   "reads_clean": bool(worst < watch), "skipped": skipped}
+-        summary = [f"calibrated on {len(used)} healthy recording(s), {n_win} windows (1 s each)",
+-                   f"threshold {thr:.4f} for {c['target_false_alarm']:.0%} window false alarms",
+-                   f"healthy recordings flagged: mean {metrics['healthy_flagged_fraction_mean']:.0%}, worst {worst:.0%}"
+-                   f" -> {'reads clean' if worst < watch else 'READS ABNORMAL'}"]
+-        return Outcome("calibrate", metrics, summary, used + src_inputs, warns, parent=parent,
+-                       extra_meta={"needs_calibration": False})
++        cfg, c = ctx.config, ctx.config["calibration"]
++        by_unit = self._files_by_unit(ctx.layout.train_dir, cfg["default_unit"])
++        if not by_unit:
++            raise InputError(f"no healthy recordings in {ctx.layout.train_dir} (or its unit sub-folders)")
++        units, used, warns, summary, metrics = {}, [], [], [], {"units": {}}
++        watch = cfg["verdict"]["watch_fraction"]
++        for unit, files in sorted(by_unit.items()):
++            uc = self._unit_cfg(cfg, unit)
++            geom = resolve_bearing(uc.get("bearing", cfg["bearing"]))
++            X, t0, fid, levels, skipped, ufiles = [], [], [], [], [], []
++            for f in files:
++                try:
++                    fs, rpm, key = self._file_params(f, cfg, unit)
++                    check_speed(rpm, geom)
++                    Xi, ti, _, lv = window_features(load_signal(f, key), fs, rpm, geom, c["max_windows_per_file"])
++                except InputError as e:
++                    skipped.append(f"{f.name}: {e}"); ctx.log.warning("[%s] skipped %s: %s", unit, f.name, e); continue
++                X.append(Xi); t0.append(ti); fid += [len(ufiles)] * len(Xi); levels.append(lv); ufiles.append(f)
++            n_win = sum(len(x) for x in X)
++            if n_win < c["min_windows"]:
++                raise InputError(f"unit {unit}: only {n_win} usable healthy windows (need >= {c['min_windows']}; "
++                                 "1 window = 1 s of signal)" + (f". Skipped: {skipped}" if skipped else ""))
++            X, t0, fid = np.vstack(X), np.concatenate(t0), np.asarray(fid)
++            base = fit_baseline(X, default_groups(fid, t0), meta={"unit": unit})
++            thr = base.threshold(c["alpha"])
++            if not np.isfinite(thr):
++                raise InputError(f"unit {unit}: too few windows for a conformal threshold at alpha {c['alpha']}")
++            # out-of-sample (cross-fitted) flagged share per healthy file: the honest healthy check
++            fracs = {ufiles[i].name: float((base.cal_scores[fid == i] > thr).mean()) for i in range(len(ufiles))}
++            rec = np.array([base.cal_scores[fid == i].mean() for i in range(len(ufiles))])
++            if len(ufiles) >= 3:
++                p_mu, p_sd = float(rec.mean()), float(rec.std(ddof=1)) + 1e-12
++                l_mu, l_sd = float(np.mean(levels)), float(np.std(levels, ddof=1)) + 1e-12
++            else:   # fewer than 3 recordings: spread of the windows stands in (stated in the warning)
++                p_mu, p_sd = float(base.cal_scores.mean()), float(base.cal_scores.std(ddof=1)) + 1e-12
++                l_mu, l_sd = float(np.mean(levels)), 1.0
++            h_p = max(MIN_CUSUM_H, _cusum_max((rec - p_mu) / p_sd))
++            h_l = max(MIN_CUSUM_H, _cusum_max((np.asarray(levels) - l_mu) / l_sd))
++            mode = "six_line" if geom is not None else "geometry_free"
++            units[unit] = {"detector": mode, "geometry": geometry_to_dict(geom), "baseline": base.to_dict(),
++                           "threshold": thr, "physics_rec": [p_mu, p_sd], "level_rec": [l_mu, l_sd],
++                           "cusum_h": {"physics": h_p, "level": h_l}, "n_windows": n_win,
++                           "n_recordings": len(ufiles), "default_rpm": uc.get("rpm"), "default_fs_hz": uc.get("fs_hz")}
++            worst = max(fracs.values())
++            metrics["units"][unit] = {"n_recordings": len(ufiles), "n_windows": n_win, "threshold": thr,
++                                      "detector": mode, "healthy_flagged_by_file": fracs, "healthy_flagged_max": worst,
++                                      "reads_clean": bool(worst < watch), "skipped": skipped}
++            used += ufiles
++            line = (f"unit {unit}: {len(ufiles)} recording(s), {n_win} windows, detector {mode}"
++                    f"{'' if geom is None else ' (' + geom.name + f', BPFO {geom.bpfo:.3f} / BPFI {geom.bpfi:.3f})'}"
++                    f", healthy flagged (cross-fitted) worst {worst:.0%} -> {'reads clean' if worst < watch else 'READS ABNORMAL'}")
++            summary.append(line)
++            if skipped:
++                warns.append(f"unit {unit}: {len(skipped)} file(s) skipped: " + "; ".join(skipped[:3]))
++            if geom is None:
++                warns.append(f"unit {unit}: geometry unknown -> geometry-free detection, no fault typing; its threshold "
++                             "needs a longer baseline than the six-line score (notes/23). Give the bearing designation if known.")
++            if n_win < c["recommended_windows"]:
++                warns.append(f"unit {unit}: baseline is {n_win / 60:.0f} min; >= {c['recommended_windows'] / 60:.0f} min of "
++                             "healthy operation per operating state is recommended (notes/26)")
++            if len(ufiles) < c["min_recordings_warn"]:
++                warns.append(f"unit {unit}: only {len(ufiles)} healthy recording(s); the trend statistics use window "
++                             "spread instead of recording-to-recording spread -- add recordings from different days/conditions")
++            if worst >= watch:
++                bad = [n for n, f in fracs.items() if f >= watch]
++                warns.append(f"unit {unit}: healthy recording(s) {bad} reach {worst:.0%} flagged against the rest of the "
++                             "unit's baseline (cross-fitted). This unit's 'healthy' data is not self-consistent (the "
++                             "per-unit failure of notes/14, 17, 24): add healthy data spanning its operating states first.")
++        cal = {"method_version": METHOD_VERSION, "alpha": c["alpha"], "verdict": cfg["verdict"],
++               "max_windows_per_file": c["max_windows_per_file"], "default_fs_hz": cfg["fs_hz"],
++               "default_rpm": cfg["rpm"], "signal_key": cfg["signal_key"], "default_unit": cfg["default_unit"],
++               "units": units}
++        (ctx.version_dir / "calibration.json").write_text(json.dumps(cal, indent=1), encoding="utf8")
++        metrics["n_units"] = len(units)
++        return Outcome("calibrate", metrics, [f"method v{METHOD_VERSION}: {len(units)} unit(s) calibrated"] + summary,
++                       used, warns, extra_meta={"needs_calibration": False, "method_version": METHOD_VERSION})
+ 
+     # ---- inference -----------------------------------------------------
+     def promote_check(self, version_dir: Path, meta: dict) -> list[str]:
+-        if not (version_dir / "calibration.json").is_file():
+-            return ["no calibration.json: this version cannot score files yet -- run `calibrate` (use --base to build on it)"]
+-        return []
++        p = version_dir / "calibration.json"
++        if not p.is_file():
++            return ["no calibration.json: run `calibrate`"]
++        v = json.loads(p.read_text(encoding="utf8")).get("method_version")
++        return [] if v == METHOD_VERSION else [f"calibrated with method {v!r}; this code runs {METHOD_VERSION} -- recalibrate"]
+ 
+     def load_model(self, version_dir: Path, meta: dict):
+-        if not (version_dir / "calibration.json").is_file():
++        p = version_dir / "calibration.json"
++        if not p.is_file():
+             raise InputError("this version has no calibration (run `calibrate`)")
+-        src = SourceModel(json.loads((version_dir / "source_model.json").read_text(encoding="utf8")))
+-        cal = json.loads((version_dir / "calibration.json").read_text(encoding="utf8"))
+-        return {"src": src, "cal": cal, "geom": geometry_from(cal["geometry"])}
++        cal = json.loads(p.read_text(encoding="utf8"))
++        if cal.get("method_version") != METHOD_VERSION:
++            raise InputError(f"model was calibrated with method {cal.get('method_version')!r}, this code is "
++                             f"{METHOD_VERSION}: recalibrate (old versions stay available for rollback)")
++        return {"cal": cal, "units": {u: (Baseline.from_dict(d["baseline"]), geometry_from_dict(d["geometry"]), d)
++                                      for u, d in cal["units"].items()}}
++
++    def _trend(self, ctx: Context, unit: str, file: str, pz: float, lz: float, h: dict) -> dict:
++        path = ctx.layout.out_dir / TREND_FILE
++        prev = {"cusum_physics": 0.0, "cusum_level": 0.0}
++        if path.is_file():
++            with path.open(newline="", encoding="utf8") as f:
++                for r in csv.DictReader(f):
++                    if r["unit"] == unit:
++                        prev = {"cusum_physics": float(r["cusum_physics"]), "cusum_level": float(r["cusum_level"])}
++        cp = max(0.0, prev["cusum_physics"] + pz - CUSUM_K)
++        cl = max(0.0, prev["cusum_level"] + lz - CUSUM_K)
++        alarm = bool(cl > h["level"] or cp > h["physics"])
++        row = {"time": iso(), "unit": unit, "file": file, "physics_z": round(pz, 4), "level_z": round(lz, 4),
++               "cusum_physics": round(cp, 4), "cusum_level": round(cl, 4), "trend_alarm": alarm}
++        new = not path.is_file()
++        path.parent.mkdir(parents=True, exist_ok=True)
++        with path.open("a", newline="", encoding="utf8") as f:
++            w = csv.DictWriter(f, fieldnames=TREND_COLUMNS)
++            if new:
++                w.writeheader()
++            w.writerow(row)
++        return row
+ 
+     def infer_one(self, model, path: Path, ctx: Context) -> list[dict]:
+-        cal, geom, src = model["cal"], model["geom"], model["src"]
+-        fb = {"fs_hz": cal.get("default_fs_hz"), "rpm": cal.get("default_rpm"), "signal_key": cal.get("signal_key")}
+-        cfg = {"fs_hz": ctx.config["fs_hz"], "rpm": ctx.config["rpm"], "signal_key": ctx.config["signal_key"]}
+-        fs, rpm, key = self._file_params(path, cfg, fb)
+-        check_speed(rpm, geom, cal["band_hz"])
+-        X, total = window_features(load_signal(path, key or fb["signal_key"]), fs, rpm, geom, cal["band_hz"], cal["max_windows_per_file"])
+-        s = src.score(X)
+-        flagged = s > cal["threshold"]
++        cal = model["cal"]
++        unit = self._unit_of(path, ctx.layout.in_dir, cal.get("default_unit", "unit1"))
++        if unit not in model["units"]:
++            raise InputError(f"unit {unit!r} has no baseline in this model (calibrated units: {sorted(model['units'])}); "
++                             "put its healthy recordings in train/<unit>/ and calibrate")
++        base, geom, ud = model["units"][unit]
++        fb = {"fs_hz": ud.get("default_fs_hz") or cal.get("default_fs_hz"), "rpm": ud.get("default_rpm") or cal.get("default_rpm"),
++              "signal_key": cal.get("signal_key")}
++        fs, rpm, key = self._file_params(path, ctx.config, unit, fb)
++        check_speed(rpm, geom)
++        X, _, total, level = window_features(load_signal(path, key), fs, rpm, geom, cal["max_windows_per_file"])
++        s = base.score(X)
++        thr = ud["threshold"]
++        flagged = s > thr
+         frac = float(flagged.mean())
+         v = cal["verdict"]
+         verdict = "faulty" if frac >= v["faulty_fraction"] else "watch" if frac >= v["watch_fraction"] else "healthy"
+-        msg = ""
+-        if len(s) < total:
+-            msg = f"scored {len(s)} of {total} windows (evenly spaced)"
+-        return [{"verdict": verdict, "score": float(np.median(s)), "flagged_fraction": round(frac, 4),
+-                 "n_windows": int(len(s)), "message": msg, "rpm": rpm, "fs_hz": fs,
+-                 "score_p95": float(np.percentile(s, 95)), "threshold": cal["threshold"],
+-                 "n_windows_flagged": int(flagged.sum())}]
++        fault_type, dominant = "", ""
++        if flagged.any():
++            z = base.z(X[flagged])
++            if geom is not None:
++                t = base.typing(X[flagged])
++                fault_type = "outer race" if (t == OUTER).mean() >= 0.5 else "inner race"
++                med = np.median(z, 0)
++                dominant = f"{LINES[int(np.argmax(med))]} z={med.max():.1f}"
++            else:
++                med = np.median(z, 0)
++                dominant = f"order {BIN_CENTRES[int(np.argmax(med))]:.2f} z={med.max():.1f} (geometry unknown: no typing)"
++        pz = (float(s.mean()) - ud["physics_rec"][0]) / ud["physics_rec"][1]
++        lz = (level - ud["level_rec"][0]) / ud["level_rec"][1]
++        tr = self._trend(ctx, unit, path.name, pz, lz, ud["cusum_h"])
++        msg = f"scored {len(s)} of {total} windows (evenly spaced)" if len(s) < total else ""
++        if tr["trend_alarm"]:
++            msg = (msg + "; " if msg else "") + "TREND ALARM: sustained rise over this unit's baseline"
++        return [{"unit": unit, "detector": ud["detector"], "verdict": verdict, "score": float(np.median(s)),
++                 "flagged_fraction": round(frac, 4), "n_windows": int(len(s)), "message": msg, "rpm": rpm, "fs_hz": fs,
++                 "threshold": thr, "n_windows_flagged": int(flagged.sum()), "fault_type": fault_type, "dominant": dominant,
++                 "physics_z": round(pz, 3), "level_z": round(lz, 3), "cusum_physics": tr["cusum_physics"],
++                 "cusum_level": tr["cusum_level"], "trend_alarm": tr["trend_alarm"]}]
+ 
+     def doctor(self, layout, cfg):
+         out = []
+-        out.append(("ok" if ASSET.is_file() else "fail", "bundled source model", str(ASSET)))
+-        b = cfg["bearing"]
+-        if any(b.get(k) is None for k in ("n_balls", "ball_diameter", "pitch_diameter")):
+-            out.append(("warn", "bearing geometry", "not filled in config/service.yaml yet (needed for `calibrate`)"))
+-        else:
+-            g = geometry_from(b)
+-            out.append(("ok", "bearing geometry", f"BPFO {g.bpfo:.3f}, BPFI {g.bpfi:.3f}, FTF {g.ftf:.3f} (orders of shaft speed)"))
++        try:
++            g = resolve_bearing(cfg["bearing"])
++            out.append(("ok" if g is not None else "warn", "default bearing",
++                        f"{g.name}: BPFO {g.bpfo:.3f}, BPFI {g.bpfi:.3f} (orders)" if g is not None
++                        else "none -> geometry-free detection, no typing"))
++        except ConfigError as e:
++            out.append(("fail", "default bearing", str(e)))
++        for u, uc in (cfg.get("units") or {}).items():
++            try:
++                g = resolve_bearing((uc or {}).get("bearing", cfg["bearing"]))
++                out.append(("ok", f"unit {u}", g.name if g is not None else "geometry-free"))
++            except ConfigError as e:
++                out.append(("fail", f"unit {u}", str(e)))
++        if cfg["rpm"] is None:
++            out.append(("warn", "rpm", "not set: every file (or unit) then needs `rpm` (shaft speed is required)"))
+         if cfg["fs_hz"] is None:
+             out.append(("warn", "fs_hz", "not set (each file then needs a sidecar with fs_hz)"))
+         return out
+diff --git a/tests/test_serving_core.py b/tests/test_serving_core.py
+index eded36a..b6153e3 100644
+--- a/tests/test_serving_core.py
++++ b/tests/test_serving_core.py
+@@ -103,14 +103,14 @@ def test_promote_refuses_tampered_version(env):
+     assert Registry(models).active() is None
+ 
+ 
+-def test_calibrate_needs_geometry_and_enough_data(env):
++def test_calibrate_needs_consistent_geometry_and_enough_data(env):
+     run, base, _ = env
+-    (base / "config" / "service.yaml").write_text("fs_hz: 12000\nrpm: 900\n")
++    (base / "config" / "service.yaml").write_text("fs_hz: 12000\nrpm: 900\nbearing: {n_balls: 8}\n")
+     np.save(base / "train" / "h.npy", healthy(1))
+-    rc, _, err = run("calibrate")
+-    assert rc == 2 and "geometry" in err
++    rc, _, err = run("calibrate")                           # half a geometry is refused
++    assert rc == 2 and "together" in err
+     (base / "config" / "service.yaml").write_text(GEOM)
+-    rc, _, err = run("calibrate")                           # one 12 s file = 11 windows < 200
++    rc, _, err = run("calibrate")                           # one 12 s file = 23 windows < 200
+     assert rc == 2 and "healthy windows" in err
+ 
+ 
+untracked: notes/25_wp15_ldm_varying_conditions.md
+untracked: outputs/remote_runs/20261022-060528_fetch-hust/cmd.txt
+untracked: outputs/remote_runs/20261022-060528_fetch-hust/diff.patch
+untracked: outputs/remote_runs/20261022-060528_fetch-hust/duration_s
+untracked: outputs/remote_runs/20261022-060528_fetch-hust/env.txt
+untracked: outputs/remote_runs/20261022-060528_fetch-hust/exit_code
+untracked: outputs/remote_runs/20261022-060528_fetch-hust/git.json
+untracked: outputs/remote_runs/20261022-060528_fetch-hust/log
+untracked: outputs/remote_runs/20261022-060528_fetch-hust/pid
+untracked: outputs/remote_runs/20261022-060532_fetch-paderborn_ldm/cmd.txt
+untracked: outputs/remote_runs/20261022-060532_fetch-paderborn_ldm/diff.patch
+untracked: outputs/remote_runs/20261022-060532_fetch-paderborn_ldm/env.txt
+untracked: outputs/remote_runs/20261022-060532_fetch-paderborn_ldm/git.json
+untracked: outputs/remote_runs/20261022-060532_fetch-paderborn_ldm/log
+untracked: outputs/remote_runs/20261022-060532_fetch-paderborn_ldm/pid
+untracked: outputs/remote_runs/20261022-060817_wp12parity/cmd.txt
+untracked: outputs/remote_runs/20261022-060817_wp12parity/diff.patch
+untracked: outputs/remote_runs/20261022-060817_wp12parity/duration_s
+untracked: outputs/remote_runs/20261022-060817_wp12parity/env.txt
+untracked: outputs/remote_runs/20261022-060817_wp12parity/exit_code
+untracked: outputs/remote_runs/20261022-060817_wp12parity/git.json
+untracked: outputs/remote_runs/20261022-060817_wp12parity/log
+untracked: outputs/remote_runs/20261022-060817_wp12parity/pid
+untracked: outputs/remote_runs/20261022-060921_wp12parity/cmd.txt
+untracked: outputs/remote_runs/20261022-060921_wp12parity/diff.patch
+untracked: outputs/remote_runs/20261022-060921_wp12parity/duration_s
+untracked: outputs/remote_runs/20261022-060921_wp12parity/env.txt
+untracked: outputs/remote_runs/20261022-060921_wp12parity/exit_code
+untracked: outputs/remote_runs/20261022-060921_wp12parity/git.json
+untracked: outputs/remote_runs/20261022-060921_wp12parity/log
+untracked: outputs/remote_runs/20261022-060921_wp12parity/pid
+untracked: outputs/remote_runs/20261022-061517_geofreecache/cmd.txt
+untracked: outputs/remote_runs/20261022-061517_geofreecache/diff.patch
+untracked: outputs/remote_runs/20261022-061517_geofreecache/duration_s
+untracked: outputs/remote_runs/20261022-061517_geofreecache/env.txt
+untracked: outputs/remote_runs/20261022-061517_geofreecache/exit_code
+untracked: outputs/remote_runs/20261022-061517_geofreecache/git.json
+untracked: outputs/remote_runs/20261022-061517_geofreecache/log
+untracked: outputs/remote_runs/20261022-061517_geofreecache/pid
+untracked: outputs/remote_runs/20261022-061642_wp13/cmd.txt
+untracked: outputs/remote_runs/20261022-061642_wp13/diff.patch
+untracked: outputs/remote_runs/20261022-061642_wp13/duration_s
+untracked: outputs/remote_runs/20261022-061642_wp13/env.txt
+untracked: outputs/remote_runs/20261022-061642_wp13/exit_code
+untracked: outputs/remote_runs/20261022-061642_wp13/git.json
+untracked: outputs/remote_runs/20261022-061642_wp13/log
+untracked: outputs/remote_runs/20261022-061642_wp13/pid
+untracked: outputs/remote_runs/20261022-061940_hustcache/cmd.txt
+untracked: outputs/remote_runs/20261022-061940_hustcache/diff.patch
+untracked: outputs/remote_runs/20261022-061940_hustcache/duration_s
+untracked: outputs/remote_runs/20261022-061940_hustcache/env.txt
+untracked: outputs/remote_runs/20261022-061940_hustcache/exit_code
+untracked: outputs/remote_runs/20261022-061940_hustcache/git.json
+untracked: outputs/remote_runs/20261022-061940_hustcache/log
+untracked: outputs/remote_runs/20261022-061940_hustcache/pid
+untracked: outputs/remote_runs/20261022-062123_wp14/cmd.txt
+untracked: outputs/remote_runs/20261022-062123_wp14/diff.patch
+untracked: outputs/remote_runs/20261022-062123_wp14/duration_s
+untracked: outputs/remote_runs/20261022-062123_wp14/env.txt
+untracked: outputs/remote_runs/20261022-062123_wp14/exit_code
+untracked: outputs/remote_runs/20261022-062123_wp14/git.json
+untracked: outputs/remote_runs/20261022-062123_wp14/log
+untracked: outputs/remote_runs/20261022-062123_wp14/pid
+untracked: outputs/remote_runs/20261022-062208_wp14/cmd.txt
+untracked: outputs/remote_runs/20261022-062208_wp14/diff.patch
+untracked: outputs/remote_runs/20261022-062208_wp14/duration_s
+untracked: outputs/remote_runs/20261022-062208_wp14/env.txt
+untracked: outputs/remote_runs/20261022-062208_wp14/exit_code
+untracked: outputs/remote_runs/20261022-062208_wp14/git.json
+untracked: outputs/remote_runs/20261022-062208_wp14/log
+untracked: outputs/remote_runs/20261022-062208_wp14/pid
+untracked: outputs/remote_runs/20261022-062700_wp16/cmd.txt
+untracked: outputs/remote_runs/20261022-062700_wp16/diff.patch
+untracked: outputs/remote_runs/20261022-062700_wp16/duration_s
+untracked: outputs/remote_runs/20261022-062700_wp16/env.txt
+untracked: outputs/remote_runs/20261022-062700_wp16/exit_code
+untracked: outputs/remote_runs/20261022-062700_wp16/git.json
+untracked: outputs/remote_runs/20261022-062700_wp16/log
+untracked: outputs/remote_runs/20261022-062700_wp16/pid
+untracked: papers/1-s2.0-S0952197621001421-am.pdf
+untracked: papers/142875.pdf
+untracked: papers/A_New_Multiple_Source_Domain_Adaptation_Fault_Diagnosis_Method_Between_Different_Rotating_Machines.pdf
+untracked: papers/ldm_upb_run_to_failure_description.pdf
+untracked: papers/xjtu_sy_dataset_interpretation_zh.pdf
+untracked: reports/001_Internal Reports.docx
+untracked: reports/IRANYekanX_Fonts/IRANYekanX-Black.ttf
+untracked: reports/IRANYekanX_Fonts/IRANYekanX-Bold.ttf
+untracked: reports/IRANYekanX_Fonts/IRANYekanX-ExtraBlack.ttf
+untracked: reports/IRANYekanX_Fonts/IRANYekanX-ExtraBold.ttf
+untracked: reports/IRANYekanX_Fonts/IRANYekanX-Heavy.ttf
+untracked: reports/IRANYekanX_Fonts/IRANYekanX-Light.ttf
+untracked: reports/IRANYekanX_Fonts/IRANYekanX-Regular.ttf
+untracked: reports/R01_vibration_autoencoder_CWRU.pdf
+untracked: scripts/analysis/wp15_ldm.py
+untracked: tests/test_bearing_fleet.py
+untracked: tests/test_bearing_replay.py

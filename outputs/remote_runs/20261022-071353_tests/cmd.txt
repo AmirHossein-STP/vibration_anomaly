@@ -1,0 +1,1 @@
+bash -c python3\ -m\ pytest\ -q\ \&\&\ DOCKER=\'sudo\ docker\'\ bash\ deploy/smoke_bearing.sh 

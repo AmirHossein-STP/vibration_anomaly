@@ -1,0 +1,1 @@
+bash -c python3\ scripts/analysis/v2_cache.py\ --set\ cpw\ --datasets\ hust\ --jobs\ 6\ \&\&\ python3\ scripts/analysis/v2_cache.py\ --set\ geofree\ --datasets\ hust\ --jobs\ 6 

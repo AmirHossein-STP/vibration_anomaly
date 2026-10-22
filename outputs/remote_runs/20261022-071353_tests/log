@@ -1,0 +1,28 @@
+........................................................................ [ 55%]
+..........................................................               [100%]
+=============================== warnings summary ===============================
+tests/test_hydraulic_smoke.py::test_raw_time_correlation_detects_perfect_correlation
+  /home/homa/work/venv/lib/python3.10/site-packages/numpy/lib/_function_base_impl.py:2999: RuntimeWarning: invalid value encountered in divide
+    c /= stddev[:, None]
+
+tests/test_hydraulic_smoke.py::test_raw_time_correlation_detects_perfect_correlation
+  /home/homa/work/venv/lib/python3.10/site-packages/numpy/lib/_function_base_impl.py:3000: RuntimeWarning: invalid value encountered in divide
+    c /= stddev[None, :]
+
+-- Docs: https://docs.pytest.org/en/stable/how-to/capture-warnings.html
+130 passed, 2 warnings in 53.61s
+2026-10-22T07:15:15Z INFO calibrate start: service=bearing candidate=20261022T071515-40c194
+2026-10-22T07:15:20Z INFO service=bearing model=20261022T071515-40c194 inputs=4 image=dev
+2026-10-22T07:15:20Z INFO bad.npy -> faulty
+2026-10-22T07:15:20Z INFO ok.npy -> healthy
+2026-10-22T07:15:20Z INFO bad.npy -> faulty
+2026-10-22T07:15:20Z INFO ok.npy -> healthy
+2026-10-22T07:15:22Z INFO calibrate start: service=bearing candidate=20261022T071522-40c194
+file,status,verdict,score,flagged_fraction,n_windows,message,unit
+bad.npy,ok,faulty,3.0096731538829866,0.9565,23,TREND ALARM: sustained rise over this unit's baseline,fan_b
+ok.npy,ok,healthy,1.8982121649173473,0.0,23,TREND ALARM: sustained rise over this unit's baseline,fan_b
+bad.npy,ok,faulty,2.7690842806479523,0.913,23,TREND ALARM: sustained rise over this unit's baseline,pump_a
+ok.npy,ok,healthy,1.8982080815793723,0.0,23,TREND ALARM: sustained rise over this unit's baseline,pump_a
+Traceback (most recent call last):
+  File "<stdin>", line 5, in <module>
+AssertionError

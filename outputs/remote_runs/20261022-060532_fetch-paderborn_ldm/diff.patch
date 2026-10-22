@@ -1,0 +1,190 @@
+diff --git a/remote/datasets/fetch.py b/remote/datasets/fetch.py
+index 2f56a48..87fd9f0 100755
+--- a/remote/datasets/fetch.py
++++ b/remote/datasets/fetch.py
+@@ -131,12 +131,29 @@ def resolve_url(src: dict) -> list[FileSpec]:
+             for f in src["files"]]
+ 
+ 
++def resolve_hf_tree(src: dict) -> list[FileSpec]:
++    """A Hugging Face dataset repo: LFS files carry a sha256, small files a git blob sha1."""
++    rev = src.get("revision", "main")
++    tree = http_json(f"https://huggingface.co/api/datasets/{src['repo']}/tree/{rev}?recursive=true")
++    pat = re.compile(src["include"])
++    out = []
++    for e in tree:
++        if e.get("type") != "file" or not pat.search(e["path"]):
++            continue
++        lfs = e.get("lfs")
++        out.append(FileSpec(e["path"], f"https://huggingface.co/datasets/{src['repo']}/resolve/{rev}/"
++                            f"{urllib.parse.quote(e['path'])}", e.get("size"),
++                            f"sha256:{lfs['oid']}" if lfs else f"gitsha1:{e['oid']}"))
++    return out
++
++
+ RESOLVERS = {
+     "github_tree": resolve_github_tree,
+     "mendeley": resolve_mendeley,
+     "zenodo": resolve_zenodo,
+     "mediafire_folder": resolve_mediafire_folder,
+     "url": resolve_url,
++    "hf_tree": resolve_hf_tree,
+ }
+ 
+ MEDIAFIRE_DIRECT = re.compile(r'https?://download\d*\.mediafire\.com/[^"\'\s<>]+')
+@@ -332,6 +349,55 @@ def record_condensed(ddir: Path, m: dict) -> None:
+     }
+ 
+ 
++def fetch_stream(name: str, cfg: dict, ddir: Path, m: dict, src: dict, specs: list[FileSpec],
++                 scratch: Path, repo: Path, jobs: int) -> dict:
++    """stage: stream -- for sets larger than the vault. Files are grouped by
++    the registry's `group` regex. Each group is downloaded to the SSD,
++    checked, condensed to `condensed/<group>/` on the vault, and deleted;
++    the manifest is saved after every group, so an interrupted run resumes
++    at the first group not marked done."""
++    gre = re.compile(cfg["group"])
++    groups: dict[str, list[FileSpec]] = {}
++    for s in specs:
++        g = gre.search(s.name)
++        if g:
++            groups.setdefault(g.group(1), []).append(s)
++    m.setdefault("groups", {})
++    raw_root = scratch / name / cfg["version"] / "raw"
++    for g, gspecs in sorted(groups.items()):
++        out = ddir / "condensed" / g
++        if m["groups"].get(g) == "done" and out.is_dir():
++            print(f"  [{g}] done, skipping", flush=True)
++            continue
++        need = sum(s.size or 0 for s in gspecs)
++        require_space(scratch, need, f"{name}/{g} (raw on SSD)")
++        print(f"  [{g}] {len(gspecs)} files, {need / 1e9:.2f} GB", flush=True)
++        with ThreadPoolExecutor(max_workers=jobs) as pool:
++            futs = {pool.submit(download, s, raw_root / s.name): s for s in gspecs}
++            for fut in as_completed(futs):
++                m["raw"][futs[fut].name] = fut.result()      # raises on any failure: rerun resumes
++        gdir = raw_root / PurePosixPath(gspecs[0].name).parent
++        tmp = ddir / "condensed" / f"{g}.partial"
++        shutil.rmtree(tmp, ignore_errors=True)
++        cmd = [sys.executable, str(HERE / f"{cfg['condense']}.py"), "--raw-dir", str(gdir), "--out", str(tmp),
++               "--src", str(repo / "src")]
++        subprocess.run(cmd, check=True, cwd=repo)
++        shutil.rmtree(out, ignore_errors=True)
++        os.replace(tmp, out)
++        shutil.rmtree(gdir, ignore_errors=True)
++        m["groups"][g] = "done"
++        record_condensed(ddir, m)
++        save_manifest(ddir, m)
++        print(f"  [{g}] condensed -> {out}", flush=True)
++    m["status"] = "complete"
++    m["raw_on_vault"] = False
++    m["history"].append({"at": now(), "by": socket.gethostname(), "event": "complete (streamed)"})
++    save_manifest(ddir, m)
++    write_source_md(ddir, m)
++    print(f"{name}: complete -> {ddir}", flush=True)
++    return m
++
++
+ def fetch(name: str, cfg: dict, vault: Path, scratch: Path, repo: Path, jobs: int,
+           force: bool = False, keep_raw: bool = False) -> dict:
+     ddir = dataset_dir(vault, name, cfg)
+@@ -349,6 +415,9 @@ def fetch(name: str, cfg: dict, vault: Path, scratch: Path, repo: Path, jobs: in
+     if len(set(names)) != len(names):
+         raise FetchError(f"{name}: duplicate file names after layout={cfg.get('layout')}")
+     m["source"] = src
++    if cfg["stage"] == "stream":
++        require_space(ddir.parent.parent.parent, int(cfg["expected_gb"] * 1e9), f"{name} (condensed)")
++        return fetch_stream(name, cfg, ddir, m, src, specs, scratch, repo, jobs)
+ 
+     raw_dir = ddir / "raw" if cfg["stage"] == "vault" else scratch / name / cfg["version"] / "raw"
+     if raw_dir.exists() and not os.access(raw_dir, os.W_OK):
+diff --git a/remote/datasets/registry.yaml b/remote/datasets/registry.yaml
+index af7097f..ecf75f7 100644
+--- a/remote/datasets/registry.yaml
++++ b/remote/datasets/registry.yaml
+@@ -10,11 +10,15 @@
+ #   zenodo            record id; checksum = md5
+ #   mediafire_folder  folder key; checksum = sha256
+ #   url               explicit list of {url, name}; no publisher checksum
++#   hf_tree           Hugging Face dataset repo + regex; checksum = LFS sha256 or git blob sha1
+ #
+ # `stage: vault`  files land directly in <vault>/datasets/<name>/<version>/raw
+ # `stage: ssd`    files land in ~/work/scratch (the big ephemeral SSD), are
+ #                 condensed into <vault>/.../condensed by `condense`, then
+ #                 deleted -- used where raw would not fit in 32 GB
++# `stage: stream` larger than vault and SSD together: files are grouped by the
++#                 `group` regex; each group is downloaded to the SSD, condensed
++#                 onto the vault, deleted; resumable per group
+ # `role: sealed`  downloaded and checksummed, never extracted (MASTER_PLAN §4.3)
+ #
+ # NOT reachable from the box (2026-10-22), do not add as sources:
+@@ -109,6 +113,55 @@ datasets:
+         ref: master
+         include: '\.(mat|md|txt)$'
+ 
++  # --- Phase 2 (2026-10-22, owner-approved). UNSEEN until each WP's notes
++  # pre-registration is written: fetching does not look at signals or labels.
++
++  hust:
++    version: mendeley-cbv7jyx4p9-v3
++    role: dev
++    stage: vault
++    expected_gb: 0.75
++    license: "CC BY 4.0"
++    citation: "Thuan & Hong, HUST bearing: a practical dataset for ball bearing fault diagnosis, BMC Research Notes 16, 138 (2023)"
++    notes: "Five bearing types 6204-6208; healthy (N) and 6 defect types; 3 loads; 51.2 kHz. WP14 (notes/24)."
++    sources:
++      - kind: mendeley
++        dataset: cbv7jyx4p9
++        version: 3
++        include: '\.(mat|png)$'
++
++  paderborn_ldm:
++    version: hf-int16-repack-of-zenodo-10805042
++    role: dev
++    stage: stream
++    group: '^data/(B\d+)/'
++    expected_gb: 4.8        # condensed: both channels at 12 kHz, int16 on the original volt grid
++    license: "CC BY 4.0"
++    citation: "Aimiyekagbon, Paderborn University, Run-to-failure data set of ball bearings subjected to time-varying load and speed conditions, Zenodo 10.5281/zenodo.10805042; Javanmardi et al., PHME 2024"
++    notes: >-
++      17 run-to-failure bearings, time-varying load and speed, 128 kHz, measured speed
++      per record. The original Zenodo record is 152 GB of zipped .mat; the source used is
++      a lossless int16 repack (50 GB, Hugging Face Nounours777/Paderborn-bearing, decode
++      error < 1e-9 V per its meta.json). WP15 (notes/25).
++    sources:
++      - kind: hf_tree
++        repo: Nounours777/Paderborn-bearing
++        include: '^data/B\d+/'
++    condense: condense_ldm
++
++  femto:
++    version: nasa-s3-10-femto-bearing
++    role: dev
++    stage: vault
++    expected_gb: 1.2
++    license: "NASA PCoE data repository, public"
++    citation: "Nectoux et al., PRONOSTIA: an experimental platform for bearings accelerated degradation tests, IEEE PHM 2012"
++    notes: "17 run-to-failure bearings, 3 constant conditions, 0.1 s at 25.6 kHz every 10 s. Archive kept unextracted; WP16 (notes/26) extracts on the SSD."
++    sources:
++      - kind: url
++        files:
++          - {name: FEMTO_Bearing.zip, url: "https://phm-datasets.s3.amazonaws.com/NASA/10.+FEMTO+Bearing.zip", size: 1157035288}
++
+   ims:
+     version: nasa-legacy-ims-zip
+     role: sealed
+untracked: papers/1-s2.0-S0952197621001421-am.pdf
+untracked: papers/142875.pdf
+untracked: papers/A_New_Multiple_Source_Domain_Adaptation_Fault_Diagnosis_Method_Between_Different_Rotating_Machines.pdf
+untracked: papers/xjtu_sy_dataset_interpretation_zh.pdf
+untracked: remote/datasets/condense_ldm.py
+untracked: reports/001_Internal Reports.docx
+untracked: reports/IRANYekanX_Fonts/IRANYekanX-Black.ttf
+untracked: reports/IRANYekanX_Fonts/IRANYekanX-Bold.ttf
+untracked: reports/IRANYekanX_Fonts/IRANYekanX-ExtraBlack.ttf
+untracked: reports/IRANYekanX_Fonts/IRANYekanX-ExtraBold.ttf
+untracked: reports/IRANYekanX_Fonts/IRANYekanX-Heavy.ttf
+untracked: reports/IRANYekanX_Fonts/IRANYekanX-Light.ttf
+untracked: reports/IRANYekanX_Fonts/IRANYekanX-Regular.ttf
+untracked: reports/R01_vibration_autoencoder_CWRU.pdf

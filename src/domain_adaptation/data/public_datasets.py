@@ -20,6 +20,7 @@ Geometry sources (notes/17 §3):
 """
 from __future__ import annotations
 
+import json
 import re
 from dataclasses import dataclass, field
 from pathlib import Path
@@ -210,3 +211,41 @@ def hust(root: Path, only: str | None = None):
                         label=HUST_LABEL[m["h"]], state="healthy" if m["h"] == "N" else "faulty",
                         fs=51200.0, signal=np.asarray(d["data"], dtype=np.float64).ravel(), rpm=60.0 * shaft_hz,
                         meta={"bearing": f"KG {btype} (HUST)", "load_W": int(m["load"]) * 100})
+
+
+# --- Paderborn LDM run-to-failure (time-varying load and speed) --------------
+# Condensed store (remote/datasets/condense_ldm.py): <root>/<B>/vibration_12k.npy
+# int16 (records, 2, 19200) on the source volt grid, meta.json, <B>_operatingConditions.csv.
+
+LDM_DEFECTS = {   # description PDF, Table 3 (found after dismantling)
+    "B01": "IR,OR,B", "B02": "IR", "B03": "IR", "B04": "IR,B", "B05": "B", "B06": "IR,B", "B07": "IR",
+    "B08": "IR,B", "B09": "OR,B", "B10": "OR,B", "B11": "IR,OR,B", "B12": "IR,B", "B13": "IR,B", "B14": "B",
+    "B15": "IR,B", "B16": "IR,OR,B", "B17": "B",
+}
+LDM_OPCOLS = {"setDynLoad / N": "set_dyn_N", "peak_dynLoad / N": "peak_dyn_N", "setStatLoad / N": "set_stat_N",
+              "meanAbs_statLoad / N": "stat_N", "setSpeed / rpm": "set_rpm", "meanAbs_speed / rpm": "speed_rpm"}
+
+
+def ldm_bearings(root: Path) -> list[str]:
+    return sorted(p.name for p in Path(root).iterdir() if (p / "vibration_12k.npy").is_file())
+
+
+def ldm_records(root: Path, bearing: str, channel: int = 0):
+    """One Recording per record: 1.6 s at 12 kHz in g, rpm = the record's measured mean speed."""
+    bdir = Path(root) / bearing
+    meta = json.loads((bdir / "meta.json").read_text())
+    codes = np.load(bdir / "vibration_12k.npy", mmap_mode="r", allow_pickle=False)
+    op = pd.read_csv(bdir / f"{bearing}_operatingConditions.csv").rename(columns=LDM_OPCOLS)
+    if len(op) != codes.shape[0]:
+        raise ValueError(f"{bearing}: {len(op)} operating-condition rows for {codes.shape[0]} records")
+    step, offset, gpv = meta["step_volts"][channel], meta["offset_volts"][channel], meta["g_per_volt"]
+    for k in range(codes.shape[0]):
+        row = op.iloc[k]
+        sig = (offset + step * np.asarray(codes[k, channel], dtype=np.float64)) * gpv
+        yield Recording("paderborn_ldm", unit=bearing, condition="varying", recording=f"{k + 1:05d}", label=-1,
+                        state="run", fs=12000.0, signal=sig, rpm=float(row.speed_rpm),
+                        meta={"minute": k + 1, "channel": meta["channels"][channel],
+                              "extra": {"record": k + 1, "time": row.Time, "speed_rpm": float(row.speed_rpm),
+                                        "set_rpm": float(row.set_rpm), "stat_N": float(row.stat_N),
+                                        "set_stat_N": float(row.set_stat_N), "peak_dyn_N": float(row.peak_dyn_N),
+                                        "set_dyn_N": float(row.set_dyn_N), "defect": LDM_DEFECTS.get(bearing, "")}})

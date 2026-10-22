@@ -1,0 +1,1 @@
+bash -c python3\ -I\ remote/datasets/fetch.py\ --vault\ /mnt/vault\ --scratch\ ~/work/scratch\ --repo\ ~/work/vibration_anomaly_detection\ unseal\ ims\ --commit\ e7c01a3eee93\ --confirm\ WP11\ \&\&\ python3\ scripts/analysis/wp18_ims.py\ --jobs\ 8 

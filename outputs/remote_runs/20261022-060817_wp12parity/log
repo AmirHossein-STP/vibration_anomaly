@@ -1,0 +1,10 @@
+Traceback (most recent call last):
+  File "/home/homa/work/vibration_anomaly_detection/scripts/analysis/wp12_parity.py", line 64, in <module>
+    main()
+  File "/home/homa/work/vibration_anomaly_detection/scripts/analysis/wp12_parity.py", line 39, in main
+    committed = {f: json.loads(subprocess.run(["git", "show", f"HEAD:{f}"], capture_output=True, text=True,
+  File "/home/homa/work/vibration_anomaly_detection/scripts/analysis/wp12_parity.py", line 39, in <dictcomp>
+    committed = {f: json.loads(subprocess.run(["git", "show", f"HEAD:{f}"], capture_output=True, text=True,
+  File "/usr/lib/python3.10/subprocess.py", line 526, in run
+    raise CalledProcessError(retcode, process.args,
+subprocess.CalledProcessError: Command '['git', 'show', 'HEAD:outputs/wp5/wp5_results.json']' returned non-zero exit status 128.

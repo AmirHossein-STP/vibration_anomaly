@@ -1,0 +1,1 @@
+python3 scripts/analysis/v2_cache.py --set geofree --datasets cwru pu ottawa_2018 ottawa_2023 mfpt --jobs 6 

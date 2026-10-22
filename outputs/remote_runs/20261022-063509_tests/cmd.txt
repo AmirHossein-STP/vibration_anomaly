@@ -1,0 +1,1 @@
+python3 -m pytest -q tests/test_bearing_replay.py tests/test_bearing_fleet.py 
