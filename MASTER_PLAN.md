@@ -23,12 +23,11 @@ speed-estimator validation, and the WP6 sensitivity curve (rejected). The curren
   are constant;
 - **diagnose** with physics typing.
 
-Open next:
-- WP9: productise cross-fitted calibration and per-unit baselines;
-- WP6 arms A–E, with a generator validated against real damage;
-- WP10 documents: inventory template, data-collection spec, L0 module;
-- WP3 leftovers: unknown-geometry mode, AWGN curve;
-- WP11 (IMS, sealed) only after freezing.
+**Next: Phase 2 (§5, "Phase 2"), written 2026-10-22.** In short:
+1. write the method down as v1.0 and build it once (WP12–13);
+2. confirm it under time-varying load and speed on a dataset nobody has looked at (WP14);
+3. freeze it and take the IMS final exam (WP16);
+4. meanwhile, get the pilot ready, which needs owner input (WP17).
 
 Decisions recorded with the owner on 2026-10-15:
 
@@ -345,6 +344,129 @@ In order. Each has a gate. **The compute line on each WP is binding.**
 > Before any heavy step, **stop and ask the owner where to run it**: a rented
 > server (`ephemeral_server_manual.md`, notes/11), a Kaggle kernel, or
 > elsewhere. Never assume the laptop.
+>
+> **Update 2026-10-22.** The rented box is driven by `remote/box` (`remote/README.md`). Kaggle
+> is unreachable from it. The "ask first" rule applies again unless the owner restates the
+> 2026-10-22 autonomy instruction.
+
+### Phase 2 (written 2026-10-22): from candidate method to frozen method to pilot
+
+**Where Phase 1 left us** (notes/17–21). One method works on every public rig tried, and
+nothing richer beat it:
+- **detect**: CPW+SES physics score against the unit's **own** healthy baseline, cross-fitted
+  conformal threshold;
+- **trend trigger**: own-baseline CUSUM on a level feature;
+- **diagnose**: physics typing.
+
+Two questions decide the architecture and are still open:
+- **(Q1)** Under **time-varying load and speed**, which is what turbomachines actually do, is the level trigger
+  confounded, and does the physics score take over as trigger? Every run-to-failure set
+  so far ran at constant conditions.
+- **(Q2)** What do **false alarms per day** look like with realistically long baselines?
+
+Neither can be answered on data already seen. Two **unseen** datasets were found reachable from the box:
+- **Paderborn LDM run-to-failure**: 17 bearings under time-varying load and speed, measured speed per
+  record, 128 kHz, ~50 GB. Zenodo 10805042, with a lossless HF repack.
+- **FEMTO/PRONOSTIA**: 17 bearings, constant conditions. NASA S3, 1.2 GB.
+
+**Rule for both:** nobody looks at their signals or labels before the WP's pre-registration
+is written.
+
+Order, with gates:
+
+#### WP12. Method v1.0, written down and built once (light)
+- `notes/22_method_v1.md` is the exact spec:
+  - features, windows, speed source (tach / logged setpoint / computed order tracking);
+  - own-unit baseline and minimum calibration duration;
+  - cross-fitted conformal threshold, recording and unit verdicts, CUSUM trigger, typing output;
+  - what is explicitly *not* covered (ball/cage, no-speed machines).
+- One implementation, `src/domain_adaptation/method.py`, which the analysis scripts and WP13 both call.
+- **Gate:** parity. Run through the new module, notes/17–18's headline numbers reproduce
+  exactly (Ottawa 2018 0.922, Ottawa 2023 own 0.930, MFPT 1.000, Paderborn N09 0.901,
+  XJTU-SY 13/15 and 9/15).
+- **Compute:** light (code). The parity run is seconds on the box.
+
+#### WP13. Productise (replaces WP9)
+- `serving_core` `bearing` service on top of `method.py`:
+  - per-unit baselines (`calibrate --unit`);
+  - cross-fitted thresholds;
+  - the level-CUSUM trigger plus physics score;
+  - typing in the explanation;
+  - speed input required (tach channel, or a setpoint per record; refuse without one);
+  - feature/method version in model metadata, with inference refusing a mismatch.
+- Replay tests: Ottawa 2023 and XJTU-SY files fed through `ad calibrate/infer` give the WP12
+  numbers.
+- **Gate:** contract and replay tests pass on the box. One end-to-end calibrate → promote →
+  infer → rollback cycle in Docker.
+- **Compute:** code is light; the test suite and Docker build run on the box.
+
+#### WP14. Confirmation under time-varying conditions (Q1): Paderborn LDM run-to-failure
+- **Pre-register first** (`notes/23`), with v1.0 frozen as of WP12. Questions:
+  - (a) false alarms of the level CUSUM vs the physics CUSUM over the early-life period,
+    as load and speed change;
+  - (b) detection and lead time at an FA budget chosen on early life only;
+  - (c) end-of-life typing against the test log;
+  - (d) whether the baseline must span the operating states: per-state baselines vs one pooled baseline.
+- **Data handling:**
+  - one bearing at a time on the SSD (raw ~3 GB each);
+  - features and level statistics go to the vault, raw is deleted;
+  - the manifest records the checksums. 50 GB never fits the vault and does not need to.
+- **Gate (to be fixed in notes/23):** a pre-registered verdict on Q1. Then the decision layer in §3
+  says which trigger runs when operating conditions vary.
+- **Compute:** heavy (download ~50 GB through the box's downlink, about 1.5–2 h; extraction minutes).
+
+#### WP15. Long-baseline false alarms (Q2): FEMTO/PRONOSTIA
+- Its 0.1 s snapshots every 10 s are too short for order features (3 revolutions). So this tests
+  the **trigger** (level/kurtosis CUSUM) and its false alarms per day with hours of
+  baseline and fine time resolution. The physics score is not applicable, and that is reported.
+- **Gate:** an FA-per-day vs lead-time curve whose operating point is chosen from early life only.
+  It is compared with XJTU-SY (notes/18).
+- **Compute:** heavy but small (1.2 GB, minutes).
+
+#### WP16. Freeze v1.0, then the IMS final exam (replaces WP11)
+- After WP14 (and WP15), freeze: record the git commit in `notes/22`. A WP14 failure means
+  revising, re-freezing and saying so. It does not mean tuning on IMS.
+- Score IMS **once** with the frozen system. Unseal it with `fetch.py unseal ims --commit <sha> --confirm WP11`.
+  IMS has 3 run-to-failure tests at 20 kHz, 1 s every 10 min, with documented inner, roller and outer failures.
+- Report development vs IMS numbers side by side in the README, the roadmap and the reports.
+- **Gate:** none. The result is reported whatever it is (§7).
+- **Compute:** heavy (minutes on the box).
+
+#### WP17. Pilot readiness (replaces the WP10 documents; light; **needs the owner**)
+- **Inventory template:** per machine, the bearing type and geometry, blade/vane counts, speed range,
+  speed signal available, sensors and mounting, unit IDs.
+- **Data-collection spec**, revised by Phase 1:
+  - a **keyphasor/encoder, or a logged speed setpoint per record, is mandatory** (notes/20);
+  - ≥ 25 kHz raw waveforms;
+  - **healthy baseline: days, spanning every operating state** (notes/18);
+  - the operating state logged per record;
+  - a maintenance log.
+- **L0 module:** ISO 20816 velocity-RMS zones.
+- **Pilot acceptance test:**
+  - clean calibration verdict per unit;
+  - drift report;
+  - speed known;
+  - baseline duration met.
+- **Ingestion format** for the service, plus `box data push` for private recordings (already built).
+- **Gate:** the owner can hand the spec to the site, and the service accepts a recording in the spec's
+  format end to end.
+
+#### WP18. Research backlog (only after WP16; in this order)
+1. Ball/cage coverage. notes/19: lines alone failed. Try a non-race "anomalous but untyped" output
+   from the own-baseline score.
+2. Fleet baseline for new units with no history. v2max helped Ottawa 2023; test it on LDM.
+3. Speed from vibration with continuity tracking, for machines without a tach.
+4. WP6 L3 arms A–E with a generator validated against real signatures (Wang/Taal/Fink 2022).
+5. WP3 leftovers: unknown-geometry bands, AWGN robustness.
+6. WP8 learned models stay closed unless 1–5 leave a measurable gap.
+
+**What would change this order:**
+- If real turbomachine data arrives, WP17 jumps to the front, and WP14 is run on it, on its
+  healthy part, before anything else.
+- If WP14 shows the physics score cannot trigger under varying conditions either, the pilot
+  must log the operating state and use per-state baselines. WP17's spec already demands that.
+
+### Phase 1 (WP1–WP11, record; statuses as of 2026-10-22)
 
 ### WP1. Re-score what already exists (no new science)
 - Recording-level and unit-level detection on PU from the envelope model's
