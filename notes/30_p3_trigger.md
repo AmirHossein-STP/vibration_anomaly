@@ -62,5 +62,48 @@ A trigger among T1–T3 **passes** if:
 
 Confirmation of any candidate: the sealed Ferrara and KAIST sets (notes/28), once.
 
-## 5. Results
-(to be filled by `scripts/analysis/p3_trigger.py`)
+## 5. Results (2026-10-22): **no trigger passes**
+Run: `remote/box run p3trig`. Report: `outputs/p3/trigger/report.md`.
+
+| trigger | IMS, 8 non-failing units: false events/day (236 days observed) | failed units detected (of 53) | gate |
+|---|---|---|---|
+| T0 v1.1 CUSUM (h: FA budget 0, leave one unit out) | **0.01** (1 event) | 45 | reference |
+| T1 conformal martingale, fixed reference, Ville | 3.70 | 52 | fail (FA) |
+| T2 conformal martingale, sliding reference | 7.11 | 53 | fail (FA) |
+| T3 forecast-residual CUSUM | 0.01 | 43 | fail (detections) |
+| T4 fleet-relative (IMS only) | 0.01 | 2/4 on IMS | descriptive |
+
+Reading (§4): **none passes**. The pre-registered consequence is that the trend layer stays out of
+the product. Alarms come from the recording verdict, and the trade-off is reported.
+
+- **The conformal guarantee does not survive real healthy data.** Ville's bound assumes the records
+  are exchangeable. Healthy vibration levels are autocorrelated and drift, so the p-values pile up
+  near 0 and the martingale grows on healthy units: 3.7–7.1 events/day on IMS, 24–179/day on the
+  short false-alarm regions of the other sets.
+  - The sliding reference (T2) is *worse*, not better. Its B-record reference is shorter than the
+    autocorrelation of the level.
+  - Track C's "formal false-alarm control" idea is therefore refuted for this statistic, not just
+    weakened.
+- The forecast residual (T3) is as quiet as T0, but it absorbs part of the degradation. It misses
+  T1-B3 and T1-B4 on IMS.
+
+### 5.1 Post hoc (not part of the verdict): the WP18 exam failure was the threshold, not the CUSUM
+Under this note's rule (h from FA budget 0 over the *other units' long healthy history*), the v1.1
+CUSUM itself:
+- has **1 false event in 236 healthy days** on the 8 non-failing IMS units;
+- detects all 4 IMS failures, with leads of 25, 47, 88 and 180 h.
+
+In WP18 the same CUSUM gave 1.02 events/day, because the service set h from its 33 h calibration
+alone. So the trigger's form is fine. What it lacked was an h that reflects how far a healthy
+level wanders over weeks, and that can only be learned from weeks of healthy data: the unit's own,
+or its fleet's.
+- **Consequence for the product (a candidate, not a result):** the trend trigger starts disabled,
+  or with a deliberately high h. Its h is re-estimated from accumulated healthy history (fleet-wide
+  where units are identical), and alarms are enabled only after a minimum healthy duration.
+- Caveat: on IMS, h came from sibling bearings on the *same* rig and test. Whether a fleet's
+  history transfers between machines is untested.
+- It needs confirmation on data where h is learned only from the past. Ferrara (6 sequential tests on
+  one rig) allows exactly that: h from tests E1..E(k−1), applied to E(k).
+
+The FA/day numbers on XJTU-SY, LDM and FEMTO rest on 0.3–0.8 days of false-alarm region in total.
+One event there is 1.2–3 events/day, so they rank the triggers but are not usable rates.

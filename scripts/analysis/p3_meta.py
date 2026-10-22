@@ -9,6 +9,7 @@ where the source datasets reward it.
     A2  bin transformer over 135 tokens [z, mu, log sd, order code]       (set-conditioned)
 
 Usage (box, after p3_episodes.py): python3 scripts/analysis/p3_meta.py [--models a1 a2] [--seeds 0 1 2 3 4]
+(one worker process per model x seed, --jobs at a time; the GPU is idle at these batch sizes)
 Output: outputs/p3/meta/results.json, outputs/p3/meta/report.md
 """
 from __future__ import annotations
@@ -16,6 +17,7 @@ from __future__ import annotations
 import argparse
 import json
 import pickle
+import subprocess
 import sys
 import time
 from pathlib import Path
@@ -137,33 +139,58 @@ def gate(ref: dict, res: dict) -> dict:
             "pass": bool(c1 >= GATE_MEAN and d_auc[worst] >= -GATE_LOSS and d_fa <= GATE_FA)}
 
 
+def run_one(m: str, seed: int, out_dir: Path) -> None:
+    """One model x seed over all 9 held-out datasets -> out_dir/runs/<m>_<seed>.json"""
+    torch.set_num_threads(1)
+    with open(OUT / "bank.pkl", "rb") as fh:
+        bank: dict[str, list[Fold]] = pickle.load(fh)
+    ref = json.loads((OUT / "a0_reference.json").read_text())
+    trainable = {d: [tensors(f) for f in fs if len(f.pos) and len(f.neg) + len(f.sup)] for d, fs in bank.items()}
+    res, t0 = {}, time.time()
+    for held in DATASETS:
+        train_sets = {d: v for d, v in trainable.items() if d != held}
+        assert held not in train_sets                       # leakage guard (notes/29 §2)
+        model = train(MODELS[m]().to(DEV), train_sets, seed * 100 + DATASETS.index(held))
+        res[held] = summary_per_fold(bank[held], {id(f): scorer(model, f) for f in bank[held]})
+    run = {"datasets": res, "gate": gate(ref, res), "seconds": time.time() - t0}
+    (out_dir / "runs").mkdir(parents=True, exist_ok=True)
+    (out_dir / "runs" / f"{m}_{seed}.json").write_text(json.dumps(run, indent=1, default=float))
+    g = run["gate"]
+    print(f"{m} seed {seed}: mean dAUC {g['mean_delta_auc']:+.3f}, worst {g['worst_dataset']} "
+          f"{g['worst_delta']:+.3f}, dFA_worst {g['delta_fa_worst']:+.3f} ({run['seconds']:.0f} s)", flush=True)
+
+
 def main():
     ap = argparse.ArgumentParser()
     ap.add_argument("--models", nargs="*", default=list(MODELS))
     ap.add_argument("--seeds", nargs="*", type=int, default=[0, 1, 2, 3, 4])
     ap.add_argument("--steps", type=int, default=STEPS, help="smoke tests only; the result uses the default")
+    ap.add_argument("--jobs", type=int, default=8)
+    ap.add_argument("--worker", nargs=2, metavar=("MODEL", "SEED"))
     a = ap.parse_args()
     globals()["STEPS"] = a.steps
-    with open(OUT / "bank.pkl", "rb") as fh:
-        bank: dict[str, list[Fold]] = pickle.load(fh)
-    ref = json.loads((OUT / "a0_reference.json").read_text())
-    trainable = {d: [tensors(f) for f in fs if len(f.pos) and len(f.neg) + len(f.sup)] for d, fs in bank.items()}
     out_dir = OUT / "meta"
-    out_dir.mkdir(parents=True, exist_ok=True)
-    results = {"steps": STEPS, "device": str(DEV), "runs": {}}
-    for m in a.models:
-        for seed in a.seeds:
-            res, t0 = {}, time.time()
-            for held in DATASETS:
-                train_sets = {d: v for d, v in trainable.items() if d != held}
-                assert held not in train_sets                       # leakage guard (notes/29 §2)
-                model = train(MODELS[m]().to(DEV), train_sets, seed * 100 + DATASETS.index(held))
-                res[held] = summary_per_fold(bank[held], {id(f): scorer(model, f) for f in bank[held]})
-            results["runs"][f"{m}:{seed}"] = {"datasets": res, "gate": gate(ref, res), "seconds": time.time() - t0}
-            g = results["runs"][f"{m}:{seed}"]["gate"]
-            print(f"{m} seed {seed}: mean dAUC {g['mean_delta_auc']:+.3f}, worst {g['worst_dataset']} "
-                  f"{g['worst_delta']:+.3f}, dFA_worst {g['delta_fa_worst']:+.3f} ({time.time() - t0:.0f} s)", flush=True)
-            (out_dir / "results.json").write_text(json.dumps(results, indent=1, default=float))
+    if a.worker:
+        run_one(a.worker[0], int(a.worker[1]), out_dir)
+        return
+    todo = [(m, s) for m in a.models for s in a.seeds]
+    procs, failed = [], []
+    while todo or procs:
+        while todo and len(procs) < a.jobs:
+            m, s = todo.pop(0)
+            procs.append(((m, s), subprocess.Popen([sys.executable, __file__, "--steps", str(a.steps), "--worker", m, str(s)])))
+        time.sleep(5)
+        for p in [p for p in procs if p[1].poll() is not None]:
+            procs.remove(p)
+            if p[1].returncode:
+                failed.append(p[0])
+    if failed:
+        raise SystemExit(f"workers failed: {failed}")
+    ref = json.loads((OUT / "a0_reference.json").read_text())
+    results = {"steps": STEPS, "device": str(DEV),
+               "runs": {f"{m}:{s}": json.loads((out_dir / "runs" / f"{m}_{s}.json").read_text())
+                        for m in a.models for s in a.seeds}}
+    (out_dir / "results.json").write_text(json.dumps(results, indent=1, default=float))
     report(ref, results, a.models, a.seeds, out_dir)
 
 

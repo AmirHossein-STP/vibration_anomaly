@@ -1,0 +1,1719 @@
+{
+ "results": {
+  "ims": {
+   "T0": {
+    "fa_per_day": 0.004232691427388963,
+    "fa_days": 236.25629629629626,
+    "detected": 4,
+    "failed": 4,
+    "median_lead_h": 67.60833333333335,
+    "units": {
+     "t1_b1": {
+      "failed": false,
+      "n_alarms": 0,
+      "lead_h": null,
+      "fa_events": 0
+     },
+     "t1_b2": {
+      "failed": false,
+      "n_alarms": 1,
+      "lead_h": null,
+      "fa_events": 0
+     },
+     "t1_b3": {
+      "failed": true,
+      "n_alarms": 1,
+      "lead_h": 88.2166666666667,
+      "fa_events": 0
+     },
+     "t1_b4": {
+      "failed": true,
+      "n_alarms": 4,
+      "lead_h": 180.12388888888893,
+      "fa_events": 0
+     },
+     "t2_b1": {
+      "failed": true,
+      "n_alarms": 6,
+      "lead_h": 47.000000000000014,
+      "fa_events": 0
+     },
+     "t2_b2": {
+      "failed": false,
+      "n_alarms": 1,
+      "lead_h": null,
+      "fa_events": 0
+     },
+     "t2_b3": {
+      "failed": false,
+      "n_alarms": 0,
+      "lead_h": null,
+      "fa_events": 0
+     },
+     "t2_b4": {
+      "failed": false,
+      "n_alarms": 2,
+      "lead_h": null,
+      "fa_events": 0
+     },
+     "t3_b1": {
+      "failed": false,
+      "n_alarms": 0,
+      "lead_h": null,
+      "fa_events": 0
+     },
+     "t3_b2": {
+      "failed": false,
+      "n_alarms": 0,
+      "lead_h": null,
+      "fa_events": 0
+     },
+     "t3_b3": {
+      "failed": true,
+      "n_alarms": 3,
+      "lead_h": 24.833333333333485,
+      "fa_events": 0
+     },
+     "t3_b4": {
+      "failed": false,
+      "n_alarms": 3,
+      "lead_h": null,
+      "fa_events": 1
+     }
+    }
+   },
+   "T1": {
+    "fa_per_day": 4.338508713073687,
+    "fa_days": 236.25629629629626,
+    "detected": 4,
+    "failed": 4,
+    "median_lead_h": 245.0194444444444,
+    "units": {
+     "t1_b1": {
+      "failed": false,
+      "n_alarms": 63,
+      "lead_h": null,
+      "fa_events": 32
+     },
+     "t1_b2": {
+      "failed": false,
+      "n_alarms": 242,
+      "lead_h": null,
+      "fa_events": 131
+     },
+     "t1_b3": {
+      "failed": true,
+      "n_alarms": 495,
+      "lead_h": 245.0194444444444,
+      "fa_events": 92
+     },
+     "t1_b4": {
+      "failed": true,
+      "n_alarms": 783,
+      "lead_h": 245.0194444444444,
+      "fa_events": 268
+     },
+     "t2_b1": {
+      "failed": true,
+      "n_alarms": 231,
+      "lead_h": 75.16666666666667,
+      "fa_events": 0
+     },
+     "t2_b2": {
+      "failed": false,
+      "n_alarms": 124,
+      "lead_h": null,
+      "fa_events": 74
+     },
+     "t2_b3": {
+      "failed": false,
+      "n_alarms": 51,
+      "lead_h": null,
+      "fa_events": 2
+     },
+     "t2_b4": {
+      "failed": false,
+      "n_alarms": 177,
+      "lead_h": null,
+      "fa_events": 127
+     },
+     "t3_b1": {
+      "failed": false,
+      "n_alarms": 79,
+      "lead_h": null,
+      "fa_events": 0
+     },
+     "t3_b2": {
+      "failed": false,
+      "n_alarms": 82,
+      "lead_h": null,
+      "fa_events": 0
+     },
+     "t3_b3": {
+      "failed": true,
+      "n_alarms": 219,
+      "lead_h": 348.84944444444454,
+      "fa_events": 0
+     },
+     "t3_b4": {
+      "failed": false,
+      "n_alarms": 453,
+      "lead_h": null,
+      "fa_events": 299
+     }
+    }
+   },
+   "T2": {
+    "fa_per_day": 6.501414032469447,
+    "fa_days": 236.25629629629626,
+    "detected": 4,
+    "failed": 4,
+    "median_lead_h": 234.60277777777776,
+    "units": {
+     "t1_b1": {
+      "failed": false,
+      "n_alarms": 164,
+      "lead_h": null,
+      "fa_events": 145
+     },
+     "t1_b2": {
+      "failed": false,
+      "n_alarms": 192,
+      "lead_h": null,
+      "fa_events": 156
+     },
+     "t1_b3": {
+      "failed": true,
+      "n_alarms": 286,
+      "lead_h": 245.35277777777776,
+      "fa_events": 89
+     },
+     "t1_b4": {
+      "failed": true,
+      "n_alarms": 511,
+      "lead_h": 223.85277777777776,
+      "fa_events": 147
+     },
+     "t2_b1": {
+      "failed": true,
+      "n_alarms": 225,
+      "lead_h": 78.50000000000001,
+      "fa_events": 1
+     },
+     "t2_b2": {
+      "failed": false,
+      "n_alarms": 143,
+      "lead_h": null,
+      "fa_events": 93
+     },
+     "t2_b3": {
+      "failed": false,
+      "n_alarms": 91,
+      "lead_h": null,
+      "fa_events": 41
+     },
+     "t2_b4": {
+      "failed": false,
+      "n_alarms": 179,
+      "lead_h": null,
+      "fa_events": 129
+     },
+     "t3_b1": {
+      "failed": false,
+      "n_alarms": 434,
+      "lead_h": null,
+      "fa_events": 326
+     },
+     "t3_b2": {
+      "failed": false,
+      "n_alarms": 240,
+      "lead_h": null,
+      "fa_events": 58
+     },
+     "t3_b3": {
+      "failed": true,
+      "n_alarms": 227,
+      "lead_h": 520.6827777777778,
+      "fa_events": 23
+     },
+     "t3_b4": {
+      "failed": false,
+      "n_alarms": 466,
+      "lead_h": null,
+      "fa_events": 328
+     }
+    }
+   },
+   "T3": {
+    "fa_per_day": 0.004232691427388963,
+    "fa_days": 236.25629629629626,
+    "detected": 2,
+    "failed": 4,
+    "median_lead_h": 39.91666666666675,
+    "units": {
+     "t1_b1": {
+      "failed": false,
+      "n_alarms": 0,
+      "lead_h": null,
+      "fa_events": 0
+     },
+     "t1_b2": {
+      "failed": false,
+      "n_alarms": 0,
+      "lead_h": null,
+      "fa_events": 0
+     },
+     "t1_b3": {
+      "failed": true,
+      "n_alarms": 0,
+      "lead_h": null,
+      "fa_events": 0
+     },
+     "t1_b4": {
+      "failed": true,
+      "n_alarms": 0,
+      "lead_h": null,
+      "fa_events": 0
+     },
+     "t2_b1": {
+      "failed": true,
+      "n_alarms": 7,
+      "lead_h": 56.000000000000014,
+      "fa_events": 0
+     },
+     "t2_b2": {
+      "failed": false,
+      "n_alarms": 3,
+      "lead_h": null,
+      "fa_events": 0
+     },
+     "t2_b3": {
+      "failed": false,
+      "n_alarms": 1,
+      "lead_h": null,
+      "fa_events": 0
+     },
+     "t2_b4": {
+      "failed": false,
+      "n_alarms": 5,
+      "lead_h": null,
+      "fa_events": 1
+     },
+     "t3_b1": {
+      "failed": false,
+      "n_alarms": 1,
+      "lead_h": null,
+      "fa_events": 0
+     },
+     "t3_b2": {
+      "failed": false,
+      "n_alarms": 2,
+      "lead_h": null,
+      "fa_events": 0
+     },
+     "t3_b3": {
+      "failed": true,
+      "n_alarms": 4,
+      "lead_h": 23.833333333333485,
+      "fa_events": 0
+     },
+     "t3_b4": {
+      "failed": false,
+      "n_alarms": 3,
+      "lead_h": null,
+      "fa_events": 0
+     }
+    }
+   },
+   "T4": {
+    "fa_per_day": 0.008465382854777926,
+    "fa_days": 236.25629629629626,
+    "detected": 2,
+    "failed": 4,
+    "median_lead_h": 21.833333333333414,
+    "units": {
+     "t1_b1": {
+      "failed": false,
+      "n_alarms": 0,
+      "lead_h": null,
+      "fa_events": 0
+     },
+     "t1_b2": {
+      "failed": false,
+      "n_alarms": 0,
+      "lead_h": null,
+      "fa_events": 0
+     },
+     "t1_b3": {
+      "failed": true,
+      "n_alarms": 0,
+      "lead_h": null,
+      "fa_events": 0
+     },
+     "t1_b4": {
+      "failed": true,
+      "n_alarms": 0,
+      "lead_h": null,
+      "fa_events": 0
+     },
+     "t2_b1": {
+      "failed": true,
+      "n_alarms": 1,
+      "lead_h": 0.3333333333333428,
+      "fa_events": 0
+     },
+     "t2_b2": {
+      "failed": false,
+      "n_alarms": 0,
+      "lead_h": null,
+      "fa_events": 0
+     },
+     "t2_b3": {
+      "failed": false,
+      "n_alarms": 0,
+      "lead_h": null,
+      "fa_events": 0
+     },
+     "t2_b4": {
+      "failed": false,
+      "n_alarms": 0,
+      "lead_h": null,
+      "fa_events": 0
+     },
+     "t3_b1": {
+      "failed": false,
+      "n_alarms": 0,
+      "lead_h": null,
+      "fa_events": 0
+     },
+     "t3_b2": {
+      "failed": false,
+      "n_alarms": 0,
+      "lead_h": null,
+      "fa_events": 0
+     },
+     "t3_b3": {
+      "failed": true,
+      "n_alarms": 1,
+      "lead_h": 43.333333333333485,
+      "fa_events": 0
+     },
+     "t3_b4": {
+      "failed": false,
+      "n_alarms": 3,
+      "lead_h": null,
+      "fa_events": 2
+     }
+    }
+   }
+  },
+  "xjtu_sy": {
+   "T0": {
+    "fa_per_day": 2.999999999999999,
+    "fa_days": 0.3333333333333334,
+    "detected": 12,
+    "failed": 15,
+    "median_lead_h": 1.5000000000000004,
+    "units": {
+     "Bearing1_1": {
+      "failed": true,
+      "n_alarms": 2,
+      "lead_h": 0.4999999999999998,
+      "fa_events": 0
+     },
+     "Bearing1_2": {
+      "failed": true,
+      "n_alarms": 17,
+      "lead_h": 1.583333333333333,
+      "fa_events": 1
+     },
+     "Bearing1_3": {
+      "failed": true,
+      "n_alarms": 11,
+      "lead_h": 1.2166666666666666,
+      "fa_events": 0
+     },
+     "Bearing1_4": {
+      "failed": true,
+      "n_alarms": 0,
+      "lead_h": null,
+      "fa_events": 0
+     },
+     "Bearing1_5": {
+      "failed": true,
+      "n_alarms": 4,
+      "lead_h": 0.18333333333333335,
+      "fa_events": null
+     },
+     "Bearing2_1": {
+      "failed": true,
+      "n_alarms": 7,
+      "lead_h": 0.4833333333333334,
+      "fa_events": 0
+     },
+     "Bearing2_2": {
+      "failed": true,
+      "n_alarms": 23,
+      "lead_h": 1.6499999999999997,
+      "fa_events": 0
+     },
+     "Bearing2_3": {
+      "failed": true,
+      "n_alarms": 74,
+      "lead_h": 6.183333333333333,
+      "fa_events": 0
+     },
+     "Bearing2_4": {
+      "failed": true,
+      "n_alarms": 0,
+      "lead_h": null,
+      "fa_events": null
+     },
+     "Bearing2_5": {
+      "failed": true,
+      "n_alarms": 17,
+      "lead_h": 2.766666666666667,
+      "fa_events": 0
+     },
+     "Bearing3_1": {
+      "failed": true,
+      "n_alarms": 20,
+      "lead_h": 2.366666666666667,
+      "fa_events": 0
+     },
+     "Bearing3_2": {
+      "failed": true,
+      "n_alarms": 19,
+      "lead_h": 20.71666666666667,
+      "fa_events": 0
+     },
+     "Bearing3_3": {
+      "failed": true,
+      "n_alarms": 2,
+      "lead_h": 0.2666666666666666,
+      "fa_events": 0
+     },
+     "Bearing3_4": {
+      "failed": true,
+      "n_alarms": 24,
+      "lead_h": 1.4166666666666679,
+      "fa_events": 0
+     },
+     "Bearing3_5": {
+      "failed": true,
+      "n_alarms": 0,
+      "lead_h": null,
+      "fa_events": null
+     }
+    }
+   },
+   "T1": {
+    "fa_per_day": 65.99999999999999,
+    "fa_days": 0.3333333333333334,
+    "detected": 15,
+    "failed": 15,
+    "median_lead_h": 1.5500000000000007,
+    "units": {
+     "Bearing1_1": {
+      "failed": true,
+      "n_alarms": 25,
+      "lead_h": 0.9833333333333332,
+      "fa_events": 10
+     },
+     "Bearing1_2": {
+      "failed": true,
+      "n_alarms": 31,
+      "lead_h": 1.6166666666666665,
+      "fa_events": 6
+     },
+     "Bearing1_3": {
+      "failed": true,
+      "n_alarms": 27,
+      "lead_h": 1.5999999999999999,
+      "fa_events": 2
+     },
+     "Bearing1_4": {
+      "failed": true,
+      "n_alarms": 8,
+      "lead_h": 0.6166666666666665,
+      "fa_events": 0
+     },
+     "Bearing1_5": {
+      "failed": true,
+      "n_alarms": 6,
+      "lead_h": 0.33333333333333337,
+      "fa_events": null
+     },
+     "Bearing2_1": {
+      "failed": true,
+      "n_alarms": 9,
+      "lead_h": 0.5666666666666673,
+      "fa_events": 0
+     },
+     "Bearing2_2": {
+      "failed": true,
+      "n_alarms": 27,
+      "lead_h": 1.6666666666666665,
+      "fa_events": 2
+     },
+     "Bearing2_3": {
+      "failed": true,
+      "n_alarms": 101,
+      "lead_h": 6.716666666666667,
+      "fa_events": 0
+     },
+     "Bearing2_4": {
+      "failed": true,
+      "n_alarms": 4,
+      "lead_h": 0.16666666666666663,
+      "fa_events": null
+     },
+     "Bearing2_5": {
+      "failed": true,
+      "n_alarms": 53,
+      "lead_h": 3.566666666666667,
+      "fa_events": 0
+     },
+     "Bearing3_1": {
+      "failed": true,
+      "n_alarms": 51,
+      "lead_h": 3.316666666666663,
+      "fa_events": 2
+     },
+     "Bearing3_2": {
+      "failed": true,
+      "n_alarms": 333,
+      "lead_h": 40.13333333333333,
+      "fa_events": 0
+     },
+     "Bearing3_3": {
+      "failed": true,
+      "n_alarms": 8,
+      "lead_h": 0.43333333333333357,
+      "fa_events": 0
+     },
+     "Bearing3_4": {
+      "failed": true,
+      "n_alarms": 25,
+      "lead_h": 1.5500000000000007,
+      "fa_events": 0
+     },
+     "Bearing3_5": {
+      "failed": true,
+      "n_alarms": 23,
+      "lead_h": 1.5,
+      "fa_events": null
+     }
+    }
+   },
+   "T2": {
+    "fa_per_day": 56.999999999999986,
+    "fa_days": 0.3333333333333334,
+    "detected": 15,
+    "failed": 15,
+    "median_lead_h": 1.6166666666666665,
+    "units": {
+     "Bearing1_1": {
+      "failed": true,
+      "n_alarms": 19,
+      "lead_h": 0.8166666666666664,
+      "fa_events": 7
+     },
+     "Bearing1_2": {
+      "failed": true,
+      "n_alarms": 16,
+      "lead_h": 1.6166666666666665,
+      "fa_events": 6
+     },
+     "Bearing1_3": {
+      "failed": true,
+      "n_alarms": 27,
+      "lead_h": 1.5999999999999999,
+      "fa_events": 2
+     },
+     "Bearing1_4": {
+      "failed": true,
+      "n_alarms": 10,
+      "lead_h": 0.9666666666666666,
+      "fa_events": 0
+     },
+     "Bearing1_5": {
+      "failed": true,
+      "n_alarms": 6,
+      "lead_h": 0.33333333333333337,
+      "fa_events": null
+     },
+     "Bearing2_1": {
+      "failed": true,
+      "n_alarms": 10,
+      "lead_h": 2.166666666666667,
+      "fa_events": 0
+     },
+     "Bearing2_2": {
+      "failed": true,
+      "n_alarms": 16,
+      "lead_h": 1.6666666666666665,
+      "fa_events": 2
+     },
+     "Bearing2_3": {
+      "failed": true,
+      "n_alarms": 62,
+      "lead_h": 7.516666666666666,
+      "fa_events": 0
+     },
+     "Bearing2_4": {
+      "failed": true,
+      "n_alarms": 4,
+      "lead_h": 0.16666666666666663,
+      "fa_events": null
+     },
+     "Bearing2_5": {
+      "failed": true,
+      "n_alarms": 35,
+      "lead_h": 3.566666666666667,
+      "fa_events": 0
+     },
+     "Bearing3_1": {
+      "failed": true,
+      "n_alarms": 60,
+      "lead_h": 40.516666666666666,
+      "fa_events": 2
+     },
+     "Bearing3_2": {
+      "failed": true,
+      "n_alarms": 50,
+      "lead_h": 40.36666666666667,
+      "fa_events": 0
+     },
+     "Bearing3_3": {
+      "failed": true,
+      "n_alarms": 8,
+      "lead_h": 0.4500000000000002,
+      "fa_events": 0
+     },
+     "Bearing3_4": {
+      "failed": true,
+      "n_alarms": 33,
+      "lead_h": 11.866666666666667,
+      "fa_events": 0
+     },
+     "Bearing3_5": {
+      "failed": true,
+      "n_alarms": 14,
+      "lead_h": 1.5,
+      "fa_events": null
+     }
+    }
+   },
+   "T3": {
+    "fa_per_day": 2.999999999999999,
+    "fa_days": 0.3333333333333334,
+    "detected": 11,
+    "failed": 15,
+    "median_lead_h": 1.3999999999999997,
+    "units": {
+     "Bearing1_1": {
+      "failed": true,
+      "n_alarms": 1,
+      "lead_h": 0.08333333333333326,
+      "fa_events": 0
+     },
+     "Bearing1_2": {
+      "failed": true,
+      "n_alarms": 3,
+      "lead_h": 1.6666666666666665,
+      "fa_events": 0
+     },
+     "Bearing1_3": {
+      "failed": true,
+      "n_alarms": 4,
+      "lead_h": 0.9833333333333334,
+      "fa_events": 0
+     },
+     "Bearing1_4": {
+      "failed": true,
+      "n_alarms": 0,
+      "lead_h": null,
+      "fa_events": 0
+     },
+     "Bearing1_5": {
+      "failed": true,
+      "n_alarms": 3,
+      "lead_h": 0.18333333333333335,
+      "fa_events": null
+     },
+     "Bearing2_1": {
+      "failed": true,
+      "n_alarms": 4,
+      "lead_h": 0.5333333333333332,
+      "fa_events": 0
+     },
+     "Bearing2_2": {
+      "failed": true,
+      "n_alarms": 5,
+      "lead_h": 1.3999999999999997,
+      "fa_events": 1
+     },
+     "Bearing2_3": {
+      "failed": true,
+      "n_alarms": 6,
+      "lead_h": 3.6166666666666663,
+      "fa_events": 0
+     },
+     "Bearing2_4": {
+      "failed": true,
+      "n_alarms": 0,
+      "lead_h": null,
+      "fa_events": null
+     },
+     "Bearing2_5": {
+      "failed": true,
+      "n_alarms": 2,
+      "lead_h": 2.516666666666667,
+      "fa_events": 0
+     },
+     "Bearing3_1": {
+      "failed": true,
+      "n_alarms": 4,
+      "lead_h": 2.0,
+      "fa_events": 0
+     },
+     "Bearing3_2": {
+      "failed": true,
+      "n_alarms": 0,
+      "lead_h": null,
+      "fa_events": 0
+     },
+     "Bearing3_3": {
+      "failed": true,
+      "n_alarms": 2,
+      "lead_h": 0.3333333333333339,
+      "fa_events": 0
+     },
+     "Bearing3_4": {
+      "failed": true,
+      "n_alarms": 7,
+      "lead_h": 1.4833333333333343,
+      "fa_events": 0
+     },
+     "Bearing3_5": {
+      "failed": true,
+      "n_alarms": 0,
+      "lead_h": null,
+      "fa_events": null
+     }
+    }
+   }
+  },
+  "paderborn_ldm": {
+   "T0": {
+    "fa_per_day": 84.08826204189735,
+    "fa_days": 0.7254282407407407,
+    "detected": 14,
+    "failed": 17,
+    "median_lead_h": 2.765138888888889,
+    "units": {
+     "B01": {
+      "failed": true,
+      "n_alarms": 1,
+      "lead_h": 0.23277777777777775,
+      "fa_events": null
+     },
+     "B02": {
+      "failed": true,
+      "n_alarms": 4,
+      "lead_h": 0.9480555555555554,
+      "fa_events": 0
+     },
+     "B03": {
+      "failed": true,
+      "n_alarms": 1,
+      "lead_h": 0.01055555555555543,
+      "fa_events": null
+     },
+     "B04": {
+      "failed": true,
+      "n_alarms": 7,
+      "lead_h": 2.8502777777777784,
+      "fa_events": null
+     },
+     "B05": {
+      "failed": true,
+      "n_alarms": 0,
+      "lead_h": null,
+      "fa_events": null
+     },
+     "B06": {
+      "failed": true,
+      "n_alarms": 7,
+      "lead_h": 13.528888888888886,
+      "fa_events": 0
+     },
+     "B07": {
+      "failed": true,
+      "n_alarms": 0,
+      "lead_h": null,
+      "fa_events": 0
+     },
+     "B08": {
+      "failed": true,
+      "n_alarms": 4,
+      "lead_h": 2.6799999999999997,
+      "fa_events": 0
+     },
+     "B09": {
+      "failed": true,
+      "n_alarms": 450,
+      "lead_h": 8.879166666666666,
+      "fa_events": 61
+     },
+     "B10": {
+      "failed": true,
+      "n_alarms": 2,
+      "lead_h": 1.2247222222222227,
+      "fa_events": 0
+     },
+     "B11": {
+      "failed": true,
+      "n_alarms": 4,
+      "lead_h": 3.527222222222221,
+      "fa_events": 0
+     },
+     "B12": {
+      "failed": true,
+      "n_alarms": 0,
+      "lead_h": null,
+      "fa_events": null
+     },
+     "B13": {
+      "failed": true,
+      "n_alarms": 13,
+      "lead_h": 5.194722222222218,
+      "fa_events": 0
+     },
+     "B14": {
+      "failed": true,
+      "n_alarms": 6,
+      "lead_h": 1.1969444444444548,
+      "fa_events": 0
+     },
+     "B15": {
+      "failed": true,
+      "n_alarms": 14,
+      "lead_h": 3.9380555555555645,
+      "fa_events": 0
+     },
+     "B16": {
+      "failed": true,
+      "n_alarms": 7,
+      "lead_h": 7.387777777777776,
+      "fa_events": 0
+     },
+     "B17": {
+      "failed": true,
+      "n_alarms": 3,
+      "lead_h": 2.2619444444444454,
+      "fa_events": 0
+     }
+    }
+   },
+   "T1": {
+    "fa_per_day": 179.20449287617467,
+    "fa_days": 0.7254282407407407,
+    "detected": 17,
+    "failed": 17,
+    "median_lead_h": 7.085555555555556,
+    "units": {
+     "B01": {
+      "failed": true,
+      "n_alarms": 83,
+      "lead_h": 0.8799999999999999,
+      "fa_events": null
+     },
+     "B02": {
+      "failed": true,
+      "n_alarms": 123,
+      "lead_h": 1.3502777777777775,
+      "fa_events": 0
+     },
+     "B03": {
+      "failed": true,
+      "n_alarms": 33,
+      "lead_h": 0.8302777777777779,
+      "fa_events": null
+     },
+     "B04": {
+      "failed": true,
+      "n_alarms": 224,
+      "lead_h": 3.4761111111111114,
+      "fa_events": null
+     },
+     "B05": {
+      "failed": true,
+      "n_alarms": 18,
+      "lead_h": 0.8252777777777778,
+      "fa_events": null
+     },
+     "B06": {
+      "failed": true,
+      "n_alarms": 1369,
+      "lead_h": 15.950833333333328,
+      "fa_events": 0
+     },
+     "B07": {
+      "failed": true,
+      "n_alarms": 133,
+      "lead_h": 61.17111111111111,
+      "fa_events": 0
+     },
+     "B08": {
+      "failed": true,
+      "n_alarms": 318,
+      "lead_h": 7.085555555555556,
+      "fa_events": 0
+     },
+     "B09": {
+      "failed": true,
+      "n_alarms": 781,
+      "lead_h": 8.88888888888889,
+      "fa_events": 129
+     },
+     "B10": {
+      "failed": true,
+      "n_alarms": 268,
+      "lead_h": 3.1366666666666667,
+      "fa_events": 0
+     },
+     "B11": {
+      "failed": true,
+      "n_alarms": 598,
+      "lead_h": 5.652499999999999,
+      "fa_events": 1
+     },
+     "B12": {
+      "failed": true,
+      "n_alarms": 117,
+      "lead_h": 0.8366666666666664,
+      "fa_events": null
+     },
+     "B13": {
+      "failed": true,
+      "n_alarms": 874,
+      "lead_h": 50.141666666666666,
+      "fa_events": 0
+     },
+     "B14": {
+      "failed": true,
+      "n_alarms": 288,
+      "lead_h": 173.28722222222223,
+      "fa_events": 0
+     },
+     "B15": {
+      "failed": true,
+      "n_alarms": 780,
+      "lead_h": 71.86194444444445,
+      "fa_events": 0
+     },
+     "B16": {
+      "failed": true,
+      "n_alarms": 754,
+      "lead_h": 17.71333333333333,
+      "fa_events": 0
+     },
+     "B17": {
+      "failed": true,
+      "n_alarms": 320,
+      "lead_h": 11.581111111111111,
+      "fa_events": 0
+     }
+    }
+   },
+   "T2": {
+    "fa_per_day": 141.98509820189224,
+    "fa_days": 0.7254282407407407,
+    "detected": 17,
+    "failed": 17,
+    "median_lead_h": 5.652499999999999,
+    "units": {
+     "B01": {
+      "failed": true,
+      "n_alarms": 83,
+      "lead_h": 0.8799999999999999,
+      "fa_events": null
+     },
+     "B02": {
+      "failed": true,
+      "n_alarms": 90,
+      "lead_h": 1.3502777777777775,
+      "fa_events": 0
+     },
+     "B03": {
+      "failed": true,
+      "n_alarms": 33,
+      "lead_h": 0.8363888888888891,
+      "fa_events": null
+     },
+     "B04": {
+      "failed": true,
+      "n_alarms": 161,
+      "lead_h": 3.4761111111111114,
+      "fa_events": null
+     },
+     "B05": {
+      "failed": true,
+      "n_alarms": 18,
+      "lead_h": 0.8252777777777778,
+      "fa_events": null
+     },
+     "B06": {
+      "failed": true,
+      "n_alarms": 167,
+      "lead_h": 61.091111111111104,
+      "fa_events": 0
+     },
+     "B07": {
+      "failed": true,
+      "n_alarms": 63,
+      "lead_h": 19.15138888888889,
+      "fa_events": 0
+     },
+     "B08": {
+      "failed": true,
+      "n_alarms": 161,
+      "lead_h": 3.5841666666666665,
+      "fa_events": 0
+     },
+     "B09": {
+      "failed": true,
+      "n_alarms": 147,
+      "lead_h": 6.679722222222222,
+      "fa_events": 100
+     },
+     "B10": {
+      "failed": true,
+      "n_alarms": 160,
+      "lead_h": 3.1366666666666667,
+      "fa_events": 1
+     },
+     "B11": {
+      "failed": true,
+      "n_alarms": 163,
+      "lead_h": 5.652499999999999,
+      "fa_events": 1
+     },
+     "B12": {
+      "failed": true,
+      "n_alarms": 113,
+      "lead_h": 1.009722222222222,
+      "fa_events": null
+     },
+     "B13": {
+      "failed": true,
+      "n_alarms": 194,
+      "lead_h": 61.462222222222216,
+      "fa_events": 0
+     },
+     "B14": {
+      "failed": true,
+      "n_alarms": 257,
+      "lead_h": 173.5063888888889,
+      "fa_events": 0
+     },
+     "B15": {
+      "failed": true,
+      "n_alarms": 481,
+      "lead_h": 74.01222222222222,
+      "fa_events": 0
+     },
+     "B16": {
+      "failed": true,
+      "n_alarms": 227,
+      "lead_h": 18.112777777777776,
+      "fa_events": 0
+     },
+     "B17": {
+      "failed": true,
+      "n_alarms": 137,
+      "lead_h": 11.338888888888889,
+      "fa_events": 1
+     }
+    }
+   },
+   "T3": {
+    "fa_per_day": 114.41517622094229,
+    "fa_days": 0.7254282407407407,
+    "detected": 15,
+    "failed": 17,
+    "median_lead_h": 1.4877777777777759,
+    "units": {
+     "B01": {
+      "failed": true,
+      "n_alarms": 2,
+      "lead_h": 0.6119444444444444,
+      "fa_events": null
+     },
+     "B02": {
+      "failed": true,
+      "n_alarms": 4,
+      "lead_h": 1.2288888888888891,
+      "fa_events": 0
+     },
+     "B03": {
+      "failed": true,
+      "n_alarms": 2,
+      "lead_h": 0.20694444444444438,
+      "fa_events": null
+     },
+     "B04": {
+      "failed": true,
+      "n_alarms": 5,
+      "lead_h": 3.300277777777778,
+      "fa_events": null
+     },
+     "B05": {
+      "failed": true,
+      "n_alarms": 0,
+      "lead_h": null,
+      "fa_events": null
+     },
+     "B06": {
+      "failed": true,
+      "n_alarms": 1,
+      "lead_h": 0.30416666666666003,
+      "fa_events": 0
+     },
+     "B07": {
+      "failed": true,
+      "n_alarms": 1,
+      "lead_h": 0.0,
+      "fa_events": 0
+     },
+     "B08": {
+      "failed": true,
+      "n_alarms": 2,
+      "lead_h": 3.1638888888888888,
+      "fa_events": 0
+     },
+     "B09": {
+      "failed": true,
+      "n_alarms": 143,
+      "lead_h": 8.644166666666667,
+      "fa_events": 83
+     },
+     "B10": {
+      "failed": true,
+      "n_alarms": 2,
+      "lead_h": 2.5627777777777787,
+      "fa_events": 0
+     },
+     "B11": {
+      "failed": true,
+      "n_alarms": 2,
+      "lead_h": 0.44305555555555465,
+      "fa_events": 0
+     },
+     "B12": {
+      "failed": true,
+      "n_alarms": 0,
+      "lead_h": null,
+      "fa_events": null
+     },
+     "B13": {
+      "failed": true,
+      "n_alarms": 1,
+      "lead_h": 5.506666666666661,
+      "fa_events": 0
+     },
+     "B14": {
+      "failed": true,
+      "n_alarms": 4,
+      "lead_h": 1.4413888888888948,
+      "fa_events": 0
+     },
+     "B15": {
+      "failed": true,
+      "n_alarms": 3,
+      "lead_h": 3.5361111111111114,
+      "fa_events": 0
+     },
+     "B16": {
+      "failed": true,
+      "n_alarms": 3,
+      "lead_h": 1.4877777777777759,
+      "fa_events": 0
+     },
+     "B17": {
+      "failed": true,
+      "n_alarms": 1,
+      "lead_h": 1.8072222222222223,
+      "fa_events": 0
+     }
+    }
+   }
+  },
+  "femto": {
+   "T0": {
+    "fa_per_day": 41.333333333333336,
+    "fa_days": 0.75,
+    "detected": 15,
+    "failed": 17,
+    "median_lead_h": 0.11388888888888893,
+    "units": {
+     "Bearing1_1": {
+      "failed": true,
+      "n_alarms": 43,
+      "lead_h": 3.341666666666667,
+      "fa_events": 0
+     },
+     "Bearing1_2": {
+      "failed": true,
+      "n_alarms": 3,
+      "lead_h": 0.0861111111111108,
+      "fa_events": null
+     },
+     "Bearing1_3": {
+      "failed": true,
+      "n_alarms": 112,
+      "lead_h": 2.8583333333333334,
+      "fa_events": 0
+     },
+     "Bearing1_4": {
+      "failed": true,
+      "n_alarms": 126,
+      "lead_h": 0.9305555555555558,
+      "fa_events": 0
+     },
+     "Bearing1_5": {
+      "failed": true,
+      "n_alarms": 3,
+      "lead_h": 0.04166666666666696,
+      "fa_events": 0
+     },
+     "Bearing1_6": {
+      "failed": true,
+      "n_alarms": 6,
+      "lead_h": 2.238888888888889,
+      "fa_events": 0
+     },
+     "Bearing1_7": {
+      "failed": true,
+      "n_alarms": 6,
+      "lead_h": 0.11388888888888893,
+      "fa_events": 0
+     },
+     "Bearing2_1": {
+      "failed": true,
+      "n_alarms": 6,
+      "lead_h": 1.7361111111111112,
+      "fa_events": null
+     },
+     "Bearing2_2": {
+      "failed": true,
+      "n_alarms": 51,
+      "lead_h": 1.5194444444444446,
+      "fa_events": null
+     },
+     "Bearing2_3": {
+      "failed": true,
+      "n_alarms": 40,
+      "lead_h": 0.022222222222222143,
+      "fa_events": 31
+     },
+     "Bearing2_4": {
+      "failed": true,
+      "n_alarms": 1,
+      "lead_h": 0.005555555555555536,
+      "fa_events": null
+     },
+     "Bearing2_5": {
+      "failed": true,
+      "n_alarms": 0,
+      "lead_h": null,
+      "fa_events": 0
+     },
+     "Bearing2_6": {
+      "failed": true,
+      "n_alarms": 2,
+      "lead_h": 0.016666666666666607,
+      "fa_events": null
+     },
+     "Bearing2_7": {
+      "failed": true,
+      "n_alarms": 1,
+      "lead_h": 0.005555555555555536,
+      "fa_events": null
+     },
+     "Bearing3_1": {
+      "failed": true,
+      "n_alarms": 0,
+      "lead_h": null,
+      "fa_events": null
+     },
+     "Bearing3_2": {
+      "failed": true,
+      "n_alarms": 1,
+      "lead_h": 0.016666666666666607,
+      "fa_events": 0
+     },
+     "Bearing3_3": {
+      "failed": true,
+      "n_alarms": 8,
+      "lead_h": 0.24166666666666659,
+      "fa_events": null
+     }
+    }
+   },
+   "T1": {
+    "fa_per_day": 24.0,
+    "fa_days": 0.75,
+    "detected": 16,
+    "failed": 17,
+    "median_lead_h": 0.1638888888888892,
+    "units": {
+     "Bearing1_1": {
+      "failed": true,
+      "n_alarms": 550,
+      "lead_h": 3.4250000000000007,
+      "fa_events": 0
+     },
+     "Bearing1_2": {
+      "failed": true,
+      "n_alarms": 22,
+      "lead_h": 0.11944444444444446,
+      "fa_events": null
+     },
+     "Bearing1_3": {
+      "failed": true,
+      "n_alarms": 535,
+      "lead_h": 3.0500000000000003,
+      "fa_events": 0
+     },
+     "Bearing1_4": {
+      "failed": true,
+      "n_alarms": 176,
+      "lead_h": 0.9472222222222224,
+      "fa_events": 0
+     },
+     "Bearing1_5": {
+      "failed": true,
+      "n_alarms": 19,
+      "lead_h": 0.13055555555555554,
+      "fa_events": 0
+     },
+     "Bearing1_6": {
+      "failed": true,
+      "n_alarms": 29,
+      "lead_h": 2.2638888888888884,
+      "fa_events": 0
+     },
+     "Bearing1_7": {
+      "failed": true,
+      "n_alarms": 30,
+      "lead_h": 0.19722222222222285,
+      "fa_events": 0
+     },
+     "Bearing2_1": {
+      "failed": true,
+      "n_alarms": 195,
+      "lead_h": 2.0194444444444444,
+      "fa_events": null
+     },
+     "Bearing2_2": {
+      "failed": true,
+      "n_alarms": 298,
+      "lead_h": 1.6361111111111113,
+      "fa_events": null
+     },
+     "Bearing2_3": {
+      "failed": true,
+      "n_alarms": 23,
+      "lead_h": 0.01944444444444393,
+      "fa_events": 18
+     },
+     "Bearing2_4": {
+      "failed": true,
+      "n_alarms": 4,
+      "lead_h": 0.016666666666666607,
+      "fa_events": null
+     },
+     "Bearing2_5": {
+      "failed": true,
+      "n_alarms": 0,
+      "lead_h": null,
+      "fa_events": 0
+     },
+     "Bearing2_6": {
+      "failed": true,
+      "n_alarms": 7,
+      "lead_h": 0.033333333333333215,
+      "fa_events": null
+     },
+     "Bearing2_7": {
+      "failed": true,
+      "n_alarms": 4,
+      "lead_h": 0.019444444444444375,
+      "fa_events": null
+     },
+     "Bearing3_1": {
+      "failed": true,
+      "n_alarms": 12,
+      "lead_h": 0.06388888888888888,
+      "fa_events": null
+     },
+     "Bearing3_2": {
+      "failed": true,
+      "n_alarms": 19,
+      "lead_h": 0.09166666666666679,
+      "fa_events": 0
+     },
+     "Bearing3_3": {
+      "failed": true,
+      "n_alarms": 54,
+      "lead_h": 0.30555555555555547,
+      "fa_events": null
+     }
+    }
+   },
+   "T2": {
+    "fa_per_day": 30.666666666666668,
+    "fa_days": 0.75,
+    "detected": 17,
+    "failed": 17,
+    "median_lead_h": 0.9555555555555557,
+    "units": {
+     "Bearing1_1": {
+      "failed": true,
+      "n_alarms": 601,
+      "lead_h": 5.272222222222222,
+      "fa_events": 2
+     },
+     "Bearing1_2": {
+      "failed": true,
+      "n_alarms": 23,
+      "lead_h": 0.12222222222222223,
+      "fa_events": null
+     },
+     "Bearing1_3": {
+      "failed": true,
+      "n_alarms": 442,
+      "lead_h": 3.783333333333333,
+      "fa_events": 0
+     },
+     "Bearing1_4": {
+      "failed": true,
+      "n_alarms": 177,
+      "lead_h": 0.9555555555555557,
+      "fa_events": 0
+     },
+     "Bearing1_5": {
+      "failed": true,
+      "n_alarms": 58,
+      "lead_h": 0.9000000000000004,
+      "fa_events": 0
+     },
+     "Bearing1_6": {
+      "failed": true,
+      "n_alarms": 36,
+      "lead_h": 2.383333333333333,
+      "fa_events": 0
+     },
+     "Bearing1_7": {
+      "failed": true,
+      "n_alarms": 233,
+      "lead_h": 3.6333333333333337,
+      "fa_events": 0
+     },
+     "Bearing2_1": {
+      "failed": true,
+      "n_alarms": 84,
+      "lead_h": 2.0194444444444444,
+      "fa_events": null
+     },
+     "Bearing2_2": {
+      "failed": true,
+      "n_alarms": 200,
+      "lead_h": 1.6361111111111113,
+      "fa_events": null
+     },
+     "Bearing2_3": {
+      "failed": true,
+      "n_alarms": 24,
+      "lead_h": 0.024999999999999467,
+      "fa_events": 18
+     },
+     "Bearing2_4": {
+      "failed": true,
+      "n_alarms": 4,
+      "lead_h": 0.016666666666666607,
+      "fa_events": null
+     },
+     "Bearing2_5": {
+      "failed": true,
+      "n_alarms": 13,
+      "lead_h": 3.7055555555555553,
+      "fa_events": 0
+     },
+     "Bearing2_6": {
+      "failed": true,
+      "n_alarms": 9,
+      "lead_h": 0.050000000000000044,
+      "fa_events": null
+     },
+     "Bearing2_7": {
+      "failed": true,
+      "n_alarms": 4,
+      "lead_h": 0.019444444444444375,
+      "fa_events": null
+     },
+     "Bearing3_1": {
+      "failed": true,
+      "n_alarms": 12,
+      "lead_h": 0.06388888888888888,
+      "fa_events": null
+     },
+     "Bearing3_2": {
+      "failed": true,
+      "n_alarms": 37,
+      "lead_h": 2.0138888888888893,
+      "fa_events": 3
+     },
+     "Bearing3_3": {
+      "failed": true,
+      "n_alarms": 54,
+      "lead_h": 0.30555555555555547,
+      "fa_events": null
+     }
+    }
+   },
+   "T3": {
+    "fa_per_day": 12.0,
+    "fa_days": 0.75,
+    "detected": 15,
+    "failed": 17,
+    "median_lead_h": 0.09722222222222232,
+    "units": {
+     "Bearing1_1": {
+      "failed": true,
+      "n_alarms": 2,
+      "lead_h": 0.09722222222222232,
+      "fa_events": 0
+     },
+     "Bearing1_2": {
+      "failed": true,
+      "n_alarms": 3,
+      "lead_h": 0.09722222222222188,
+      "fa_events": null
+     },
+     "Bearing1_3": {
+      "failed": true,
+      "n_alarms": 20,
+      "lead_h": 2.6750000000000003,
+      "fa_events": 0
+     },
+     "Bearing1_4": {
+      "failed": true,
+      "n_alarms": 48,
+      "lead_h": 0.9361111111111113,
+      "fa_events": 0
+     },
+     "Bearing1_5": {
+      "failed": true,
+      "n_alarms": 6,
+      "lead_h": 0.11666666666666714,
+      "fa_events": 0
+     },
+     "Bearing1_6": {
+      "failed": true,
+      "n_alarms": 9,
+      "lead_h": 2.2555555555555555,
+      "fa_events": 0
+     },
+     "Bearing1_7": {
+      "failed": true,
+      "n_alarms": 6,
+      "lead_h": 0.12222222222222268,
+      "fa_events": 0
+     },
+     "Bearing2_1": {
+      "failed": true,
+      "n_alarms": 0,
+      "lead_h": null,
+      "fa_events": null
+     },
+     "Bearing2_2": {
+      "failed": true,
+      "n_alarms": 12,
+      "lead_h": 1.5111111111111113,
+      "fa_events": null
+     },
+     "Bearing2_3": {
+      "failed": true,
+      "n_alarms": 18,
+      "lead_h": 0.022222222222222143,
+      "fa_events": 9
+     },
+     "Bearing2_4": {
+      "failed": true,
+      "n_alarms": 1,
+      "lead_h": 0.008333333333333304,
+      "fa_events": null
+     },
+     "Bearing2_5": {
+      "failed": true,
+      "n_alarms": 0,
+      "lead_h": null,
+      "fa_events": 0
+     },
+     "Bearing2_6": {
+      "failed": true,
+      "n_alarms": 2,
+      "lead_h": 0.022222222222222143,
+      "fa_events": null
+     },
+     "Bearing2_7": {
+      "failed": true,
+      "n_alarms": 2,
+      "lead_h": 0.008333333333333304,
+      "fa_events": null
+     },
+     "Bearing3_1": {
+      "failed": true,
+      "n_alarms": 1,
+      "lead_h": 0.01388888888888884,
+      "fa_events": null
+     },
+     "Bearing3_2": {
+      "failed": true,
+      "n_alarms": 2,
+      "lead_h": 0.04166666666666696,
+      "fa_events": 0
+     },
+     "Bearing3_3": {
+      "failed": true,
+      "n_alarms": 7,
+      "lead_h": 0.2583333333333333,
+      "fa_events": null
+     }
+    }
+   }
+  }
+ },
+ "ims_nonfailing_fa_per_day": {
+  "T0": 0.005571421137339851,
+  "T1": 3.704995056331001,
+  "T2": 7.10913337124565,
+  "T3": 0.005571421137339851,
+  "T4": 0.011142842274679703
+ },
+ "detected_total": {
+  "T0": 45,
+  "T1": 52,
+  "T2": 53,
+  "T3": 43
+ },
+ "pass": {
+  "T1": false,
+  "T2": false,
+  "T3": false
+ }
+}
