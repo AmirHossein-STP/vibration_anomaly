@@ -28,6 +28,14 @@ against the machine's own healthy baseline.
   - A speed estimate from vibration is not good enough, so a keyphasor or encoder is required.
   - Synthetic-fault sensitivity curves do not predict real detection.
 
+**Phase 2 (2026-10-22): one monitor for many bearings** (notes/22–27, `deploy/runbooks/bearing.md`).
+The `bearing` service now runs the measured method on a fleet of units, each against its own healthy
+baseline, for any bearing: catalog designation, geometry, fault factors, or none (geometry-free).
+- Confirmed on unseen data across 5 bearing sizes (HUST) and under varying load and speed (LDM).
+- **Final exam (IMS, frozen system):** the detection score finds all 4 failing bearings at end of life.
+  But the pre-registered verdict is *not consistent with development*, because the trend alarm gives
+  about 1 false event per day and fires on healthy units too. The trend trigger is the next thing to fix.
+
 Rented-GPU work now runs through `remote/box` and a persistent data vault: see
 [`remote/README.md`](remote/README.md).
 

@@ -23,11 +23,25 @@ speed-estimator validation, and the WP6 sensitivity curve (rejected). The curren
   are constant;
 - **diagnose** with physics typing.
 
-**Next: Phase 2 (§5, "Phase 2"), written 2026-10-22.** In short:
-1. write the method down as v1.0 and build it once (WP12–13);
-2. confirm it under time-varying load and speed on a dataset nobody has looked at (WP14);
-3. freeze it and take the IMS final exam (WP16);
-4. meanwhile, get the pilot ready, which needs owner input (WP17).
+**Phase 2 executed 2026-10-22** (owner: "works on many bearings", heavy steps without asking).
+The pre-registered results are in notes/22–27:
+
+| WP | result |
+|---|---|
+| 12 | method v1.0 = one module (`method.py`), parity exact (10,749 numbers) |
+| 13 | bearing catalog (11 bearings, published frequencies checked); **geometry-free score ships** (AUC ≥ six-line on 6/6 dev rows) |
+| 14 | **HUST, 5 bearing types (unseen): passes** (AUC ≥ 0.80 on 4/5 types, typing 0.83); 6205 fails (inconsistent healthy baseline) |
+| 15 | **LDM, varying load and speed (unseen):** level trigger conditioned on the operating point is best (14/17); physics does not take over as trigger; geometry-free beats six-line → **method v1.1** |
+| 16 | FEMTO: own-baseline RMS CUSUM detects 15/17 with about 1 false event/day; records must be ≥ 1 s; baseline ≥ 30 min |
+| 17 | `bearing` service rebuilt on the method: fleet of units, catalog/geometry/factors/geometry-free, cross-fitted thresholds, typing hint, per-unit trend; replay on real data exact; Docker cycle passes |
+| 18 | **IMS final exam (frozen `e7c01a3`): NOT consistent with development** on the pre-registered readings (1.02 false trend events/day vs ≤ 1; the trend alarm is non-specific). Post hoc: the geometry-free *detection score* rises to 0.88–0.97 on all 4 failing bearings, and the six-line score does not |
+| 19 | deployment kit: data spec, inventory template, acceptance checklist, ISO 20816 L0 |
+
+**Open next:**
+- the trend trigger (a long, drifting baseline at a slow cadence);
+- a fresh unseen run-to-failure set to confirm a revised trigger (IMS is spent);
+- ball/cage coverage;
+- real machine data, still the only real test.
 
 Decisions recorded with the owner on 2026-10-15:
 
