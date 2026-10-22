@@ -95,7 +95,9 @@ PU_6203 = BearingGeometry("6203", n_balls=8, ball_diameter=6.75, pitch_diameter=
 def envelope_spectrum(
     signal: np.ndarray,
     fs_hz: float,
-    band_hz: tuple[float, float] = (1500.0, 5500.0),
+    band_hz: tuple[float, float] | None = (1500.0, 5500.0),
+    whiten: bool = False,
+    squared: bool = False,
 ) -> tuple[np.ndarray, np.ndarray]:
     """Band-pass -> Hilbert envelope -> magnitude spectrum of the envelope.
 
@@ -107,16 +109,29 @@ def envelope_spectrum(
     1.5-5.5 kHz covers the usable high-frequency region where bearing
     resonances live and shaft/imbalance harmonics do not.
 
+    MASTER_PLAN WP2 H-d alternative, label-free: `whiten=True, band_hz=None,
+    squared=True` is cepstrum pre-whitening + squared envelope spectrum
+    (Borghesani et al. 2013): flattening the spectrum's magnitude removes the
+    rig's resonance shape, so no band has to be chosen at all.
+
     Returns (freqs_hz, magnitude) for the envelope, DC removed.
     """
-    nyq = fs_hz / 2.0
-    lo, hi = band_hz[0] / nyq, min(band_hz[1] / nyq, 0.99)
-    if not 0 < lo < hi < 1:
-        raise ValueError(f"band {band_hz} invalid for fs={fs_hz}")
-    sos = butter(4, [lo, hi], btype="bandpass", output="sos")
-    banded = sosfiltfilt(sos, signal)
+    if whiten:
+        X = np.fft.rfft(signal)
+        signal = np.fft.irfft(X / (np.abs(X) + 1e-12), n=len(signal))
+    if band_hz is None:
+        banded = signal
+    else:
+        nyq = fs_hz / 2.0
+        lo, hi = band_hz[0] / nyq, min(band_hz[1] / nyq, 0.99)
+        if not 0 < lo < hi < 1:
+            raise ValueError(f"band {band_hz} invalid for fs={fs_hz}")
+        sos = butter(4, [lo, hi], btype="bandpass", output="sos")
+        banded = sosfiltfilt(sos, signal)
 
     env = np.abs(hilbert(banded))
+    if squared:
+        env = env ** 2
     env = env - env.mean()          # the DC term dwarfs every fault peak
     window = np.hanning(len(env))
     spec = np.abs(np.fft.rfft(env * window))
@@ -141,9 +156,13 @@ def envelope_order_features(
     fs_hz: float,
     rpm: float,
     geometry: BearingGeometry,
-    band_hz: tuple[float, float] = (1500.0, 5500.0),
+    band_hz: tuple[float, float] | None = (1500.0, 5500.0),
     n_harmonics: int = 3,
     tol_orders: float = 0.08,
+    tol_rel: float | None = None,
+    norm: str = "sum",
+    whiten: bool = False,
+    squared: bool = False,
 ) -> dict[str, float]:
     """A small, physically-named feature vector comparable ACROSS rigs.
 
@@ -152,22 +171,37 @@ def envelope_order_features(
     hard the rig is driven -- divides out. That matters more here than
     usual: the two datasets were recorded years apart on different
     equipment, and absolute amplitude carries no shared meaning.
+
+    The defaults are v1, the version every published number used. The
+    other arguments are the MASTER_PLAN WP2 variants, each fixed a priori:
+    `tol_rel` (H-c) makes the peak window a fraction of the order it reads,
+    so a speed error moves every harmonic by the same relative amount it is
+    allowed; `norm="median"` (H-b) divides by the reference band's median
+    instead of its sum, which does not grow with the number of bins the
+    band holds; `whiten`/`squared`/`band_hz=None` (H-d), see
+    envelope_spectrum.
     """
+    if norm not in ("sum", "median"):
+        raise ValueError(f"norm must be 'sum' or 'median', got {norm!r}")
     shaft_hz = rpm / 60.0
-    freqs, spec = envelope_spectrum(signal, fs_hz, band_hz)
+    freqs, spec = envelope_spectrum(signal, fs_hz, band_hz, whiten=whiten, squared=squared)
     orders = freqs / shaft_hz
 
     # Reference band: everything the bearing could plausibly produce, used
     # to normalize. Starts above 0.5 to exclude the shaft-rate peak, which
     # is imbalance/misalignment and present on healthy machines too.
     ref = (orders >= 0.5) & (orders <= 12.0)
-    total = float(spec[ref].sum()) + 1e-12
+    total = float(spec[ref].sum() if norm == "sum" else np.median(spec[ref])) + 1e-12
+    # relative windows narrower than one order bin (the cage order) would
+    # read a single bin or none, so they are floored at one bin either side
+    bin_orders = (freqs[1] - freqs[0]) / shaft_hz
+    tol = (lambda c: max(tol_rel * c, bin_orders)) if tol_rel else (lambda c: tol_orders)
 
     feats: dict[str, float] = {}
     for label, base in (("bpfo", geometry.bpfo), ("bpfi", geometry.bpfi)):
         harmonics = []
         for h in range(1, n_harmonics + 1):
-            e = _band_energy(orders, spec, base * h, tol_orders) / total
+            e = _band_energy(orders, spec, base * h, tol(base * h)) / total
             feats[f"{label}_h{h}"] = e
             harmonics.append(e)
         feats[f"{label}_sum"] = float(np.sum(harmonics))
@@ -176,9 +210,9 @@ def envelope_order_features(
     # peaks carry shaft-rate sidebands; outer-race defects are stationary
     # and do not. This is the main geometric cue separating the two.
     feats["bpfi_sidebands"] = sum(
-        _band_energy(orders, spec, geometry.bpfi + s, tol_orders) / total for s in (-1.0, 1.0)
+        _band_energy(orders, spec, geometry.bpfi + s, tol(geometry.bpfi + s)) / total for s in (-1.0, 1.0)
     )
-    feats["ftf"] = _band_energy(orders, spec, geometry.ftf, tol_orders) / total
+    feats["ftf"] = _band_energy(orders, spec, geometry.ftf, tol(geometry.ftf)) / total
 
     # Shape statistics of the envelope spectrum: impulsiveness rises with
     # localized damage regardless of which race it is on, so these help the

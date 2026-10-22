@@ -145,7 +145,9 @@ class BearingService(Service):
             "band_hz": [1500.0, 5500.0],   # resonance band for the envelope; fixed a priori in the study
             "calibration": {"target_false_alarm": 0.10, "min_windows": 200,
                             "min_recordings_warn": 3, "max_windows_per_file": 600},
-            "verdict": {"watch_fraction": 0.25, "faulty_fraction": 0.5},
+            # MASTER_PLAN WP1 (notes/14): at 0.25, a quarter of held-out healthy recordings
+            # read as watch; 0.40 keeps that near 10%. 0.5 kept ~5% healthy recordings faulty.
+            "verdict": {"watch_fraction": 0.40, "faulty_fraction": 0.5},
         }
 
     def validate_config(self, cfg: dict) -> list[str]:

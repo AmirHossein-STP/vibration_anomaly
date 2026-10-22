@@ -31,8 +31,8 @@ add healthy data covering normal operating conditions first.
 cp new_*.npy <DATA_DIR>/bearing/in/               # optional per-file speed: new_1.npy.meta.json  ->  {"rpm": 1480, "fs_hz": 25600}
 ./ad bearing infer --archive
 ```
-Read `out/<date>/<job>/results.csv`. Columns: `verdict` (`healthy` < 25% windows flagged <= `watch` < 50% <= `faulty`), `flagged_fraction`, `score` (median), `rpm`, `fs_hz`.
-The 25% / 50% levels are engineering defaults (`verdict:` in the config), not validated limits for your machine.
+Read `out/<date>/<job>/results.csv`. Columns: `verdict` (`healthy` < 40% windows flagged <= `watch` < 50% <= `faulty`), `flagged_fraction`, `score` (median), `rpm`, `fs_hz`.
+The 40% / 50% levels were measured on Paderborn (notes/14): with a threshold from other healthy bearings, about 10% of a NEW healthy bearing's recordings read `watch` and 5% `faulty` on average, but one healthy bearing in six alarmed far more. They are a starting point, not validated limits for your machine (`verdict:` in the config).
 
 ## Messages you may see
 | Message | Meaning / action |
