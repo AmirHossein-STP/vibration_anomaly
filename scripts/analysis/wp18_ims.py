@@ -71,7 +71,9 @@ def build(tests: dict[int, Path], jobs: int) -> list[str]:
             for k, f in enumerate(files):
                 sub = "train" if k < BASE_N else "in"
                 (data / sub / unit).mkdir(parents=True, exist_ok=True)
-                work.append((f, data / sub / unit / f"{f.name}.npy", col))
+                dst = data / sub / unit / f"{f.name}.npy"
+                if not dst.exists():
+                    work.append((f, dst, col))
     with ProcessPoolExecutor(jobs) as ex:
         list(ex.map(_convert, work, chunksize=64))
     for det in DETECTORS:          # same input files (hard links), one service root per detector
@@ -80,7 +82,11 @@ def build(tests: dict[int, Path], jobs: int) -> list[str]:
             root.parent.mkdir(parents=True, exist_ok=True)
             subprocess.run(["cp", "-al", str(data), str(root)], check=True)
         (root / "config").mkdir(parents=True, exist_ok=True)
-        (root / "config" / "service.yaml").write_text(CONFIG.replace("{detector}", det))
+        cfg = root / "config" / "service.yaml"
+        cfg.unlink(missing_ok=True)       # never write through a hard link shared with the other root
+        cfg.write_text(CONFIG.replace("{detector}", det))
+        for d in (root / "out", SERVICE / det / "models"):    # each detector scores from a clean state
+            subprocess.run(["rm", "-rf", str(d)], check=True)
     return units
 
 
@@ -135,7 +141,7 @@ def score(det: str, units: list[str]):
     race = [u for u in failing if FAILED[(int(u[1]), int(u[-1]))] != "roller"]
     healthy = [u for u in units if u not in failing]
     c1 = sum(res[u]["first_alarm_h"] is not None for u in failing)
-    c2 = sum(res[u]["typed"] == FAILED[(int(u[1]), int(u[-1]))] for u in race)
+    c2 = sum(res[u]["typed"].startswith(FAILED[(int(u[1]), int(u[-1]))]) for u in race)    # service says "... (hint)"
     c3 = float(np.mean([res[u]["events_per_day"] for u in healthy]))
     consistent = c1 >= 3 and c2 >= 2 and c3 <= 1.0
     res["_readings"] = {"c1": c1, "c2": c2, "c3": c3, "consistent": consistent, "model": version}
