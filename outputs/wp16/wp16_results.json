@@ -1,0 +1,350 @@
+{
+ "h": {
+  "60": {
+   "rms": {
+    "detected": 12,
+    "of": 17,
+    "median_lead_h": 0.03888888888888889,
+    "fa_per_day": 1.2,
+    "n_long": 10,
+    "lead_h": {
+     "Bearing1_1": 2.3333333333333335,
+     "Bearing1_2": 0.0,
+     "Bearing1_3": 2.5694444444444446,
+     "Bearing1_4": 0.9055555555555556,
+     "Bearing1_5": 0.013888888888888888,
+     "Bearing1_6": 0.022222222222222223,
+     "Bearing1_7": 0.05555555555555555,
+     "Bearing2_1": null,
+     "Bearing2_2": 1.3555555555555556,
+     "Bearing2_3": 0.011111111111111112,
+     "Bearing2_4": null,
+     "Bearing2_5": null,
+     "Bearing2_6": 0.005555555555555556,
+     "Bearing2_7": null,
+     "Bearing3_1": null,
+     "Bearing3_2": 0.008333333333333333,
+     "Bearing3_3": 0.13333333333333333
+    }
+   },
+   "kurt": {
+    "detected": 5,
+    "of": 17,
+    "median_lead_h": 0.2388888888888889,
+    "fa_per_day": 1.2,
+    "n_long": 10,
+    "lead_h": {
+     "Bearing1_1": 2.797222222222222,
+     "Bearing1_2": null,
+     "Bearing1_3": 0.2388888888888889,
+     "Bearing1_4": 0.1111111111111111,
+     "Bearing1_5": null,
+     "Bearing1_6": null,
+     "Bearing1_7": 0.20833333333333334,
+     "Bearing2_1": null,
+     "Bearing2_2": null,
+     "Bearing2_3": null,
+     "Bearing2_4": null,
+     "Bearing2_5": null,
+     "Bearing2_6": null,
+     "Bearing2_7": null,
+     "Bearing3_1": null,
+     "Bearing3_2": 2.3777777777777778,
+     "Bearing3_3": null
+    }
+   }
+  },
+  "180": {
+   "rms": {
+    "detected": 15,
+    "of": 17,
+    "median_lead_h": 0.11388888888888889,
+    "fa_per_day": 1.3333333333333333,
+    "n_long": 9,
+    "lead_h": {
+     "Bearing1_1": 3.341666666666667,
+     "Bearing1_2": 0.08611111111111111,
+     "Bearing1_3": 2.8583333333333334,
+     "Bearing1_4": 0.9305555555555556,
+     "Bearing1_5": 0.041666666666666664,
+     "Bearing1_6": 2.238888888888889,
+     "Bearing1_7": 0.11388888888888889,
+     "Bearing2_1": 1.7361111111111112,
+     "Bearing2_2": 1.5194444444444444,
+     "Bearing2_3": 0.022222222222222223,
+     "Bearing2_4": 0.005555555555555556,
+     "Bearing2_5": null,
+     "Bearing2_6": 0.016666666666666666,
+     "Bearing2_7": 0.005555555555555556,
+     "Bearing3_1": null,
+     "Bearing3_2": 0.016666666666666666,
+     "Bearing3_3": 0.24166666666666667
+    }
+   },
+   "kurt": {
+    "detected": 9,
+    "of": 17,
+    "median_lead_h": 0.9861111111111112,
+    "fa_per_day": 2.6666666666666665,
+    "n_long": 9,
+    "lead_h": {
+     "Bearing1_1": 3.0444444444444443,
+     "Bearing1_2": null,
+     "Bearing1_3": 0.9861111111111112,
+     "Bearing1_4": 0.5777777777777777,
+     "Bearing1_5": null,
+     "Bearing1_6": 0.8055555555555556,
+     "Bearing1_7": 1.913888888888889,
+     "Bearing2_1": null,
+     "Bearing2_2": null,
+     "Bearing2_3": 2.9277777777777776,
+     "Bearing2_4": 0.6416666666666667,
+     "Bearing2_5": 2.8472222222222223,
+     "Bearing2_6": null,
+     "Bearing2_7": null,
+     "Bearing3_1": null,
+     "Bearing3_2": 0.4083333333333333,
+     "Bearing3_3": null
+    }
+   }
+  },
+  "360": {
+   "rms": {
+    "detected": 15,
+    "of": 17,
+    "median_lead_h": 0.2638888888888889,
+    "fa_per_day": 8.0,
+    "n_long": 9,
+    "lead_h": {
+     "Bearing1_1": 3.888888888888889,
+     "Bearing1_2": 0.2638888888888889,
+     "Bearing1_3": 3.5388888888888888,
+     "Bearing1_4": 0.95,
+     "Bearing1_5": 0.1388888888888889,
+     "Bearing1_6": 2.3805555555555555,
+     "Bearing1_7": 0.6194444444444445,
+     "Bearing2_1": 1.0083333333333333,
+     "Bearing2_2": 1.2027777777777777,
+     "Bearing2_3": 0.022222222222222223,
+     "Bearing2_4": 0.019444444444444445,
+     "Bearing2_5": null,
+     "Bearing2_6": 0.03611111111111111,
+     "Bearing2_7": null,
+     "Bearing3_1": 0.06388888888888888,
+     "Bearing3_2": 0.11666666666666667,
+     "Bearing3_3": 0.2
+    }
+   },
+   "kurt": {
+    "detected": 9,
+    "of": 17,
+    "median_lead_h": 1.5,
+    "fa_per_day": 1.3333333333333333,
+    "n_long": 9,
+    "lead_h": {
+     "Bearing1_1": 4.105555555555555,
+     "Bearing1_2": null,
+     "Bearing1_3": 1.5,
+     "Bearing1_4": 0.8805555555555555,
+     "Bearing1_5": 0.08611111111111111,
+     "Bearing1_6": 1.7472222222222222,
+     "Bearing1_7": 2.9138888888888888,
+     "Bearing2_1": null,
+     "Bearing2_2": 0.013888888888888888,
+     "Bearing2_3": null,
+     "Bearing2_4": null,
+     "Bearing2_5": 3.4166666666666665,
+     "Bearing2_6": null,
+     "Bearing2_7": null,
+     "Bearing3_1": null,
+     "Bearing3_2": 0.04722222222222222,
+     "Bearing3_3": null
+    }
+   }
+  },
+  "rule": {
+   "baseline_records": null,
+   "baseline_minutes": null,
+   "achieved_fa_per_day": {
+    "60": 1.2,
+    "180": 1.3333333333333333,
+    "360": 8.0
+   }
+  },
+  "rms_ge_kurt": true
+ },
+ "v": {
+  "60": {
+   "rms": {
+    "detected": 8,
+    "of": 17,
+    "median_lead_h": 0.5597222222222222,
+    "fa_per_day": 1.2,
+    "n_long": 10,
+    "lead_h": {
+     "Bearing1_1": 0.027777777777777776,
+     "Bearing1_2": null,
+     "Bearing1_3": 1.3555555555555556,
+     "Bearing1_4": 0.55,
+     "Bearing1_5": null,
+     "Bearing1_6": null,
+     "Bearing1_7": null,
+     "Bearing2_1": 0.25555555555555554,
+     "Bearing2_2": 0.5694444444444444,
+     "Bearing2_3": 2.75,
+     "Bearing2_4": null,
+     "Bearing2_5": 4.25,
+     "Bearing2_6": null,
+     "Bearing2_7": null,
+     "Bearing3_1": null,
+     "Bearing3_2": null,
+     "Bearing3_3": 0.10833333333333334
+    }
+   },
+   "kurt": {
+    "detected": 6,
+    "of": 17,
+    "median_lead_h": 2.104166666666667,
+    "fa_per_day": 1.2,
+    "n_long": 10,
+    "lead_h": {
+     "Bearing1_1": 3.236111111111111,
+     "Bearing1_2": null,
+     "Bearing1_3": null,
+     "Bearing1_4": null,
+     "Bearing1_5": null,
+     "Bearing1_6": 1.5138888888888888,
+     "Bearing1_7": 2.6944444444444446,
+     "Bearing2_1": null,
+     "Bearing2_2": null,
+     "Bearing2_3": 3.261111111111111,
+     "Bearing2_4": null,
+     "Bearing2_5": 0.10555555555555556,
+     "Bearing2_6": null,
+     "Bearing2_7": null,
+     "Bearing3_1": null,
+     "Bearing3_2": 0.5416666666666666,
+     "Bearing3_3": null
+    }
+   }
+  },
+  "180": {
+   "rms": {
+    "detected": 6,
+    "of": 17,
+    "median_lead_h": 0.9111111111111111,
+    "fa_per_day": 1.3333333333333333,
+    "n_long": 9,
+    "lead_h": {
+     "Bearing1_1": 0.14722222222222223,
+     "Bearing1_2": null,
+     "Bearing1_3": 1.5944444444444446,
+     "Bearing1_4": 0.6805555555555556,
+     "Bearing1_5": null,
+     "Bearing1_6": null,
+     "Bearing1_7": 0.016666666666666666,
+     "Bearing2_1": null,
+     "Bearing2_2": 1.1416666666666666,
+     "Bearing2_3": 2.9277777777777776,
+     "Bearing2_4": null,
+     "Bearing2_5": null,
+     "Bearing2_6": null,
+     "Bearing2_7": null,
+     "Bearing3_1": null,
+     "Bearing3_2": null,
+     "Bearing3_3": null
+    }
+   },
+   "kurt": {
+    "detected": 5,
+    "of": 17,
+    "median_lead_h": 2.4972222222222222,
+    "fa_per_day": 1.3333333333333333,
+    "n_long": 9,
+    "lead_h": {
+     "Bearing1_1": 2.827777777777778,
+     "Bearing1_2": null,
+     "Bearing1_3": 0.25555555555555554,
+     "Bearing1_4": null,
+     "Bearing1_5": null,
+     "Bearing1_6": 1.2305555555555556,
+     "Bearing1_7": 2.4972222222222222,
+     "Bearing2_1": null,
+     "Bearing2_2": null,
+     "Bearing2_3": 2.9277777777777776,
+     "Bearing2_4": null,
+     "Bearing2_5": null,
+     "Bearing2_6": null,
+     "Bearing2_7": null,
+     "Bearing3_1": null,
+     "Bearing3_2": null,
+     "Bearing3_3": null
+    }
+   }
+  },
+  "360": {
+   "rms": {
+    "detected": 16,
+    "of": 17,
+    "median_lead_h": 0.75,
+    "fa_per_day": 5.333333333333333,
+    "n_long": 9,
+    "lead_h": {
+     "Bearing1_1": 4.175,
+     "Bearing1_2": 0.1111111111111111,
+     "Bearing1_3": 2.088888888888889,
+     "Bearing1_4": 0.9416666666666667,
+     "Bearing1_5": 0.1388888888888889,
+     "Bearing1_6": 2.2555555555555555,
+     "Bearing1_7": 2.8833333333333333,
+     "Bearing2_1": 1.1555555555555554,
+     "Bearing2_2": 1.1833333333333333,
+     "Bearing2_3": 0.013888888888888888,
+     "Bearing2_4": 1.0583333333333333,
+     "Bearing2_5": 0.09444444444444444,
+     "Bearing2_6": 0.03611111111111111,
+     "Bearing2_7": null,
+     "Bearing3_1": 0.06666666666666667,
+     "Bearing3_2": 0.5583333333333333,
+     "Bearing3_3": 0.19444444444444445
+    }
+   },
+   "kurt": {
+    "detected": 5,
+    "of": 17,
+    "median_lead_h": 1.6666666666666667,
+    "fa_per_day": 1.3333333333333333,
+    "n_long": 9,
+    "lead_h": {
+     "Bearing1_1": 4.783333333333333,
+     "Bearing1_2": null,
+     "Bearing1_3": 1.6666666666666667,
+     "Bearing1_4": 0.1,
+     "Bearing1_5": null,
+     "Bearing1_6": 1.6111111111111112,
+     "Bearing1_7": 2.786111111111111,
+     "Bearing2_1": null,
+     "Bearing2_2": null,
+     "Bearing2_3": null,
+     "Bearing2_4": null,
+     "Bearing2_5": null,
+     "Bearing2_6": null,
+     "Bearing2_7": null,
+     "Bearing3_1": null,
+     "Bearing3_2": null,
+     "Bearing3_3": null
+    }
+   }
+  },
+  "rule": {
+   "baseline_records": null,
+   "baseline_minutes": null,
+   "achieved_fa_per_day": {
+    "60": 1.2,
+    "180": 1.3333333333333333,
+    "360": 5.333333333333333
+   }
+  },
+  "rms_ge_kurt": true
+ }
+}
