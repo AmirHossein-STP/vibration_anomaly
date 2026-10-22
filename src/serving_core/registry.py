@@ -32,12 +32,20 @@ class Registry:
     # ---- versions ------------------------------------------------------
     def new_version_dir(self, config_hash: str, data_hash: str) -> tuple[str, Path]:
         stamp = utc_now().strftime("%Y%m%dT%H%M%S")
-        version = f"{stamp}-{sha256_json([config_hash, data_hash])[:6]}"
-        path = self.versions_dir / version
-        if path.exists():
-            raise RegistryError(f"version {version} already exists")
-        path.mkdir(parents=True)
-        return version, path
+        base = f"{stamp}-{sha256_json([config_hash, data_hash])[:6]}"
+        # Two calibrations of the same data within one second (seen on the
+        # rented box's test run) would otherwise collide; a suffix keeps both
+        # and still sorts after the first.
+        self.versions_dir.mkdir(parents=True, exist_ok=True)
+        for n in range(100):
+            version = base if n == 0 else f"{base}-{n}"
+            path = self.versions_dir / version
+            try:
+                path.mkdir()
+                return version, path
+            except FileExistsError:
+                continue
+        raise RegistryError(f"could not allocate a version name after {base}")
 
     def path(self, version: str) -> Path:
         p = self.versions_dir / version
