@@ -35,6 +35,7 @@ from domain_adaptation.features.geofree import BIN_CENTRES, BIN_NAMES, geofree_f
 from domain_adaptation.iso20816 import velocity_rms_mm_s, zone
 from domain_adaptation.method import (
     CPW_SES, CUSUM_K, HOP, LINES, METHOD_VERSION, OUTER, WIN, Baseline, default_groups, fit_baseline,
+    fit_level_model, level_z,
 )
 from serving_core.service import ConfigError, Context, NotSupported, Outcome, Service
 from serving_core.signals import InputError, list_signal_files, load_signal, read_sidecar
@@ -84,19 +85,19 @@ def geometry_from_dict(d: dict | None):
     return BearingGeometry(d["name"], d["n_balls"], d["ball_diameter"], d["pitch_diameter"], d["contact_angle_deg"])
 
 
-def check_speed(rpm: float, geom) -> None:
+def check_speed(rpm: float, geom, bins: bool = True) -> None:
     """The 1 s window and 12 kHz rate bound the measurable speeds."""
     shaft = rpm / 60.0
     if shaft < 5:
         raise InputError(f"rpm={rpm:g} is too low for 1 s analysis windows (need >= 300 rpm)")
-    top = (3 * geom.bpfi + 1) * shaft if geom is not None else 15.5 * shaft
+    top = max(15.5 if bins else 0.0, 3 * geom.bpfi + 1 if geom is not None else 0.0) * shaft
     if top > FS_MODEL / 2 * 0.9:
         raise InputError(f"rpm={rpm:g} is too high: the fault lines ({top:.0f} Hz) would pass the 12 kHz analysis range")
 
 
 # ───────────────────────── features ─────────────────────────
-def window_features(signal: np.ndarray, fs_hz: float, rpm: float, geom, max_windows: int | None):
-    """-> (X [n, 6 lines or 135 bins], window start times, total windows, mean log RMS)."""
+def window_features(signal: np.ndarray, fs_hz: float, rpm: float, geom, max_windows: int | None, bins: bool = True):
+    """-> ({"lines": [n, 6] if geometry known, "bins": [n, 135] if bins}, window starts, total windows, mean log RMS)."""
     if not np.isfinite(signal).all():
         raise InputError("signal contains NaN or infinite values")
     fs_i = int(round(fs_hz))
@@ -107,18 +108,19 @@ def window_features(signal: np.ndarray, fs_hz: float, rpm: float, geom, max_wind
     total = len(starts)
     if max_windows and total > max_windows:
         starts = starts[np.linspace(0, total - 1, max_windows).round().astype(int)]
-    rows, rms = [], []
+    lines, binv, rms = [], [], []
     for s in starts:
         w = sig[s:s + WIN]
-        if geom is None:
+        if bins:
             f = geofree_features(w, FS_MODEL, rpm)
-            rows.append([f[n] for n in BIN_NAMES])
-        else:
+            binv.append([f[n] for n in BIN_NAMES])
+        if geom is not None:
             f = envelope_order_features(w, FS_MODEL, rpm, geom, **CPW_SES)
-            rows.append([f[n] for n in LINES])
+            lines.append([f[n] for n in LINES])
         x = w - w.mean()
         rms.append(np.sqrt((x ** 2).mean()) + 1e-12)
-    return np.asarray(rows), starts / FS_MODEL, total, float(np.mean(np.log(rms)))
+    X = {"lines": np.asarray(lines) if geom is not None else None, "bins": np.asarray(binv) if bins else None}
+    return X, starts / FS_MODEL, total, float(np.mean(np.log(rms)))
 
 
 def _cusum_max(u: np.ndarray) -> float:
@@ -143,7 +145,13 @@ class BearingService(Service):
             # bpfo + bpfi fault factors in orders. All empty -> geometry-free detection.
             "bearing": {"designation": None, "name": None, "n_balls": None, "ball_diameter": None,
                         "pitch_diameter": None, "contact_angle_deg": 0.0, "bpfo": None, "bpfi": None},
-            "units": {},            # unit -> {bearing: {...}, rpm, fs_hz} overrides
+            "units": {},            # unit -> {bearing: {...}, rpm, fs_hz, detector} overrides
+            # v1.1 (notes/22 §7a): geometry-free detection (won HUST and LDM); the six fault lines
+            # type the race when the bearing is known. "six_line" = v1.0's detector.
+            "detector": "geometry_free",
+            # numeric sidecar keys describing the operating point (e.g. ["load_N"]); with log rpm they
+            # condition the level trend statistic (notes/25: varying load/speed)
+            "operating_state_keys": [],
             "default_unit": "unit1",  # files directly in train/ or in/ without a `unit` sidecar
             "fs_hz": None,          # sampling rate (Hz); a sidecar `fs_hz` overrides per file
             "rpm": None,            # shaft speed; a sidecar `rpm` overrides per file (REQUIRED one way or the other)
@@ -174,6 +182,9 @@ class BearingService(Service):
         v = cfg["verdict"]
         if not 0 < v["watch_fraction"] < v["faulty_fraction"] <= 1:
             p.append("verdict: need 0 < watch_fraction < faulty_fraction <= 1")
+        if cfg["detector"] not in ("geometry_free", "six_line") or any(
+                (uc or {}).get("detector", "geometry_free") not in ("geometry_free", "six_line") for uc in (cfg.get("units") or {}).values()):
+            p.append("detector must be geometry_free or six_line")
         iso = cfg["iso20816"]
         if iso.get("group") not in (None, 1, 2) or iso.get("foundation") not in ("rigid", "flexible") \
                 or iso.get("signal_unit") not in (None, "g", "m/s2", "mm/s2"):
@@ -199,6 +210,14 @@ class BearingService(Service):
         if fs <= 0 or rpm <= 0:
             raise InputError("fs_hz and rpm must be positive")
         return fs, rpm, key
+
+    def _state(self, path: Path, rpm: float, keys: list[str]) -> list[float]:
+        """Operating point of one recording: log rpm and the configured numeric sidecar keys."""
+        side = read_sidecar(path)
+        try:
+            return [float(np.log(rpm))] + [float(side[k]) for k in keys]
+        except KeyError as e:
+            raise InputError(f"operating_state_keys: sidecar of {path.name} lacks {e}")
 
     def _unit_of(self, path: Path, top: Path, default: str) -> str:
         side = read_sidecar(path)
@@ -236,21 +255,33 @@ class BearingService(Service):
         for unit, files in sorted(by_unit.items()):
             uc = self._unit_cfg(cfg, unit)
             geom = resolve_bearing(uc.get("bearing", cfg["bearing"]))
-            X, t0, fid, levels, skipped, ufiles = [], [], [], [], [], []
+            mode = uc.get("detector", cfg["detector"])
+            if mode == "six_line" and geom is None:
+                warns.append(f"unit {unit}: detector six_line needs the bearing geometry; using geometry_free")
+                mode = "geometry_free"
+            keys = list(cfg.get("operating_state_keys") or [])
+            X, t0, fid, levels, states, skipped, ufiles = [], [], [], [], [], [], []
             for f in files:
                 try:
                     fs, rpm, key = self._file_params(f, cfg, unit)
-                    check_speed(rpm, geom)
-                    Xi, ti, _, lv = window_features(load_signal(f, key), fs, rpm, geom, c["max_windows_per_file"])
+                    check_speed(rpm, geom, mode == "geometry_free")
+                    Xi, ti, _, lv = window_features(load_signal(f, key), fs, rpm, geom, c["max_windows_per_file"],
+                                                    bins=mode == "geometry_free")
+                    st = self._state(f, rpm, keys)
                 except InputError as e:
                     skipped.append(f"{f.name}: {e}"); ctx.log.warning("[%s] skipped %s: %s", unit, f.name, e); continue
-                X.append(Xi); t0.append(ti); fid += [len(ufiles)] * len(Xi); levels.append(lv); ufiles.append(f)
-            n_win = sum(len(x) for x in X)
+                X.append(Xi); t0.append(ti); fid += [len(ufiles)] * len(ti); levels.append(lv); states.append(st)
+                ufiles.append(f)
+            n_win = len(fid)
             if n_win < c["min_windows"]:
                 raise InputError(f"unit {unit}: only {n_win} usable healthy windows (need >= {c['min_windows']}; "
                                  "1 window = 1 s of signal)" + (f". Skipped: {skipped}" if skipped else ""))
-            X, t0, fid = np.vstack(X), np.concatenate(t0), np.asarray(fid)
-            base = fit_baseline(X, default_groups(fid, t0), meta={"unit": unit})
+            t0, fid = np.concatenate(t0), np.asarray(fid)
+            groups = default_groups(fid, t0)
+            det_key = "bins" if mode == "geometry_free" else "lines"
+            base = fit_baseline(np.vstack([x[det_key] for x in X]), groups, meta={"unit": unit, "features": det_key})
+            typ = fit_baseline(np.vstack([x["lines"] for x in X]), groups, meta={"unit": unit, "features": "lines"}) \
+                if geom is not None else None
             thr = base.threshold(c["alpha"])
             if not np.isfinite(thr):
                 raise InputError(f"unit {unit}: too few windows for a conformal threshold at alpha {c['alpha']}")
@@ -259,15 +290,15 @@ class BearingService(Service):
             rec = np.array([base.cal_scores[fid == i].mean() for i in range(len(ufiles))])
             if len(ufiles) >= 3:
                 p_mu, p_sd = float(rec.mean()), float(rec.std(ddof=1)) + 1e-12
-                l_mu, l_sd = float(np.mean(levels)), float(np.std(levels, ddof=1)) + 1e-12
+                lm = fit_level_model(np.asarray(levels), np.asarray(states))
             else:   # fewer than 3 recordings: spread of the windows stands in (stated in the warning)
                 p_mu, p_sd = float(base.cal_scores.mean()), float(base.cal_scores.std(ddof=1)) + 1e-12
-                l_mu, l_sd = float(np.mean(levels)), 1.0
+                lm = {"coef": [float(np.mean(levels))] + [0.0] * (1 + len(keys)), "resid_sd": 1.0, "conditioned": False}
             h_p = max(MIN_CUSUM_H, _cusum_max((rec - p_mu) / p_sd))
-            h_l = max(MIN_CUSUM_H, _cusum_max((np.asarray(levels) - l_mu) / l_sd))
-            mode = "six_line" if geom is not None else "geometry_free"
+            h_l = max(MIN_CUSUM_H, _cusum_max([level_z(lm, lv, st) for lv, st in zip(levels, states)]))
             units[unit] = {"detector": mode, "geometry": geometry_to_dict(geom), "baseline": base.to_dict(),
-                           "threshold": thr, "physics_rec": [p_mu, p_sd], "level_rec": [l_mu, l_sd],
+                           "typing_baseline": typ.to_dict() if typ is not None else None,
+                           "threshold": thr, "physics_rec": [p_mu, p_sd], "level_model": lm, "state_keys": keys,
                            "cusum_h": {"physics": h_p, "level": h_l}, "n_windows": n_win,
                            "n_recordings": len(ufiles), "default_rpm": uc.get("rpm"), "default_fs_hz": uc.get("fs_hz")}
             worst = max(fracs.values())
@@ -282,8 +313,11 @@ class BearingService(Service):
             if skipped:
                 warns.append(f"unit {unit}: {len(skipped)} file(s) skipped: " + "; ".join(skipped[:3]))
             if geom is None:
-                warns.append(f"unit {unit}: geometry unknown -> geometry-free detection, no fault typing; its threshold "
-                             "needs a longer baseline than the six-line score (notes/23). Give the bearing designation if known.")
+                warns.append(f"unit {unit}: bearing unknown -> detection only, no fault typing. Give the designation, "
+                             "geometry or fault factors if known.")
+            if mode == "geometry_free" and n_win < c["recommended_windows"]:
+                warns.append(f"unit {unit}: the geometry-free score sets a conservative threshold on short baselines "
+                             "(notes/23); a longer baseline will raise its sensitivity")
             if n_win < c["recommended_windows"]:
                 warns.append(f"unit {unit}: baseline is {n_win / 60:.0f} min; >= {c['recommended_windows'] / 60:.0f} min of "
                              "healthy operation per operating state is recommended (notes/26)")
@@ -320,8 +354,11 @@ class BearingService(Service):
         if cal.get("method_version") != METHOD_VERSION:
             raise InputError(f"model was calibrated with method {cal.get('method_version')!r}, this code is "
                              f"{METHOD_VERSION}: recalibrate (old versions stay available for rollback)")
-        return {"cal": cal, "units": {u: (Baseline.from_dict(d["baseline"]), geometry_from_dict(d["geometry"]), d)
-                                      for u, d in cal["units"].items()}}
+        units = {}
+        for u, d in cal["units"].items():
+            typ = Baseline.from_dict(d["typing_baseline"]) if d.get("typing_baseline") else None
+            units[u] = (Baseline.from_dict(d["baseline"]), geometry_from_dict(d["geometry"]), d, typ)
+        return {"cal": cal, "units": units}
 
     def _trend(self, ctx: Context, model: dict, unit: str, file: str, pz: float, lz: float, h: dict) -> dict:
         path = ctx.layout.out_dir / TREND_FILE
@@ -355,19 +392,20 @@ class BearingService(Service):
         if unit not in model["units"]:
             raise InputError(f"unit {unit!r} has no baseline in this model (calibrated units: {sorted(model['units'])}); "
                              "put its healthy recordings in train/<unit>/ and calibrate")
-        base, geom, ud = model["units"][unit]
+        base, geom, ud, typ = model["units"][unit]
         fb = {"fs_hz": ud.get("default_fs_hz") or cal.get("default_fs_hz"), "rpm": ud.get("default_rpm") or cal.get("default_rpm"),
               "signal_key": cal.get("signal_key")}
         fs, rpm, key = self._file_params(path, ctx.config, unit, fb)
-        check_speed(rpm, geom)
+        bins = ud["detector"] == "geometry_free"
+        check_speed(rpm, geom, bins)
         signal = load_signal(path, key)
-        X, _, total, level = window_features(signal, fs, rpm, geom, cal["max_windows_per_file"])
+        X, _, total, level = window_features(signal, fs, rpm, geom, cal["max_windows_per_file"], bins=bins)
         iso = {**ctx.config["iso20816"], **(self._unit_cfg(ctx.config, unit).get("iso20816") or {})}
         iso_v = iso_z = None
         if iso.get("group") and iso.get("signal_unit"):
             iso_v = round(velocity_rms_mm_s(signal, fs, iso["signal_unit"], rpm), 3)
             iso_z = zone(iso_v, iso["group"], iso["foundation"])
-        s = base.score(X)
+        s = base.score(X["bins"] if bins else X["lines"])
         thr = ud["threshold"]
         flagged = s > thr
         frac = float(flagged.mean())
@@ -375,17 +413,18 @@ class BearingService(Service):
         verdict = "faulty" if frac >= v["faulty_fraction"] else "watch" if frac >= v["watch_fraction"] else "healthy"
         fault_type, dominant = "", ""
         if flagged.any():
-            z = base.z(X[flagged])
-            if geom is not None:
-                t = base.typing(X[flagged])
-                fault_type = "outer race" if (t == OUTER).mean() >= 0.5 else "inner race"
-                med = np.median(z, 0)
+            if typ is not None:
+                lines = X["lines"][flagged]
+                t = typ.typing(lines)
+                # a hint, not a diagnosis (notes/25: unreliable when another defect type coexists)
+                fault_type = "outer race (hint)" if (t == OUTER).mean() >= 0.5 else "inner race (hint)"
+                med = np.median(typ.z(lines), 0)
                 dominant = f"{LINES[int(np.argmax(med))]} z={med.max():.1f}"
             else:
-                med = np.median(z, 0)
-                dominant = f"order {BIN_CENTRES[int(np.argmax(med))]:.2f} z={med.max():.1f} (geometry unknown: no typing)"
+                med = np.median(base.z(X["bins"][flagged]), 0)
+                dominant = f"order {BIN_CENTRES[int(np.argmax(med))]:.2f} z={med.max():.1f} (bearing unknown: no typing)"
         pz = (float(s.mean()) - ud["physics_rec"][0]) / ud["physics_rec"][1]
-        lz = (level - ud["level_rec"][0]) / ud["level_rec"][1]
+        lz = level_z(ud["level_model"], level, self._state(path, rpm, ud.get("state_keys") or []))
         tr = self._trend(ctx, model, unit, path.name, pz, lz, ud["cusum_h"])
         msg = f"scored {len(s)} of {total} windows (evenly spaced)" if len(s) < total else ""
         if tr["trend_alarm"]:

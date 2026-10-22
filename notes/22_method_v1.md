@@ -69,5 +69,21 @@ To be decided by WP13 (notes/23): the geometry-free fallback, or level/kurtosis 
 | Paderborn N09 | 0.901 |
 | XJTU-SY RMS CUSUM / physics CUSUM (detected of 15) | 13 / 9 |
 
+## 7a. v1.1 (2026-10-22): two pre-registered decisions from WP14/WP15
+1. **Detection score = geometry-free** (notes/23 §2). It won both pre-registered head-to-head
+   comparisons on unseen data: HUST (notes/24) and LDM (notes/25). The **six lines are kept for
+   typing** whenever the geometry is known. The six-line detector stays selectable (`detector: six_line`).
+   - **Caveat (notes/23):** its threshold needs a longer baseline. With tiny baselines it is
+     conservative, and with a fleet baseline it overshoots FA.
+2. **Trend trigger under varying operating conditions = level CUSUM conditioned on the operating
+   point.** Log RMS minus a linear fit on [log speed, + any logged load] estimated on the unit's
+   baseline recordings (notes/25: FA 0.19 → 0.15, 14/17 detected). With fewer than 10 baseline
+   recordings, or no spread in the operating point, the pooled level is used.
+   The physics CUSUM is reported alongside but is not the trigger.
+3. Physics typing failed its bar on LDM (7/11). Typing is therefore reported as a **hint**
+   ("rise points at the outer race"), not a diagnosis, when another defect type may coexist.
+
+`METHOD_VERSION = "1.1"`. v1.0 models are refused and must be recalibrated.
+
 ## 8. Freeze record
 (empty until WP18)

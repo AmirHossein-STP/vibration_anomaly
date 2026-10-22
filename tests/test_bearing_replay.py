@@ -35,7 +35,7 @@ def test_service_reproduces_wp5_own_unit_numbers(tmp_path, capsys):
     run("init")
     base = data / "bearing"
     (base / "config" / "service.yaml").write_text(
-        'fs_hz: 12000\nbearing: {designation: "NSK 6203ZZ"}\ncalibration: {min_windows: 9}\n')
+        'fs_hz: 12000\ndetector: six_line\nbearing: {designation: "NSK 6203ZZ"}\ncalibration: {min_windows: 9}\n')
     held = {}
     for b in BEARINGS:
         h = next(ottawa2023(DATA, only=f"H_{b}_0"))

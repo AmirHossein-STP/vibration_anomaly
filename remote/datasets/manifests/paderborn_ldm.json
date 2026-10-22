@@ -140,6 +140,206 @@
   "B07/vibration_12k.npy": {
    "sha256": "1d9f01d8994a64f77def7f2437dab96126d16a01d0949599523d7f117f038c5d",
    "size": 490982528
+  },
+  "B08/B08_log.pdf": {
+   "sha256": "9665e714d0665f7d6b1b524ccb0551aa45d209c4275193af557175e60f85c8ab",
+   "size": 170229
+  },
+  "B08/B08_meanTemperatures.csv": {
+   "sha256": "daca1af1ee47fb6d8cd39e95f4aa104735013b1b81f2454958d8b89927f7e2bf",
+   "size": 132829
+  },
+  "B08/B08_operatingConditions.csv": {
+   "sha256": "6c2b05b8235f30aa0c136fbd4828006188de9ee016c782d16e61bbb758e8d447",
+   "size": 215025
+  },
+  "B08/meta.json": {
+   "sha256": "5f82749e502de28eb88157259d3a426edda4a869098b7c4a2ca0e97e6ae2f866",
+   "size": 46738
+  },
+  "B08/vibration_12k.npy": {
+   "sha256": "52e974e7cd7a790e345394ccceee9e251a41b7165f87274027bb6d181dc36a12",
+   "size": 140313728
+  },
+  "B09/B09_log.pdf": {
+   "sha256": "3208b220370898289f7861cac2ad6a30072319ce363d88e3f029802a5bf72850",
+   "size": 170555
+  },
+  "B09/B09_meanTemperatures.csv": {
+   "sha256": "902cb71eb7c3936f9e6944a7f1682614a7aae0ec2e1efeadc3dcd2542cc90205",
+   "size": 131805
+  },
+  "B09/B09_operatingConditions.csv": {
+   "sha256": "b29bd6eed3c11ad2bdb733bedfdff088fe25adbb9ae0c3ddba62165cd32f6a19",
+   "size": 214235
+  },
+  "B09/meta.json": {
+   "sha256": "e6c377d4bea4b0a2b3c652a375fc1f6ac92d2e3a38d9a5ecad8660c2a492c708",
+   "size": 46388
+  },
+  "B09/vibration_12k.npy": {
+   "sha256": "4eed9c73e25cda9d75fc2d1de2c388236b2b093be3ad98756c7aa51e173e25ce",
+   "size": 139238528
+  },
+  "B10/B10_log.pdf": {
+   "sha256": "cf21729c1554e6c5e15b44804d3055221a3129c668c69769da12c99d1b6f15e9",
+   "size": 170842
+  },
+  "B10/B10_meanTemperatures.csv": {
+   "sha256": "21e43530700d0f74880325efc55bfe2b9f23c7926ae870cf56c421b1faa9dc5d",
+   "size": 234358
+  },
+  "B10/B10_operatingConditions.csv": {
+   "sha256": "b6b637479ef50d068a715c9937054b09d00e50a022f667d45f11c8f6dcd71b44",
+   "size": 381631
+  },
+  "B10/meta.json": {
+   "sha256": "67beb8aae2a6452b7de2cb50326fc8a19f84e05c464b6d92648a0bcbce458c08",
+   "size": 81661
+  },
+  "B10/vibration_12k.npy": {
+   "sha256": "e2b0c4dbd550bdf66d78a259b4a0c4461552107717837305be4a0b939e6c1dd5",
+   "size": 247603328
+  },
+  "B11/B11_log.pdf": {
+   "sha256": "c46192ddb09bdef9c073ef723b774789a278e682f27ffbfa118cb304a468cefe",
+   "size": 169936
+  },
+  "B11/B11_meanTemperatures.csv": {
+   "sha256": "6f150b8ba5a482f85351d925c72f06225255ebaa3cd73d8a5e5327197c8bb1bd",
+   "size": 141917
+  },
+  "B11/B11_operatingConditions.csv": {
+   "sha256": "c0c7eb9cad39131eed489cc7c5fc58216239b39693d618568f380be8de050dda",
+   "size": 185506
+  },
+  "B11/meta.json": {
+   "sha256": "52bb4595321e87c21db262112a0a18960f436b91e43141896e4c2f16f47d93f4",
+   "size": 49886
+  },
+  "B11/vibration_12k.npy": {
+   "sha256": "48b50ce0f0de69f1164ef12026c1953acab6461678951aba4dd86686cbb0ddb0",
+   "size": 149990528
+  },
+  "B12/B12_log.pdf": {
+   "sha256": "15ca339e9b6be6dfe997764bcc0c438898ce7b1bc8ad1a0ebb2ff44cee381500",
+   "size": 169640
+  },
+  "B12/B12_meanTemperatures.csv": {
+   "sha256": "2987104c06fa29bf00dcb0234b0a0c655eaf4943f0dd670b32d30150beb4d034",
+   "size": 55806
+  },
+  "B12/B12_operatingConditions.csv": {
+   "sha256": "9f263b1749ead38e6448a95c99d8d04ec543f4e55bc19c3b5bde75f377f951cf",
+   "size": 72982
+  },
+  "B12/meta.json": {
+   "sha256": "52e91aa20397e0c473ad2a4b8586908ad659b2f31d294663be8ec9f56b734df6",
+   "size": 20235
+  },
+  "B12/vibration_12k.npy": {
+   "sha256": "2a806d5577bce38dc779903e9e46b3725e1f536f37f987d7f082423cdcacec84",
+   "size": 58905728
+  },
+  "B13/B13_log.pdf": {
+   "sha256": "7167c11c24c975f8308645d744e2cecea619e8d40bef4e35a6747ea8850f185c",
+   "size": 170197
+  },
+  "B13/B13_meanTemperatures.csv": {
+   "sha256": "7721fc6b19e85c93d227014ddbfca713fdffa2518574060d58a6741486bc9a9c",
+   "size": 1410952
+  },
+  "B13/B13_operatingConditions.csv": {
+   "sha256": "11ecc05394b88b63ce2703064bacdac6d54b8c7a17cf09245971e97ed7683493",
+   "size": 1844169
+  },
+  "B13/meta.json": {
+   "sha256": "82a0c94a2885b26b8d9195974528a74e5eabc85dd005851e0c50388b3de0fddd",
+   "size": 486487
+  },
+  "B13/vibration_12k.npy": {
+   "sha256": "7a1a363bb84874abc2b3550d840b6921a8f3740d8de5d937c527b3fed2116749",
+   "size": 1491225728
+  },
+  "B14/B14_log.pdf": {
+   "sha256": "0ab179b0fddded874cf858931dc603c2bda14e200a96f998d41582d2067d45a0",
+   "size": 170239
+  },
+  "B14/B14_meanTemperatures.csv": {
+   "sha256": "f3443431bd2b6bb14f0dc08511606a4abe893c2e8e752ece6c6c7b0903424ac7",
+   "size": 895178
+  },
+  "B14/B14_operatingConditions.csv": {
+   "sha256": "f16f2a8a49b1ae83a926456a42ae2159f2750d39b261d9f4f3d0e9e0dbfc1a40",
+   "size": 1173518
+  },
+  "B14/meta.json": {
+   "sha256": "2705dcf6c0d7cfda5c09231ea5b4df9b2cc88aa21955d2d1119ca3bc4a02e6d4",
+   "size": 308987
+  },
+  "B14/vibration_12k.npy": {
+   "sha256": "615a97c6ad23fc0f3b587cfffb84ef314ab387e8995a4b31a19d0d9dc91107bf",
+   "size": 945945728
+  },
+  "B15/B15_log.pdf": {
+   "sha256": "3a867b23d621d82a0acb638b990f3f1f26c2a9cb6c81609078b853d01b86eda5",
+   "size": 169660
+  },
+  "B15/B15_meanTemperatures.csv": {
+   "sha256": "0d84012ec03269eba9d8887ac127f75e00af0fc232b8c783ef4982f1e43f3ac8",
+   "size": 1639958
+  },
+  "B15/B15_operatingConditions.csv": {
+   "sha256": "b8bb949ef94be2cba28633ec468b454c5c6c305e5729bad3fbabbef93c812024",
+   "size": 2149294
+  },
+  "B15/meta.json": {
+   "sha256": "59dfa33a6f0943e10e9a862d2411cf3ca1f3a0b7f9e95396648c60aa49fc753c",
+   "size": 565237
+  },
+  "B15/vibration_12k.npy": {
+   "sha256": "e4f5c80efa6129e4c71e116e7278291be34d93f72cc71c1a0fa3eb5240d66bd2",
+   "size": 1733145728
+  },
+  "B16/B16_log.pdf": {
+   "sha256": "be0492526696fb7e145d88c107d4fdcaf54fc047b30d7b3acce2ebf02a956940",
+   "size": 170231
+  },
+  "B16/B16_meanTemperatures.csv": {
+   "sha256": "1b9a620f70a898202e6a76dad594fc6b612652998c913a30355bd834f3f49775",
+   "size": 428103
+  },
+  "B16/B16_operatingConditions.csv": {
+   "sha256": "8496b26f3441a7a360ef2ab1c79c7f9e70f5544559db65d78dc5834ad708cbb0",
+   "size": 562743
+  },
+  "B16/meta.json": {
+   "sha256": "ef49d9fe358185bfa526475d8560e094397945a2a984a2e44cca718898c35870",
+   "size": 148336
+  },
+  "B16/vibration_12k.npy": {
+   "sha256": "f8588bab7ffa806b2a9f668c444403e95ab97d507b00eab5ef517bf0a8867106",
+   "size": 452428928
+  },
+  "B17/B17_log.pdf": {
+   "sha256": "e204f5b722ede76f8393564add4336e309e74a90bf122334264864b39a01a20b",
+   "size": 169943
+  },
+  "B17/B17_meanTemperatures.csv": {
+   "sha256": "ce3e346753ae5b5f81b7a71d831efd7b2c8c8c69cd80ede27be2f1bc9872d8d1",
+   "size": 198648
+  },
+  "B17/B17_operatingConditions.csv": {
+   "sha256": "b07cc55d293d9496b392ab99ff2a4ffdca228205a2d3b74ad7a8561243f297e4",
+   "size": 261977
+  },
+  "B17/meta.json": {
+   "sha256": "5e58a0ea3efa86107d5d5e740027a576586b936213a2e22912fb8d091ef9dd7c",
+   "size": 69386
+  },
+  "B17/vibration_12k.npy": {
+   "sha256": "3e52e302a135fe4de2ea68d2e8b584e9c0ff4f6b87c01432045a3edd455ff9ec",
+   "size": 209894528
   }
  },
  "dataset": "paderborn_ldm",
@@ -150,9 +350,25 @@
   "B04": "done",
   "B05": "done",
   "B06": "done",
-  "B07": "done"
+  "B07": "done",
+  "B08": "done",
+  "B09": "done",
+  "B10": "done",
+  "B11": "done",
+  "B12": "done",
+  "B13": "done",
+  "B14": "done",
+  "B15": "done",
+  "B16": "done",
+  "B17": "done"
  },
- "history": [],
+ "history": [
+  {
+   "at": "2026-10-22T06:47:18Z",
+   "by": "payesh-20-947",
+   "event": "complete (streamed)"
+  }
+ ],
  "license": "CC BY 4.0",
  "notes": "17 run-to-failure bearings, time-varying load and speed, 128 kHz, measured speed per record. The original Zenodo record is 152 GB of zipped .mat; the source used is a lossless int16 repack (50 GB, Hugging Face Nounours777/Paderborn-bearing, decode error < 1e-9 V per its meta.json). WP15 (notes/25).",
  "raw": {
@@ -365,6 +581,306 @@
    "sha256": "36b14745d0dbb3f71596cebbd67d1e19fc8f57ccb5677896f686a5f7897d0721",
    "size": 5237145728,
    "url": "https://huggingface.co/datasets/Nounours777/Paderborn-bearing/resolve/main/data/B07/vibration.npy"
+  },
+  "data/B08/B08_log.pdf": {
+   "publisher_checksum": "sha256:9665e714d0665f7d6b1b524ccb0551aa45d209c4275193af557175e60f85c8ab",
+   "sha256": "9665e714d0665f7d6b1b524ccb0551aa45d209c4275193af557175e60f85c8ab",
+   "size": 170229,
+   "url": "https://huggingface.co/datasets/Nounours777/Paderborn-bearing/resolve/main/data/B08/B08_log.pdf"
+  },
+  "data/B08/B08_meanTemperatures.csv": {
+   "publisher_checksum": "gitsha1:3c80309a38b9f721b947f344c8f0d2dd4e90ec54",
+   "sha256": "daca1af1ee47fb6d8cd39e95f4aa104735013b1b81f2454958d8b89927f7e2bf",
+   "size": 132829,
+   "url": "https://huggingface.co/datasets/Nounours777/Paderborn-bearing/resolve/main/data/B08/B08_meanTemperatures.csv"
+  },
+  "data/B08/B08_operatingConditions.csv": {
+   "publisher_checksum": "gitsha1:0244dab6127631a509ce8f86ce1c17a9a0f1fbfb",
+   "sha256": "6c2b05b8235f30aa0c136fbd4828006188de9ee016c782d16e61bbb758e8d447",
+   "size": 215025,
+   "url": "https://huggingface.co/datasets/Nounours777/Paderborn-bearing/resolve/main/data/B08/B08_operatingConditions.csv"
+  },
+  "data/B08/meta.json": {
+   "publisher_checksum": "gitsha1:3c97eb4b6b4b24690620279013efa2ce2ff323da",
+   "sha256": "866060c24747fe3a608bd05341caf6386f8dd61eee4d9db7afd1b55c6be4029f",
+   "size": 50282,
+   "url": "https://huggingface.co/datasets/Nounours777/Paderborn-bearing/resolve/main/data/B08/meta.json"
+  },
+  "data/B08/vibration.npy": {
+   "publisher_checksum": "sha256:0d08b884544d08d7679aee3efbf2513fe72ea54447a8ebfad2b258e26678c960",
+   "sha256": "0d08b884544d08d7679aee3efbf2513fe72ea54447a8ebfad2b258e26678c960",
+   "size": 1496678528,
+   "url": "https://huggingface.co/datasets/Nounours777/Paderborn-bearing/resolve/main/data/B08/vibration.npy"
+  },
+  "data/B09/B09_log.pdf": {
+   "publisher_checksum": "sha256:3208b220370898289f7861cac2ad6a30072319ce363d88e3f029802a5bf72850",
+   "sha256": "3208b220370898289f7861cac2ad6a30072319ce363d88e3f029802a5bf72850",
+   "size": 170555,
+   "url": "https://huggingface.co/datasets/Nounours777/Paderborn-bearing/resolve/main/data/B09/B09_log.pdf"
+  },
+  "data/B09/B09_meanTemperatures.csv": {
+   "publisher_checksum": "gitsha1:8466e5dc17063a89e643286b7ca005ff4c34749e",
+   "sha256": "902cb71eb7c3936f9e6944a7f1682614a7aae0ec2e1efeadc3dcd2542cc90205",
+   "size": 131805,
+   "url": "https://huggingface.co/datasets/Nounours777/Paderborn-bearing/resolve/main/data/B09/B09_meanTemperatures.csv"
+  },
+  "data/B09/B09_operatingConditions.csv": {
+   "publisher_checksum": "gitsha1:90c55c85734ade1e51822ffda83a07dac31a418c",
+   "sha256": "b29bd6eed3c11ad2bdb733bedfdff088fe25adbb9ae0c3ddba62165cd32f6a19",
+   "size": 214235,
+   "url": "https://huggingface.co/datasets/Nounours777/Paderborn-bearing/resolve/main/data/B09/B09_operatingConditions.csv"
+  },
+  "data/B09/meta.json": {
+   "publisher_checksum": "gitsha1:09e965c995529c653828c2611ba7ce8e605e29d4",
+   "sha256": "1cd41de8d5316fce89ac78f1b4211dfed345d1188424146588759efb3ba61122",
+   "size": 49904,
+   "url": "https://huggingface.co/datasets/Nounours777/Paderborn-bearing/resolve/main/data/B09/meta.json"
+  },
+  "data/B09/vibration.npy": {
+   "publisher_checksum": "sha256:32767722abda0cc601ec70be40b7483d217ce83d95ddfeef4547c56c666a415f",
+   "sha256": "32767722abda0cc601ec70be40b7483d217ce83d95ddfeef4547c56c666a415f",
+   "size": 1485209728,
+   "url": "https://huggingface.co/datasets/Nounours777/Paderborn-bearing/resolve/main/data/B09/vibration.npy"
+  },
+  "data/B10/B10_log.pdf": {
+   "publisher_checksum": "sha256:cf21729c1554e6c5e15b44804d3055221a3129c668c69769da12c99d1b6f15e9",
+   "sha256": "cf21729c1554e6c5e15b44804d3055221a3129c668c69769da12c99d1b6f15e9",
+   "size": 170842,
+   "url": "https://huggingface.co/datasets/Nounours777/Paderborn-bearing/resolve/main/data/B10/B10_log.pdf"
+  },
+  "data/B10/B10_meanTemperatures.csv": {
+   "publisher_checksum": "gitsha1:3f837983eafaa91d772f7fbb8a04a87e7c27d243",
+   "sha256": "21e43530700d0f74880325efc55bfe2b9f23c7926ae870cf56c421b1faa9dc5d",
+   "size": 234358,
+   "url": "https://huggingface.co/datasets/Nounours777/Paderborn-bearing/resolve/main/data/B10/B10_meanTemperatures.csv"
+  },
+  "data/B10/B10_operatingConditions.csv": {
+   "publisher_checksum": "gitsha1:9235cf57b467027c8e38a6a6af087fe66b201a76",
+   "sha256": "b6b637479ef50d068a715c9937054b09d00e50a022f667d45f11c8f6dcd71b44",
+   "size": 381631,
+   "url": "https://huggingface.co/datasets/Nounours777/Paderborn-bearing/resolve/main/data/B10/B10_operatingConditions.csv"
+  },
+  "data/B10/meta.json": {
+   "publisher_checksum": "gitsha1:c2b801ab0933be331aa81c4afeb501cc569a850a",
+   "sha256": "0b48d1be7561a79e92e47dd7925b5a45ad4f5991c9c5ff233f287825013b10e8",
+   "size": 88000,
+   "url": "https://huggingface.co/datasets/Nounours777/Paderborn-bearing/resolve/main/data/B10/meta.json"
+  },
+  "data/B10/vibration.npy": {
+   "publisher_checksum": "sha256:432aff0e7c300cf437f930c06bfc19eb5b2ce3744dae14cbaddc1dab67ba051c",
+   "sha256": "432aff0e7c300cf437f930c06bfc19eb5b2ce3744dae14cbaddc1dab67ba051c",
+   "size": 1320550528,
+   "url": "https://huggingface.co/datasets/Nounours777/Paderborn-bearing/resolve/main/data/B10/vibration.npy"
+  },
+  "data/B11/B11_log.pdf": {
+   "publisher_checksum": "sha256:c46192ddb09bdef9c073ef723b774789a278e682f27ffbfa118cb304a468cefe",
+   "sha256": "c46192ddb09bdef9c073ef723b774789a278e682f27ffbfa118cb304a468cefe",
+   "size": 169936,
+   "url": "https://huggingface.co/datasets/Nounours777/Paderborn-bearing/resolve/main/data/B11/B11_log.pdf"
+  },
+  "data/B11/B11_meanTemperatures.csv": {
+   "publisher_checksum": "gitsha1:9a6b66c72aee92f8b0c406affc8b863428f08a0d",
+   "sha256": "6f150b8ba5a482f85351d925c72f06225255ebaa3cd73d8a5e5327197c8bb1bd",
+   "size": 141917,
+   "url": "https://huggingface.co/datasets/Nounours777/Paderborn-bearing/resolve/main/data/B11/B11_meanTemperatures.csv"
+  },
+  "data/B11/B11_operatingConditions.csv": {
+   "publisher_checksum": "gitsha1:4900708736637e5651e449443d32a2cc05c3f3dd",
+   "sha256": "c0c7eb9cad39131eed489cc7c5fc58216239b39693d618568f380be8de050dda",
+   "size": 185506,
+   "url": "https://huggingface.co/datasets/Nounours777/Paderborn-bearing/resolve/main/data/B11/B11_operatingConditions.csv"
+  },
+  "data/B11/meta.json": {
+   "publisher_checksum": "gitsha1:903b867fd42800d58aa0695e391e8f03d5b6568f",
+   "sha256": "9d82d358a67380262327a41140f670eb871841b663cb95a07f8101e28f79bb13",
+   "size": 53683,
+   "url": "https://huggingface.co/datasets/Nounours777/Paderborn-bearing/resolve/main/data/B11/meta.json"
+  },
+  "data/B11/vibration.npy": {
+   "publisher_checksum": "sha256:c94b8dcb51c402f9ab15fc355a8425fe44d5853364106625b1670bc2fe37dc67",
+   "sha256": "c94b8dcb51c402f9ab15fc355a8425fe44d5853364106625b1670bc2fe37dc67",
+   "size": 799948928,
+   "url": "https://huggingface.co/datasets/Nounours777/Paderborn-bearing/resolve/main/data/B11/vibration.npy"
+  },
+  "data/B12/B12_log.pdf": {
+   "publisher_checksum": "sha256:15ca339e9b6be6dfe997764bcc0c438898ce7b1bc8ad1a0ebb2ff44cee381500",
+   "sha256": "15ca339e9b6be6dfe997764bcc0c438898ce7b1bc8ad1a0ebb2ff44cee381500",
+   "size": 169640,
+   "url": "https://huggingface.co/datasets/Nounours777/Paderborn-bearing/resolve/main/data/B12/B12_log.pdf"
+  },
+  "data/B12/B12_meanTemperatures.csv": {
+   "publisher_checksum": "gitsha1:e678d04730101c93987eb13641d3fac6d7d92e6d",
+   "sha256": "2987104c06fa29bf00dcb0234b0a0c655eaf4943f0dd670b32d30150beb4d034",
+   "size": 55806,
+   "url": "https://huggingface.co/datasets/Nounours777/Paderborn-bearing/resolve/main/data/B12/B12_meanTemperatures.csv"
+  },
+  "data/B12/B12_operatingConditions.csv": {
+   "publisher_checksum": "gitsha1:2a7263190217ebfc75a2d2debb3cf6af9d67f477",
+   "sha256": "9f263b1749ead38e6448a95c99d8d04ec543f4e55bc19c3b5bde75f377f951cf",
+   "size": 72982,
+   "url": "https://huggingface.co/datasets/Nounours777/Paderborn-bearing/resolve/main/data/B12/B12_operatingConditions.csv"
+  },
+  "data/B12/meta.json": {
+   "publisher_checksum": "gitsha1:76d7da0f6fa1a5080041178b895e870b024ff1a2",
+   "sha256": "9b38b1083da04e35148f3bda11391f3278fcf36f33d106fcb1ebe81851b88b3d",
+   "size": 21660,
+   "url": "https://huggingface.co/datasets/Nounours777/Paderborn-bearing/resolve/main/data/B12/meta.json"
+  },
+  "data/B12/vibration.npy": {
+   "publisher_checksum": "sha256:2490a52b3b186ab68edd3b146fa664a066c9ee9db3d10cfa6186bafc531bee47",
+   "sha256": "2490a52b3b186ab68edd3b146fa664a066c9ee9db3d10cfa6186bafc531bee47",
+   "size": 314163328,
+   "url": "https://huggingface.co/datasets/Nounours777/Paderborn-bearing/resolve/main/data/B12/vibration.npy"
+  },
+  "data/B13/B13_log.pdf": {
+   "publisher_checksum": "sha256:7167c11c24c975f8308645d744e2cecea619e8d40bef4e35a6747ea8850f185c",
+   "sha256": "7167c11c24c975f8308645d744e2cecea619e8d40bef4e35a6747ea8850f185c",
+   "size": 170197,
+   "url": "https://huggingface.co/datasets/Nounours777/Paderborn-bearing/resolve/main/data/B13/B13_log.pdf"
+  },
+  "data/B13/B13_meanTemperatures.csv": {
+   "publisher_checksum": "gitsha1:79e5d2eb6db31036415df7c0bbeb156e71c84104",
+   "sha256": "7721fc6b19e85c93d227014ddbfca713fdffa2518574060d58a6741486bc9a9c",
+   "size": 1410952,
+   "url": "https://huggingface.co/datasets/Nounours777/Paderborn-bearing/resolve/main/data/B13/B13_meanTemperatures.csv"
+  },
+  "data/B13/B13_operatingConditions.csv": {
+   "publisher_checksum": "gitsha1:ec18e5f7681d472d872af3ea13c5c464d7829f66",
+   "sha256": "11ecc05394b88b63ce2703064bacdac6d54b8c7a17cf09245971e97ed7683493",
+   "size": 1844169,
+   "url": "https://huggingface.co/datasets/Nounours777/Paderborn-bearing/resolve/main/data/B13/B13_operatingConditions.csv"
+  },
+  "data/B13/meta.json": {
+   "publisher_checksum": "gitsha1:0158d65cc787be5756007aa7d91637b8fd348ece",
+   "sha256": "829686947fbae2e880a4989b8cfcfb0fcf15e44351be783a931b8b714206a74d",
+   "size": 525212,
+   "url": "https://huggingface.co/datasets/Nounours777/Paderborn-bearing/resolve/main/data/B13/meta.json"
+  },
+  "data/B13/vibration.npy": {
+   "publisher_checksum": "sha256:6ec620519b9b8668c5437fcb99e5f62c94da5299c27c2acf9cbe9efaff945e8e",
+   "sha256": "6ec620519b9b8668c5437fcb99e5f62c94da5299c27c2acf9cbe9efaff945e8e",
+   "size": 7953203328,
+   "url": "https://huggingface.co/datasets/Nounours777/Paderborn-bearing/resolve/main/data/B13/vibration.npy"
+  },
+  "data/B14/B14_log.pdf": {
+   "publisher_checksum": "sha256:0ab179b0fddded874cf858931dc603c2bda14e200a96f998d41582d2067d45a0",
+   "sha256": "0ab179b0fddded874cf858931dc603c2bda14e200a96f998d41582d2067d45a0",
+   "size": 170239,
+   "url": "https://huggingface.co/datasets/Nounours777/Paderborn-bearing/resolve/main/data/B14/B14_log.pdf"
+  },
+  "data/B14/B14_meanTemperatures.csv": {
+   "publisher_checksum": "gitsha1:3983b83961ba1767fb9d8b108b45a2638412dec6",
+   "sha256": "f3443431bd2b6bb14f0dc08511606a4abe893c2e8e752ece6c6c7b0903424ac7",
+   "size": 895178,
+   "url": "https://huggingface.co/datasets/Nounours777/Paderborn-bearing/resolve/main/data/B14/B14_meanTemperatures.csv"
+  },
+  "data/B14/B14_operatingConditions.csv": {
+   "publisher_checksum": "gitsha1:562e3ffaf88446447179107fd8824d0ed3d8a1d9",
+   "sha256": "f16f2a8a49b1ae83a926456a42ae2159f2750d39b261d9f4f3d0e9e0dbfc1a40",
+   "size": 1173518,
+   "url": "https://huggingface.co/datasets/Nounours777/Paderborn-bearing/resolve/main/data/B14/B14_operatingConditions.csv"
+  },
+  "data/B14/meta.json": {
+   "publisher_checksum": "gitsha1:89ba50ed782a3b1f7fcf300e8c82cbbf64e32a83",
+   "sha256": "03df47e90596bf6cd10ea9ef530fb9ae982255466b7d7f181e0337a301a56de1",
+   "size": 333512,
+   "url": "https://huggingface.co/datasets/Nounours777/Paderborn-bearing/resolve/main/data/B14/meta.json"
+  },
+  "data/B14/vibration.npy": {
+   "publisher_checksum": "sha256:7c0f105369da30a6d54e2861c2a4fff0c68533b39421114a769725b640b2af50",
+   "sha256": "7c0f105369da30a6d54e2861c2a4fff0c68533b39421114a769725b640b2af50",
+   "size": 5045043328,
+   "url": "https://huggingface.co/datasets/Nounours777/Paderborn-bearing/resolve/main/data/B14/vibration.npy"
+  },
+  "data/B15/B15_log.pdf": {
+   "publisher_checksum": "sha256:3a867b23d621d82a0acb638b990f3f1f26c2a9cb6c81609078b853d01b86eda5",
+   "sha256": "3a867b23d621d82a0acb638b990f3f1f26c2a9cb6c81609078b853d01b86eda5",
+   "size": 169660,
+   "url": "https://huggingface.co/datasets/Nounours777/Paderborn-bearing/resolve/main/data/B15/B15_log.pdf"
+  },
+  "data/B15/B15_meanTemperatures.csv": {
+   "publisher_checksum": "gitsha1:7f2f5c8c18f3cd2fad4860b8c2ca01bd5575fd9a",
+   "sha256": "0d84012ec03269eba9d8887ac127f75e00af0fc232b8c783ef4982f1e43f3ac8",
+   "size": 1639958,
+   "url": "https://huggingface.co/datasets/Nounours777/Paderborn-bearing/resolve/main/data/B15/B15_meanTemperatures.csv"
+  },
+  "data/B15/B15_operatingConditions.csv": {
+   "publisher_checksum": "gitsha1:fd9f8e1d367d57e720914b03e43fcb4406b92c95",
+   "sha256": "b8bb949ef94be2cba28633ec468b454c5c6c305e5729bad3fbabbef93c812024",
+   "size": 2149294,
+   "url": "https://huggingface.co/datasets/Nounours777/Paderborn-bearing/resolve/main/data/B15/B15_operatingConditions.csv"
+  },
+  "data/B15/meta.json": {
+   "publisher_checksum": "gitsha1:e4973b3e8ed18a137d0f54ffd65c80a096c8e74f",
+   "sha256": "a888af51dbbeca7bbc421d51092186e5740a1fb7a8b9d38cf34110f4fe581acb",
+   "size": 610262,
+   "url": "https://huggingface.co/datasets/Nounours777/Paderborn-bearing/resolve/main/data/B15/meta.json"
+  },
+  "data/B15/vibration.npy": {
+   "publisher_checksum": "sha256:48fa4574530dc8b273a7d272c72e65839dc4bd093dce2d4d1508afd539630787",
+   "sha256": "48fa4574530dc8b273a7d272c72e65839dc4bd093dce2d4d1508afd539630787",
+   "size": 9243443328,
+   "url": "https://huggingface.co/datasets/Nounours777/Paderborn-bearing/resolve/main/data/B15/vibration.npy"
+  },
+  "data/B16/B16_log.pdf": {
+   "publisher_checksum": "sha256:be0492526696fb7e145d88c107d4fdcaf54fc047b30d7b3acce2ebf02a956940",
+   "sha256": "be0492526696fb7e145d88c107d4fdcaf54fc047b30d7b3acce2ebf02a956940",
+   "size": 170231,
+   "url": "https://huggingface.co/datasets/Nounours777/Paderborn-bearing/resolve/main/data/B16/B16_log.pdf"
+  },
+  "data/B16/B16_meanTemperatures.csv": {
+   "publisher_checksum": "gitsha1:9c9cab45546d8f4ec29e8989a7c95f872ab481f4",
+   "sha256": "1b9a620f70a898202e6a76dad594fc6b612652998c913a30355bd834f3f49775",
+   "size": 428103,
+   "url": "https://huggingface.co/datasets/Nounours777/Paderborn-bearing/resolve/main/data/B16/B16_meanTemperatures.csv"
+  },
+  "data/B16/B16_operatingConditions.csv": {
+   "publisher_checksum": "gitsha1:3f78ca5b132d7abf768edef26c2b9d41f335d203",
+   "sha256": "8496b26f3441a7a360ef2ab1c79c7f9e70f5544559db65d78dc5834ad708cbb0",
+   "size": 562743,
+   "url": "https://huggingface.co/datasets/Nounours777/Paderborn-bearing/resolve/main/data/B16/B16_operatingConditions.csv"
+  },
+  "data/B16/meta.json": {
+   "publisher_checksum": "gitsha1:fc5dc67165ea844b66a76603971d8cf19bfa8788",
+   "sha256": "68cea6e368df194b2084dff887067654e64cce4917f905e3c6a6f2ef62d2f18a",
+   "size": 160009,
+   "url": "https://huggingface.co/datasets/Nounours777/Paderborn-bearing/resolve/main/data/B16/meta.json"
+  },
+  "data/B16/vibration.npy": {
+   "publisher_checksum": "sha256:157c9e2ca2b34abe7a1a4314b73e72c09c219000e6551b0ea817c112f86ded08",
+   "sha256": "157c9e2ca2b34abe7a1a4314b73e72c09c219000e6551b0ea817c112f86ded08",
+   "size": 2412953728,
+   "url": "https://huggingface.co/datasets/Nounours777/Paderborn-bearing/resolve/main/data/B16/vibration.npy"
+  },
+  "data/B17/B17_log.pdf": {
+   "publisher_checksum": "sha256:e204f5b722ede76f8393564add4336e309e74a90bf122334264864b39a01a20b",
+   "sha256": "e204f5b722ede76f8393564add4336e309e74a90bf122334264864b39a01a20b",
+   "size": 169943,
+   "url": "https://huggingface.co/datasets/Nounours777/Paderborn-bearing/resolve/main/data/B17/B17_log.pdf"
+  },
+  "data/B17/B17_meanTemperatures.csv": {
+   "publisher_checksum": "gitsha1:f51f9ca2faf11fa7e7994235b246dd23e68e204d",
+   "sha256": "ce3e346753ae5b5f81b7a71d831efd7b2c8c8c69cd80ede27be2f1bc9872d8d1",
+   "size": 198648,
+   "url": "https://huggingface.co/datasets/Nounours777/Paderborn-bearing/resolve/main/data/B17/B17_meanTemperatures.csv"
+  },
+  "data/B17/B17_operatingConditions.csv": {
+   "publisher_checksum": "gitsha1:53874b0780b2d11db9d6284b19edc2fffc992ac4",
+   "sha256": "b07cc55d293d9496b392ab99ff2a4ffdca228205a2d3b74ad7a8561243f297e4",
+   "size": 261977,
+   "url": "https://huggingface.co/datasets/Nounours777/Paderborn-bearing/resolve/main/data/B17/B17_operatingConditions.csv"
+  },
+  "data/B17/meta.json": {
+   "publisher_checksum": "gitsha1:a3ae0d67069de40403c138329d11a950528b4edc",
+   "sha256": "c0707a480961c76b2bc1d61bc28611c46a30d4ef5cf0f14ff72c75073ffcf9b5",
+   "size": 74743,
+   "url": "https://huggingface.co/datasets/Nounours777/Paderborn-bearing/resolve/main/data/B17/meta.json"
+  },
+  "data/B17/vibration.npy": {
+   "publisher_checksum": "sha256:8b0c5e40ca21945b35777d2003b54c42051f107725ce86883e987446a5e3b97f",
+   "sha256": "8b0c5e40ca21945b35777d2003b54c42051f107725ce86883e987446a5e3b97f",
+   "size": 1119436928,
+   "url": "https://huggingface.co/datasets/Nounours777/Paderborn-bearing/resolve/main/data/B17/vibration.npy"
   }
  },
  "raw_on_vault": false,
@@ -376,6 +892,6 @@
   "repo": "Nounours777/Paderborn-bearing"
  },
  "stage": "stream",
- "status": "partial",
+ "status": "complete",
  "version": "hf-int16-repack-of-zenodo-10805042"
 }

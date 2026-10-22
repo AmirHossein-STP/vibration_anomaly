@@ -20,7 +20,7 @@ import numpy as np
 
 from domain_adaptation.features.envelope import BearingGeometry, envelope_order_features
 
-METHOD_VERSION = "1.0"
+METHOD_VERSION = "1.1"   # 1.1: geometry-free detection + six-line typing; conditioned level trigger (notes/22 §7a)
 LINES = ["bpfo_h1", "bpfo_h2", "bpfo_h3", "bpfi_h1", "bpfi_h2", "bpfi_h3"]
 CPW_SES = {"whiten": True, "band_hz": None, "squared": True}   # envelope_cache variant hd_cpw_ses
 FS = 12000
@@ -136,3 +136,28 @@ def ewma(u: np.ndarray, lam: float = 0.2, start: int = 0) -> np.ndarray:
         e = lam * float(u[i]) + (1 - lam) * e
         out[i] = e
     return out
+
+
+# --- level conditioned on the operating point (notes/25, v1.1) ----------------
+
+MIN_RECORDINGS_CONDITIONED = 10
+
+
+def fit_level_model(levels: np.ndarray, state: np.ndarray) -> dict:
+    """log-level per recording ~ [1, log rpm, loads...] on the baseline recordings.
+    Falls back to the pooled level (intercept only) with < 10 recordings or no spread."""
+    levels = np.asarray(levels, dtype=np.float64)
+    X = np.c_[np.ones(len(levels)), np.asarray(state, dtype=np.float64).reshape(len(levels), -1)]
+    keep = [0] + [j for j in range(1, X.shape[1]) if np.std(X[:, j]) > 1e-9]
+    if len(levels) < MIN_RECORDINGS_CONDITIONED or len(keep) == 1:
+        keep = [0]
+    coef = np.zeros(X.shape[1])
+    coef[keep] = np.linalg.lstsq(X[:, keep], levels, rcond=None)[0]
+    resid = levels - X @ coef
+    sd = float(resid.std(ddof=1)) if len(levels) > 1 else 0.0
+    return {"coef": coef.tolist(), "resid_sd": sd + 1e-12, "conditioned": len(keep) > 1}
+
+
+def level_z(model: dict, level: float, state: np.ndarray) -> float:
+    x = np.r_[1.0, np.asarray(state, dtype=np.float64).ravel()]
+    return float((level - x @ np.asarray(model["coef"])) / model["resid_sd"])

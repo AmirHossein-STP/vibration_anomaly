@@ -38,6 +38,12 @@ LDM signal or score was looked at.** What was read:
 - **Detection** = first record over threshold after record 450 (after 150 for the four short
   bearings). Lead = time from detection to the last record, in hours.
 
+### 2a. Amendment (2026-10-22, before any score: the first cache build crashed)
+Some records have a **measured** speed near zero: the rig stopped, or the test was interrupted
+(the logs mention both). They have no valid order axis. **Records with measured speed < 1000
+rpm or not finite are excluded**, by the same 1000 rpm threshold as the warm-up rule. This is a
+data-validity filter decided from the operating-condition table alone, not from any score.
+
 ## 3. Pre-registered readings
 - **(a) Confounding.** Record-level FA in the assumed-healthy segment at conformal α = 0.10
   (the per-record raw z, not the CUSUM). Predicted: **L_pooled FA > 0.25**, confounded by
@@ -56,3 +62,41 @@ LDM signal or score was looked at.** What was read:
   - Not counted: mixed IR+OR (B01, B11, B16) and ball only (B05, B14, B17).
 
   It passes if ≥ 2/3 of the 11 are right.
+
+---
+
+## 4. Results (after computing, 2026-10-22)
+
+Runs: `remote/box run fetch-paderborn_ldm` (50 GB streamed per bearing, 7 GB condensed),
+`ldmcache` (379k windows per feature set, ~8 min each), `wp15`. Table: `outputs/wp15/wp15_report.md`.
+
+Channel A (primary), 17 bearings, 1.6 s records about every 12 s, speed and load re-drawn every record:
+
+| statistic | record FA at α 0.10 (assumed-healthy) | CUSUM detected (FA budget 0) | median lead |
+|---|---|---|---|
+| phys6 (six lines) | **0.106** | 9/17 | 1.3 h |
+| geofree | 0.122 | 10/17 | 2.5 h |
+| L_pooled (log RMS) | 0.191 | 13/17 | 1.6 h |
+| **L_cond** (log RMS given speed and load) | 0.151 | **14/17** | **2.8 h** |
+
+Readings, as pre-registered:
+- **(a) Confounding: FALSE as stated.** The level's FA (0.19) is higher than the physics score's (0.11),
+  but not above the predicted 0.25. Varying speed and load confound the raw level only moderately on this rig.
+- **(b) Conditioning helps: TRUE.** Regressing log RMS on log speed, static load and dynamic load
+  over the baseline lowers FA from 0.19 to 0.15, and gives the most detections (14/17) with the longest lead.
+- **Q1 verdict: the physics score does NOT take over as trigger.** The level trigger stays, **conditioned
+  on the operating point**. This is the "varying conditions" rule for notes/22.
+- **(c) Geometry-free wins LDM: TRUE** (10 vs 9 detected, 2.5 vs 1.3 h). It also won HUST (notes/24).
+  So **per pre-registration, geometry-free becomes the primary detection score, and the six lines stay
+  for typing.**
+- **(d) Typing at end of life: 7/11 = 0.64 → FAIL** (the bar was 2/3). Channel C gives 8/11.
+  The misses are IR+B bearings typed outer (B04, B06, B08, B12). With a co-existing ball defect,
+  "which race rose most" is not reliable on this rig.
+
+What else the table shows:
+- Lead times are short against test durations (hours on 2–176 h tests). Most damage here grows
+  fast at the end.
+- Ball-only bearings (B05, B14, B17) are found only by the level (B14, B17), and late.
+  That is the documented ball gap again.
+- B06's very early level detection (60 h before the end of a 66 h test) is likely a false
+  early alarm: its log records a broken shaker stinger.

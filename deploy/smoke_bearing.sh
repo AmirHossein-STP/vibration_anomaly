@@ -37,7 +37,7 @@ import csv, sys
 rows = {(r["unit"], r["file"]): r for r in csv.DictReader(open(sys.argv[1]))}
 for u in ("pump_a", "fan_b"):
     assert rows[(u, "bad.npy")]["verdict"] in ("watch", "faulty") and rows[(u, "ok.npy")]["verdict"] == "healthy", u
-assert rows[("pump_a", "bad.npy")]["fault_type"] == "outer race"
+assert rows[("pump_a", "bad.npy")]["fault_type"].startswith("outer race")
 print("SMOKE OK: image builds; calibrate -> promote -> infer -> rollback for 2 units")
 PY
 rm -rf "$W"

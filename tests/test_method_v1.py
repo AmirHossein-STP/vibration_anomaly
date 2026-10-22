@@ -62,13 +62,26 @@ def test_baseline_roundtrip_and_version_guard():
     b = fit_baseline(_healthy(), np.repeat(np.arange(6), 10))
     d = b.to_dict()
     assert Baseline.from_dict(d).threshold() == b.threshold()
-    d["method_version"] = "0.9"
+    d["method_version"] = "0.9"   # any other version is refused
     with pytest.raises(ValueError):
         Baseline.from_dict(d)
-    assert METHOD_VERSION == "1.0"
+    assert METHOD_VERSION == "1.1"
 
 
 def test_cusum_accumulates_only_above_k():
     u = np.array([0, 0, 0.4, 2, 2, -5, 1.5])
     c = cusum(u, k=0.5, start=1)
     assert np.isnan(c[0]) and c[2] == 0.0 and c[4] == pytest.approx(3.0) and c[5] == 0.0
+
+
+def test_level_model_conditions_on_speed_and_falls_back_when_it_cannot():
+    from domain_adaptation.method import fit_level_model, level_z
+    rng = np.random.default_rng(0)
+    rpm = rng.uniform(1500, 3000, 40)
+    lv = 2.0 * np.log(rpm) + rng.normal(0, 0.05, 40)          # level rises with speed
+    m = fit_level_model(lv, np.log(rpm)[:, None])
+    assert m["conditioned"] and abs(m["coef"][1] - 2.0) < 0.2
+    # a healthy record at a new speed is not an alarm once speed is accounted for
+    assert abs(level_z(m, 2.0 * np.log(2900), [np.log(2900)])) < 3
+    few = fit_level_model(lv[:5], np.log(rpm[:5])[:, None])     # < 10 recordings: pooled
+    assert not few["conditioned"] and few["coef"][1] == 0.0

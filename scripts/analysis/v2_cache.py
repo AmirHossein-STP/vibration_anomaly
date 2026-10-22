@@ -29,9 +29,9 @@ from domain_adaptation.features.geofree import BIN_NAMES, geofree_features, geof
 from domain_adaptation.method import CPW_SES
 from domain_adaptation.features.physics_v2 import V2_NAMES, v2_features, v2_features_cot
 from envelope_cache import CWRU_RAW, PU_CODES, PU_STORE
-from wp5_cache import COT_HOP_REVS, COT_REVS, COT_SPR, GEOMETRY, HOP, ROOTS, WIN, fingerprint as wp5_fp, to_12k
+from wp5_cache import COT_HOP_REVS, COT_REVS, COT_SPR, GEOMETRY, HOP, ROOTS, WIN, fingerprint as wp5_fp, time_domain, to_12k
 
-DATASETS = ["cwru", "pu", "ottawa_2018", "ottawa_2023", "mfpt", "xjtu_sy", "hust"]
+DATASETS = ["cwru", "pu", "ottawa_2018", "ottawa_2023", "mfpt", "xjtu_sy", "hust", "paderborn_ldm"]
 META = ["dataset", "unit", "condition", "recording", "label", "state", "damage_mode", "win", "t0", "rpm",
         "channel", "minute"]
 SOURCES = [Path(p) for p in ("src/domain_adaptation/features/physics_v2.py", "src/domain_adaptation/features/cot.py",
@@ -72,12 +72,14 @@ def rows_of(rec: pdx.Recording, g, damage_mode: str = "", fset: str = "v2") -> l
     sig, fs = to_12k(rec.signal, rec.fs)
     base = {"dataset": rec.dataset, "unit": rec.unit, "condition": rec.condition, "recording": rec.recording,
             "label": rec.label, "state": rec.state, "damage_mode": damage_mode,
-            "channel": rec.meta.get("channel", ""), "minute": rec.meta.get("minute", -1)}
+            "channel": rec.meta.get("channel", ""), "minute": rec.meta.get("minute", -1),
+            **rec.meta.get("extra", {})}
+    td = (lambda w: time_domain(w)) if fset == "cpw" else (lambda w: {})   # level stats ride with method features
     out = []
     if rec.phase_revs is None:
         for i, s in enumerate(range(0, len(sig) - WIN + 1, HOP)):
             out.append({**base, "win": i, "t0": round(s / fs, 4), "rpm": rec.rpm,
-                        **const_fn(sig[s:s + WIN], fs, rec.rpm, g)})
+                        **const_fn(sig[s:s + WIN], fs, rec.rpm, g), **td(sig[s:s + WIN])})
         return out
     phase = np.interp(np.arange(len(sig)) / fs, np.arange(len(rec.phase_revs)) / rec.fs, rec.phase_revs)
     starts = np.searchsorted(phase, phase[0] + np.arange(0, phase[-1] - phase[0], COT_HOP_REVS))
@@ -104,6 +106,13 @@ def _job(args) -> list[dict]:
         rec = pdx.Recording("pu", code, cond, f"{code}_{run}", label, "healthy" if label == 0 else "faulty",
                             12000.0, sig, rpm=rpm)
         return rows_of(rec, PU_6203, mode, fset)
+    if dataset == "paderborn_ldm":
+        bearing, ch = key
+        g = lookup("61806-2RS")
+        # notes/25 §2a: records whose MEASURED speed is < 1000 rpm or not finite (rig stopped,
+        # warm-up, interruptions) carry no valid order axis and are skipped
+        return [r for rec in pdx.ldm_records(Path("data/paderborn_ldm"), bearing, ch)
+                if np.isfinite(rec.rpm) and rec.rpm >= 1000 for r in rows_of(rec, g, "", fset)]
     if dataset == "hust":   # one geometry per bearing type, from the catalog
         return [r for rec in pdx.hust(Path("data/hust"), only=key)
                 for r in rows_of(rec, lookup(rec.meta["bearing"]), "", fset)]
@@ -127,6 +136,8 @@ def keys(dataset: str) -> list:
         return [(b, ch) for b in pdx.xjtu_bearings(ROOTS[dataset]).bearing for ch in (0, 1)]
     if dataset == "hust":
         return sorted(p.stem for p in Path("data/hust").glob("*.mat"))
+    if dataset == "paderborn_ldm":     # channel A (primary) and C
+        return [(b, ch) for b in pdx.ldm_bearings(Path("data/paderborn_ldm")) for ch in (0, 1)]
     root = ROOTS[dataset]
     return sorted(p.stem for p in (root.rglob("*.mat") if dataset == "mfpt" else root.glob("*.mat")))
 
@@ -150,7 +161,9 @@ def main():
         with ProcessPoolExecutor(a.jobs) as ex:
             for part in ex.map(_job, [(d, k, a.set) for k in keys(d)], chunksize=4):
                 rows += part
-        pd.DataFrame(rows)[META + names].to_csv(p, index=False, float_format="%.7g")
+        df = pd.DataFrame(rows)
+        df = df[[c for c in df.columns if c not in names] + names]     # meta (+ dataset extras) first
+        df.to_csv(p, index=False, float_format="%.7g")
         print(f"[{d}] {len(rows)} windows in {time.time() - t0:.0f} s -> {p}", flush=True)
 
 

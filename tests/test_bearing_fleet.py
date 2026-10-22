@@ -51,8 +51,10 @@ def _rows(base):
 def test_each_unit_gets_its_own_baseline_and_detector(fleet):
     run, base, models, v = fleet
     cal = json.loads((models / "versions" / v / "calibration.json").read_text())
-    assert cal["method_version"] == "1.0"
-    assert cal["units"]["pump_a"]["detector"] == "six_line" and cal["units"]["fan_b"]["detector"] == "geometry_free"
+    assert cal["method_version"] == "1.1"
+    # v1.1: geometry-free detection everywhere; the six lines type the race where the bearing is known
+    assert cal["units"]["pump_a"]["detector"] == "geometry_free" and cal["units"]["pump_a"]["typing_baseline"]
+    assert cal["units"]["fan_b"]["detector"] == "geometry_free" and cal["units"]["fan_b"]["typing_baseline"] is None
     for unit in ("pump_a", "fan_b"):
         (base / "in" / unit).mkdir(parents=True, exist_ok=True)
         np.save(base / "in" / unit / "new_ok.npy", healthy(900))
@@ -64,8 +66,8 @@ def test_each_unit_gets_its_own_baseline_and_detector(fleet):
         ok, bad = rows[(unit, "new_ok.npy")], rows[(unit, "new_bad.npy")]
         assert bad["flagged_fraction"] > ok["flagged_fraction"] + 0.3
         assert bad["verdict"] in ("watch", "faulty")
-    assert rows[("pump_a", "new_bad.npy")]["fault_type"] == "outer race"        # injected at BPFO
-    assert "geometry unknown" in rows[("fan_b", "new_bad.npy")]["dominant"]       # no typing without geometry
+    assert rows[("pump_a", "new_bad.npy")]["fault_type"] == "outer race (hint)"  # injected at BPFO
+    assert "bearing unknown" in rows[("fan_b", "new_bad.npy")]["dominant"]        # no typing without geometry
     assert rows[("pump_a", "new_ok.npy")]["iso_zone"] in ("A", "B", "C", "D")     # L0 runs when configured
 
 
@@ -96,7 +98,7 @@ def test_trend_cusum_accumulates_per_unit_across_jobs(fleet):
 def test_model_from_another_method_version_is_refused(fleet):
     run, base, models, v = fleet
     p = models / "versions" / v / "calibration.json"
-    d = json.loads(p.read_text()); d["method_version"] = "0.9"; p.write_text(json.dumps(d))
+    d = json.loads(p.read_text()); d["method_version"] = "1.0"; p.write_text(json.dumps(d))
     np.save(base / "in" / "x.npy", healthy(3))
     rc, _, err = run("infer")
     assert rc == 2   # integrity check refuses the modified version before it can be used
@@ -111,3 +113,17 @@ def test_missing_speed_is_refused(tmp_path, capsys):
         np.save(data / "bearing/train" / f"h{i}.npy", healthy(i))
     assert run("calibrate") == 2
     assert "speed unknown" in capsys.readouterr().err
+
+
+def test_six_line_detector_is_still_selectable(tmp_path, capsys):
+    data, models = tmp_path / "d", tmp_path / "m"
+    run = lambda *a: main(["bearing", "--data-root", str(data), "--models-root", str(models), *a])
+    run("init")
+    (data / "bearing/config/service.yaml").write_text('fs_hz: 12000\nrpm: 900\ndetector: six_line\n'
+                                                      'bearing: {designation: "6203 (Paderborn KAt)"}\n')
+    for i in range(10):
+        np.save(data / "bearing/train" / f"h{i}.npy", healthy(i))
+    assert run("calibrate") == 0
+    v = capsys.readouterr().out.split("Candidate model:")[1].split()[0]
+    cal = json.loads((models / "bearing/versions" / v / "calibration.json").read_text())
+    assert cal["units"]["unit1"]["detector"] == "six_line"
