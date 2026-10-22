@@ -1,0 +1,1141 @@
+<title>Bearing Monitor Report</title>
+<meta name="claude:viewport-fit-sides" content="cover">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=IBM+Plex+Mono:wght@400;600&family=IBM+Plex+Sans+Condensed:wght@500;600;700&family=IBM+Plex+Sans:ital,wght@0,400;0,500;0,600;1,400&display=swap">
+<style>
+/* Layout: a lab report. Sticky contents rail on the left (wide screens), one reading column on the right;
+   charts and diagrams sit in full-width figure panels. Accent = steel blue, series colours = validated chart palette. */
+:root{
+  --bg:#f5f6f7; --surface:#ffffff; --ink:#131920; --muted:#55606b; --line:#d8dde2; --line-soft:#e9ecef;
+  --accent:#1d5b8f; --accent-soft:#e2ecf5;
+  --s1:#2a78d6; --s2:#eb6834; --s3:#1baf7a; --s4:#eda100; --s5:#e87ba4; --s6:#008300; --s7:#6250d6;
+  --good:#0ca30c; --warn:#b57d00; --bad:#d03b3b;
+  --good-soft:#e3f4e3; --warn-soft:#fbf0d6; --bad-soft:#f9e1e1;
+  --f-display:"IBM Plex Sans Condensed","Arial Narrow",system-ui,sans-serif;
+  --f-body:"IBM Plex Sans",system-ui,-apple-system,"Segoe UI",sans-serif;
+  --f-mono:"IBM Plex Mono",ui-monospace,"SFMono-Regular",Menlo,monospace;
+}
+@media (prefers-color-scheme: dark){:root:not([data-theme="light"]){
+  --bg:#0e1216; --surface:#151b21; --ink:#e6e9ed; --muted:#9ba6b2; --line:#2a323b; --line-soft:#1f262d;
+  --accent:#6ea9de; --accent-soft:#18283a;
+  --s1:#3987e5; --s2:#d95926; --s3:#199e70; --s4:#c98500; --s5:#d55181; --s6:#2f9a2f; --s7:#9085e9;
+  --good:#3fbf3f; --warn:#e2a92b; --bad:#e66767;
+  --good-soft:#15291a; --warn-soft:#2c2412; --bad-soft:#331a1c; color-scheme:dark}}
+:root[data-theme="dark"]{
+  --bg:#0e1216; --surface:#151b21; --ink:#e6e9ed; --muted:#9ba6b2; --line:#2a323b; --line-soft:#1f262d;
+  --accent:#6ea9de; --accent-soft:#18283a;
+  --s1:#3987e5; --s2:#d95926; --s3:#199e70; --s4:#c98500; --s5:#d55181; --s6:#2f9a2f; --s7:#9085e9;
+  --good:#3fbf3f; --warn:#e2a92b; --bad:#e66767;
+  --good-soft:#15291a; --warn-soft:#2c2412; --bad-soft:#331a1c; color-scheme:dark}
+*{box-sizing:border-box}
+body{background:var(--bg);color:var(--ink);font-family:var(--f-body);font-size:16px;line-height:1.6}
+.wrap{max-width:1240px;margin:0 auto;padding-left:max(16px,env(safe-area-inset-left,0px));padding-right:max(16px,env(safe-area-inset-right,0px));padding-block:28px 64px;display:grid;grid-template-columns:230px minmax(0,1fr);gap:40px}
+@media (max-width:900px){.wrap{grid-template-columns:minmax(0,1fr);gap:20px}}
+nav.toc{position:sticky;top:calc(env(safe-area-inset-top,0px) + 16px);align-self:start;max-height:calc(100vh - 32px);overflow:auto;font-size:13.5px}
+nav.toc .lbl{font-family:var(--f-display);text-transform:uppercase;letter-spacing:.08em;font-size:12px;color:var(--muted);margin-bottom:8px}
+nav.toc ol{list-style:none;margin:0;padding:0;display:grid;gap:2px}
+nav.toc a{display:block;padding:4px 8px;border-radius:4px;color:var(--ink);text-decoration:none}
+nav.toc a:hover,nav.toc a:focus-visible{background:var(--accent-soft);outline:none}
+nav.toc ol ol{padding-left:12px;font-size:12.5px}
+nav.toc ol ol a{color:var(--muted)}
+@media (max-width:900px){nav.toc{position:static;max-height:none}nav.toc details{border:1px solid var(--line);border-radius:6px;padding:8px 12px;background:var(--surface)}}
+nav.toc summary{cursor:pointer;font-family:var(--f-display);font-weight:600}
+main{min-width:0}
+h1,h2,h3,h4{font-family:var(--f-display);line-height:1.2;text-wrap:balance;margin:0}
+h1{font-size:clamp(34px,5vw,52px);font-weight:700;letter-spacing:-.01em}
+h2{font-size:30px;font-weight:700;margin-top:56px;padding-top:16px;border-top:2px solid var(--ink)}
+h3{font-size:22px;font-weight:600;margin-top:36px}
+h4{font-size:17px;font-weight:600;margin-top:22px}
+p,li{max-width:72ch}
+p{margin:12px 0}
+a{color:var(--accent)}
+.eyebrow{font-family:var(--f-display);text-transform:uppercase;letter-spacing:.1em;font-size:12.5px;color:var(--accent);font-weight:600}
+.lede{font-size:19px;color:var(--ink);max-width:68ch}
+.muted{color:var(--muted)}
+code,.mono{font-family:var(--f-mono);font-size:.88em}
+code{background:var(--line-soft);padding:1px 5px;border-radius:3px}
+.hero{display:grid;grid-template-columns:minmax(0,1fr) 260px;gap:28px;align-items:center;padding-bottom:12px}
+@media (max-width:700px){.hero{grid-template-columns:minmax(0,1fr)}.hero svg{max-width:220px}}
+.hero svg{width:100%;height:auto}
+.glance{display:grid;grid-template-columns:repeat(auto-fit,minmax(170px,1fr));gap:12px;margin:24px 0 8px}
+.glance div{background:var(--surface);border:1px solid var(--line);border-radius:6px;padding:12px 14px}
+.glance b{display:block;font-family:var(--f-display);font-size:28px;line-height:1.1;font-variant-numeric:tabular-nums}
+.glance span{font-size:13px;color:var(--muted)}
+.callout{border-left:4px solid var(--accent);background:var(--accent-soft);padding:12px 16px;border-radius:0 6px 6px 0;margin:16px 0;max-width:80ch}
+.callout.good{border-color:var(--good);background:var(--good-soft)}
+.callout.bad{border-color:var(--bad);background:var(--bad-soft)}
+.callout.warn{border-color:var(--warn);background:var(--warn-soft)}
+.callout p{margin:6px 0}
+.chip{display:inline-flex;align-items:center;gap:5px;font-family:var(--f-display);font-weight:600;font-size:12.5px;padding:2px 9px;border-radius:999px;white-space:nowrap;letter-spacing:.02em}
+.chip::before{font-family:var(--f-mono);font-size:11px}
+.chip.pass{background:var(--good-soft);color:var(--good)} .chip.pass::before{content:"✓"}
+.chip.fail{background:var(--bad-soft);color:var(--bad)} .chip.fail::before{content:"✗"}
+.chip.part{background:var(--warn-soft);color:var(--warn)} .chip.part::before{content:"~"}
+.chip.info{background:var(--accent-soft);color:var(--accent)} .chip.info::before{content:"•"}
+.tbl{overflow-x:auto;margin:16px 0;border:1px solid var(--line);border-radius:6px;background:var(--surface)}
+table{border-collapse:collapse;width:100%;font-size:14px;font-variant-numeric:tabular-nums}
+th,td{text-align:left;padding:8px 12px;border-bottom:1px solid var(--line-soft);vertical-align:top}
+th{font-family:var(--f-display);font-weight:600;font-size:13px;text-transform:uppercase;letter-spacing:.04em;color:var(--muted);background:var(--bg);white-space:nowrap}
+tr:last-child td{border-bottom:0}
+td.n{text-align:right;font-family:var(--f-mono);font-size:13px;white-space:nowrap}
+figure{margin:20px 0;background:var(--surface);border:1px solid var(--line);border-radius:6px;padding:16px}
+figure .ftitle{font-family:var(--f-display);font-weight:600;font-size:16px}
+figure figcaption{font-size:13.5px;color:var(--muted);margin-top:8px;max-width:80ch}
+.legend{display:flex;flex-wrap:wrap;gap:6px 16px;font-size:13px;margin:8px 0 4px}
+.legend span{display:inline-flex;align-items:center;gap:6px}
+.legend i{width:12px;height:12px;border-radius:3px;display:inline-block}
+.chart svg{width:100%;height:auto;display:block}
+.chart text{font-family:var(--f-body);font-size:11px;fill:var(--muted)}
+.chart .ax{stroke:var(--line);stroke-width:1}
+.chart .base{stroke:var(--muted);stroke-width:1}
+.chart .ref{stroke:var(--muted);stroke-dasharray:4 4;stroke-width:1}
+.chart .reflbl{fill:var(--muted);font-size:10.5px}
+.chart .val{fill:var(--ink);font-size:10.5px;font-family:var(--f-mono)}
+.chart rect.bar,.chart circle.dot{cursor:default}
+.chart rect.bar:hover,.chart circle.dot:hover{opacity:.8}
+.c-s1{fill:var(--s1)}.c-s2{fill:var(--s2)}.c-s3{fill:var(--s3)}.c-s4{fill:var(--s4)}.c-s5{fill:var(--s5)}.c-s6{fill:var(--s6)}.c-s7{fill:var(--s7)}
+.bg-s1{background:var(--s1)}.bg-s2{background:var(--s2)}.bg-s3{background:var(--s3)}.bg-s4{background:var(--s4)}.bg-s5{background:var(--s5)}.bg-s6{background:var(--s6)}.bg-s7{background:var(--s7)}
+.st-s1{stroke:var(--s1)}.st-s3{stroke:var(--s3)}.st-s2{stroke:var(--s2)}
+.grid2{display:grid;grid-template-columns:repeat(auto-fit,minmax(300px,1fr));gap:16px}
+.grid2>*{min-width:0}
+.mer{overflow-x:auto;background:var(--surface);border:1px solid var(--line);border-radius:6px;padding:12px;margin:16px 0}
+pre.mmd{margin:0;font-family:var(--f-mono);font-size:12px;color:var(--muted);white-space:pre;line-height:1.5}
+.mmd-out{display:flex;justify-content:center}
+.mmd-out svg{max-width:100%;height:auto}
+.steps{counter-reset:s;list-style:none;padding:0;display:grid;gap:10px;margin:14px 0}
+.steps li{counter-increment:s;position:relative;padding:10px 12px 10px 48px;background:var(--surface);border:1px solid var(--line);border-radius:6px;max-width:none}
+.steps li::before{content:counter(s);position:absolute;left:12px;top:10px;width:24px;height:24px;border-radius:50%;background:var(--accent);color:var(--surface);font-family:var(--f-display);font-weight:700;font-size:13px;display:grid;place-items:center}
+.concepts{display:grid;grid-template-columns:repeat(auto-fit,minmax(260px,1fr));gap:12px;margin:14px 0}
+.concepts div{background:var(--surface);border:1px solid var(--line);border-radius:6px;padding:12px 14px;min-width:0}
+.concepts h4{margin:0 0 4px;font-size:16px}
+.concepts p{margin:0;font-size:14.5px}
+.wp{display:inline-block;font-family:var(--f-mono);font-size:12px;background:var(--ink);color:var(--bg);padding:1px 6px;border-radius:3px;margin-right:6px;vertical-align:2px}
+#tip{position:fixed;z-index:20;pointer-events:none;background:var(--ink);color:var(--bg);font-size:12.5px;padding:6px 9px;border-radius:5px;max-width:260px;line-height:1.35}
+dl.gl{display:grid;grid-template-columns:minmax(120px,190px) minmax(0,1fr);gap:6px 18px;margin:12px 0}
+dl.gl dt{font-weight:600;font-family:var(--f-display)}
+dl.gl dd{margin:0;max-width:70ch}
+@media (max-width:560px){dl.gl{grid-template-columns:minmax(0,1fr)}dl.gl dd{margin-bottom:8px}}
+footer{margin-top:56px;padding-top:16px;border-top:1px solid var(--line);font-size:13px;color:var(--muted)}
+:focus-visible{outline:2px solid var(--accent);outline-offset:2px}
+@media (prefers-reduced-motion:reduce){*{transition:none!important;animation:none!important}}
+</style>
+
+<div id="tip" hidden></div>
+<div class="wrap">
+<nav class="toc" aria-label="Contents">
+  <details open>
+    <summary>Contents</summary>
+    <div class="lbl" style="margin-top:8px">Report</div>
+    <ol>
+      <li><a href="#summary">1. The short version</a></li>
+      <li><a href="#timeline">2. What happened, in order</a></li>
+      <li><a href="#start">3. Where we started</a></li>
+      <li><a href="#infra">4. Building the server system</a>
+        <ol>
+          <li><a href="#infra-problem">The problem</a></li>
+          <li><a href="#infra-found">What we found</a></li>
+          <li><a href="#infra-design">The design</a></li>
+          <li><a href="#infra-data">Datasets on the vault</a></li>
+          <li><a href="#infra-check">Checks and results</a></li>
+        </ol></li>
+      <li><a href="#method">5. How the method works</a>
+        <ol>
+          <li><a href="#method-ideas">The ideas</a></li>
+          <li><a href="#method-judge">How we judge results</a></li>
+        </ol></li>
+      <li><a href="#p1">6. Phase 1 research</a>
+        <ol>
+          <li><a href="#wp5">WP5 new datasets</a></li>
+          <li><a href="#wp7">WP7 run-to-failure</a></li>
+          <li><a href="#kurt">Level and kurtosis</a></li>
+          <li><a href="#wp3">WP3 feature v2</a></li>
+          <li><a href="#wp10">WP10 speed</a></li>
+          <li><a href="#wp6">WP6 synthetic faults</a></li>
+        </ol></li>
+      <li><a href="#p2">7. Phase 2: many bearings</a>
+        <ol>
+          <li><a href="#wp12">WP12 method v1.0</a></li>
+          <li><a href="#wp13">WP13 geometry</a></li>
+          <li><a href="#wp14">WP14 HUST</a></li>
+          <li><a href="#wp15">WP15 varying speed</a></li>
+          <li><a href="#wp16">WP16 FEMTO</a></li>
+          <li><a href="#wp17">WP17 the product</a></li>
+          <li><a href="#wp18">WP18 final exam</a></li>
+          <li><a href="#wp19">WP19 deployment kit</a></li>
+        </ol></li>
+      <li><a href="#decisions">8. Every decision</a></li>
+      <li><a href="#lessons">9. What we learned</a></li>
+      <li><a href="#next">10. What is open</a></li>
+      <li><a href="#files">11. Where things are</a></li>
+      <li><a href="#glossary">12. Glossary</a></li>
+    </ol>
+  </details>
+</nav>
+
+<main>
+<header class="hero">
+  <div>
+    <div class="eyebrow">Vibration anomaly detection · session of 22 October 2026</div>
+    <h1>Bearing Monitor Report</h1>
+    <p class="lede">This session started with one question about a rented server and ended with a bearing monitor
+    that was tested on ten public datasets and then sat a sealed final exam. This page explains every step:
+    what we built, what we measured, what passed, what failed, and why.</p>
+  </div>
+  <svg viewBox="0 0 260 260" role="img" aria-label="Cross-section of a ball bearing with its four fault frequencies labelled">
+    <circle cx="130" cy="130" r="112" fill="none" stroke="var(--ink)" stroke-width="14"/>
+    <circle cx="130" cy="130" r="58" fill="none" stroke="var(--ink)" stroke-width="12"/>
+    <circle cx="130" cy="130" r="38" fill="var(--bg)" stroke="var(--muted)" stroke-width="2"/>
+    <circle cx="130" cy="130" r="85" fill="none" stroke="var(--muted)" stroke-width="1.5" stroke-dasharray="3 4"/>
+    <g fill="var(--accent)">
+      <circle cx="130" cy="45" r="19"/><circle cx="190.1" cy="69.9" r="19"/><circle cx="215" cy="130" r="19"/>
+      <circle cx="190.1" cy="190.1" r="19"/><circle cx="130" cy="215" r="19"/><circle cx="69.9" cy="190.1" r="19"/>
+      <circle cx="45" cy="130" r="19"/><circle cx="69.9" cy="69.9" r="19"/>
+    </g>
+    <circle cx="203" cy="44" r="5" fill="var(--bad)"/>
+    <g font-family="IBM Plex Mono, monospace" font-size="10.5" fill="var(--ink)">
+      <text x="152" y="22">BPFO · outer race</text>
+      <text x="96" y="137">BPFI</text>
+      <text x="107" y="149" fill="var(--muted)">inner race</text>
+      <text x="6" y="252">BSF · ball   FTF · cage</text>
+    </g>
+  </svg>
+</header>
+
+<div class="glance" aria-label="At a glance">
+  <div><b>10</b><span>public bearing datasets downloaded by the server itself</span></div>
+  <div><b>13</b><span>bearing geometries the method was tested on</span></div>
+  <div><b>~30 s</b><span>to make a fresh rented server ready (<code>box up</code>)</span></div>
+  <div><b>130</b><span>automated tests passing on the server</span></div>
+  <div><b>18</b><span>commits, every experiment pre-registered</span></div>
+</div>
+
+<!-- ========================================================== -->
+<h2 id="summary">1. The short version</h2>
+<p>You asked for two things, in this order:</p>
+<ol>
+  <li><b>Set up the rented server once, cleanly</b>, so every future rental is quick, and put the datasets
+    on the permanent storage volume, downloaded directly, not through your laptop.</li>
+  <li>Then <b>run the research plan yourself, without asking</b>, and later, <b>make the system work on many bearings</b>.</li>
+</ol>
+
+<div class="grid2">
+  <div class="callout good">
+    <p><b>What works</b></p>
+    <ul>
+      <li>One command (<code>remote/box up &lt;ip&gt;</code>) readies a new rental in about 30 seconds. Data and results
+        live on the permanent volume.</li>
+      <li>The <b>detection score</b> works across machines and bearing sizes it was never tuned on:
+        <ul>
+          <li>Ottawa 2018: AUC 0.92–1.00;</li>
+          <li>MFPT: 1.00;</li>
+          <li>HUST: 4 of 5 bearing types;</li>
+          <li>on the sealed IMS exam it rises to 0.88–0.97 on all four bearings that failed.</li>
+        </ul></li>
+      <li>Comparing each bearing with <b>its own healthy history</b> is much better than comparing it with other bearings.</li>
+      <li>A product exists: the <code>bearing</code> service monitors a fleet of units, each with its own baseline.</li>
+    </ul>
+  </div>
+  <div class="callout bad">
+    <p><b>What does not work yet</b></p>
+    <ul>
+      <li>The <b>trend alarm</b>, which watches for a slow rise across recordings, gave about one false event
+        per day on healthy bearings during the final exam. It also fired on healthy units, so the pre-registered
+        verdict was <span class="chip fail">not consistent</span>.</li>
+      <li><b>Ball and cage faults</b> are mostly missed.</li>
+      <li>Saying <b>which race</b> failed is right most of the time, but not reliably. It is reported as a hint.</li>
+      <li>Every machine needs a <b>speed signal</b>. Guessing speed from vibration was tested and is not good enough.</li>
+      <li>No real machine data has been tested. Everything here is laboratory data.</li>
+    </ul>
+  </div>
+</div>
+
+<!-- ========================================================== -->
+<h2 id="timeline">2. What happened, in order</h2>
+<p>The session ran in six stages. Each arrow is a point where you gave an answer or a decision was recorded in git.</p>
+<div class="mer"><pre class="mmd">
+flowchart LR
+  A["You: set the rented&lt;br/&gt;server up once, cleanly"] --> B["Plan: vault + box command&lt;br/&gt;+ dataset registry"]
+  B --> C["Build + first rental:&lt;br/&gt;7 datasets on the vault"]
+  C --> D["You: run the plan,&lt;br/&gt;do not ask"]
+  D --> E["Phase 1 research:&lt;br/&gt;WP5 WP7 WP3 WP10 WP6"]
+  E --> F["New plan, then your answers:&lt;br/&gt;no real data; many bearings"]
+  F --> G["Phase 2: WP12 to WP19,&lt;br/&gt;3 more datasets"]
+  G --> H["Freeze method v1.1,&lt;br/&gt;sealed IMS final exam"]
+</pre></div>
+
+<div class="tbl"><table>
+  <thead><tr><th>Stage</th><th>What you asked or answered</th><th>What was produced</th></tr></thead>
+  <tbody>
+    <tr><td>Server plan</td><td>"Set the server up cleanly, datasets straight onto storage, think of future needs."<br/>
+      Your choices: tooling in this repo; extra datasets (full CWRU, Ottawa 2023, MFPT); Paderborn kept condensed only.</td>
+      <td>An approved plan: three places (Mac, box, vault), one <code>box</code> command, a dataset registry with checksums.</td></tr>
+    <tr><td>Build</td><td>"Make sure the server is ready with all files. Every rental is Ubuntu 22.04 with CUDA 12.8, Docker, PyTorch, TensorFlow."</td>
+      <td><code>remote/</code> tooling, the formatted vault, 7 datasets fetched and verified, runbook <code>remote/README.md</code>.</td></tr>
+    <tr><td>Phase 1</td><td>"Run the plan yourself, don't ask, I want results when I'm back."</td>
+      <td>WP5, WP7, WP3, WP10, WP6, each pre-registered (notes/17–21).</td></tr>
+    <tr><td>New plan</td><td>"Commit it. What now? Make a new plan."</td><td>5 commits; Phase 2 plan in MASTER_PLAN.</td></tr>
+    <tr><td>Your answers</td><td>No real data is coming · run heavy steps without asking · new datasets approved ·
+      "I want my system to work on many bearings" · the storage volume is permanent.</td>
+      <td>A revised plan centred on many bearings (WP12–WP20).</td></tr>
+    <tr><td>Phase 2</td><td>(executed without questions)</td><td>Method v1.0 → v1.1, product rebuilt, 3 new datasets, frozen system, IMS exam (notes/22–27).</td></tr>
+  </tbody>
+</table></div>
+
+<!-- ========================================================== -->
+<h2 id="start">3. Where we started</h2>
+<p>Before this session the repository already held three experiments and a master plan written on 15 October 2026.
+The research question in that plan is this: <b>we have machines we only have healthy data for. Can we still detect, and if possible
+locate, bearing faults on them?</b> Public datasets have faults, but on other machines with other sensors.</p>
+<div class="tbl"><table>
+  <thead><tr><th>Earlier finding</th><th>Number</th><th>What it meant</th></tr></thead>
+  <tbody>
+    <tr><td>Autoencoder trained on healthy CWRU, tested on CWRU</td><td class="n">AUC 1.0</td><td>Easy in-domain. It says nothing about other machines.</td></tr>
+    <tr><td>Spectrogram CNN trained on one rig, tested on another</td><td class="n">bal. acc. 0.499</td><td>No transfer. The network learns how the <i>machine</i> sounds, not the fault.</td></tr>
+    <tr><td>Envelope-order features + logistic regression, CWRU → Paderborn 900 rpm</td><td class="n">recall 0.746 at 10% FA</td><td>Physics features computed from geometry and speed do transfer.</td></tr>
+    <tr><td>Same method at 1500 rpm</td><td class="n">bal. acc. 0.685</td><td>A drop. Later traced to the CWRU-trained classifier, not to the physics.</td></tr>
+    <tr><td>Healthy-referenced physics score (no classifier), Paderborn</td><td class="n">AUC 0.84–0.90</td><td>The new main candidate, but it was chosen on Paderborn, so it needed new data to confirm.</td></tr>
+  </tbody>
+</table></div>
+<p>So the open work was WP5 onward: confirm the physics score on datasets nobody had looked at, and run that heavy
+computation on a rented server. That is where this session began.</p>
+
+<!-- ========================================================== -->
+<h2 id="infra">4. Building the server system</h2>
+
+<h3 id="infra-problem">4.1 The problem</h3>
+<p>You rent two things from the provider:</p>
+<ul>
+  <li>a <b>compute server</b> (RTX 3090, 8 cores, 30 GB RAM, 100 GB SSD), which exists for a few hours and is then deleted completely;</li>
+  <li>a <b>32 GB storage volume</b> that is permanent and can be attached to any future server.</li>
+</ul>
+<p>Earlier rentals were set up by hand. That cost time each time, and once, results were lost when a server was deleted.
+The aim was one system, set up once and written down, so every later rental takes minutes.</p>
+
+<h3 id="infra-found">4.2 What we found on the live server</h3>
+<p>Before designing anything we checked the running server with read-only commands.</p>
+<div class="tbl"><table>
+  <thead><tr><th>Check</th><th>Finding</th><th>Consequence for the design</th></tr></thead>
+  <tbody>
+    <tr><td>Storage volume</td><td><code>/dev/vdb</code>, 32 GiB, completely blank. The provider's help says <code>vdx</code>, which is only a placeholder.</td><td>Format once, then always find it by its <b>label</b> (<code>vault</code>), never by device name.</td></tr>
+    <tr><td>Login</td><td>The provider had already installed your Mac's SSH key.</td><td>No password is stored anywhere.</td></tr>
+    <tr><td>Software</td><td>Ubuntu 22.04.5, Python 3.10.12, PyTorch 2.8.0 with CUDA 12.8, TensorFlow 2.19, Docker 28.3, passwordless sudo.</td><td>Never reinstall PyTorch. The Python environment reuses the system one.</td></tr>
+    <tr><td>Disk and memory</td><td>97 GB SSD (76 GB free), 29 GiB RAM, RTX 3090 24 GB.</td><td>Big raw downloads can sit on the SSD while being processed.</td></tr>
+    <tr><td>Kaggle / Google</td><td>"This service is not available in your location."</td><td>The old route (Kaggle → laptop → server) is dead. We needed other mirrors.</td></tr>
+    <tr><td>Paderborn and CWRU official sites</td><td>Paderborn: error 503 and an IPv6-only address. CWRU: timeout.</td><td>Paderborn came from a Zenodo copy, CWRU from a GitHub copy.</td></tr>
+  </tbody>
+</table></div>
+
+<figure class="chart">
+  <div class="ftitle">Download speed from the server, per source</div>
+  <div class="legend"><span><i class="bg-s1"></i>one connection</span><span><i class="bg-s3"></i>several connections in parallel</span></div>
+  <div id="ch-net"></div>
+  <figcaption>Measured on the server. Blocked sources are listed with no bar. Your laptop uploads at about 0.5 MB/s, so
+  sending datasets from the laptop would have taken hours. The server downloading them itself takes minutes.</figcaption>
+</figure>
+
+<h3 id="infra-design">4.3 The design: three places, three jobs</h3>
+<div class="mer"><pre class="mmd">
+flowchart LR
+  subgraph MAC["Your Mac · permanent"]
+    code["git repo&lt;br/&gt;remote/box"]
+  end
+  subgraph BOX["Rented server · a few hours"]
+    ssd["SSD ~/work&lt;br/&gt;code, Python env,&lt;br/&gt;staged data, live runs"]
+  end
+  subgraph VAULT["Storage volume /mnt/vault · permanent, 32 GB"]
+    ds["datasets/&lt;br/&gt;(checksummed)"]
+    env["env/&lt;br/&gt;tool + package cache"]
+    pr["projects/&lt;br/&gt;outputs + run records"]
+  end
+  web["Publishers:&lt;br/&gt;GitHub, Zenodo, Mendeley,&lt;br/&gt;MediaFire, NASA, Hugging Face"]
+  code -- "box push · 330 KB" --> ssd
+  web -- "box data fetch" --> ds
+  ds -- "box stage" --> ssd
+  ssd -- "sync every 60 s" --> pr
+  pr -- "box pull" --> code
+</pre></div>
+<p><b>The rule:</b> anything expensive to rebuild lives on the vault, and anything cheap to rebuild lives on the SSD.
+If a rental ends without warning, at most 60 seconds of results are lost.</p>
+
+<h4>The <code>box</code> command (runs on your Mac)</h4>
+<div class="tbl"><table>
+  <thead><tr><th>Command</th><th>What it does</th></tr></thead>
+  <tbody>
+    <tr><td><code>box up &lt;ip&gt;</code></td><td>Pushes the code, mounts the vault, builds the Python environment from the vault's cache, restores earlier outputs, copies the usual datasets to the SSD, and starts the 60-second sync. Measured: <b>28 s</b>.</td></tr>
+    <tr><td><code>box up &lt;ip&gt; --init-vault</code></td><td>Only the very first time with a new, blank volume: partitions and formats it.</td></tr>
+    <tr><td><code>box run NAME -- command</code></td><td>Starts a job that keeps running if the connection drops. It records the git commit, the uncommitted changes, the environment, the log and the exit code.</td></tr>
+    <tr><td><code>box status</code> / <code>box logs</code></td><td>GPU, vault space, datasets, sync state, recent jobs / one job's log.</td></tr>
+    <tr><td><code>box data fetch NAME</code></td><td>The server downloads a dataset from its publisher straight onto the vault and checks every file.</td></tr>
+    <tr><td><code>box data verify</code></td><td>Re-checks every file on the vault against the checksum lists committed in git.</td></tr>
+    <tr><td><code>box stage NAME</code></td><td>Copies a dataset from the vault to the fast SSD and links it where the code expects it.</td></tr>
+    <tr><td><code>box pull</code> / <code>box down</code></td><td>Copy results to the Mac / final sync, pull, and unmount the vault cleanly before the rental ends.</td></tr>
+  </tbody>
+</table></div>
+
+<div class="mer"><pre class="mmd">
+flowchart TD
+  a["box up IP"] --> b["Reset host key, check SSH key login"]
+  b --> c["Push code (git file list, 330 KB)"]
+  c --> d["Mount vault by label 'vault'"]
+  d --> e["Install unrar/7z from cached .debs"]
+  e --> f["uv venv with system PyTorch,&lt;br/&gt;packages from vault cache"]
+  f --> g["Restore outputs/ from vault"]
+  g --> h["Stage default datasets to SSD"]
+  h --> i["Start sync daemon (every 60 s)"]
+  i --> j["Ready · about 30 s"]
+</pre></div>
+
+<h4>Safety: formatting can never wipe data</h4>
+<p>Formatting is the only step that destroys anything, so it only happens if <b>exactly one</b> disk qualifies:
+not the system disk, no partitions, no filesystem signature, and between 20 and 100 GB. We tested this on fake disks
+(loop devices) before touching the real volume:</p>
+<div class="tbl"><table>
+  <thead><tr><th>Test disk</th><th>Expected</th><th>Result</th></tr></thead>
+  <tbody>
+    <tr><td>21 GB disk that already has a filesystem</td><td>refuse</td><td><span class="chip pass">refused</span></td></tr>
+    <tr><td>5 GB blank disk</td><td>refuse (too small)</td><td><span class="chip pass">refused</span></td></tr>
+    <tr><td>No <code>--init</code> flag</td><td>refuse, list candidates</td><td><span class="chip pass">listed /dev/vdb as blank</span></td></tr>
+    <tr><td>21 GB blank disk with <code>--init</code></td><td>format and mount</td><td><span class="chip pass">formatted</span></td></tr>
+    <tr><td>Remount, and <code>--init</code> again on the formatted disk</td><td>mount only, never re-format</td><td><span class="chip pass">mounted by label</span></td></tr>
+  </tbody>
+</table></div>
+
+<h3 id="infra-data">4.4 Datasets on the vault</h3>
+<p>Every dataset is described once in <code>remote/datasets/registry.yaml</code>: where to get it, the backup sources,
+its licence, and how to check it. The fetcher follows the same path for every dataset:</p>
+<div class="mer"><pre class="mmd">
+flowchart LR
+  r["Ask the publisher for&lt;br/&gt;its file list + checksums"] --> d["Download with resume&lt;br/&gt;(.part files)"]
+  d --> v{"Matches the publisher's&lt;br/&gt;sha256 / md5 / git hash?"}
+  v -- no --> x["Delete, retry or&lt;br/&gt;try the next source"]
+  v -- yes --> s{"Too big for&lt;br/&gt;the vault?"}
+  s -- no --> k["Keep raw files&lt;br/&gt;on the vault"]
+  s -- yes --> c["Condense on the SSD,&lt;br/&gt;keep only the condensed store"]
+  k --> m["Write MANIFEST.json"]
+  c --> m
+  m --> g["Copy manifest into git&lt;br/&gt;for later verification"]
+</pre></div>
+<p>Downloaded archives are treated as untrusted. Every file name is checked before extraction, so nothing can be
+written outside its folder. Extraction happens into a new, empty folder, and no code is ever run from a data folder.</p>
+
+<div class="tbl"><table>
+  <thead><tr><th>Dataset</th><th>What it is</th><th>Source that worked</th><th>On the vault</th><th>Used in</th></tr></thead>
+  <tbody>
+    <tr><td>CWRU</td><td>Lab rig, seeded faults, 4 speeds; bearing SKF 6205</td><td>GitHub (npz copy)</td><td class="n">0.63 GB</td><td>Phase 1, WP13</td></tr>
+    <tr><td>Paderborn</td><td>32 bearings, real and artificial damage, 2 speeds; 6203</td><td>Zenodo (31 of 32; KA08 from your Mac)</td><td class="n">1.7 GB</td><td>reference for all</td></tr>
+    <tr><td>Ottawa 2018</td><td>Speed changes inside each recording (13–28 Hz); ER16K</td><td>Mendeley</td><td class="n">0.76 GB</td><td>WP5, WP10</td></tr>
+    <tr><td>Ottawa 2023</td><td>20 bearings, each recorded healthy → developing → faulty; 6203</td><td>Mendeley</td><td class="n">0.29 GB</td><td>WP5, WP6, WP17 replay</td></tr>
+    <tr><td>MFPT</td><td>Industry test rig, 20 recordings</td><td>GitHub (MathWorks copy)</td><td class="n">0.04 GB</td><td>WP5</td></tr>
+    <tr><td>XJTU-SY</td><td>15 bearings run until they fail, one record per minute; UER204</td><td>MediaFire</td><td class="n">2.3 GB</td><td>WP5, WP7</td></tr>
+    <tr><td>HUST</td><td>5 bearing sizes 6204–6208, healthy + 6 defect types</td><td>Mendeley</td><td class="n">0.67 GB</td><td>WP14</td></tr>
+    <tr><td>Paderborn LDM</td><td>17 bearings run to failure, speed and load change every record; 61806</td><td>Hugging Face (lossless repack, 50 GB streamed)</td><td class="n">7.0 GB</td><td>WP15</td></tr>
+    <tr><td>FEMTO / PRONOSTIA</td><td>17 bearings run to failure, 0.1 s every 10 s</td><td>NASA S3</td><td class="n">1.1 GB</td><td>WP16</td></tr>
+    <tr><td>IMS</td><td>4 bearings × 3 tests run to failure; ZA-2115. <b>Sealed</b> until the final exam</td><td>data.nasa.gov</td><td class="n">1.0 GB</td><td>WP18 only</td></tr>
+  </tbody>
+</table></div>
+
+<figure class="chart">
+  <div class="ftitle">What occupies the 32 GB vault (16 GB used at the end)</div>
+  <div id="ch-vault"></div>
+  <figcaption>Paderborn LDM was 50 GB at the source. It was streamed one bearing at a time through the SSD and kept as a
+  12 kHz store (7 GB). XJTU-SY and Paderborn were also condensed. "Other" means the Python package cache, outputs and run records.</figcaption>
+</figure>
+
+<h3 id="infra-check">4.5 Checks and results</h3>
+<div class="tbl"><table>
+  <thead><tr><th>Check</th><th>Result</th></tr></thead>
+  <tbody>
+    <tr><td>Paderborn store rebuilt on the server from Zenodo vs the copy on your Mac</td><td><span class="chip pass">2,559 of 2,559 arrays bit-identical</span></td></tr>
+    <tr><td>Feature caches rebuilt on the server vs the Mac's</td><td><span class="chip pass">identical (max difference 0.0)</span>, built in 6–9 s instead of minutes</td></tr>
+    <tr><td>All datasets vs their committed checksum lists</td><td><span class="chip pass">all OK</span></td></tr>
+    <tr><td>Test suite on the server</td><td><span class="chip pass">99 → 103 → 130 passing</span>. It also exposed a real bug: two model versions created in the same second collided. Fixed.</td></tr>
+    <tr><td>Fresh <code>box up</code> on a new rental</td><td><span class="chip pass">28 s</span> (bootstrap 14 s)</td></tr>
+    <tr><td>Clean shutdown</td><td><span class="chip pass">vault unmounted cleanly</span> at the end of the session</td></tr>
+  </tbody>
+</table></div>
+
+<!-- ========================================================== -->
+<h2 id="method">5. How the method works, in plain words</h2>
+<h3 id="method-ideas">5.1 The ideas</h3>
+<p>A damaged bearing makes a small knock every time a ball rolls over the damage. The knocks repeat at a rate set only
+by the bearing's shape and the shaft speed. If we measure that rate in <b>multiples of shaft speed ("orders")</b>, it is
+the same number on any machine running that bearing at any speed. That is why the method can move from machine to
+machine where neural networks trained on one machine could not.</p>
+
+<div class="mer"><pre class="mmd">
+flowchart TD
+  s["Vibration recording + shaft speed"] --> r["Resample to 12 kHz"]
+  r --> w["Cut into 1 s windows (overlap 0.5 s)"]
+  w --> c["Flatten the spectrum (cepstrum pre-whitening)&lt;br/&gt;removes the machine's own resonances"]
+  c --> e["Squared envelope&lt;br/&gt;keeps the knock rhythm, drops the carrier"]
+  e --> o["Envelope spectrum, read in orders of shaft speed"]
+  o --> L6["Six fault lines&lt;br/&gt;BPFO and BPFI × 1, 2, 3&lt;br/&gt;(needs bearing geometry)"]
+  o --> G["135 bins from 1.5 to 15 orders&lt;br/&gt;(geometry-free, v1.1 detector)"]
+  L6 --> T["Typing hint:&lt;br/&gt;which race rose most"]
+  G --> Z["Each value as a z-score against&lt;br/&gt;the unit's OWN healthy windows"]
+  L6 -.->|v1.0 detector| Z
+  Z --> M["Window score = largest z"]
+  M --> TH["Threshold = cross-fitted conformal quantile (10%)"]
+  TH --> V["Recording verdict:&lt;br/&gt;healthy · watch ≥ 40% · faulty ≥ 50% of windows"]
+  s --> LV["Level: log RMS per recording,&lt;br/&gt;adjusted for speed and load"]
+  LV --> CU["CUSUM trend alarm across recordings"]
+</pre></div>
+
+<div class="concepts">
+  <div><h4>Orders</h4><p>Frequency divided by shaft speed. At 900 rpm (15 Hz) a fault at 3.05 orders sits at 45.8 Hz;
+    at 1500 rpm, at 76.3 Hz. In orders it is the same 3.05.</p></div>
+  <div><h4>BPFO, BPFI, BSF, FTF</h4><p>The four fault rates: outer race, inner race, ball spin, cage. All come from
+    ball count, ball diameter, pitch diameter and contact angle. A check that always holds: BPFO + BPFI = number of balls.</p></div>
+  <div><h4>Envelope</h4><p>The knocks ring the machine's structure at high frequency. The envelope follows the loudness of that
+    ringing, so the knock <i>rhythm</i> appears as clean lines in its spectrum.</p></div>
+  <div><h4>CPW + SES</h4><p>Cepstrum pre-whitening flattens the spectrum, so no frequency band has to be chosen by hand.
+    The squared envelope spectrum (SES) then shows the rhythm. It needs no tuning, so it cannot be tuned to fault labels.</p></div>
+  <div><h4>Healthy baseline, z-score</h4><p>For each line or bin we learn its usual value on that unit's healthy windows.
+    A new window's z-score says how many standard deviations above usual it is. Only rises count.</p></div>
+  <div><h4>Max over lines</h4><p>A fault usually lights one or two lines, not all of them. Taking the largest z catches
+    that, and averaging would dilute it (tested in WP3).</p></div>
+  <div><h4>Conformal threshold</h4><p>Pick the threshold so that about 10% of healthy windows exceed it. With enough healthy
+    data this rate is guaranteed on new healthy windows from the same unit.</p></div>
+  <div><h4>Cross-fitting</h4><p>Each healthy recording is scored by a baseline built <i>without</i> it. Without this, small
+    baselines judge themselves too kindly and false alarms overshoot (found in WP5).</p></div>
+  <div><h4>Geometry-free bins</h4><p>Instead of six named lines, read 135 small bins across 1.5–15 orders. It needs no
+    geometry, and it turned out to detect better (WP13–WP15).</p></div>
+  <div><h4>Order tracking</h4><p>When speed changes inside a recording, the envelope is resampled to equal steps of shaft
+    <i>angle</i> using the encoder. Fault lines then stay sharp (Ottawa 2018).</p></div>
+  <div><h4>Typing</h4><p>If the bearing is known: did the outer-race lines or the inner-race lines rise more? Reported as a hint.</p></div>
+  <div><h4>CUSUM trend alarm</h4><p>Adds up how much each recording sits above normal, minus a small allowance. A slow, steady rise
+    builds up until it crosses a limit. Single noisy recordings do not.</p></div>
+</div>
+
+<h3 id="method-judge">5.2 How we judge results</h3>
+<div class="concepts">
+  <div><h4>Recall</h4><p>Share of faulty windows that are flagged. Higher is better.</p></div>
+  <div><h4>False alarm (FA)</h4><p>Share of <i>held-out</i> healthy windows that are flagged. The target is 10%. We always
+    report the worst unit too, because false alarms are usually caused by one odd unit.</p></div>
+  <div><h4>AUC</h4><p>If you pick one faulty and one healthy window at random, AUC is the chance the faulty one scores higher.
+    0.5 is a coin toss and 1.0 is perfect. It does not depend on any threshold.</p></div>
+  <div><h4>Held-out folds</h4><p>We never test on what was used for calibration. Typically we hold out one healthy unit or
+    recording at a time and repeat.</p></div>
+  <div><h4>Pre-registration</h4><p>Before every experiment the question, the protocol and the pass rule were written into a
+    notes file and committed. Then it ran. Several rules failed, and we kept the failures.</p></div>
+  <div><h4>Seen vs unseen data</h4><p>Once a dataset has influenced a choice it is "spent" for confirming that choice.
+    Real confirmation needs data nobody has looked at. IMS was kept sealed for the final exam.</p></div>
+</div>
+<div class="mer"><pre class="mmd">
+flowchart LR
+  P["Write question, protocol&lt;br/&gt;and pass rule in notes/"] --> C["Commit it"]
+  C --> R["Run on the server&lt;br/&gt;(box run)"]
+  R --> G{"Pass rule met?"}
+  G -- yes --> A["Adopt the change"]
+  G -- no --> K["Keep current method,&lt;br/&gt;record why"]
+  A --> U["Update MASTER_PLAN, commit"]
+  K --> U
+</pre></div>
+
+<!-- ========================================================== -->
+<h2 id="p1">6. Phase 1 research (first autonomous run)</h2>
+<p>After the server was ready, you asked me to run the plan without asking. Five work packages ran.</p>
+
+<h3 id="wp5"><span class="wp">WP5</span>The physics score on datasets nobody had used</h3>
+<p><b>Question:</b> does the physics score, frozen exactly as chosen on Paderborn, work on Ottawa 2018, Ottawa 2023 and MFPT?
+It was compared with the older CWRU-trained classifier.</p>
+<figure class="chart">
+  <div class="ftitle">Race-fault AUC by dataset and method</div>
+  <div class="legend" id="lg-auc"></div>
+  <div id="ch-auc"></div>
+  <figcaption>The dashed lines mark chance (0.5) and the pass bar (0.8). "Fleet" means a baseline made of other bearings;
+  "own" means the bearing's own healthy data. Paderborn 1500 rpm is condition N15_M01_F10. The CWRU-trained classifier
+  was not tested on CWRU, where it was trained. Kurtosis comes from the later addendum, shown here for comparison.</figcaption>
+</figure>
+<div class="tbl"><table>
+  <thead><tr><th>Dataset</th><th>Physics AUC</th><th>Recall</th><th>False alarms (worst)</th><th>Typing</th><th>CWRU classifier AUC</th></tr></thead>
+  <tbody>
+    <tr><td>Ottawa 2018 (order-tracked)</td><td class="n">0.922</td><td class="n">0.767</td><td class="n">0.106 (0.30)</td><td class="n">0.630</td><td class="n">0.481</td></tr>
+    <tr><td>Ottawa 2023, fleet baseline</td><td class="n">0.712</td><td class="n">0.579</td><td class="n">0.134 (1.00)</td><td class="n">0.747</td><td class="n">0.716</td></tr>
+    <tr><td>Ottawa 2023, own baseline</td><td class="n">0.930</td><td class="n">0.876</td><td class="n">0.300 (0.78)</td><td class="n">0.774</td><td class="n">0.721</td></tr>
+    <tr><td>MFPT</td><td class="n">1.000</td><td class="n">1.000</td><td class="n">0.182 (0.27)</td><td class="n">1.000</td><td class="n">0.835</td></tr>
+    <tr><td>CWRU</td><td class="n">0.929</td><td class="n">0.874</td><td class="n">0.111 (0.14)</td><td class="n">0.872</td><td class="n">—</td></tr>
+  </tbody>
+</table></div>
+<p><b>Gate:</b> <span class="chip part">PARTIAL</span>. Ottawa 2018 passed outright. MFPT separated perfectly but its
+false alarms were too high, and Ottawa 2023 with a fleet baseline was too weak. Two causes were found:</p>
+<div class="grid2">
+  <figure class="chart">
+    <div class="ftitle">Cause 1: small baselines judge themselves too kindly</div>
+    <div class="legend"><span><i class="bg-s2"></i>before (in-sample threshold)</span><span><i class="bg-s1"></i>after cross-fitting</span></div>
+    <div id="ch-xf"></div>
+    <figcaption>False-alarm rate on held-out healthy data. The target is 0.10. With large baselines (CWRU, Paderborn)
+    cross-fitting changes nothing. With tiny ones (MFPT 22 windows, Ottawa 2023 9 windows) it fixes the overshoot.</figcaption>
+  </figure>
+  <figure class="chart">
+    <div class="ftitle">Cause 2: other bearings are a poor baseline</div>
+    <div class="legend"><span><i class="bg-s1"></i>physics score AUC</span></div>
+    <div id="ch-own"></div>
+    <figcaption>Ottawa 2023 is the only set where each bearing was recorded healthy and then faulty. Comparing a bearing
+    with <i>its own</i> healthy file instead of 19 others lifts AUC from 0.71 to 0.93.</figcaption>
+  </figure>
+</div>
+<p><b>Other findings:</b></p>
+<ul>
+  <li>The CWRU-trained classifier failed on Ottawa 2018 (AUC 0.48, a coin toss).</li>
+  <li>Ball and cage faults were mostly missed (Ottawa 2018 ball 0.13, Ottawa 2023 ball 0.02).</li>
+</ul>
+
+<h3 id="wp7"><span class="wp">WP7</span>Run to failure: XJTU-SY</h3>
+<p>Fifteen bearings ran until they broke, with one recording per minute. Each bearing's first 20 minutes served as its healthy baseline.</p>
+<ul>
+  <li><b>Typing at end of life was right on 10 of 11 single-race failures</b>: physics names the failed race on real, naturally grown damage.</li>
+  <li>The raw per-minute physics score is noisy. A simple "3 minutes in a row above the threshold" alarm fired later
+    than a plain RMS alarm on most bearings. That pre-registered check was <span class="chip fail">does not support</span>.</li>
+</ul>
+<p>So we built a proper <b>decision layer</b>: smoothed statistics (EWMA, CUSUM) with the threshold set from healthy minutes
+of <i>other</i> bearings, allowing zero false alarms, and compared at that same false-alarm level.</p>
+<figure class="chart">
+  <div class="ftitle">XJTU-SY: bearings detected before failure (of 15), at a zero false-alarm budget</div>
+  <div id="ch-xjtu"></div>
+  <figcaption>Horizontal channel. Median warning: RMS CUSUM 84 min, physics CUSUM 93 min, kurtosis CUSUM 55 min.
+  Pre-registered reading: <b>RMS stays the trigger</b> at constant speed and load, and physics provides the diagnosis.</figcaption>
+</figure>
+
+<h3 id="kurt"><span class="wp">add.</span>Level (RMS) and impulsiveness (kurtosis)</h3>
+<p>We then tested the simple statistics everywhere: log RMS ("level") and time-domain kurtosis ("impulsiveness"), both
+against the unit's own baseline.</p>
+<div class="tbl"><table>
+  <thead><tr><th>Dataset</th><th>Physics AUC</th><th>Kurtosis AUC</th><th>Level AUC</th><th>Physics + kurtosis (max)</th></tr></thead>
+  <tbody>
+    <tr><td>Ottawa 2018 (speed sweeps)</td><td class="n">0.922</td><td class="n">0.993</td><td class="n">0.809</td><td class="n">0.995</td></tr>
+    <tr><td>Ottawa 2023 own</td><td class="n">0.930</td><td class="n">1.000</td><td class="n">0.902</td><td class="n">0.998</td></tr>
+    <tr><td>MFPT</td><td class="n">1.000</td><td class="n">1.000</td><td class="n">0.893</td><td class="n">1.000</td></tr>
+    <tr><td>CWRU</td><td class="n">0.929</td><td class="n">0.986</td><td class="n">1.000</td><td class="n">0.978</td></tr>
+    <tr><td>Paderborn 900 rpm (real damage)</td><td class="n">0.901</td><td class="n"><b>0.333</b></td><td class="n">0.492</td><td class="n">0.822</td></tr>
+    <tr><td>Paderborn 1500 rpm ×3</td><td class="n">0.84–0.86</td><td class="n"><b>0.44–0.45</b></td><td class="n">0.79</td><td class="n">0.73–0.75</td></tr>
+  </tbody>
+</table></div>
+<ul>
+  <li><b>Kurtosis is excellent on big, sharp faults but below a coin toss on Paderborn's subtle real damage.</b>
+    The prediction that level is weaker when speed varies held (Ottawa 2018: 0.81 vs 0.92).</li>
+  <li>Combining physics and kurtosis was <span class="chip fail">rejected</span>, because it lost 0.08–0.11 AUC on Paderborn.</li>
+  <li>The lesson: no single statistic wins everywhere. The physics score was never the best by much, but it was never bad.</li>
+</ul>
+
+<h3 id="wp3"><span class="wp">WP3</span>Feature set v2: more fault lines</h3>
+<p>We added harmonics up to 5, inner-race sidebands, and the ball (BSF) and cage (FTF) families, hoping to catch ball and cage faults.</p>
+<div class="tbl"><table>
+  <thead><tr><th>Dataset</th><th>v1 (6 lines)</th><th>v2 family average</th><th>v2 max over 17 lines</th></tr></thead>
+  <tbody>
+    <tr><td>CWRU</td><td class="n">0.929</td><td class="n">0.930</td><td class="n">0.947</td></tr>
+    <tr><td>Ottawa 2018</td><td class="n">0.922</td><td class="n">0.765</td><td class="n">0.944</td></tr>
+    <tr><td>Ottawa 2023 fleet</td><td class="n">0.712</td><td class="n">0.937</td><td class="n">0.856</td></tr>
+    <tr><td>Ottawa 2023 own</td><td class="n">0.930</td><td class="n">0.952</td><td class="n">0.953</td></tr>
+    <tr><td>MFPT</td><td class="n">1.000</td><td class="n">0.954</td><td class="n">1.000</td></tr>
+    <tr><td>Paderborn 900 rpm</td><td class="n">0.901</td><td class="n">0.892</td><td class="n">0.912</td></tr>
+    <tr><td>Paderborn 1500 rpm ×3</td><td class="n">0.84–0.86</td><td class="n">0.66–0.75</td><td class="n">0.78–0.85</td></tr>
+  </tbody>
+</table></div>
+<p><span class="chip fail">v2 not adopted</span>. It helped ball and cage faults on Ottawa 2023 (+0.13 to +0.14) but hurt race faults
+elsewhere, and it confused typing, because ball and cage lines also rise on race faults.
+The hint that "taking the max over more evidence can help" came back later as the geometry-free score.</p>
+
+<h3 id="wp10"><span class="wp">WP10</span>Can we guess shaft speed from vibration?</h3>
+<p>Every method above needs shaft speed. We tried estimating it from the vibration's own shaft harmonics.</p>
+<div class="grid2">
+  <div class="tbl" style="margin:0"><table>
+    <thead><tr><th>Data</th><th>Median error</th><th>Within 1%</th></tr></thead>
+    <tbody>
+      <tr><td>Ottawa 2018 (vs encoder)</td><td class="n">0.42%</td><td class="n">79%</td></tr>
+      <tr><td>Paderborn 900 rpm</td><td class="n">8.35%</td><td class="n">8%</td></tr>
+      <tr><td>Paderborn 1500 rpm</td><td class="n">2.5–2.9%</td><td class="n">14–17%</td></tr>
+      <tr><td>Paderborn nominal setpoint</td><td class="n">0.03%</td><td class="n">100%</td></tr>
+    </tbody>
+  </table></div>
+  <figure class="chart" style="margin:0">
+    <div class="ftitle">Effect on detection (Ottawa 2018)</div>
+    <div id="ch-speed"></div>
+    <figcaption>Even a 0.4% median error, plus 7.5% of windows locked to double or half speed, costs 0.14 AUC.</figcaption>
+  </figure>
+</div>
+<p><span class="chip fail">not adequate</span>. <b>A speed signal is now a hard requirement</b>: a tachometer or encoder, or the
+logged setpoint of a speed-controlled drive. Order tracking with an encoder was worth +0.12 over a constant speed per window.</p>
+
+<h3 id="wp6"><span class="wp">WP6</span>Synthetic faults: can we estimate sensitivity per machine?</h3>
+<p>The idea: add fake fault knocks of growing strength to a machine's healthy data and see how strong they must be
+before we detect them. If that predicted which real faults were caught, it would give each machine a sensitivity score.</p>
+<ul>
+  <li>Correlation with real detection on 10 Ottawa 2023 bearings: <b>ρ = +0.20</b>. The rule needed ≤ −0.5.
+    <span class="chip fail">does not predict</span></li>
+  <li>The simple knock generator does not look like real damage in feature space.</li>
+  <li>The curve's floor also mixed in each unit's own false-alarm rate.</li>
+</ul>
+
+<!-- ========================================================== -->
+<h2 id="p2">7. Phase 2: one monitor for many bearings</h2>
+<p>You said there is no real machine data, and that you want the system to work on many bearings.
+The plan was rewritten around four needs:</p>
+<ol>
+  <li>an easy way to give the bearing;</li>
+  <li>a fallback when the bearing is unknown;</li>
+  <li>proof on unseen data across bearing sizes and under changing speed and load;</li>
+  <li>one service that handles many units.</li>
+</ol>
+<div class="mer"><pre class="mmd">
+flowchart LR
+  W12["WP12&lt;br/&gt;method v1.0&lt;br/&gt;one module"] --> W13["WP13&lt;br/&gt;catalog +&lt;br/&gt;geometry-free"]
+  W13 --> W14["WP14&lt;br/&gt;HUST&lt;br/&gt;5 sizes"]
+  W14 --> W15["WP15&lt;br/&gt;LDM varying&lt;br/&gt;speed + load"]
+  W15 --> W16["WP16&lt;br/&gt;FEMTO&lt;br/&gt;false alarms"]
+  W16 --> W17["WP17&lt;br/&gt;product:&lt;br/&gt;fleet service"]
+  W17 --> W18["WP18&lt;br/&gt;freeze +&lt;br/&gt;IMS exam"]
+  W17 --> W19["WP19&lt;br/&gt;deployment kit"]
+</pre></div>
+
+<h3 id="wp12"><span class="wp">WP12</span>Method v1.0: written down, built once</h3>
+<ul>
+  <li>The method's exact specification went into <code>notes/22</code>.</li>
+  <li>The code went into one module, <code>src/domain_adaptation/method.py</code>, which every analysis script and the product now call.</li>
+  <li><b>Gate:</b> the old results must come out exactly the same. <span class="chip pass">10,749 of 10,749 numbers identical</span></li>
+</ul>
+
+<h3 id="wp13"><span class="wp">WP13</span>Giving the bearing, or not knowing it</h3>
+<p><b>Three ways to describe a bearing:</b></p>
+<ul>
+  <li>a catalog name;</li>
+  <li>its dimensions;</li>
+  <li>the manufacturer's fault factors.</li>
+</ul>
+<p>The catalog holds only bearings whose numbers were checked against a published source (14 entries):</p>
+<div class="tbl"><table>
+  <thead><tr><th>Bearing</th><th>Balls</th><th>BPFO</th><th>BPFI</th><th>Checked against</th></tr></thead>
+  <tbody>
+    <tr><td>SKF 6205-2RS JEM (CWRU)</td><td class="n">9</td><td class="n">3.585</td><td class="n">5.415</td><td>CWRU data center values</td></tr>
+    <tr><td>6203 (Paderborn)</td><td class="n">8</td><td class="n">3.053</td><td class="n">4.947</td><td>Lessmeier 2016</td></tr>
+    <tr><td>ER16K (Ottawa 2018)</td><td class="n">9</td><td class="n">3.572</td><td class="n">5.428</td><td>Huang &amp; Baddour 2018</td></tr>
+    <tr><td>NSK 6203ZZ / FAFNIR 203KD (Ottawa 2023)</td><td class="n">8</td><td class="n">3.050</td><td class="n">4.950</td><td>Sehri 2023 table</td></tr>
+    <tr><td>LDK UER204 (XJTU-SY)</td><td class="n">8</td><td class="n">3.083</td><td class="n">4.917</td><td>107.91 Hz at 35 Hz</td></tr>
+    <tr><td>MFPT test bearing</td><td class="n">—</td><td class="n">3.245</td><td class="n">4.755</td><td>factors in the files</td></tr>
+    <tr><td>Rexnord ZA-2115 (IMS)</td><td class="n">16</td><td class="n">7.092</td><td class="n">8.908</td><td>236.4 / 296.9 Hz at 2000 rpm</td></tr>
+    <tr><td>61806-2RS (Paderborn LDM)</td><td class="n">19</td><td class="n">8.649</td><td class="n">10.351</td><td>LDM description</td></tr>
+    <tr><td>KG 6204 … 6208 (HUST, 5 entries)</td><td class="n">8–9</td><td class="n">≈3.0–3.6</td><td class="n">≈5.0–5.4</td><td>paper; pitch diameter approximated</td></tr>
+  </tbody>
+</table></div>
+<p><b>Geometry-free score.</b> For unknown bearings we read 135 small bins instead of six named lines. Pre-registered rule:
+it ships as the fallback if its AUC is within 0.05 of the six-line score on at least 5 of 6 development rows.</p>
+<figure class="chart">
+  <div class="ftitle">Geometry-free vs six-line score (AUC) on the development datasets</div>
+  <div class="legend"><span><i class="bg-s1"></i>six fault lines (needs geometry)</span><span><i class="bg-s3"></i>geometry-free 135 bins</span></div>
+  <div id="ch-geo"></div>
+  <figcaption>The gate passed 6 of 6 <span class="chip pass">ships</span>. The surprise: geometry-free was as good or better almost
+  everywhere. Its weakness is calibration. With a fleet baseline its false alarms overshot (Paderborn 0.18–0.21 vs 0.10).
+  With a tiny own baseline it was very cautious (Ottawa 2023: recall 0.27, FA 0.02).</figcaption>
+</figure>
+
+<h3 id="wp14"><span class="wp">WP14</span>HUST: five bearing sizes nobody had used</h3>
+<p>For each bearing size, the baseline was its healthy recordings at two loads, and testing was done at the third load.
+The faults were inner, outer and ball defects and their pairs.</p>
+<figure class="chart">
+  <div class="ftitle">Race-fault AUC per bearing size</div>
+  <div class="legend"><span><i class="bg-s1"></i>six fault lines</span><span><i class="bg-s3"></i>geometry-free</span></div>
+  <div id="ch-hust"></div>
+  <figcaption>Gate: six-line AUC ≥ 0.80 on at least 4 of 5 sizes, and typing above 0.6.
+  <span class="chip pass">PASS</span> 4 of 5, typing 0.83. 6205 failed because one of its own healthy recordings did not match the
+  other two. The same "odd healthy unit" problem appeared on Paderborn and Ottawa.</figcaption>
+</figure>
+<div class="tbl"><table>
+  <thead><tr><th>Size</th><th>Six-line AUC</th><th>False alarms</th><th>Typing</th><th>Geometry-free AUC</th><th>Geometry-free FA</th></tr></thead>
+  <tbody>
+    <tr><td>6204</td><td class="n">0.982</td><td class="n">0.088</td><td class="n">1.00</td><td class="n">0.984</td><td class="n">0.000</td></tr>
+    <tr><td>6205</td><td class="n">0.454</td><td class="n">0.333</td><td class="n">0.81</td><td class="n">0.773</td><td class="n">0.175</td></tr>
+    <tr><td>6206</td><td class="n">0.883</td><td class="n">0.035</td><td class="n">0.89</td><td class="n">0.934</td><td class="n">0.000</td></tr>
+    <tr><td>6207</td><td class="n">0.953</td><td class="n">0.070</td><td class="n">0.82</td><td class="n">0.933</td><td class="n">0.000</td></tr>
+    <tr><td>6208</td><td class="n">0.837</td><td class="n">0.018</td><td class="n">0.62</td><td class="n">0.845</td><td class="n">0.035</td></tr>
+  </tbody>
+</table></div>
+<p>Head to head, geometry-free <b>won HUST</b>: AUC higher or equal on 4 of 5 sizes, with mean false alarms of 0.04.
+By the pre-registered rule, it would become the main detector only if it also won the next test.</p>
+
+<h3 id="wp15"><span class="wp">WP15</span>Paderborn LDM: speed and load change all the time</h3>
+<p>This is the realistic case for turbomachines. Seventeen bearings ran to failure, with speed (1,500–3,600 rpm) and load re-drawn
+before every 1.6-second record. Each bearing's first 150 records (about 30 min) were its baseline.</p>
+<div class="grid2">
+  <figure class="chart">
+    <div class="ftitle">Bearings detected before failure (of 17)</div>
+    <div id="ch-ldm-det"></div>
+  </figure>
+  <figure class="chart">
+    <div class="ftitle">Median warning time (hours)</div>
+    <div id="ch-ldm-lead"></div>
+  </figure>
+</div>
+<div class="tbl"><table>
+  <thead><tr><th>Pre-registered reading</th><th>Result</th></tr></thead>
+  <tbody>
+    <tr><td>(a) Raw level is confounded: FA &gt; 0.25 while physics ≤ 0.15</td><td><span class="chip fail">false</span> level 0.19 vs physics 0.11. Higher, but not as much as predicted.</td></tr>
+    <tr><td>(b) Adjusting the level for speed and load lowers its false alarms</td><td><span class="chip pass">true</span> 0.19 → 0.15, and it detected the most (14/17)</td></tr>
+    <tr><td>Q1: does the physics score take over as the trend trigger?</td><td><span class="chip fail">no</span> 9/17 vs 14/17. The adjusted level stays the trigger.</td></tr>
+    <tr><td>(c) Geometry-free beats six-line</td><td><span class="chip pass">yes</span> 10 vs 9 detected, 2.5 vs 1.3 h. It won both tests, so it <b>becomes the main detector (method v1.1)</b>.</td></tr>
+    <tr><td>(d) End-of-life typing ≥ 2/3</td><td><span class="chip fail">7/11</span> just under the bar (other channel 8/11). Typing becomes a "hint".</td></tr>
+  </tbody>
+</table></div>
+<p>The download itself was a feat: 50 GB streamed from Hugging Face one bearing at a time (B01–B09 at 128 kHz, B10–B17 at 64 kHz),
+converted to 12 kHz on the SSD, then deleted. 379,228 windows were scored per feature set.</p>
+
+<h3 id="wp16"><span class="wp">WP16</span>FEMTO: how many false alarms per day?</h3>
+<p>FEMTO records 0.1 s every 10 s. That is too short for fault lines, so only the trend trigger could be tested.</p>
+<figure class="chart">
+  <div class="ftitle">Detections (of 17) by baseline length, own-baseline CUSUM, zero false-alarm budget</div>
+  <div class="legend"><span><i class="bg-s7"></i>RMS level</span><span><i class="bg-s4"></i>kurtosis</span></div>
+  <div id="ch-femto"></div>
+  <figcaption>Held-out false alarms: 1.2, 1.3 and 8.0 per day for 10, 30 and 60 min baselines. 1.2/day is a single false event,
+  the smallest rate this data can resolve. At 60 min the "healthy" window already overlapped early damage on short-lived bearings.
+  Warning times were short (median 0.04–0.26 h): these tests fail abruptly.</figcaption>
+</figure>
+<p><b>What went into the data spec:</b></p>
+<ul>
+  <li>at least 30 minutes of healthy baseline per operating state;</li>
+  <li>recordings at least 1 second long;</li>
+  <li>expect about one false trend event per day.</li>
+</ul>
+
+<h3 id="wp17"><span class="wp">WP17</span>The product: a fleet bearing monitor</h3>
+<p>The existing <code>bearing</code> service still used the old CWRU-trained classifier, which Phase 1 showed does not
+transfer. It was rebuilt on the method module.</p>
+<div class="mer"><pre class="mmd">
+flowchart LR
+  T["train/UNIT/&lt;br/&gt;healthy recordings"] --> C["calibrate&lt;br/&gt;one baseline per unit"]
+  C --> P["promote&lt;br/&gt;(never automatic)"]
+  P --> I["infer&lt;br/&gt;in/UNIT/ new recordings"]
+  I --> R["results per file:&lt;br/&gt;verdict, typing hint,&lt;br/&gt;trend statistics, ISO zone"]
+  I --> TR["bearing_trend.csv&lt;br/&gt;per-unit CUSUM"]
+  P --> RB["rollback"]
+</pre></div>
+<div class="tbl"><table>
+  <thead><tr><th>Feature</th><th>How</th></tr></thead>
+  <tbody>
+    <tr><td>Many units</td><td>One folder per unit (<code>train/pump_A/</code>, <code>in/pump_A/</code>), or a <code>unit</code> key in a small sidecar file.</td></tr>
+    <tr><td>Bearing per unit</td><td>A catalog name, dimensions, fault factors, or nothing (detection only, no typing).</td></tr>
+    <tr><td>Speed is required</td><td>Per file, per unit or global. Without it the file is refused.</td></tr>
+    <tr><td>Honest calibration check</td><td>Each healthy recording is judged against the <i>rest</i> of its unit's baseline. "READS ABNORMAL" warns before you trust the unit.</td></tr>
+    <tr><td>Trend</td><td>Per-unit CUSUM on the level (adjusted for speed and any logged load) and on the physics score, kept across jobs.</td></tr>
+    <tr><td>Safety</td><td>A model from another method version is refused. Unknown units are rejected, not scored.</td></tr>
+    <tr><td>ISO 20816 zones</td><td>Optional overall severity A–D by machine class (WP19).</td></tr>
+  </tbody>
+</table></div>
+<p><b>Proof:</b></p>
+<ul>
+  <li>Real Ottawa 2023 recordings fed through the service reproduce the analysis per bearing exactly. <span class="chip pass">replay test</span></li>
+  <li>The Docker image builds on the server and completes calibrate → promote → infer → rollback for two units. <span class="chip pass">smoke test</span></li>
+  <li>All 130 tests pass.</li>
+</ul>
+
+<h3 id="wp18"><span class="wp">WP18</span>The final exam: IMS, sealed until now</h3>
+<p>The method was frozen as v1.1 at commit <code>e7c01a3</code>. Only then was IMS opened. Its protocol had been written while
+it was still sealed. IMS has three tests with four bearings each, run until failure, with one 1-second record every 10 minutes.
+Four bearings failed: test 1 bearing 3 (inner race) and bearing 4 (roller), test 2 bearing 1 (outer race), and test 3 bearing 3 (outer race).</p>
+<div class="tbl"><table>
+  <thead><tr><th>Pre-registered reading</th><th>Geometry-free (main)</th><th>Six-line</th><th>Needed</th></tr></thead>
+  <tbody>
+    <tr><td>Trend alarm before failure, failing bearings</td><td class="n">4/4</td><td class="n">4/4</td><td class="n">≥ 3</td></tr>
+    <tr><td>Typing right, race failures</td><td class="n">2/3</td><td class="n">3/3</td><td class="n">≥ 2</td></tr>
+    <tr><td>False trend events per day, healthy bearings</td><td class="n">1.02</td><td class="n">1.03</td><td class="n">≤ 1</td></tr>
+    <tr><td><b>Verdict</b></td><td><span class="chip fail">not consistent</span></td><td><span class="chip fail">not consistent</span></td><td></td></tr>
+  </tbody>
+</table></div>
+<p>The "4/4" is less good than it looks: the trend alarm fired hours to days after the baseline on <i>every</i> bearing,
+including healthy ones. With a 33-hour baseline at a 10-minute cadence, the level drifts on all units.
+Looking at the detection score itself (after the verdict, clearly labelled as such) tells a better story:</p>
+<figure class="chart">
+  <div class="ftitle">Share of windows flagged: first half of the test → last 2% (IMS, 12 bearings)</div>
+  <div class="legend"><span><i class="bg-s3"></i>geometry-free (main, v1.1)</span><span><i class="bg-s1"></i>six-line (v1.0)</span><span>open dot = first half · filled dot = last 2% · <b>bold label</b> = bearing that failed</span></div>
+  <div class="grid2"><div id="ch-ims-geo"></div><div id="ch-ims-six"></div></div>
+  <figcaption>The geometry-free score climbs to 0.88–0.97 on all four failing bearings. The failing bearing is the highest unit
+  in its test (tied once, with its shaft neighbour). The six-line score barely moves on this double-row roller bearing. That
+  confirms the switch to geometry-free, which was decided before IMS was opened.</figcaption>
+</figure>
+<p>Three bugs were found <i>in the exam script</i> during the run and fixed. All are recorded in notes/27, and the frozen
+method was never touched:</p>
+<ul>
+  <li>macOS metadata files inside the IMS zip broke extraction;</li>
+  <li>a hard-linked config made the first run score the six-line detector twice;</li>
+  <li>a text match missed the "(hint)" label on typing.</li>
+</ul>
+
+<h3 id="wp19"><span class="wp">WP19</span>Deployment kit</h3>
+<div class="tbl"><table>
+  <thead><tr><th>File</th><th>Purpose</th></tr></thead>
+  <tbody>
+    <tr><td><code>deploy/BEARING_DATA_SPEC.md</code></td><td>What any site must record. Every rule is tied to a measured result:
+      ≥ 25 kHz, recordings ≥ 1 s, speed signal mandatory, bearing identity, ≥ 30 min healthy baseline per operating state.</td></tr>
+    <tr><td><code>deploy/inventory_template.csv</code></td><td>One row per measurement point: bearing, sensor, speed source, baseline period.</td></tr>
+    <tr><td><code>deploy/PILOT_ACCEPTANCE.md</code></td><td>Seven checks a unit must pass before it is monitored.</td></tr>
+    <tr><td><code>src/domain_adaptation/iso20816.py</code></td><td>Standard vibration severity zones A–D by machine class (layer L0).</td></tr>
+    <tr><td><code>deploy/runbooks/bearing.md</code></td><td>The operator's guide, rewritten for fleet use.</td></tr>
+  </tbody>
+</table></div>
+
+<!-- ========================================================== -->
+<h2 id="decisions">8. Every decision, in one table</h2>
+<div class="tbl"><table>
+  <thead><tr><th>WP</th><th>Question</th><th>Result</th><th>Decision</th></tr></thead>
+  <tbody>
+    <tr><td>5</td><td>Does the frozen physics score work on new rigs?</td><td><span class="chip part">partial</span></td><td>Keep it. Add cross-fitting and own-unit baselines.</td></tr>
+    <tr><td>5</td><td>Own baseline better than fleet?</td><td><span class="chip pass">supported</span></td><td>Every unit uses its own history.</td></tr>
+    <tr><td>5/7</td><td>XJTU timing vs RMS (3-in-a-row alarm)</td><td><span class="chip fail">no</span></td><td>Build a proper decision layer.</td></tr>
+    <tr><td>7</td><td>Physics or level as trend trigger?</td><td><span class="chip info">level</span></td><td>Level triggers, physics diagnoses.</td></tr>
+    <tr><td>add.</td><td>Is level confounded by speed?</td><td><span class="chip pass">yes</span></td><td>Physics needed where speed varies.</td></tr>
+    <tr><td>add.</td><td>Kurtosis on subtle damage?</td><td><span class="chip fail">fails</span></td><td>Strong-fault statistic only.</td></tr>
+    <tr><td>add.</td><td>Fuse physics + kurtosis?</td><td><span class="chip fail">rejected</span></td><td>Keep physics alone.</td></tr>
+    <tr><td>3</td><td>Feature set v2?</td><td><span class="chip fail">rejected</span></td><td>v1 stays.</td></tr>
+    <tr><td>10</td><td>Speed from vibration good enough?</td><td><span class="chip fail">no</span></td><td>Speed signal mandatory.</td></tr>
+    <tr><td>6</td><td>Synthetic faults predict sensitivity?</td><td><span class="chip fail">no</span></td><td>Not shipped.</td></tr>
+    <tr><td>12</td><td>One module reproduces everything?</td><td><span class="chip pass">exact</span></td><td>method.py is the single implementation.</td></tr>
+    <tr><td>13</td><td>Geometry-free as fallback?</td><td><span class="chip pass">ships</span></td><td>Unknown bearings still monitored.</td></tr>
+    <tr><td>14</td><td>Works across 5 bearing sizes?</td><td><span class="chip pass">4/5</span></td><td>Many-bearings claim supported on HUST.</td></tr>
+    <tr><td>15</td><td>Trigger under varying speed/load?</td><td><span class="chip info">adjusted level</span></td><td>Level adjusted for speed and load.</td></tr>
+    <tr><td>14+15</td><td>Geometry-free as main detector?</td><td><span class="chip pass">won both</span></td><td>Method v1.1.</td></tr>
+    <tr><td>15</td><td>Typing reliable?</td><td><span class="chip fail">7/11</span></td><td>Reported as a hint.</td></tr>
+    <tr><td>16</td><td>Baseline length rule?</td><td><span class="chip part">unresolved</span></td><td>≥ 30 min. About 1 false event/day.</td></tr>
+    <tr><td>17</td><td>Product = measured method?</td><td><span class="chip pass">exact replay</span></td><td>Service rebuilt.</td></tr>
+    <tr><td>18</td><td>Final exam on IMS</td><td><span class="chip fail">not consistent</span></td><td>Detection holds. The trend trigger must be fixed.</td></tr>
+  </tbody>
+</table></div>
+
+<!-- ========================================================== -->
+<h2 id="lessons">9. What we learned</h2>
+<ol class="steps">
+  <li><b>Physics travels, learned patterns do not.</b> Measurements computed from bearing geometry and speed, and compared
+    with the same machine's healthy data, worked on every new rig. Classifiers trained on one rig failed on others.</li>
+  <li><b>A unit's own history is the right reference.</b> Ottawa 2023 went from AUC 0.71 to 0.93. The most common failure
+    everywhere was one unit whose "healthy" data did not look like its own other healthy data.</li>
+  <li><b>Small baselines need cross-fitting</b>, or the threshold is too low and false alarms overshoot.</li>
+  <li><b>More evidence, taken as a maximum, helps.</b> The geometry-free score (the largest of 135 bins) beat the six named
+    lines on unseen data and in the final exam. Averaging diluted the signal.</li>
+  <li><b>No single simple statistic wins everywhere.</b> Kurtosis is great on big faults and useless on subtle ones. Level is a
+    strong trigger at steady speed and needs adjusting when speed and load change.</li>
+  <li><b>Detection is solved better than timing.</b> The weak part is the trend alarm across days: it drifts.</li>
+  <li><b>Speed must be measured.</b> Estimating it cost 0.14 AUC.</li>
+  <li><b>Writing the rule down first kept us honest.</b> Nine pre-registered checks failed, and each one changed the plan.</li>
+  <li><b>Infrastructure:</b>
+    <ul>
+      <li>Expect blocked services (Kaggle, Google) and keep backup mirrors.</li>
+      <li>Check every file's checksum.</li>
+      <li>Stream data that does not fit.</li>
+      <li>Record exactly which code produced each result.</li>
+    </ul></li>
+</ol>
+
+<!-- ========================================================== -->
+<h2 id="next">10. What is open</h2>
+<div class="tbl"><table>
+  <thead><tr><th>Priority</th><th>Item</th><th>Why</th></tr></thead>
+  <tbody>
+    <tr><td class="n">1</td><td>Fix the trend trigger: a baseline spanning days, a slower statistic, re-baselining</td><td>It is the part that failed the final exam.</td></tr>
+    <tr><td class="n">2</td><td>A new, unseen run-to-failure dataset to confirm the fix</td><td>IMS is now used up and cannot judge a revised method.</td></tr>
+    <tr><td class="n">3</td><td>Ball and cage faults</td><td>Still mostly missed. Geometry-free sees part of them.</td></tr>
+    <tr><td class="n">4</td><td>Baseline for a brand-new unit with no history</td><td>A fleet baseline is not adequate today.</td></tr>
+    <tr><td class="n">5</td><td>Speed tracking from vibration (for machines without a tachometer)</td><td>A fallback only, if it can be made reliable.</td></tr>
+    <tr><td class="n">6</td><td>Real machine data</td><td>The only test that really counts. The data spec says exactly what to record.</td></tr>
+  </tbody>
+</table></div>
+
+<!-- ========================================================== -->
+<h2 id="files">11. Where things are in the repository</h2>
+<div class="tbl"><table>
+  <thead><tr><th>Path</th><th>What</th></tr></thead>
+  <tbody>
+    <tr><td><code>remote/box</code>, <code>remote/README.md</code></td><td>The server command and its runbook</td></tr>
+    <tr><td><code>remote/datasets/</code></td><td>Registry, fetcher, condensers, committed checksum lists</td></tr>
+    <tr><td><code>src/domain_adaptation/method.py</code></td><td>Method v1.1: baseline, score, threshold, typing, CUSUM, level model</td></tr>
+    <tr><td><code>src/domain_adaptation/bearings.py</code></td><td>Bearing catalog, dimensions, fault factors</td></tr>
+    <tr><td><code>src/domain_adaptation/features/</code></td><td><code>envelope.py</code> (frozen), <code>geofree.py</code>, <code>cot.py</code>, <code>physics_v2.py</code>, <code>speed.py</code></td></tr>
+    <tr><td><code>src/serving_core/services/bearing.py</code></td><td>The fleet bearing monitor service</td></tr>
+    <tr><td><code>scripts/analysis/wp*.py</code></td><td>Every experiment, one script each</td></tr>
+    <tr><td><code>notes/17</code> … <code>notes/27</code></td><td>Pre-registrations and results, one note per work package</td></tr>
+    <tr><td><code>outputs/wp*/</code>, <code>outputs/remote_runs/</code></td><td>Result tables and figures; the record of every server run</td></tr>
+    <tr><td><code>deploy/</code></td><td>Data spec, inventory template, acceptance checklist, runbook, Docker smoke test</td></tr>
+    <tr><td><code>MASTER_PLAN.md</code></td><td>The single forward plan, with status of every work package</td></tr>
+  </tbody>
+</table></div>
+
+<!-- ========================================================== -->
+<h2 id="glossary">12. Glossary</h2>
+<dl class="gl">
+  <dt>Bearing race</dt><dd>The inner and outer rings the balls roll on. Damage on the outer race shows at BPFO, on the inner race at BPFI.</dd>
+  <dt>Order</dt><dd>A frequency expressed as a multiple of shaft speed.</dd>
+  <dt>Envelope spectrum</dt><dd>The spectrum of the loudness curve of high-frequency vibration. It shows how often knocks repeat.</dd>
+  <dt>Baseline</dt><dd>The healthy data a unit is compared with. Own baseline: the same unit. Fleet baseline: other units.</dd>
+  <dt>Cross-fitting</dt><dd>Scoring each part of the baseline with a model built without that part, so the threshold is honest.</dd>
+  <dt>Conformal threshold</dt><dd>A threshold set from healthy scores so a chosen share (10%) of healthy windows exceed it.</dd>
+  <dt>AUC</dt><dd>Chance that a faulty window outscores a healthy one. 0.5 is chance, 1.0 is perfect.</dd>
+  <dt>Recall / false alarm</dt><dd>Share of faulty windows caught / share of healthy windows wrongly flagged.</dd>
+  <dt>CUSUM</dt><dd>A running sum of how far each recording sits above normal. It alarms on sustained rises.</dd>
+  <dt>Run-to-failure</dt><dd>A test where a bearing runs until it breaks, recorded throughout.</dd>
+  <dt>Pre-registration</dt><dd>Writing the question and the pass rule down and committing them before running the experiment.</dd>
+  <dt>Sealed dataset</dt><dd>A dataset nobody opens until the final exam (IMS here), so it can judge the finished method fairly.</dd>
+  <dt>Vault</dt><dd>The permanent 32 GB storage volume, mounted at <code>/mnt/vault</code> on whichever server is rented.</dd>
+  <dt>Manifest</dt><dd>The list of every file in a dataset with its size and checksum, kept on the vault and in git.</dd>
+  <dt>Geometry-free score</dt><dd>Detection without knowing the bearing: the largest rise over 135 order bins.</dd>
+  <dt>Typing hint</dt><dd>Which race's lines rose most. Reported as a hint because it was right only 63–100% of the time across tests.</dd>
+</dl>
+
+<footer>
+  Built from the repository's notes (notes/14–27), result files in <code>outputs/</code>, and the run records of every server job.
+  Frozen method: commit <code>e7c01a3</code>. Final commit of the session: <code>a91dd35</code>.
+</footer>
+</main>
+</div>
+
+<script src="https://cdnjs.cloudflare.com/ajax/libs/mermaid/10.9.1/mermaid.min.js"></script>
+<script>
+(async function(){
+  if(!window.mermaid)return;   /* library blocked: the readable diagram source stays visible */
+  mermaid.initialize({startOnLoad:false,securityLevel:"strict",theme:"base",
+    flowchart:{htmlLabels:true,curve:"basis",useMaxWidth:true},
+    themeVariables:{primaryColor:"#dbe7f2",primaryTextColor:"#0f1720",primaryBorderColor:"#3b6d96",lineColor:"#8a97a3",
+      secondaryColor:"#f5e3d5",tertiaryColor:"#e2f2ea",clusterBkg:"#eef3f7",clusterBorder:"#8a97a3",
+      edgeLabelBackground:"#eef3f7",fontFamily:"IBM Plex Sans, system-ui, sans-serif",fontSize:"14px"}});
+  const blocks=[...document.querySelectorAll("pre.mmd")];
+  for(let i=0;i<blocks.length;i++){
+    const b=blocks[i];
+    try{const r=await mermaid.render("mmd-"+i,b.textContent);const d=document.createElement("div");d.className="mmd-out";d.innerHTML=r.svg;b.replaceWith(d);}
+    catch(e){b.title="Diagram could not be drawn; showing its source";}
+  }
+})();
+</script>
+<script>
+(function(){
+const NS="http://www.w3.org/2000/svg";
+const tip=document.getElementById("tip");
+function mk(tag,attrs,parent){const e=document.createElementNS(NS,tag);for(const k in attrs)e.setAttribute(k,attrs[k]);if(parent)parent.appendChild(e);return e}
+function txt(parent,x,y,s,attrs){const t=mk("text",Object.assign({x,y},attrs||{}),parent);t.textContent=s;return t}
+function hover(node,html){
+  node.addEventListener("mousemove",e=>{tip.innerHTML=html;tip.hidden=false;let x=e.clientX+14,y=e.clientY+14;const r=tip.getBoundingClientRect();
+    if(x+r.width>innerWidth-8)x=e.clientX-r.width-14;if(y+r.height>innerHeight-8)y=e.clientY-r.height-14;tip.style.left=x+"px";tip.style.top=y+"px"});
+  node.addEventListener("mouseleave",()=>{tip.hidden=true});
+  node.setAttribute("tabindex","0");node.addEventListener("focus",()=>{tip.hidden=true});
+}
+function grouped(id,o){
+  const host=document.getElementById(id);if(!host)return;
+  const W=o.width||760,H=o.height||280,m={l:40,r:10,t:14,b:o.bottom||46};
+  const svg=mk("svg",{viewBox:`0 0 ${W} ${H}`,role:"img","aria-label":o.label||""},host);
+  const pw=W-m.l-m.r,ph=H-m.t-m.b,max=o.max||1,y=v=>m.t+ph*(1-v/max);
+  (o.ticks||[0,.25,.5,.75,1]).forEach(t=>{mk("line",{x1:m.l,x2:W-m.r,y1:y(t),y2:y(t),class:"ax"},svg);txt(svg,m.l-6,y(t)+4,(o.tfmt||(v=>v.toFixed(2)))(t),{"text-anchor":"end"})});
+  const band=pw/o.cats.length,n=o.series.length,inner=band*0.76,gap=2,bw=(inner-gap*(n-1))/n;
+  o.cats.forEach((c,i)=>{const x0=m.l+band*i+(band-inner)/2;
+    o.series.forEach((s,j)=>{const v=s.vals[i];if(v==null)return;const x=x0+j*(bw+gap),h=Math.max(1,y(0)-y(v));
+      const r=mk("rect",{x,y:y(v),width:bw,height:h,rx:Math.min(3,bw/2),class:"bar "+s.cls},svg);
+      hover(r,`<b>${s.name}</b><br>${c.replace(/\n/g," ")}: ${(o.fmt||(v=>v.toFixed(3)))(v)}`);
+      if(o.values&&bw>=14)txt(svg,x+bw/2,y(v)-3,(o.vfmt||(v=>v.toFixed(2)))(v),{"text-anchor":"middle",class:"val"});});
+    c.split("\n").forEach((line,k)=>txt(svg,m.l+band*i+band/2,H-m.b+16+k*13,line,{"text-anchor":"middle"}));
+  });
+  mk("line",{x1:m.l,x2:W-m.r,y1:y(0),y2:y(0),class:"base"},svg);
+  (o.refs||[]).forEach(r=>{mk("line",{x1:m.l,x2:W-m.r,y1:y(r.v),y2:y(r.v),class:"ref"},svg);txt(svg,W-m.r-2,y(r.v)-4,r.label,{"text-anchor":"end",class:"reflbl"})});
+}
+function hbars(id,o){
+  const host=document.getElementById(id);if(!host)return;
+  const rowH=o.rowH||26,W=o.width||760,lab=o.labelW||210,m={t:6,r:60,b:22};
+  const H=m.t+m.b+rowH*o.items.length;
+  const svg=mk("svg",{viewBox:`0 0 ${W} ${H}`,role:"img","aria-label":o.label||""},host);
+  const pw=W-lab-m.r,x=v=>lab+pw*v/o.max;
+  (o.ticks||[]).forEach(t=>{mk("line",{x1:x(t),x2:x(t),y1:m.t,y2:H-m.b,class:"ax"},svg);txt(svg,x(t),H-6,(o.tfmt||String)(t),{"text-anchor":"middle"})});
+  o.items.forEach((it,i)=>{const yy=m.t+i*rowH,bh=rowH*0.62;
+    txt(svg,lab-8,yy+rowH/2+4,it.label,{"text-anchor":"end",fill:"var(--ink)","font-weight":it.bold?"600":"400"});
+    if(it.value==null){txt(svg,lab+4,yy+rowH/2+4,it.note||"",{fill:"var(--muted)"});return}
+    const r=mk("rect",{x:lab,y:yy+(rowH-bh)/2,width:Math.max(1,x(it.value)-lab),height:bh,rx:3,class:"bar "+(it.cls||"c-s1")},svg);
+    hover(r,`<b>${it.label}</b><br>${(o.fmt||String)(it.value)}${it.note?"<br>"+it.note:""}`);
+    txt(svg,x(it.value)+6,yy+rowH/2+4,(o.fmt||String)(it.value),{class:"val"});
+  });
+  mk("line",{x1:lab,x2:lab,y1:m.t,y2:H-m.b,class:"base"},svg);
+  (o.refs||[]).forEach(r=>{mk("line",{x1:x(r.v),x2:x(r.v),y1:m.t,y2:H-m.b,class:"ref"},svg);txt(svg,x(r.v)+3,m.t+10,r.label,{class:"reflbl"})});
+}
+function dumbbell(id,o){
+  const host=document.getElementById(id);if(!host)return;
+  const rowH=24,W=o.width||420,lab=o.labelW||96,m={t:28,r:16,b:24};
+  const H=m.t+m.b+rowH*o.rows.length;
+  const svg=mk("svg",{viewBox:`0 0 ${W} ${H}`,role:"img","aria-label":o.label||""},host);
+  const pw=W-lab-m.r,x=v=>lab+pw*v/o.max;
+  txt(svg,lab,16,o.title,{fill:"var(--ink)","font-weight":"600","font-size":"12.5"});
+  (o.ticks||[0,.25,.5,.75,1]).forEach(t=>{mk("line",{x1:x(t),x2:x(t),y1:m.t-4,y2:H-m.b,class:"ax"},svg);txt(svg,x(t),H-6,(o.tfmt||(v=>v.toFixed(2)))(t),{"text-anchor":"middle"})});
+  o.rows.forEach((r,i)=>{const yy=m.t+i*rowH+rowH/2;
+    txt(svg,lab-8,yy+4,r.label,{"text-anchor":"end",fill:"var(--ink)","font-weight":r.bold?"700":"400"});
+    mk("line",{x1:x(r.a),x2:x(r.b),y1:yy,y2:yy,class:o.stroke,"stroke-width":2.5},svg);
+    const a=mk("circle",{cx:x(r.a),cy:yy,r:4.5,fill:"var(--surface)",class:o.stroke+" dot","stroke-width":2},svg);
+    const b=mk("circle",{cx:x(r.b),cy:yy,r:5,class:o.cls+" dot"},svg);
+    const h=`<b>${r.label}</b>${r.note?" · "+r.note:""}<br>${o.aName}: ${r.a.toFixed(2)} → ${o.bName}: ${r.b.toFixed(2)}`;
+    hover(a,h);hover(b,h);
+  });
+}
+/* ---------------- data ---------------- */
+const pct=v=>v.toFixed(2);
+hbars("ch-net",{max:30,ticks:[0,5,10,15,20,25,30],fmt:v=>v+" MB/s",label:"Download speeds",items:[
+  {label:"MediaFire (6 parallel)",value:28,cls:"c-s3"},
+  {label:"Hugging Face (1 conn.)",value:17.5,cls:"c-s1"},
+  {label:"PyPI",value:15,cls:"c-s1"},
+  {label:"Mendeley (8 parallel)",value:14,cls:"c-s3"},
+  {label:"Zenodo (6 parallel)",value:11.5,cls:"c-s3"},
+  {label:"GitHub releases",value:8.5,cls:"c-s1"},
+  {label:"data.nasa.gov",value:6.5,cls:"c-s1"},
+  {label:"GitHub raw files",value:5.9,cls:"c-s1"},
+  {label:"NASA S3",value:2.1,cls:"c-s1"},
+  {label:"Your laptop → server",value:0.5,cls:"c-s2",note:"upload speed of the old route"},
+  {label:"Kaggle / Google Cloud",value:null,note:"blocked: not available in your location"},
+  {label:"Google Drive",value:null,note:"blocked"},
+  {label:"Paderborn official site",value:null,note:"503 / IPv6-only, unreachable"},
+  {label:"CWRU official site",value:null,note:"timeout"}]});
+hbars("ch-vault",{max:7.5,ticks:[0,1,2,3,4,5,6,7],fmt:v=>v.toFixed(2)+" GB",label:"Vault usage",items:[
+  {label:"Paderborn LDM (from 50 GB)",value:7.0,cls:"c-s1"},
+  {label:"XJTU-SY (from 4.4 GB)",value:2.3,cls:"c-s1"},
+  {label:"Paderborn (v1 + v2 stores)",value:1.7,cls:"c-s1"},
+  {label:"FEMTO",value:1.1,cls:"c-s1"},
+  {label:"IMS (sealed)",value:1.0,cls:"c-s1"},
+  {label:"Ottawa 2018",value:0.76,cls:"c-s1"},
+  {label:"HUST",value:0.67,cls:"c-s1"},
+  {label:"CWRU",value:0.63,cls:"c-s1"},
+  {label:"Ottawa 2023",value:0.29,cls:"c-s1"},
+  {label:"MFPT",value:0.04,cls:"c-s1"},
+  {label:"Other (env, outputs, runs)",value:0.5,cls:"c-s7"}]});
+const aucSeries=[
+  {name:"CWRU-trained classifier",cls:"c-s2",vals:[null,.890,.736,.481,.716,.721,.835]},
+  {name:"Physics, six lines",cls:"c-s1",vals:[.929,.901,.849,.922,.712,.930,1.0]},
+  {name:"Geometry-free",cls:"c-s3",vals:[.951,.919,.898,.998,.825,.971,.996]},
+  {name:"Kurtosis",cls:"c-s4",vals:[.986,.333,.451,.993,1.0,1.0,1.0]}];
+document.getElementById("lg-auc").innerHTML=aucSeries.map(s=>`<span><i class="bg-${s.cls.slice(2)}"></i>${s.name}</span>`).join("");
+grouped("ch-auc",{cats:["CWRU","Paderborn\n900 rpm","Paderborn\n1500 rpm","Ottawa\n2018","Ottawa 2023\nfleet","Ottawa 2023\nown","MFPT"],
+  series:aucSeries,refs:[{v:.5,label:"chance"},{v:.8,label:"pass bar"}],label:"AUC by dataset",height:300});
+dumbbell("ch-xf",{title:"False alarms on held-out healthy data",max:.35,ticks:[0,.1,.2,.3],labelW:118,stroke:"st-s2",cls:"c-s1",aName:"before",bName:"after",width:440,
+  rows:[{label:"MFPT",a:.182,b:.000},{label:"Ottawa 2023 own",a:.300,b:.056},{label:"Ottawa 2018",a:.106,b:.097},{label:"CWRU",a:.111,b:.108},{label:"Paderborn 900",a:.112,b:.108}]});
+hbars("ch-own",{max:1,ticks:[0,.25,.5,.75,1],fmt:pct,width:440,labelW:150,label:"Own vs fleet baseline",items:[
+  {label:"Fleet (19 other bearings)",value:.712,cls:"c-s1"},
+  {label:"Own healthy file",value:.930,cls:"c-s1"},
+  {label:"Own, CWRU classifier",value:.721,cls:"c-s2"}]});
+hbars("ch-xjtu",{max:15,ticks:[0,3,6,9,12,15],fmt:v=>v+" of 15",label:"XJTU detections",items:[
+  {label:"RMS level, CUSUM",value:13,cls:"c-s7",note:"median warning 84 min"},
+  {label:"RMS level, EWMA",value:13,cls:"c-s7",note:"median 52 min"},
+  {label:"RMS level, raw",value:12,cls:"c-s7"},
+  {label:"Kurtosis, CUSUM",value:11,cls:"c-s4",note:"median 55 min"},
+  {label:"Physics, CUSUM",value:9,cls:"c-s1",note:"median 93 min, earliest relative to life"},
+  {label:"Physics, EWMA",value:3,cls:"c-s1"},
+  {label:"Physics, raw",value:2,cls:"c-s1"}]});
+hbars("ch-speed",{max:1,ticks:[0,.25,.5,.75,1],fmt:pct,width:440,labelW:180,label:"Speed source vs AUC",refs:[{v:.5,label:"chance"}],items:[
+  {label:"Encoder + order tracking",value:.922,cls:"c-s1"},
+  {label:"Encoder, mean per window",value:.804,cls:"c-s1"},
+  {label:"Estimated from vibration",value:.661,cls:"c-s2"}]});
+grouped("ch-geo",{cats:["CWRU","Paderborn\n900","Paderborn\n1500 (worst)","Ottawa\n2018","Ottawa 2023\nfleet","Ottawa 2023\nown","MFPT"],
+  series:[{name:"Six fault lines",cls:"c-s1",vals:[.929,.901,.838,.922,.712,.930,1.0]},{name:"Geometry-free",cls:"c-s3",vals:[.951,.919,.879,.998,.825,.971,.996]}],
+  refs:[{v:.8,label:"0.80"}],values:true,label:"Geometry-free vs six-line",height:290});
+grouped("ch-hust",{cats:["6204","6205","6206","6207","6208"],series:[{name:"Six fault lines",cls:"c-s1",vals:[.982,.454,.883,.953,.837]},{name:"Geometry-free",cls:"c-s3",vals:[.984,.773,.934,.933,.845]}],
+  refs:[{v:.8,label:"pass bar 0.80"},{v:.5,label:"chance"}],values:true,label:"HUST AUC per bearing size",height:270,width:640});
+hbars("ch-ldm-det",{max:17,ticks:[0,5,10,15],fmt:v=>v+" of 17",width:440,labelW:150,label:"LDM detections",items:[
+  {label:"Level adjusted for speed+load",value:14,cls:"c-s6"},{label:"Level (raw RMS)",value:13,cls:"c-s7"},
+  {label:"Geometry-free",value:10,cls:"c-s3"},{label:"Physics, six lines",value:9,cls:"c-s1"}]});
+hbars("ch-ldm-lead",{max:3,ticks:[0,1,2,3],fmt:v=>v.toFixed(1)+" h",width:440,labelW:150,label:"LDM median warning",items:[
+  {label:"Level adjusted for speed+load",value:2.8,cls:"c-s6"},{label:"Level (raw RMS)",value:1.6,cls:"c-s7"},
+  {label:"Geometry-free",value:2.5,cls:"c-s3"},{label:"Physics, six lines",value:1.3,cls:"c-s1"}]});
+grouped("ch-femto",{cats:["10 min baseline","30 min baseline","60 min baseline"],max:17,ticks:[0,5,10,15],tfmt:String,fmt:v=>v+" of 17",vfmt:String,values:true,
+  series:[{name:"RMS level",cls:"c-s7",vals:[12,15,15]},{name:"Kurtosis",cls:"c-s4",vals:[5,9,9]}],label:"FEMTO detections",height:240,width:600});
+const imsRows=(g)=>[["T1 B1","",0],["T1 B2","",0],["T1 B3","inner race failed",1],["T1 B4","roller failed",1],["T2 B1","outer race failed",1],["T2 B2","",0],["T2 B3","",0],["T2 B4","",0],["T3 B1","",0],["T3 B2","",0],["T3 B3","outer race failed",1],["T3 B4","",0]]
+  .map((r,i)=>({label:r[0],note:r[1],bold:!!r[2],a:g[i][0],b:g[i][1]}));
+dumbbell("ch-ims-geo",{title:"Geometry-free (main)",stroke:"st-s3",cls:"c-s3",aName:"first half",bName:"last 2%",max:1,labelW:70,
+  rows:imsRows([[.18,.17],[.13,.60],[.10,.88],[.07,.90],[.13,.94],[.09,.75],[.13,.62],[.15,.94],[.19,.37],[.21,.25],[.16,.97],[.15,.55]])});
+dumbbell("ch-ims-six",{title:"Six-line (v1.0)",stroke:"st-s1",cls:"c-s1",aName:"first half",bName:"last 2%",max:1,labelW:70,
+  rows:imsRows([[.10,.07],[.11,.05],[.06,.30],[.03,.03],[.08,.25],[.07,.31],[.12,.38],[.11,.25],[.23,.33],[.12,.15],[.14,.22],[.18,.33]])});
+})();
+</script>
