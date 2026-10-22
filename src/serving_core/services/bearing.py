@@ -323,19 +323,23 @@ class BearingService(Service):
         return {"cal": cal, "units": {u: (Baseline.from_dict(d["baseline"]), geometry_from_dict(d["geometry"]), d)
                                       for u, d in cal["units"].items()}}
 
-    def _trend(self, ctx: Context, unit: str, file: str, pz: float, lz: float, h: dict) -> dict:
+    def _trend(self, ctx: Context, model: dict, unit: str, file: str, pz: float, lz: float, h: dict) -> dict:
         path = ctx.layout.out_dir / TREND_FILE
-        prev = {"cusum_physics": 0.0, "cusum_level": 0.0}
-        if path.is_file():
-            with path.open(newline="", encoding="utf8") as f:
-                for r in csv.DictReader(f):
-                    if r["unit"] == unit:
-                        prev = {"cusum_physics": float(r["cusum_physics"]), "cusum_level": float(r["cusum_level"])}
+        state = model.get("_trend_state")
+        if state is None:       # read the trend file once per job, then keep the last state per unit in memory
+            state = {}
+            if path.is_file():
+                with path.open(newline="", encoding="utf8") as f:
+                    for r in csv.DictReader(f):
+                        state[r["unit"]] = {"cusum_physics": float(r["cusum_physics"]), "cusum_level": float(r["cusum_level"])}
+            model["_trend_state"] = state
+        prev = state.get(unit, {"cusum_physics": 0.0, "cusum_level": 0.0})
         cp = max(0.0, prev["cusum_physics"] + pz - CUSUM_K)
         cl = max(0.0, prev["cusum_level"] + lz - CUSUM_K)
         alarm = bool(cl > h["level"] or cp > h["physics"])
         row = {"time": iso(), "unit": unit, "file": file, "physics_z": round(pz, 4), "level_z": round(lz, 4),
                "cusum_physics": round(cp, 4), "cusum_level": round(cl, 4), "trend_alarm": alarm}
+        state[unit] = {"cusum_physics": row["cusum_physics"], "cusum_level": row["cusum_level"]}
         new = not path.is_file()
         path.parent.mkdir(parents=True, exist_ok=True)
         with path.open("a", newline="", encoding="utf8") as f:
@@ -382,7 +386,7 @@ class BearingService(Service):
                 dominant = f"order {BIN_CENTRES[int(np.argmax(med))]:.2f} z={med.max():.1f} (geometry unknown: no typing)"
         pz = (float(s.mean()) - ud["physics_rec"][0]) / ud["physics_rec"][1]
         lz = (level - ud["level_rec"][0]) / ud["level_rec"][1]
-        tr = self._trend(ctx, unit, path.name, pz, lz, ud["cusum_h"])
+        tr = self._trend(ctx, model, unit, path.name, pz, lz, ud["cusum_h"])
         msg = f"scored {len(s)} of {total} windows (evenly spaced)" if len(s) < total else ""
         if tr["trend_alarm"]:
             msg = (msg + "; " if msg else "") + "TREND ALARM: sustained rise over this unit's baseline"
