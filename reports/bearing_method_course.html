@@ -1,0 +1,964 @@
+<title>Bearing Method Course</title>
+<meta name="claude:viewport-fit-sides" content="cover">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Atkinson+Hyperlegible:ital,wght@0,400;0,700;1,400&family=IBM+Plex+Mono:wght@400;600&family=IBM+Plex+Sans+Condensed:wght@500;600;700&display=swap">
+<style>
+/* Layout: a course notebook. Sticky lesson rail on the left (wide screens), lessons in one reading column,
+   live "lab" panels that break slightly wider. Accent = instrument blue; demo colours = validated chart palette. */
+:root{
+  --bg:#f3f5f7; --surface:#ffffff; --ink:#141a21; --muted:#56616d; --line:#d7dde3; --soft:#e8ecf0;
+  --accent:#1f5f94; --accent-soft:#e1ebf4;
+  --s1:#2a78d6; --s2:#eb6834; --s3:#1baf7a; --s4:#eda100; --s7:#6250d6;
+  --good:#0b8a0b; --bad:#c43535; --good-soft:#e2f2e2; --bad-soft:#f8e2e2; --warn-soft:#fbf1d8; --warn:#9a6b00;
+  --f-display:"IBM Plex Sans Condensed","Arial Narrow",system-ui,sans-serif;
+  --f-body:"Atkinson Hyperlegible",system-ui,-apple-system,"Segoe UI",sans-serif;
+  --f-mono:"IBM Plex Mono",ui-monospace,Menlo,monospace;
+}
+@media (prefers-color-scheme: dark){:root:not([data-theme="light"]){
+  --bg:#0f1317; --surface:#161c22; --ink:#e6eaee; --muted:#9aa6b2; --line:#29323b; --soft:#1e252c;
+  --accent:#6aa8de; --accent-soft:#19293a;
+  --s1:#3987e5; --s2:#d95926; --s3:#199e70; --s4:#c98500; --s7:#9085e9;
+  --good:#45c045; --bad:#e66767; --good-soft:#15291a; --bad-soft:#331a1c; --warn-soft:#2c2412; --warn:#e2a92b; color-scheme:dark}}
+:root[data-theme="dark"]{
+  --bg:#0f1317; --surface:#161c22; --ink:#e6eaee; --muted:#9aa6b2; --line:#29323b; --soft:#1e252c;
+  --accent:#6aa8de; --accent-soft:#19293a;
+  --s1:#3987e5; --s2:#d95926; --s3:#199e70; --s4:#c98500; --s7:#9085e9;
+  --good:#45c045; --bad:#e66767; --good-soft:#15291a; --bad-soft:#331a1c; --warn-soft:#2c2412; --warn:#e2a92b; color-scheme:dark}
+*{box-sizing:border-box}
+body{background:var(--bg);color:var(--ink);font-family:var(--f-body);font-size:17px;line-height:1.62}
+.wrap{max-width:1220px;margin:0 auto;padding-left:max(16px,env(safe-area-inset-left,0px));padding-right:max(16px,env(safe-area-inset-right,0px));padding-block:28px 72px;display:grid;grid-template-columns:240px minmax(0,1fr);gap:40px}
+@media (max-width:920px){.wrap{grid-template-columns:minmax(0,1fr);gap:18px}}
+nav.rail{position:sticky;top:calc(env(safe-area-inset-top,0px) + 16px);align-self:start;max-height:calc(100vh - 32px);overflow:auto;font-size:14px}
+@media (max-width:920px){nav.rail{position:static;max-height:none}}
+nav.rail details{background:var(--surface);border:1px solid var(--line);border-radius:6px;padding:10px 12px}
+nav.rail summary{cursor:pointer;font-family:var(--f-display);font-weight:600}
+nav.rail .part{font-family:var(--f-display);text-transform:uppercase;letter-spacing:.08em;font-size:11.5px;color:var(--muted);margin:12px 0 4px}
+nav.rail ol{list-style:none;margin:0;padding:0;display:grid;gap:1px}
+nav.rail a{display:block;padding:3px 7px;border-radius:4px;color:var(--ink);text-decoration:none}
+nav.rail a:hover,nav.rail a:focus-visible{background:var(--accent-soft);outline:none}
+nav.rail a span{font-family:var(--f-mono);font-size:12px;color:var(--muted);margin-right:6px}
+main{min-width:0}
+h1,h2,h3,h4{font-family:var(--f-display);line-height:1.2;text-wrap:balance;margin:0}
+h1{font-size:clamp(34px,5vw,50px);font-weight:700}
+h2.part{font-size:15px;text-transform:uppercase;letter-spacing:.12em;color:var(--accent);margin-top:64px;padding-bottom:6px;border-bottom:2px solid var(--accent)}
+section.lesson{margin-top:40px;scroll-margin-top:16px}
+section.lesson>h3{font-size:27px;font-weight:700}
+.lnum{display:block;font-family:var(--f-mono);font-size:13px;color:var(--muted);letter-spacing:.04em;margin-bottom:4px}
+h4{font-size:18px;font-weight:600;margin-top:22px}
+p,li{max-width:70ch}
+p{margin:12px 0}
+a{color:var(--accent)}
+code{font-family:var(--f-mono);font-size:.86em;background:var(--soft);padding:1px 5px;border-radius:3px}
+.lede{font-size:19.5px;max-width:66ch}
+.muted{color:var(--muted)}
+.key{border-left:4px solid var(--accent);background:var(--accent-soft);padding:12px 16px;border-radius:0 6px 6px 0;margin:16px 0;max-width:76ch}
+.key b:first-child{font-family:var(--f-display);text-transform:uppercase;letter-spacing:.06em;font-size:13px;display:block;color:var(--accent);margin-bottom:2px}
+.vs{display:grid;grid-template-columns:repeat(auto-fit,minmax(260px,1fr));gap:12px;margin:16px 0}
+.vs>div{background:var(--surface);border:1px solid var(--line);border-radius:6px;padding:12px 14px;min-width:0}
+.vs h5{margin:0 0 6px;font-family:var(--f-display);font-size:14px;text-transform:uppercase;letter-spacing:.06em}
+.vs .before h5{color:var(--muted)} .vs .now h5{color:var(--accent)}
+.vs p,.vs li{font-size:15.5px;margin:4px 0}
+.vs ul{margin:4px 0;padding-left:18px}
+.formula{font-family:var(--f-mono);font-size:15px;background:var(--surface);border:1px solid var(--line);border-radius:6px;padding:12px 16px;margin:14px 0;overflow-x:auto;white-space:pre;line-height:1.7}
+.tbl{overflow-x:auto;margin:14px 0;border:1px solid var(--line);border-radius:6px;background:var(--surface)}
+table{border-collapse:collapse;width:100%;font-size:14.5px;font-variant-numeric:tabular-nums}
+th,td{text-align:left;padding:7px 12px;border-bottom:1px solid var(--soft);vertical-align:top}
+th{font-family:var(--f-display);font-weight:600;font-size:13px;text-transform:uppercase;letter-spacing:.04em;color:var(--muted);background:var(--bg)}
+tr:last-child td{border-bottom:0}
+td.n{text-align:right;font-family:var(--f-mono);font-size:13.5px;white-space:nowrap}
+details.check{background:var(--surface);border:1px dashed var(--line);border-radius:6px;padding:10px 14px;margin:16px 0;max-width:76ch}
+details.check summary{cursor:pointer;font-weight:700}
+details.check summary::before{content:"Check yourself · ";font-family:var(--f-display);color:var(--accent);font-weight:600}
+.lab{background:var(--surface);border:1px solid var(--line);border-radius:8px;padding:16px;margin:20px 0}
+.lab .lt{font-family:var(--f-display);font-weight:700;font-size:18px;display:flex;align-items:center;gap:10px;flex-wrap:wrap}
+.lab .lt::before{content:"LAB";font-size:11px;letter-spacing:.12em;background:var(--accent);color:var(--surface);padding:2px 7px;border-radius:3px}
+.lab .lsub{font-size:14.5px;color:var(--muted);margin:4px 0 10px;max-width:80ch}
+.controls{display:flex;flex-wrap:wrap;gap:10px 22px;align-items:flex-end;margin:10px 0 14px;font-size:14.5px}
+.controls label{display:grid;gap:3px}
+.controls .lbl{font-family:var(--f-display);font-weight:600;font-size:13px;text-transform:uppercase;letter-spacing:.05em;color:var(--muted)}
+.controls output{font-family:var(--f-mono);font-size:13px;color:var(--ink)}
+input[type=range]{width:180px;accent-color:var(--accent)}
+select,input[type=number]{font:inherit;font-size:14.5px;padding:4px 6px;border:1px solid var(--line);border-radius:4px;background:var(--bg);color:var(--ink)}
+input[type=number]{width:90px}
+.seg{display:inline-flex;border:1px solid var(--line);border-radius:6px;overflow:hidden}
+.seg button{font:inherit;font-size:13.5px;padding:5px 11px;border:0;background:var(--bg);color:var(--ink);cursor:pointer}
+.seg button[aria-pressed="true"]{background:var(--accent);color:var(--surface)}
+.btn{font:inherit;font-size:13.5px;padding:5px 11px;border:1px solid var(--line);border-radius:6px;background:var(--bg);color:var(--ink);cursor:pointer}
+.btn:hover{border-color:var(--accent)}
+.plot{width:100%;min-width:0}
+.plot svg{width:100%;height:auto;display:block}
+.plot .pt{font-family:var(--f-display);font-weight:600;font-size:14px;margin:8px 0 2px}
+svg text{font-family:var(--f-body);font-size:11px;fill:var(--muted)}
+.ax{stroke:var(--line);stroke-width:1}
+.base{stroke:var(--muted);stroke-width:1}
+.trace{fill:none;stroke:var(--s1);stroke-width:1.3}
+.trace2{fill:none;stroke:var(--s2);stroke-width:1.3}
+.mk-o{stroke:var(--s2);stroke-width:1.5;stroke-dasharray:3 3}
+.mk-i{stroke:var(--s7);stroke-width:1.5;stroke-dasharray:3 3}
+.binband{fill:var(--s3);opacity:.08}
+.hot{fill:var(--s3)}
+.f-s1{fill:var(--s1)}.f-s2{fill:var(--s2)}.f-s3{fill:var(--s3)}.f-s4{fill:var(--s4)}.f-s7{fill:var(--s7)}.f-muted{fill:var(--muted)}.f-bg{fill:var(--surface)}
+.st-s2{stroke:var(--s2)}.st-s1{stroke:var(--s1)}.st-bad{stroke:var(--bad)}
+.thr{stroke:var(--bad);stroke-width:1.5;stroke-dasharray:5 4}
+.readout{display:grid;grid-template-columns:repeat(auto-fit,minmax(170px,1fr));gap:8px;margin-top:10px}
+.readout div{background:var(--bg);border-radius:6px;padding:8px 10px;font-size:13.5px;min-width:0}
+.readout b{display:block;font-family:var(--f-mono);font-size:17px;font-variant-numeric:tabular-nums}
+.legend{display:flex;flex-wrap:wrap;gap:4px 14px;font-size:13px;color:var(--muted);margin:2px 0}
+.legend span{display:inline-flex;align-items:center;gap:6px}
+.legend i{display:inline-block;width:14px;height:3px;border-radius:2px}
+.calc{display:grid;grid-template-columns:repeat(auto-fit,minmax(150px,1fr));gap:10px;margin:8px 0}
+.calc label{display:grid;gap:3px;font-size:14px}
+.chip{display:inline-block;font-family:var(--f-display);font-weight:600;font-size:12.5px;padding:2px 9px;border-radius:999px}
+.chip.good{background:var(--good-soft);color:var(--good)} .chip.bad{background:var(--bad-soft);color:var(--bad)} .chip.warn{background:var(--warn-soft);color:var(--warn)}
+.mer{overflow-x:auto;background:var(--surface);border:1px solid var(--line);border-radius:6px;padding:12px;margin:16px 0}
+pre.mmd{margin:0;font-family:var(--f-mono);font-size:12px;color:var(--muted);white-space:pre}
+.mmd-out{display:flex;justify-content:center}.mmd-out svg{max-width:100%;height:auto}
+dl.gl{display:grid;grid-template-columns:minmax(120px,200px) minmax(0,1fr);gap:6px 18px}
+dl.gl dt{font-family:var(--f-display);font-weight:600}
+dl.gl dd{margin:0}
+@media (max-width:560px){dl.gl{grid-template-columns:minmax(0,1fr)}dl.gl dd{margin-bottom:8px}}
+:focus-visible{outline:2px solid var(--accent);outline-offset:2px}
+@media (prefers-reduced-motion:reduce){*{transition:none!important}}
+footer{margin-top:56px;padding-top:14px;border-top:1px solid var(--line);font-size:13.5px;color:var(--muted)}
+</style>
+
+<div class="wrap">
+<nav class="rail" aria-label="Lessons">
+  <details open>
+    <summary>Course outline</summary>
+    <div class="part">Start here</div>
+    <ol><li><a href="#l0"><span>00</span>Old vs new, in one page</a></li></ol>
+    <div class="part">A · The signal</div>
+    <ol>
+      <li><a href="#l1"><span>01</span>Why a fault knocks in rhythm</a></li>
+      <li><a href="#l2"><span>02</span>Orders: speed-free units</a></li>
+      <li><a href="#l3"><span>03</span>The envelope</a></li>
+      <li><a href="#l4"><span>04</span>Pre-whitening (no band)</a></li>
+      <li><a href="#l5"><span>05</span>Squared envelope spectrum</a></li>
+    </ol>
+    <div class="part">B · Reading the spectrum</div>
+    <ol>
+      <li><a href="#l6"><span>06</span>Six fault lines</a></li>
+      <li><a href="#l7"><span>07</span>Geometry-free: 135 bins</a></li>
+    </ol>
+    <div class="part">C · The decision</div>
+    <ol>
+      <li><a href="#l8"><span>08</span>No classifier: compare with yourself</a></li>
+      <li><a href="#l9"><span>09</span>Baseline and z-score</a></li>
+      <li><a href="#l10"><span>10</span>Take the largest rise</a></li>
+      <li><a href="#l11"><span>11</span>The conformal threshold</a></li>
+      <li><a href="#l12"><span>12</span>Cross-fitting</a></li>
+      <li><a href="#l13"><span>13</span>Own baseline vs fleet</a></li>
+      <li><a href="#l14"><span>14</span>Lab: the full detector</a></li>
+      <li><a href="#l15"><span>15</span>Recording verdicts</a></li>
+      <li><a href="#l16"><span>16</span>Typing hint: which race</a></li>
+    </ol>
+    <div class="part">D · Over time</div>
+    <ol>
+      <li><a href="#l17"><span>17</span>Level and the CUSUM trend</a></li>
+      <li><a href="#l18"><span>18</span>When speed changes: order tracking</a></li>
+    </ol>
+    <div class="part">E · All together</div>
+    <ol>
+      <li><a href="#l19"><span>19</span>The whole pipeline + reading the output</a></li>
+      <li><a href="#l20"><span>20</span>Requirements, limits, evidence</a></li>
+      <li><a href="#quiz"><span>✓</span>Final self-test</a></li>
+      <li><a href="#glossary"><span>G</span>Glossary</a></li>
+    </ol>
+  </details>
+</nav>
+
+<main>
+<header>
+  <div class="muted" style="font-family:var(--f-display);text-transform:uppercase;letter-spacing:.1em;font-size:13px">A course on method v1.1 · the bearing monitor</div>
+  <h1>Bearing Method Course</h1>
+  <p class="lede">You know the earlier method: envelope features and a logistic regression trained on CWRU.
+  This course explains the method we use now, one idea at a time, starting from what you already know.
+  The labs are live: they generate a bearing signal in your browser and run the real steps of the method on it, so you
+  can move a slider and watch what changes.</p>
+  <p class="muted" style="font-size:15px">The labs use simulated signals (a 6203 bearing, 12 kHz). Real datasets are cited as
+  evidence at the end of each lesson.</p>
+</header>
+
+<!-- ======================================================= -->
+<h2 class="part">Start here</h2>
+<section class="lesson" id="l0">
+  <span class="lnum">LESSON 00</span>
+  <h3>The old method and the new one, side by side</h3>
+  <p>Both methods start with the same physics: a damaged bearing makes knocks in a rhythm, and we measure that rhythm.
+  They differ in <b>how the rhythm is read</b> and especially in <b>how the decision is made</b>.</p>
+  <div class="tbl"><table>
+    <thead><tr><th>Step</th><th>Earlier method</th><th>Method v1.1 (now)</th></tr></thead>
+    <tbody>
+      <tr><td>Speed</td><td>Nominal rpm</td><td>Measured rpm per recording, or a tachometer for order tracking</td></tr>
+      <tr><td>Frequency band</td><td>Fixed 1.5–5.5 kHz band-pass</td><td><b>No band.</b> The spectrum is flattened first (pre-whitening)</td></tr>
+      <tr><td>Envelope</td><td>Envelope spectrum</td><td>Squared envelope spectrum</td></tr>
+      <tr><td>What is read</td><td>13 features at the bearing's fault orders</td><td><b>135 small bins over 1.5–15 orders</b> (geometry-free) for detection, plus 6 named fault lines for typing</td></tr>
+      <tr><td>Decision</td><td><b>Logistic regression trained on CWRU faults</b></td><td><b>No classifier.</b> Each number is compared with <i>this machine's own</i> healthy history</td></tr>
+      <tr><td>Threshold</td><td>Quantile of target healthy scores</td><td>Conformal quantile of <b>cross-fitted</b> healthy scores</td></tr>
+      <tr><td>Fault type</td><td>From the classifier</td><td>A hint: which race's lines rose more</td></tr>
+      <tr><td>Over time</td><td>—</td><td>CUSUM trend on vibration level (adjusted for speed and load) and on the score</td></tr>
+    </tbody>
+  </table></div>
+  <div class="mer"><pre class="mmd">flowchart LR
+  subgraph OLD["Earlier method"]
+    o1["Signal"] --> o2["Band-pass&lt;br/&gt;1.5–5.5 kHz"] --> o3["Envelope&lt;br/&gt;spectrum"] --> o4["13 features&lt;br/&gt;at fault orders"] --> o5["Classifier&lt;br/&gt;trained on CWRU"] --> o6["Threshold from&lt;br/&gt;target healthy"]
+  end
+  subgraph NEW["Method v1.1"]
+    n1["Signal + speed"] --> n2["Pre-whiten&lt;br/&gt;(no band)"] --> n3["Squared envelope&lt;br/&gt;spectrum"] --> n4["135 bins&lt;br/&gt;(+ 6 lines for typing)"] --> n5["z-score vs this&lt;br/&gt;machine's healthy data"] --> n6["Largest z vs&lt;br/&gt;cross-fitted threshold"]
+  end</pre></div>
+  <div class="key"><b>The one sentence to remember</b>
+  The old method asked "does this look like a CWRU fault?". The new one asks "has anything in this machine's fault
+  rhythm risen above what this same machine does when it is healthy?"</div>
+</section>
+
+<!-- ======================================================= -->
+<h2 class="part">Part A · The signal</h2>
+
+<section class="lesson" id="l1">
+  <span class="lnum">LESSON 01</span>
+  <h3>Why a damaged bearing knocks in rhythm</h3>
+  <p>A ball bearing has an outer ring (outer race), an inner ring (inner race), balls, and a cage that keeps the balls apart.
+  If one race has a crack or a pit, every ball that rolls over it makes a small impact. These impacts repeat at a rate that
+  depends only on:</p>
+  <ul>
+    <li>the <b>shaft speed</b>;</li>
+    <li>the <b>bearing's shape</b>: number of balls <i>n</i>, ball diameter <i>d</i>, pitch diameter <i>D</i> (the circle through the
+    ball centres), and contact angle <i>α</i>.</li>
+  </ul>
+  <div class="formula">r     = (d / D) · cos(α)
+BPFO  = (n / 2) · (1 − r)                 outer race: impacts per shaft turn
+BPFI  = (n / 2) · (1 + r)                 inner race
+FTF   = (1 / 2) · (1 − r)                 cage turns per shaft turn
+BSF   = (D / 2d) · (1 − r²)               ball spin
+check: BPFO + BPFI = n  (always)</div>
+  <p>These are already "per shaft turn" numbers (orders, next lesson). Multiply by the shaft speed in Hz to get Hz.</p>
+
+  <div class="lab" id="lab-calc">
+    <div class="lt">Bearing calculator</div>
+    <div class="lsub">Pick a bearing from our catalog or type your own numbers. All four fault frequencies update.</div>
+    <div class="controls">
+      <span class="seg" role="group" aria-label="Preset bearings">
+        <button type="button" data-preset="6203" aria-pressed="true">6203 (Paderborn)</button>
+        <button type="button" data-preset="6205" aria-pressed="false">6205 (CWRU)</button>
+        <button type="button" data-preset="ZA2115" aria-pressed="false">ZA-2115 (IMS)</button>
+        <button type="button" data-preset="61806" aria-pressed="false">61806 (LDM)</button>
+      </span>
+    </div>
+    <div class="calc">
+      <label>Balls n <input type="number" id="c-n" value="8" min="3" step="1"></label>
+      <label>Ball diameter d <input type="number" id="c-d" value="6.75" step="0.01"></label>
+      <label>Pitch diameter D <input type="number" id="c-D" value="28.5" step="0.01"></label>
+      <label>Contact angle α (°) <input type="number" id="c-a" value="0" step="0.1"></label>
+      <label>Shaft speed (rpm) <input type="number" id="c-rpm" value="900" step="10"></label>
+    </div>
+    <div class="tbl" style="margin-top:6px"><table>
+      <thead><tr><th>Fault</th><th>Orders (per shaft turn)</th><th>Hz at this speed</th></tr></thead>
+      <tbody id="c-out"></tbody>
+    </table></div>
+  </div>
+  <details class="check"><summary>Why does an inner-race fault give more impacts per turn than an outer-race fault?</summary>
+  <p>The inner race turns with the shaft, so a point on it meets the balls more often than a point on the stationary outer race.
+  That is why BPFI &gt; BPFO, and they always add up to the number of balls.</p></details>
+</section>
+
+<section class="lesson" id="l2">
+  <span class="lnum">LESSON 02</span>
+  <h3>Orders: units that do not change with speed</h3>
+  <p>An <b>order</b> is a frequency divided by the shaft speed (in Hz). The outer-race fault of a 6203 is <b>3.053 orders</b>:</p>
+  <ul>
+    <li>at 900 rpm (15 Hz) that is 45.8 Hz;</li>
+    <li>at 1500 rpm (25 Hz), 76.3 Hz.</li>
+  </ul>
+  <p>Measured in Hz, the fault line moves every time the speed changes. In orders it stays at 3.053.</p>
+  <p>This is what lets one method work at any speed: <b>we always read the spectrum in orders</b>. It needs the shaft speed,
+  which is why the method requires it.</p>
+  <div class="key"><b>Try it</b>In the signal lab below, move the speed slider with the x-axis in Hz, then switch to orders.
+  In Hz the fault lines slide around; in orders they stand still on the dashed markers.</div>
+</section>
+
+<section class="lesson" id="l3">
+  <span class="lnum">LESSON 03</span>
+  <h3>The envelope: hear the rhythm, not the ring</h3>
+  <p>A single impact is very short. It makes the bearing housing ring like a small bell, at a high frequency set by the
+  structure (here about 3.3 kHz). So in the normal spectrum, a fault shows up as a bump around 3.3 kHz, which tells you
+  nothing about the rhythm, and every machine rings at a different frequency.</p>
+  <p>The <b>envelope</b> follows the loudness of the ringing over time: a peak at each knock. Its spectrum therefore shows
+  the <b>knock rate</b>, a clean line at BPFO or BPFI and its multiples (harmonics). The ringing frequency, which belongs to the
+  machine and not to the fault, drops out. That is why envelope analysis can move between machines.</p>
+  <p>In practice, the envelope comes from the Hilbert transform: it turns the signal into a rotating arrow whose length is the envelope.</p>
+
+  <div class="lab" id="lab-sig">
+    <div class="lt">Signal lab</div>
+    <div class="lsub">A simulated 6203 bearing at 12 kHz with noise, shaft harmonics, a machine tone at 2.2 kHz and (optionally) a fault
+    ringing a 3.3 kHz resonance. Everything is computed in your browser with the method's real steps (0.68 s windows here).</div>
+    <div class="controls">
+      <label><span class="lbl">Fault</span>
+        <select id="s-fault"><option value="outer" selected>outer race</option><option value="inner">inner race</option><option value="none">healthy</option></select></label>
+      <label><span class="lbl">Fault strength <output id="s-amp-o">1.2</output></span><input type="range" id="s-amp" min="0" max="3" step="0.1" value="1.2"></label>
+      <label><span class="lbl">Shaft speed <output id="s-rpm-o">900 rpm</output></span><input type="range" id="s-rpm" min="600" max="3000" step="50" value="900"></label>
+      <div><span class="lbl" style="display:block;font-family:var(--f-display);font-weight:600;font-size:13px;text-transform:uppercase;letter-spacing:.05em;color:var(--muted)">Processing</span>
+        <span class="seg" role="group" aria-label="Processing"><button type="button" id="s-new" aria-pressed="true">Now: pre-whiten + squared</button><button type="button" id="s-old" aria-pressed="false">Before: 1.5–5.5 kHz band</button></span></div>
+      <div><span class="lbl" style="display:block;font-family:var(--f-display);font-weight:600;font-size:13px;text-transform:uppercase;letter-spacing:.05em;color:var(--muted)">x-axis</span>
+        <span class="seg" role="group" aria-label="x-axis"><button type="button" id="s-ord" aria-pressed="true">orders</button><button type="button" id="s-hz" aria-pressed="false">Hz</button></span></div>
+    </div>
+    <div class="grid" style="display:grid;grid-template-columns:repeat(auto-fit,minmax(300px,1fr));gap:12px">
+      <div class="plot"><div class="pt">1 · The raw signal (first 0.1 s)</div><div id="p-time"></div></div>
+      <div class="plot"><div class="pt">2 · Normal spectrum (0–6 kHz, dB)</div><div id="p-spec"></div></div>
+    </div>
+    <div class="plot"><div class="pt">3 · Envelope spectrum: where the knock rhythm shows</div>
+      <div class="legend"><span><i style="background:var(--s2)"></i>BPFO × 1, 2, 3 (outer)</span><span><i style="background:var(--s7)"></i>BPFI × 1, 2, 3 (inner)</span><span><i style="background:var(--s3)"></i>the bin that rose most above this machine's healthy baseline (geometry-free view)</span></div>
+      <div id="p-env"></div></div>
+    <div class="readout" id="s-read"></div>
+  </div>
+  <details class="check"><summary>Why can't we just look for a peak at BPFO in the normal spectrum?</summary>
+  <p>Because the knocks themselves are broadband pulses. The energy sits around the structure's ringing frequency, and the
+  knock rhythm only appears as tiny, smeared sidebands there. The envelope turns that rhythm into a clear line.</p></details>
+</section>
+
+<section class="lesson" id="l4">
+  <span class="lnum">LESSON 04</span>
+  <h3>Pre-whitening: no frequency band to choose</h3>
+  <div class="vs">
+    <div class="before"><h5>Before</h5><p>Band-pass 1.5–5.5 kHz, then the envelope. The band was a guess about where
+    bearing resonances live. If the real resonance is outside it, or a strong machine tone sits inside it, the result suffers.
+    At Paderborn 1500 rpm this was one suspect for the drop.</p></div>
+    <div class="now"><h5>Now</h5><p><b>Cepstrum pre-whitening (CPW)</b>: compute the spectrum, set every frequency's
+    magnitude to 1 (keep only its phase), and transform back. Loud steady tones and the machine's resonance shape are flattened,
+    while sharp knocks survive, because their energy is spread over all frequencies at once. Then the envelope is taken of
+    the <i>whole</i> band.</p></div>
+  </div>
+  <div class="formula">X(f)        = FFT(window)
+X_white(f)  = X(f) / |X(f)|          every frequency gets magnitude 1
+x_white(t)  = inverse FFT(X_white)</div>
+  <p>Nothing here is chosen or tuned, so it cannot be tuned to fault labels either. In the lab, switch to "Before" and see that the
+  2.2 kHz machine tone (outside the band) disappears, but so does any information outside 1.5–5.5 kHz. Pre-whitening flattens
+  the tone while keeping the knocks.</p>
+</section>
+
+<section class="lesson" id="l5">
+  <span class="lnum">LESSON 05</span>
+  <h3>The squared envelope spectrum (SES)</h3>
+  <p>After whitening we take the analytic signal (Hilbert transform), its <b>squared</b> magnitude (the envelope squared),
+  remove its mean, apply a Hann window, and take the spectrum. Squaring makes impacts stand out more against background noise.
+  This is the standard "CPW + SES" recipe from the bearing-diagnostics literature (Borghesani et al. 2013).
+  The frequency axis is then divided by the shaft speed to get orders.</p>
+  <div class="formula">a(t)     = x_white(t) + j · Hilbert(x_white)(t)
+e(t)     = |a(t)|²  − mean
+SES(f)   = | FFT( e(t) · Hann(t) ) |
+order    = f / shaft_Hz</div>
+</section>
+
+<!-- ======================================================= -->
+<h2 class="part">Part B · Reading the spectrum</h2>
+
+<section class="lesson" id="l6">
+  <span class="lnum">LESSON 06</span>
+  <h3>Six fault lines (needs the bearing's geometry)</h3>
+  <p>If we know the bearing, we know exactly where to look: BPFO and BPFI, and their 2nd and 3rd harmonics. For each of these
+  six places we take the <b>highest point within ±0.08 orders</b> (to allow for a little slip and speed error), and divide it by
+  the total of the envelope spectrum between 0.5 and 12 orders. Dividing makes the number independent of how loud the machine
+  is or how sensitive the sensor is.</p>
+  <div class="formula">line(k) = max SES within (order_k ± 0.08)  /  sum of SES over 0.5–12 orders
+order_k ∈ { BPFO, 2·BPFO, 3·BPFO, BPFI, 2·BPFI, 3·BPFI }</div>
+  <p>This was the main detector until method v1.0. It is still used for <b>typing</b> (lesson 16), because only named lines can say
+  "outer" or "inner".</p>
+</section>
+
+<section class="lesson" id="l7">
+  <span class="lnum">LESSON 07</span>
+  <h3>Geometry-free: 135 bins instead of six lines</h3>
+  <p>This is the idea behind the name. <b>"Geometry-free" means the detector does not need to know the bearing's geometry</b>,
+  that is, its number of balls and its diameters. Instead of reading six exact places, it reads the whole stretch of the envelope
+  spectrum where bearing faults can appear:</p>
+  <div class="formula">orders 1.5 → 15, cut into 135 bins of width 0.1 order
+bin(j) = max SES inside bin j  /  sum of SES over 0.5–12 orders      (same normalisation as the lines)</div>
+  <h4>Why 1.5 to 15 orders?</h4>
+  <p>For ordinary ball bearings, BPFO is about 0.4 × (number of balls) and BPFI about 0.6 × (number of balls). With 7 to 20 balls,
+  the fault fundamentals fall roughly between 2.5 and 12 orders, and their harmonics continue above. Starting at 1.5 skips
+  shaft rotation (1 order), which every machine has whether healthy or not. 15 keeps the range inside the analysis bandwidth at normal speeds.</p>
+  <h4>How can it detect a fault without knowing where to look?</h4>
+  <p>Because the detection step (lessons 9–10) does not ask "is BPFO high?". It asks "<b>did any bin rise above where it
+  normally is on this machine?</b>". A fault adds a new rhythm, and that rhythm lands in some bins: the fundamental, its harmonics,
+  and the sidebands. Those bins rise against their own healthy history. We do not need to know in advance which bins they will be.</p>
+  <div class="vs">
+    <div class="now"><h5>What it gains</h5><ul>
+      <li>Works for any bearing, even an unknown one.</li>
+      <li>Catches energy the six lines miss: higher harmonics, sidebands, the other race, partly ball damage.</li>
+      <li>Measured: as good as or better than the six lines on 6 of 6 development datasets, on HUST (4/5 sizes), on LDM, and on IMS.</li>
+    </ul></div>
+    <div class="before"><h5>What it costs</h5><ul>
+      <li>It cannot say <i>which</i> race. It reports the "dominant order" (the bin that rose most), and you need the geometry to interpret it.</li>
+      <li>Looking at 135 places gives more chances for a healthy bin to wobble high, so its threshold needs more healthy data to be set well (lesson 11).</li>
+    </ul></div>
+  </div>
+  <p>Because geometry-free beat the six lines on both pre-registered comparisons on unseen data (HUST and LDM), it became the
+  <b>main detector in method v1.1</b>. The six lines stay for typing whenever the geometry is known.</p>
+  <details class="check"><summary>A bearing's BPFO is 3.05 orders. Which bins will rise for an outer-race fault?</summary>
+  <p>Mainly the bins around 3.0–3.1 (fundamental), 6.1 (2×), 9.1–9.2 (3×), and 12.2 (4×). The detector does not need to know this:
+  it will see those bins rise against their healthy values. In the lab, the green highlight shows the bin that rose most above
+  12 healthy windows of the same simulated machine. On a healthy signal the largest z is still around 2–3: that is just normal wobble.</p></details>
+</section>
+
+<!-- ======================================================= -->
+<h2 class="part">Part C · The decision</h2>
+
+<section class="lesson" id="l8">
+  <span class="lnum">LESSON 08</span>
+  <h3>No classifier: compare the machine with itself</h3>
+  <div class="vs">
+    <div class="before"><h5>Before</h5><p>A logistic regression learned "fault vs healthy" from CWRU: one rig, one bearing type,
+    large artificial faults, about 1,750 rpm. On a different machine its decision boundary sat in the wrong place.
+    At Paderborn 1500 rpm recall fell to 0.29–0.51, and on Ottawa 2018 AUC was 0.48, a coin toss.</p></div>
+    <div class="now"><h5>Now</h5><p>No learning from faults at all. For each unit we learn only what <i>its own healthy</i> envelope
+    spectrum looks like. A fault is anything that rises clearly above that. Nothing from another machine is carried over except the
+    physics of how to compute the spectrum.</p></div>
+  </div>
+  <p>This removes the reason the old method failed across machines and speeds: there is no learned boundary to put in the wrong
+  place. The price is that every unit needs healthy recordings of itself before monitoring starts.</p>
+</section>
+
+<section class="lesson" id="l9">
+  <span class="lnum">LESSON 09</span>
+  <h3>The healthy baseline and the z-score</h3>
+  <p>Take a unit's healthy recordings and cut them into 1 s windows. For each bin (or line), take the <b>logarithm</b> of its
+  value in every healthy window and compute the <b>mean</b> and <b>standard deviation</b>. Together they are the unit's
+  <b>baseline</b>: "where this bin normally sits, and how much it normally wobbles".</p>
+  <p>For a new window, each bin's <b>z-score</b> is:</p>
+  <div class="formula">z(bin) = ( log(value) − mean_log(bin) ) / sd_log(bin)</div>
+  <ul>
+    <li><b>Why the log?</b> Spectrum values are always positive and spread over a wide range. In log form, "twice as high" is the same
+    step everywhere, and the wobble looks like an ordinary bell curve.</li>
+    <li><b>What does z mean?</b> How many "normal wobbles" above usual. z = 3 means three standard deviations higher than this unit ever
+    usually goes. Only <i>rises</i> count; a bin going down is not a fault sign.</li>
+  </ul>
+</section>
+
+<section class="lesson" id="l10">
+  <span class="lnum">LESSON 10</span>
+  <h3>Take the largest rise</h3>
+  <p>A window now has 135 z-scores, or 6 for the line detector. Its <b>score</b> is the <b>largest</b> of them:</p>
+  <div class="formula">score(window) = max over bins of z(bin)</div>
+  <p>Why the maximum and not the average? A fault usually lights up a few bins, not all of them. Averaging 135 bins would bury two
+  strong ones under 133 normal ones. We tested averaging (feature set v2, "family mean") and it was worse. The maximum catches the
+  single bin that jumped.</p>
+  <p>The maximum has a side effect: even on healthy data, the largest of 135 wobbling numbers is usually around 2–3, not 0.
+  So we never use a fixed rule like "z &gt; 3". The threshold is learned from the healthy scores themselves (next lesson).</p>
+</section>
+
+<section class="lesson" id="l11">
+  <span class="lnum">LESSON 11</span>
+  <h3>The conformal threshold</h3>
+  <p>Score every healthy calibration window. Sort the scores. With <i>n</i> scores and a target false-alarm rate α = 10%, the threshold is
+  the <b>⌈(n+1)·0.9⌉-th smallest</b> score.</p>
+  <div class="formula">threshold = sorted_healthy_scores[ ceil((n + 1) · (1 − α)) ]      α = 0.10</div>
+  <p>The promise of this "conformal" rule: if a new healthy window behaves like the calibration windows, the chance it
+  exceeds the threshold is <b>at most 10%</b>. No bell-curve assumption is needed; it only counts.
+  With fewer than 9 windows the rule cannot reach 90% and the threshold is infinite, so the service refuses to calibrate.</p>
+  <p>So a "flagged" window means: <b>higher than about 90% of this unit's healthy windows.</b> On its own a flagged window is weak
+  evidence. Many flagged windows in a recording is strong evidence (lesson 15).</p>
+</section>
+
+<section class="lesson" id="l12">
+  <span class="lnum">LESSON 12</span>
+  <h3>Cross-fitting: don't let the baseline grade itself</h3>
+  <p>There is a trap. The healthy windows that set the mean and sd are the same windows we then score to set the threshold.
+  Each window helped define "normal", so it looks more normal than a <i>new</i> healthy window would. The threshold comes out
+  too low, and on new healthy data more than 10% of windows get flagged.</p>
+  <p><b>Cross-fitting fixes this:</b> split the baseline into groups (one per recording, or three time blocks if there is only one
+  recording). Score each group with a baseline built from <i>the other groups only</i>, then set the threshold on those honest scores.</p>
+  <div class="mer"><pre class="mmd">flowchart LR
+  A["Healthy recordings&lt;br/&gt;R1 R2 R3 R4"] --> B["Score R1 with a baseline&lt;br/&gt;from R2 R3 R4"]
+  A --> C["Score R2 with a baseline&lt;br/&gt;from R1 R3 R4"]
+  A --> D["... and so on"]
+  B --> E["Honest scores&lt;br/&gt;for every window"]
+  C --> E
+  D --> E
+  E --> F["Conformal threshold&lt;br/&gt;at 90%"]</pre></div>
+  <div class="tbl"><table>
+    <thead><tr><th>Where we saw it</th><th>Baseline size</th><th>False alarms, in-sample</th><th>with cross-fitting</th></tr></thead>
+    <tbody>
+      <tr><td>MFPT</td><td class="n">22 windows</td><td class="n">0.18</td><td class="n">0.00</td></tr>
+      <tr><td>Ottawa 2023 (own baseline)</td><td class="n">9 windows</td><td class="n">0.30</td><td class="n">0.06</td></tr>
+      <tr><td>Paderborn</td><td class="n">thousands</td><td class="n">0.112</td><td class="n">0.108</td></tr>
+      <tr><td>Synthetic test in the code</td><td class="n">18 windows</td><td class="n">0.129</td><td class="n">0.039</td></tr>
+    </tbody>
+  </table></div>
+  <p>With big baselines it changes nothing. With small ones it is the difference between a broken and a working threshold.
+  The detector lab lets you switch it on and off.</p>
+</section>
+
+<section class="lesson" id="l13">
+  <span class="lnum">LESSON 13</span>
+  <h3>Own baseline vs fleet baseline</h3>
+  <p>Could we use healthy data from <i>other</i> units of the same type as the baseline? It is tempting, especially for a new
+  machine. The data says no:</p>
+  <ul>
+    <li>On Ottawa 2023, comparing each bearing with the other 19 bearings' healthy recordings gave AUC <b>0.71</b>, and one healthy
+    bearing was flagged on every window.</li>
+    <li>Comparing each bearing with its <b>own</b> healthy recording gave AUC <b>0.93</b>.</li>
+  </ul>
+  <p>Every unit has its own normal: its mounting, its sensor position, its tolerances, small differences in the bearing.
+  A "fleet" baseline mixes those differences into the noise, so faults hide in it and odd healthy units look faulty.
+  That is why the product calibrates <b>one baseline per unit</b>. It is also why the most common failure we saw everywhere was
+  "one unit whose healthy data did not look like its own other healthy data" (Paderborn K005, Ottawa 2023 b02, HUST 6205).</p>
+</section>
+
+<section class="lesson" id="l14">
+  <span class="lnum">LESSON 14</span>
+  <h3>Lab: the full detector, step by step</h3>
+  <p>This lab builds a unit's baseline from simulated healthy recordings and scores 20 new healthy windows and 20 faulty ones.
+  Everything is computed live.</p>
+  <div class="lab" id="lab-det">
+    <div class="lt">Detector lab</div>
+    <div class="lsub">Baseline: healthy recordings of one simulated unit at 900 rpm. Try a tiny baseline with cross-fitting off, then turn it on.
+    Switch between the geometry-free and six-line detectors. Lower the fault strength until the faults hide inside the healthy spread.</div>
+    <ol class="lsub" style="padding-left:20px">
+      <li><b>Large baseline, cross-fitting on, strength 0.6</b> (the default): nearly every fault is caught, and only a few healthy windows are flagged. This is the method working as designed.</li>
+      <li><b>Small baseline, cross-fitting off:</b> about half of the new healthy windows get flagged. That is the in-sample trap of lesson 12.</li>
+      <li><b>Small baseline, cross-fitting on, geometry-free:</b> the threshold jumps high and nothing is caught. The largest of 135 bins needs more healthy data to set a sensible threshold (lesson 7, "what it costs").</li>
+      <li><b>Same small baseline, six fault lines:</b> it works again. With 6 numbers instead of 135, the healthy maximum wobbles less.</li>
+      <li><b>Strength 0.3:</b> the faults start hiding among the healthy windows. This is where real early damage lives.</li>
+    </ol>
+    <div class="controls">
+      <label><span class="lbl">Detector</span><select id="d-det"><option value="geo" selected>geometry-free (135 bins)</option><option value="six">six fault lines</option></select></label>
+      <label><span class="lbl">Fault</span><select id="d-fault"><option value="outer" selected>outer race</option><option value="inner">inner race</option></select></label>
+      <label><span class="lbl">Fault strength <output id="d-amp-o">0.6</output></span><input type="range" id="d-amp" min="0" max="2" step="0.05" value="0.6"></label>
+      <label><span class="lbl">Baseline size</span><select id="d-size"><option value="12">small: 3 recordings × 4 windows</option><option value="40" selected>large: 4 recordings × 10 windows</option></select></label>
+      <label><span class="lbl">Cross-fitting</span><select id="d-xf"><option value="1" selected>on</option><option value="0">off (in-sample)</option></select></label>
+    </div>
+    <div class="plot"><div class="pt">Scores of new windows against the threshold</div>
+      <div class="legend"><span><i style="background:var(--s1)"></i>new healthy windows</span><span><i style="background:var(--s2)"></i>faulty windows</span><span><i style="background:var(--bad)"></i>threshold (conformal 90%)</span></div>
+      <div id="p-strip"></div></div>
+    <div class="readout" id="d-read"></div>
+    <div class="plot"><div class="pt">Inside one faulty window: the z-score of every bin (or line). The score is the tallest bar.</div>
+      <div id="p-z"></div></div>
+  </div>
+</section>
+
+<section class="lesson" id="l15">
+  <span class="lnum">LESSON 15</span>
+  <h3>From windows to a recording verdict</h3>
+  <p>A recording of 10 s gives about 19 one-second windows (they overlap by half). We count the share that are over the threshold:</p>
+  <div class="tbl"><table>
+    <thead><tr><th>Share of windows flagged</th><th>Verdict</th><th>Why these numbers</th></tr></thead>
+    <tbody>
+      <tr><td class="n">&lt; 40%</td><td><span class="chip good">healthy</span></td><td>About 10% of healthy windows are flagged by design, so a healthy recording usually lands near 10%.</td></tr>
+      <tr><td class="n">≥ 40%</td><td><span class="chip warn">watch</span></td><td>Measured on held-out healthy Paderborn units: at 25%, too many healthy recordings (23%) reached watch; at 40%, about 12%.</td></tr>
+      <tr><td class="n">≥ 50%</td><td><span class="chip bad">faulty</span></td><td>About 5% of healthy recordings reach this. Most real damage goes well above.</td></tr>
+    </tbody>
+  </table></div>
+  <p>On IMS, the failing bearings ended with 88–97% of windows flagged; healthy-life recordings sat around 10–20%.</p>
+</section>
+
+<section class="lesson" id="l16">
+  <span class="lnum">LESSON 16</span>
+  <h3>Typing hint: which race?</h3>
+  <p>When the geometry is known, the service also keeps a baseline of the six named lines. On the windows the detector flagged, it compares
+  the largest z among the three <b>outer-race</b> lines with the largest among the three <b>inner-race</b> lines. Whichever rose more is
+  the hint, reported as "outer race (hint)" or "inner race (hint)", along with the single line that rose most, e.g. <code>bpfo_h2 z=6.1</code>.</p>
+  <div class="tbl"><table>
+    <thead><tr><th>Test</th><th>Right race</th></tr></thead>
+    <tbody>
+      <tr><td>XJTU-SY, real run-to-failure damage</td><td class="n">10 of 11</td></tr>
+      <tr><td>HUST, 5 bearing sizes</td><td class="n">83% of windows</td></tr>
+      <tr><td>Paderborn (development)</td><td class="n">74–81%</td></tr>
+      <tr><td>IMS final exam</td><td class="n">2–3 of 3</td></tr>
+      <tr><td>LDM, race + ball damage together</td><td class="n">7 of 11</td></tr>
+    </tbody>
+  </table></div>
+  <p>Good, but not reliable enough to call a diagnosis, especially when two kinds of damage exist at once. Hence "hint".
+  Ball and cage faults are not covered by this step.</p>
+</section>
+
+<!-- ======================================================= -->
+<h2 class="part">Part D · Over time</h2>
+
+<section class="lesson" id="l17">
+  <span class="lnum">LESSON 17</span>
+  <h3>The level and the CUSUM trend alarm</h3>
+  <p>The detector judges one recording at a time. Damage usually grows, so it also helps to watch the <b>trend</b> across recordings.
+  Two series are kept per unit:</p>
+  <ul>
+    <li><b>Level:</b> the log of the vibration RMS of each recording, as a z-score against the healthy recordings. When speed and
+    load vary (and are logged), the level is first <b>adjusted for them</b>. A straight-line fit, learned on the healthy recordings,
+    says what log RMS to expect at this speed and load, and we use the difference (the residual). On LDM this cut false alarms
+    from 0.19 to 0.15 and gave the most detections (14 of 17).</li>
+    <li><b>Physics:</b> the mean window score of the recording, standardised the same way.</li>
+  </ul>
+  <p>Each series feeds a <b>CUSUM</b>:</p>
+  <div class="formula">C₀ = 0
+C_t = max( 0 ,  C_{t−1} + z_t − k )        k = 0.5
+alarm when C_t &gt; h                          h ≥ 5, set from the healthy recordings</div>
+  <p>In words: each recording adds how far it is above normal, minus a small allowance <i>k</i>. Normal recordings (z around 0) drain
+  the sum back towards 0. A steady rise keeps adding until the sum crosses <i>h</i>. A single noisy recording is not enough.</p>
+
+  <div class="lab" id="lab-cusum">
+    <div class="lt">CUSUM lab</div>
+    <div class="lsub">200 recordings of one unit: healthy until recording 140, then a slow rise. Switch on "baseline drift" to see
+    what went wrong in the IMS final exam.</div>
+    <div class="controls">
+      <label><span class="lbl">Allowance k <output id="u-k-o">0.5</output></span><input type="range" id="u-k" min="0" max="1.5" step="0.05" value="0.5"></label>
+      <label><span class="lbl">Alarm limit h <output id="u-h-o">5</output></span><input type="range" id="u-h" min="2" max="15" step="0.5" value="5"></label>
+      <label><span class="lbl">Baseline drift</span><select id="u-drift"><option value="0" selected>none</option><option value="1">slow drift from the start</option></select></label>
+      <button type="button" class="btn" id="u-new">New random series</button>
+    </div>
+    <div class="plot"><div class="pt">Standardised level per recording (dots) and the CUSUM (line)</div>
+      <div class="legend"><span><i style="background:var(--s1)"></i>z of each recording</span><span><i style="background:var(--s4)"></i>CUSUM</span><span><i style="background:var(--bad)"></i>alarm limit h</span><span><i style="background:var(--s2)"></i>damage starts (140)</span></div>
+      <div id="p-cusum"></div></div>
+    <div class="readout" id="u-read"></div>
+  </div>
+  <div class="key"><b>What the final exam showed</b>
+  On IMS the healthy baseline was 200 records (about 33 hours), recorded every 10 minutes. Over the following weeks the level slowly
+  drifted on <i>every</i> bearing, healthy ones included. The CUSUM crossed its limit within hours to days everywhere: about one false
+  trend event per day. This is the part of the method that still needs work, for example a much longer baseline or a slower,
+  re-baselined statistic.</div>
+</section>
+
+<section class="lesson" id="l18">
+  <span class="lnum">LESSON 18</span>
+  <h3>When the speed changes inside a recording: order tracking</h3>
+  <p>Everything above assumes the speed is constant during one 1 s window. On some machines it is not: in Ottawa 2018 it sweeps from 13 to
+  28 Hz within 10 s. Then a fault at 3.57 orders smears across many Hz, and the line blurs.</p>
+  <p><b>Computed order tracking</b> fixes this with an encoder or tachometer that tells the shaft angle at every moment:</p>
+  <ol>
+    <li>compute the envelope in time, as usual (the ringing is in Hz);</li>
+    <li>resample the envelope to equal steps of <b>shaft angle</b> (128 samples per revolution) instead of equal steps of time;</li>
+    <li>take the spectrum over 20 revolutions. Its axis is now directly in orders, and the fault line is sharp again.</li>
+  </ol>
+  <div class="tbl"><table>
+    <thead><tr><th>Ottawa 2018 (speed sweeping 13–28 Hz)</th><th>AUC</th></tr></thead>
+    <tbody>
+      <tr><td>Encoder + order tracking</td><td class="n">0.922</td></tr>
+      <tr><td>Encoder, but one average speed per window</td><td class="n">0.804</td></tr>
+      <tr><td>Speed estimated from the vibration itself</td><td class="n">0.661</td></tr>
+    </tbody>
+  </table></div>
+  <p>This is why the method insists on a measured speed signal.</p>
+</section>
+
+<!-- ======================================================= -->
+<h2 class="part">Part E · All together</h2>
+
+<section class="lesson" id="l19">
+  <span class="lnum">LESSON 19</span>
+  <h3>The whole pipeline, and how to read the service's output</h3>
+  <div class="mer"><pre class="mmd">flowchart TD
+  A["Recording of one unit + its shaft speed"] --> B["Resample to 12 kHz,&lt;br/&gt;1 s windows (overlap 0.5 s)"]
+  B --> C["Pre-whiten each window"]
+  C --> D["Squared envelope spectrum,&lt;br/&gt;axis in orders"]
+  D --> E["135 bins, 1.5–15 orders"]
+  D --> F["6 fault lines&lt;br/&gt;(if bearing known)"]
+  E --> G["z-score of every bin vs&lt;br/&gt;this unit's healthy baseline"]
+  G --> H["Window score = largest z"]
+  H --> I{"Above the cross-fitted&lt;br/&gt;90% threshold?"}
+  I --> J["Share of flagged windows&lt;br/&gt;→ healthy / watch / faulty"]
+  F --> K["Typing hint on flagged&lt;br/&gt;windows: outer or inner"]
+  A --> L["Log RMS, adjusted for&lt;br/&gt;speed and load"]
+  L --> M["CUSUM across recordings&lt;br/&gt;→ trend alarm"]
+  H --> N["Mean score per recording&lt;br/&gt;→ physics CUSUM"]</pre></div>
+  <h4>One row of output, explained</h4>
+  <p>This is what <code>ad bearing infer</code> writes for each file:</p>
+  <div class="tbl"><table>
+    <thead><tr><th>Column</th><th>Example</th><th>Meaning</th></tr></thead>
+    <tbody>
+      <tr><td><code>unit</code></td><td>pump_A_DE</td><td>Which bearing position (its folder name)</td></tr>
+      <tr><td><code>detector</code></td><td>geometry_free</td><td>Which score was used (lesson 7)</td></tr>
+      <tr><td><code>verdict</code></td><td>faulty</td><td>From the share of flagged windows (lesson 15)</td></tr>
+      <tr><td><code>flagged_fraction</code></td><td>0.91</td><td>Share of the file's windows above the threshold</td></tr>
+      <tr><td><code>score</code> / <code>threshold</code></td><td>6.4 / 2.9</td><td>Median window score, and this unit's threshold</td></tr>
+      <tr><td><code>fault_type</code></td><td>outer race (hint)</td><td>Typing hint (lesson 16); empty if the bearing is unknown</td></tr>
+      <tr><td><code>dominant</code></td><td>bpfo_h2 z=6.1</td><td>Which line (or which order, if unknown) rose most</td></tr>
+      <tr><td><code>level_z</code>, <code>physics_z</code></td><td>4.2, 3.8</td><td>This recording against the healthy recordings (lesson 17)</td></tr>
+      <tr><td><code>cusum_level</code>, <code>cusum_physics</code></td><td>7.9, 5.1</td><td>Running trend sums for this unit</td></tr>
+      <tr><td><code>trend_alarm</code></td><td>True</td><td>A CUSUM crossed its limit</td></tr>
+      <tr><td><code>iso_velocity_mm_s</code>, <code>iso_zone</code></td><td>3.1, C</td><td>Optional ISO 20816 severity (overall vibration velocity, zones A–D)</td></tr>
+    </tbody>
+  </table></div>
+  <p class="muted" style="font-size:15px">The example values are illustrative, not from a real machine.</p>
+</section>
+
+<section class="lesson" id="l20">
+  <span class="lnum">LESSON 20</span>
+  <h3>Requirements, limits, and the evidence</h3>
+  <h4>What a unit needs</h4>
+  <ul>
+    <li>Raw vibration at ≥ 25 kHz, recordings ≥ 1 s long.</li>
+    <li>Shaft speed for every recording: a tachometer or encoder, or the setpoint of a speed-controlled drive.</li>
+    <li>At least 30 minutes of its <b>own</b> healthy data, covering all its operating states.</li>
+    <li>Optional but valuable: the bearing designation or geometry, for typing.</li>
+  </ul>
+  <h4>What it does not do</h4>
+  <ul>
+    <li>Ball and cage faults: mostly missed.</li>
+    <li>A brand-new unit with no healthy history of its own.</li>
+    <li>Reliable multi-day trend alarms: the CUSUM drifts (lesson 17).</li>
+  </ul>
+  <h4>Evidence for each design choice</h4>
+  <div class="tbl"><table>
+    <thead><tr><th>Choice</th><th>Evidence</th></tr></thead>
+    <tbody>
+      <tr><td>No classifier, own baseline</td><td>CWRU-trained classifier: Ottawa 2018 AUC 0.48; the physics score 0.92–1.00. Own vs fleet baseline: 0.93 vs 0.71.</td></tr>
+      <tr><td>Geometry-free detection</td><td>Beat or matched the six lines on 6/6 development sets; won HUST (4/5 sizes) and LDM (10 vs 9 bearings); on IMS rose to 0.88–0.97 on all 4 failing bearings while the six lines barely moved.</td></tr>
+      <tr><td>Maximum, not average</td><td>Family-mean variants lost up to 0.19 AUC (feature set v2).</td></tr>
+      <tr><td>Cross-fitting</td><td>Brought false alarms back to ≤ 10% with small baselines (MFPT, Ottawa 2023).</td></tr>
+      <tr><td>Measured speed</td><td>Estimated speed cost 0.14 AUC; order tracking added 0.12.</td></tr>
+      <tr><td>Level trigger, adjusted for speed/load</td><td>XJTU-SY: 13/15 bearings at zero false-alarm budget; LDM: 14/17.</td></tr>
+    </tbody>
+  </table></div>
+</section>
+
+<section class="lesson" id="quiz">
+  <span class="lnum">FINAL SELF-TEST</span>
+  <h3>Ten questions</h3>
+  <details class="check"><summary>1. In one sentence, what does "geometry-free" mean?</summary><p>The detector watches 135 small slices of the envelope spectrum (1.5–15 orders) against the unit's own healthy history, so it does not need the bearing's ball count or diameters.</p></details>
+  <details class="check"><summary>2. Why do we divide frequency by shaft speed?</summary><p>To get orders, which do not change with speed. A fault line then sits at the same place at 900 or 1500 rpm.</p></details>
+  <details class="check"><summary>3. What problem does pre-whitening solve that the old 1.5–5.5 kHz band did not?</summary><p>It removes the machine's own resonance shape and steady tones without anyone choosing a band, so nothing is guessed or tuned.</p></details>
+  <details class="check"><summary>4. Why did the old method fail at 1500 rpm on Paderborn?</summary><p>Its decision came from a classifier trained on CWRU; that boundary did not fit Paderborn at 1500 rpm. The physics lines themselves still carried the information (AUC 0.84–0.86).</p></details>
+  <details class="check"><summary>5. A bin's healthy log values have mean −6.0 and sd 0.5. A new window has log value −4.5. What is its z?</summary><p>(−4.5 − (−6.0)) / 0.5 = 3.0, three normal wobbles above usual.</p></details>
+  <details class="check"><summary>6. Why can't we just alarm when the largest z exceeds 3?</summary><p>With 135 bins, the largest healthy z is often already 2–3. The threshold must be learned from healthy maximum scores (the conformal rule).</p></details>
+  <details class="check"><summary>7. With 40 healthy scores and α = 10%, which score is the threshold?</summary><p>ceil(41 × 0.9) = ceil(36.9) = the 37th smallest score.</p></details>
+  <details class="check"><summary>8. What goes wrong without cross-fitting, and when does it matter?</summary><p>The baseline judges its own windows too kindly, so the threshold is too low and false alarms exceed 10%. It matters with small baselines; with thousands of windows it makes no difference.</p></details>
+  <details class="check"><summary>9. When does the service say "outer race (hint)" and when does it say nothing?</summary><p>When flagged windows exist and the geometry is known, it compares the outer and inner lines' largest z. With unknown geometry it reports only the dominant order.</p></details>
+  <details class="check"><summary>10. What failed in the final exam, and what held?</summary><p>The detection score held (it rose on all 4 failing bearings). The trend alarm failed: it fired on healthy bearings too, about once per day.</p></details>
+</section>
+
+<section class="lesson" id="glossary">
+  <span class="lnum">GLOSSARY</span>
+  <h3>Words used in this course</h3>
+  <dl class="gl">
+    <dt>Order</dt><dd>A frequency divided by shaft speed in Hz; "per shaft turn".</dd>
+    <dt>BPFO / BPFI</dt><dd>Ball-pass frequency of the outer / inner race: impacts per shaft turn when that race is damaged.</dd>
+    <dt>BSF / FTF</dt><dd>Ball spin frequency / cage (fundamental train) frequency.</dd>
+    <dt>Harmonic</dt><dd>A whole multiple of a frequency (2×, 3× …). A train of sharp knocks has many.</dd>
+    <dt>Envelope</dt><dd>The loudness curve of the vibration over time. Its spectrum shows how often knocks repeat.</dd>
+    <dt>Pre-whitening (CPW)</dt><dd>Setting every frequency's magnitude to 1 before the envelope, removing resonance shape and steady tones.</dd>
+    <dt>SES</dt><dd>Squared envelope spectrum: the spectrum of the squared envelope.</dd>
+    <dt>Bin</dt><dd>One 0.1-order slice of the envelope spectrum. Its value is the highest point inside it, divided by the spectrum's total.</dd>
+    <dt>Geometry-free</dt><dd>Detection from the 135 bins; needs no bearing geometry, gives no race.</dd>
+    <dt>Baseline</dt><dd>A unit's healthy windows: the mean and spread of each bin's log value.</dd>
+    <dt>z-score</dt><dd>How many standard deviations above the baseline mean a value is.</dd>
+    <dt>Conformal threshold</dt><dd>The healthy score below which 90% of healthy windows fall, with a guarantee on new healthy windows.</dd>
+    <dt>Cross-fitting</dt><dd>Scoring each part of the baseline with a baseline built without it, so the threshold is honest.</dd>
+    <dt>Fleet baseline</dt><dd>Using other units' healthy data. Measured to be much worse than a unit's own.</dd>
+    <dt>CUSUM</dt><dd>A running sum of how far each recording is above normal minus an allowance; alarms on sustained rises.</dd>
+    <dt>Order tracking</dt><dd>Resampling to equal steps of shaft angle so orders stay sharp when speed changes.</dd>
+    <dt>AUC</dt><dd>Chance that a faulty window scores higher than a healthy one: 0.5 = coin toss, 1.0 = perfect.</dd>
+  </dl>
+</section>
+
+<footer>Method v1.1 is frozen at commit <code>e7c01a3</code>. Specification: <code>notes/22_method_v1.md</code>; code:
+<code>src/domain_adaptation/method.py</code>, <code>features/geofree.py</code>, <code>features/envelope.py</code>, <code>features/cot.py</code>;
+product: <code>src/serving_core/services/bearing.py</code>. Evidence: notes/17–27.</footer>
+</main>
+</div>
+
+<script src="https://cdnjs.cloudflare.com/ajax/libs/mermaid/10.9.1/mermaid.min.js"></script>
+<script>
+(async function(){
+  if(!window.mermaid)return;
+  mermaid.initialize({startOnLoad:false,securityLevel:"strict",theme:"base",flowchart:{htmlLabels:true,curve:"basis",useMaxWidth:true},
+    themeVariables:{primaryColor:"#dbe7f2",primaryTextColor:"#0f1720",primaryBorderColor:"#3b6d96",lineColor:"#8a97a3",
+      clusterBkg:"#eef3f7",clusterBorder:"#8a97a3",edgeLabelBackground:"#eef3f7",fontFamily:"Atkinson Hyperlegible, system-ui, sans-serif",fontSize:"14px"}});
+  const blocks=[...document.querySelectorAll("pre.mmd")];
+  for(let i=0;i<blocks.length;i++){const b=blocks[i];
+    try{const r=await mermaid.render("cmmd-"+i,b.textContent);const d=document.createElement("div");d.className="mmd-out";d.innerHTML=r.svg;b.replaceWith(d);}
+    catch(e){b.title="Diagram could not be drawn; showing its source";}}
+})();
+</script>
+<script>
+(function(){
+"use strict";
+/* ---------- math ---------- */
+function rng(seed){let a=seed>>>0;return function(){a|=0;a=a+0x6D2B79F5|0;let t=Math.imul(a^a>>>15,1|a);t=t+Math.imul(t^t>>>7,61|t)^t;return((t^t>>>14)>>>0)/4294967296}}
+function gauss(r){let u=0,v=0;while(u===0)u=r();v=r();return Math.sqrt(-2*Math.log(u))*Math.cos(2*Math.PI*v)}
+function fft(re,im){const n=re.length;
+  for(let i=1,j=0;i<n;i++){let bit=n>>1;for(;j&bit;bit>>=1)j^=bit;j^=bit;if(i<j){let t=re[i];re[i]=re[j];re[j]=t;t=im[i];im[i]=im[j];im[j]=t}}
+  for(let len=2;len<=n;len<<=1){const ang=-2*Math.PI/len,wr=Math.cos(ang),wi=Math.sin(ang),h=len>>1;
+    for(let i=0;i<n;i+=len){let cr=1,ci=0;for(let k=0;k<h;k++){const a=i+k,b=a+h;
+      const br=re[b]*cr-im[b]*ci,bi=re[b]*ci+im[b]*cr;re[b]=re[a]-br;im[b]=im[a]-bi;re[a]+=br;im[a]+=bi;
+      const t=cr*wr-ci*wi;ci=cr*wi+ci*wr;cr=t}}}}
+function ifft(re,im){const n=re.length;for(let i=0;i<n;i++)im[i]=-im[i];fft(re,im);for(let i=0;i<n;i++){re[i]/=n;im[i]=-im[i]/n}}
+const FS=12000,N=8192,BPFO=3.053,BPFI=4.947,RES=3300,TONE=2200;
+const LINES=[BPFO,2*BPFO,3*BPFO,BPFI,2*BPFI,3*BPFI];
+const LINE_NAMES=["bpfo_h1","bpfo_h2","bpfo_h3","bpfi_h1","bpfi_h2","bpfi_h3"];
+const BIN_LO=1.5,BIN_W=0.1,NBIN=135;
+function synth(o){ /* {rpm,fault,amp,seed} */
+  const r=rng(o.seed),fsh=o.rpm/60,x=new Float64Array(N),ph=r()*6.283;
+  for(let i=0;i<N;i++){const t=i/FS;
+    x[i]=gauss(r)+0.5*Math.sin(2*Math.PI*fsh*t+ph)+0.25*Math.sin(2*Math.PI*2*fsh*t)+(1.2+0.4*Math.sin(2*Math.PI*fsh*t))*Math.sin(2*Math.PI*TONE*t+ph)}
+  if(o.fault!=="none"&&o.amp>0){
+    const order=o.fault==="outer"?BPFO:BPFI,period=1/(order*fsh),w=2*Math.PI*RES,zeta=0.03,L=Math.floor(5/(zeta*w)*FS);
+    let t=r()*period;
+    while(t<N/FS){const i0=Math.round(t*FS);const g=o.fault==="inner"?(0.55+0.45*Math.cos(2*Math.PI*fsh*t+ph)):1;
+      for(let k=0;k<L&&i0+k<N;k++){const tt=k/FS;x[i0+k]+=o.amp*6*g*Math.exp(-zeta*w*tt)*Math.sin(w*tt)}
+      t+=period*(1+0.01*gauss(r))}}
+  return x}
+function envSpec(x,rpm,mode){ /* mode "new": CPW + squared ; "old": band 1.5-5.5 kHz + envelope */
+  const re=Float64Array.from(x),im=new Float64Array(N);fft(re,im);
+  if(mode==="new"){for(let k=0;k<N;k++){const m=Math.sqrt(re[k]*re[k]+im[k]*im[k])+1e-12;re[k]/=m;im[k]/=m}}
+  else{for(let k=0;k<N;k++){const f=(k<=N/2?k:N-k)*FS/N;if(f<1500||f>5500){re[k]=0;im[k]=0}}}
+  /* analytic signal directly from the spectrum: keep DC & Nyquist, double positive, zero negative */
+  for(let k=1;k<N/2;k++){re[k]*=2;im[k]*=2}for(let k=N/2+1;k<N;k++){re[k]=0;im[k]=0}
+  ifft(re,im);
+  const e=new Float64Array(N);let mean=0;
+  for(let i=0;i<N;i++){const a=re[i]*re[i]+im[i]*im[i];e[i]=mode==="new"?a:Math.sqrt(a);mean+=e[i]}mean/=N;
+  const er=new Float64Array(N),ei=new Float64Array(N);
+  for(let i=0;i<N;i++){er[i]=(e[i]-mean)*(0.5-0.5*Math.cos(2*Math.PI*i/(N-1)))}
+  fft(er,ei);const half=N/2,mag=new Float64Array(half),ords=new Float64Array(half),fsh=rpm/60;
+  for(let k=0;k<half;k++){mag[k]=Math.sqrt(er[k]*er[k]+ei[k]*ei[k]);ords[k]=k*FS/N/fsh}
+  return{mag,ords,fsh}}
+function readFeatures(s){let tot=0;for(let k=0;k<s.ords.length;k++)if(s.ords[k]>=0.5&&s.ords[k]<=12)tot+=s.mag[k];tot+=1e-12;
+  const bins=new Float64Array(NBIN);for(let k=0;k<s.ords.length;k++){const j=Math.floor((s.ords[k]-BIN_LO)/BIN_W);if(j>=0&&j<NBIN&&s.mag[k]>bins[j])bins[j]=s.mag[k]}
+  for(let j=0;j<NBIN;j++)bins[j]/=tot;
+  const lines=LINES.map(c=>{let m=0;for(let k=0;k<s.ords.length;k++)if(Math.abs(s.ords[k]-c)<=0.08&&s.mag[k]>m)m=s.mag[k];return m/tot});
+  return{bins:Array.from(bins),lines}}
+/* ---------- svg helpers ---------- */
+const NS="http://www.w3.org/2000/svg";
+function mk(t,a,p){const e=document.createElementNS(NS,t);for(const k in a)e.setAttribute(k,a[k]);if(p)p.appendChild(e);return e}
+function tx(p,x,y,s,a){const t=mk("text",Object.assign({x,y},a||{}),p);t.textContent=s;return t}
+function frame(id,W,H){const h=document.getElementById(id);h.innerHTML="";return mk("svg",{viewBox:`0 0 ${W} ${H}`,role:"img"},h)}
+function path(pts){let d="";for(let i=0;i<pts.length;i++)d+=(i?"L":"M")+pts[i][0].toFixed(1)+","+pts[i][1].toFixed(1);return d}
+/* ---------- lab: calculator ---------- */
+const PRESETS={"6203":[8,6.75,28.5,0,900],"6205":[9,0.3126,1.537,0,1797],"ZA2115":[16,0.331,2.815,15.17,2000],"61806":[19,3.18,35.5,0,2400]};
+function calc(){const n=+document.getElementById("c-n").value,d=+document.getElementById("c-d").value,D=+document.getElementById("c-D").value,
+  a=+document.getElementById("c-a").value,rpm=+document.getElementById("c-rpm").value,out=document.getElementById("c-out");
+  if(!(n>=3&&d>0&&D>d)){out.innerHTML=`<tr><td colspan="3">Enter n ≥ 3 and a ball diameter smaller than the pitch diameter (same unit).</td></tr>`;return}
+  const r=d/D*Math.cos(a*Math.PI/180),f=rpm/60,rows=[["BPFO · outer race",n/2*(1-r)],["BPFI · inner race",n/2*(1+r)],["BSF · ball spin",D/(2*d)*(1-r*r)],["FTF · cage",0.5*(1-r)]];
+  out.innerHTML=rows.map(([l,o])=>`<tr><td>${l}</td><td class="n">${o.toFixed(3)}</td><td class="n">${(o*f).toFixed(1)} Hz</td></tr>`).join("")+
+    `<tr><td class="muted">Check: BPFO + BPFI</td><td class="n">${(n/2*(1-r)+n/2*(1+r)).toFixed(3)}</td><td class="muted">= number of balls (${n})</td></tr>`}
+document.querySelectorAll("[data-preset]").forEach(b=>b.addEventListener("click",()=>{const p=PRESETS[b.dataset.preset];
+  ["c-n","c-d","c-D","c-a","c-rpm"].forEach((id,i)=>document.getElementById(id).value=p[i]);
+  document.querySelectorAll("[data-preset]").forEach(x=>x.setAttribute("aria-pressed",String(x===b)));calc()}));
+["c-n","c-d","c-D","c-a","c-rpm"].forEach(id=>document.getElementById(id).addEventListener("input",calc));
+calc();
+/* ---------- lab: signal ---------- */
+const S={mode:"new",axis:"ord"},sigBase={};
+function stats(X){const p=X[0].length,mu=new Array(p).fill(0),sd=new Array(p).fill(0);
+  X.forEach(r=>r.forEach((v,j)=>mu[j]+=v/X.length));X.forEach(r=>r.forEach((v,j)=>sd[j]+=(v-mu[j])**2/X.length));
+  return{mu,sd:sd.map(v=>Math.sqrt(v)+1e-12)}}
+function seg(a,b,key,va,vb){a.addEventListener("click",()=>{S[key]=va;a.setAttribute("aria-pressed","true");b.setAttribute("aria-pressed","false");drawSig()});
+  b.addEventListener("click",()=>{S[key]=vb;b.setAttribute("aria-pressed","true");a.setAttribute("aria-pressed","false");drawSig()})}
+seg(document.getElementById("s-new"),document.getElementById("s-old"),"mode","new","old");
+seg(document.getElementById("s-ord"),document.getElementById("s-hz"),"axis","ord","hz");
+function drawSig(){
+  const fault=document.getElementById("s-fault").value,amp=+document.getElementById("s-amp").value,rpm=+document.getElementById("s-rpm").value;
+  document.getElementById("s-amp-o").textContent=amp.toFixed(1);document.getElementById("s-rpm-o").textContent=rpm+" rpm";
+  const x=synth({rpm,fault,amp,seed:7});
+  /* time */
+  {const W=460,H=170,m={l:30,r:8,t:8,b:22},svg=frame("p-time",W,H),n=Math.round(0.1*FS);let mx=0;for(let i=0;i<n;i++)mx=Math.max(mx,Math.abs(x[i]));
+   const pts=[];for(let i=0;i<n;i+=2)pts.push([m.l+(W-m.l-m.r)*i/n,m.t+(H-m.t-m.b)*(0.5-0.5*x[i]/mx)]);
+   mk("line",{x1:m.l,x2:W-m.r,y1:m.t+(H-m.t-m.b)/2,y2:m.t+(H-m.t-m.b)/2,class:"ax"},svg);mk("path",{d:path(pts),class:"trace","stroke-width":"0.8"},svg);
+   tx(svg,m.l,H-6,"0 s");tx(svg,W-m.r,H-6,"0.1 s",{"text-anchor":"end"})}
+  /* spectrum dB */
+  {const re=Float64Array.from(x),im=new Float64Array(N);for(let i=0;i<N;i++)re[i]*=0.5-0.5*Math.cos(2*Math.PI*i/(N-1));fft(re,im);
+   const W=460,H=170,m={l:34,r:8,t:8,b:22},svg=frame("p-spec",W,H),half=N/2,db=new Float64Array(half);let mx=-1e9;
+   for(let k=1;k<half;k++){db[k]=20*Math.log10(Math.sqrt(re[k]*re[k]+im[k]*im[k])+1e-9);mx=Math.max(mx,db[k])}
+   const lo=mx-60,pts=[];for(let k=1;k<half;k+=4){let v=-1e9;for(let q=k;q<k+4&&q<half;q++)v=Math.max(v,db[q]);pts.push([m.l+(W-m.l-m.r)*k/half,m.t+(H-m.t-m.b)*(1-Math.max(0,v-lo)/60)])}
+   if(S.mode==="old"){const x1=m.l+(W-m.l-m.r)*1500/6000,x2=m.l+(W-m.l-m.r)*5500/6000;mk("rect",{x:x1,y:m.t,width:x2-x1,height:H-m.t-m.b,class:"binband"},svg);tx(svg,(x1+x2)/2,m.t+12,"old band",{"text-anchor":"middle"})}
+   mk("path",{d:path(pts),class:"trace","stroke-width":"0.9"},svg);
+   [0,2000,4000,6000].forEach(f=>{const xx=m.l+(W-m.l-m.r)*f/6000;tx(svg,xx,H-6,f/1000+" kHz",{"text-anchor":"middle"})});
+   tx(svg,m.l+(W-m.l-m.r)*TONE/6000,m.t+26,"machine tone",{"text-anchor":"middle"});tx(svg,m.l+(W-m.l-m.r)*RES/6000+10,m.t+40,"fault ringing",{"text-anchor":"start"})}
+  /* envelope spectrum */
+  const s=envSpec(x,rpm,S.mode),feat=readFeatures(s);
+  /* a small healthy baseline of this same machine at this speed (12 windows), as the method does */
+  const key=rpm+"_"+S.mode;
+  if(!sigBase[key]){const B=[],L=[];for(let i=0;i<12;i++){const f=readFeatures(envSpec(synth({rpm,fault:"none",amp:0,seed:300+i}),rpm,S.mode));
+      B.push(f.bins.map(v=>Math.log(v+1e-9)));L.push(f.lines.map(v=>Math.log(v+1e-9)))}sigBase[key]={b:stats(B),l:stats(L)}}
+  const zb=feat.bins.map((v,j)=>(Math.log(v+1e-9)-sigBase[key].b.mu[j])/sigBase[key].b.sd[j]);
+  const zl=feat.lines.map((v,j)=>(Math.log(v+1e-9)-sigBase[key].l.mu[j])/sigBase[key].l.sd[j]);
+  let jb=0;zb.forEach((v,j)=>{if(v>zb[jb])jb=j});
+  let jl=0;zl.forEach((v,j)=>{if(v>zl[jl])jl=j});
+  {const W=940,H=230,m={l:40,r:12,t:12,b:28},svg=frame("p-env",W,H);
+   const maxO=15,maxHz=maxO*s.fsh,useO=S.axis==="ord";
+   const X=o=>m.l+(W-m.l-m.r)*(useO?o/maxO:(o*s.fsh)/maxHz);
+   let mx=0;for(let k=0;k<s.ords.length;k++)if(s.ords[k]>0.3&&s.ords[k]<=maxO)mx=Math.max(mx,s.mag[k]);
+   const Y=v=>m.t+(H-m.t-m.b)*(1-v/mx);
+   /* geometry-free region and hottest bin */
+   mk("rect",{x:X(BIN_LO),y:m.t,width:X(15)-X(BIN_LO),height:H-m.t-m.b,class:"binband"},svg);
+   mk("rect",{x:X(BIN_LO+jb*BIN_W),y:m.t,width:Math.max(2,X(BIN_LO+(jb+1)*BIN_W)-X(BIN_LO+jb*BIN_W)),height:H-m.t-m.b,class:"hot",opacity:".35"},svg);
+   LINES.forEach((c,i)=>{if(c<maxO){const xx=X(c);mk("line",{x1:xx,x2:xx,y1:m.t,y2:H-m.b,class:i<3?"mk-o":"mk-i"},svg)}});
+   const pts=[];for(let k=1;k<s.ords.length&&s.ords[k]<=maxO;k++)pts.push([X(s.ords[k]),Y(s.mag[k])]);
+   mk("path",{d:path(pts),class:"trace"},svg);mk("line",{x1:m.l,x2:W-m.r,y1:H-m.b,y2:H-m.b,class:"base"},svg);
+   for(let t=0;t<=maxO;t+=useO?1:Math.max(1,Math.round(maxO/6))){const v=useO?t:Math.round(t*s.fsh);const xx=useO?X(t):X(t);
+     tx(svg,xx,H-10,useO?String(t):(v+" Hz"),{"text-anchor":"middle"})}
+   tx(svg,W-m.r,H-0,useO?"orders of shaft speed":"Hz",{"text-anchor":"end"});tx(svg,X(BIN_LO)+4,m.t+12,"geometry-free range 1.5–15 orders",{})}
+  document.getElementById("s-read").innerHTML=
+    `<div>Shaft speed<b>${(rpm/60).toFixed(1)} Hz</b></div><div>BPFO here<b>${(BPFO*rpm/60).toFixed(1)} Hz = 3.053 ord</b></div>`+
+    `<div>Bin that rose most vs healthy<b>${(BIN_LO+jb*BIN_W).toFixed(1)}–${(BIN_LO+(jb+1)*BIN_W).toFixed(1)} ord, z = ${zb[jb].toFixed(1)}</b></div>`+
+    `<div>Line that rose most vs healthy<b>${LINE_NAMES[jl]}, z = ${zl[jl].toFixed(1)}</b></div>`}
+["s-fault","s-amp","s-rpm"].forEach(id=>document.getElementById(id).addEventListener("input",drawSig));
+drawSig();
+/* ---------- lab: detector ---------- */
+const cache={};
+function featOf(seedKey,o){if(!cache[seedKey])cache[seedKey]=readFeatures(envSpec(synth(o),o.rpm,"new"));return cache[seedKey]}
+function logs(f,det){return(det==="geo"?f.bins:f.lines).map(v=>Math.log(v+1e-9))}
+function fitBase(X,groups){const p=X[0].length,mu=new Array(p).fill(0),sd=new Array(p).fill(0);
+  X.forEach(r=>r.forEach((v,j)=>mu[j]+=v));mu.forEach((v,j)=>mu[j]=v/X.length);
+  X.forEach(r=>r.forEach((v,j)=>sd[j]+=(v-mu[j])**2));sd.forEach((v,j)=>sd[j]=Math.sqrt(v/X.length)+1e-12);
+  const score=r=>Math.max(...r.map((v,j)=>(v-mu[j])/sd[j]));
+  const insample=X.map(score);
+  const cal=X.map((r,i)=>{const others=X.filter((_,q)=>groups[q]!==groups[i]);const m2=new Array(p).fill(0),s2=new Array(p).fill(0);
+    others.forEach(o=>o.forEach((v,j)=>m2[j]+=v));m2.forEach((v,j)=>m2[j]=v/others.length);
+    others.forEach(o=>o.forEach((v,j)=>s2[j]+=(v-m2[j])**2));s2.forEach((v,j)=>s2[j]=Math.sqrt(v/others.length)+1e-12);
+    return Math.max(...r.map((v,j)=>(v-m2[j])/s2[j]))});
+  return{mu,sd,score,insample,cal,z:r=>r.map((v,j)=>(v-mu[j])/sd[j])}}
+function conformal(s,a){const t=[...s].sort((x,y)=>x-y),k=Math.ceil((t.length+1)*(1-a));return k>t.length?Infinity:t[k-1]}
+function drawDet(){
+  const det=document.getElementById("d-det").value,fault=document.getElementById("d-fault").value,amp=+document.getElementById("d-amp").value,
+    size=+document.getElementById("d-size").value,xf=document.getElementById("d-xf").value==="1";
+  document.getElementById("d-amp-o").textContent=amp.toFixed(2);
+  const recs=size===12?3:4,per=size/recs,X=[],G=[];
+  for(let r=0;r<recs;r++)for(let w=0;w<per;w++){X.push(logs(featOf(`b${r}_${w}`,{rpm:900,fault:"none",amp:0,seed:1000+r*100+w}),det));G.push(r)}
+  const b=fitBase(X,G),thr=conformal(xf?b.cal:b.insample,0.10);
+  const H=[],F=[];for(let i=0;i<20;i++){H.push(b.score(logs(featOf(`h${i}`,{rpm:900,fault:"none",amp:0,seed:5000+i}),det)));
+    F.push(b.score(logs(featOf(`f_${fault}_${amp}_${i}`,{rpm:900,fault,amp,seed:9000+i}),det)))}
+  /* strip */
+  {const W=940,Hh=130,m={l:20,r:20,t:14,b:26},svg=frame("p-strip",W,Hh);const all=H.concat(F,[isFinite(thr)?thr:0]);
+   const lo=Math.min(0,...all),hi=Math.max(...all)*1.05+0.5,X_=v=>m.l+(W-m.l-m.r)*(v-lo)/(hi-lo);
+   mk("line",{x1:m.l,x2:W-m.r,y1:Hh-m.b,y2:Hh-m.b,class:"base"},svg);
+   for(let t=Math.ceil(lo);t<=hi;t+=Math.max(1,Math.round((hi-lo)/10)))tx(svg,X_(t),Hh-8,String(t),{"text-anchor":"middle"});
+   H.forEach((v,i)=>mk("circle",{cx:X_(v),cy:m.t+20+(i%5)*6,r:4.5,class:"f-s1"},svg));
+   F.forEach((v,i)=>mk("circle",{cx:X_(v),cy:m.t+58+(i%5)*6,r:4.5,class:"f-s2"},svg));
+   if(isFinite(thr)){mk("line",{x1:X_(thr),x2:X_(thr),y1:m.t-4,y2:Hh-m.b,class:"thr"},svg);tx(svg,X_(thr)+5,m.t+4,"threshold "+thr.toFixed(2),{fill:"var(--bad)"})}
+   tx(svg,m.l,m.t+4,"healthy");tx(svg,m.l,m.t+52,"faulty")}
+  const fa=H.filter(v=>v>thr).length,rc=F.filter(v=>v>thr).length;
+  document.getElementById("d-read").innerHTML=`<div>Baseline<b>${size} windows</b></div><div>Threshold<b>${isFinite(thr)?thr.toFixed(2):"∞ (too few)"}</b></div>`+
+    `<div>New healthy flagged<b>${fa} / 20 = ${(fa/20*100).toFixed(0)}%</b></div><div>Faulty flagged<b>${rc} / 20 = ${(rc/20*100).toFixed(0)}%</b></div>`;
+  /* z profile of the first faulty window */
+  {const z=b.z(logs(featOf(`f_${fault}_${amp}_0`,{rpm:900,fault,amp,seed:9000}),det)),W=940,Hh=200,m={l:34,r:10,t:12,b:30},svg=frame("p-z",W,Hh);
+   const zmax=Math.max(4,...z)*1.05,zmin=Math.min(-3,...z),Y=v=>m.t+(Hh-m.t-m.b)*(zmax-v)/(zmax-zmin),bw=(W-m.l-m.r)/z.length;
+   [-2,0,2,4,6,8,10].filter(t=>t>=zmin&&t<=zmax).forEach(t=>{mk("line",{x1:m.l,x2:W-m.r,y1:Y(t),y2:Y(t),class:"ax"},svg);tx(svg,m.l-4,Y(t)+4,String(t),{"text-anchor":"end"})});
+   const imax=z.indexOf(Math.max(...z));
+   z.forEach((v,j)=>{mk("rect",{x:m.l+j*bw+(det==="geo"?0.3:bw*0.2),y:Math.min(Y(v),Y(0)),width:det==="geo"?Math.max(1,bw-0.6):bw*0.6,height:Math.max(1,Math.abs(Y(v)-Y(0))),
+     class:j===imax?"f-s2":(v>=0?"f-s1":"f-muted"),rx:1},svg)});
+   if(det==="geo"){LINES.forEach((c,i)=>{if(c<15){const xx=m.l+(c-BIN_LO)/BIN_W*bw;mk("line",{x1:xx,x2:xx,y1:m.t,y2:Hh-m.b,class:i<3?"mk-o":"mk-i"},svg)}});
+     [2,4,6,8,10,12,14].forEach(o=>tx(svg,m.l+(o-BIN_LO)/BIN_W*bw,Hh-12,o+" ord",{"text-anchor":"middle"}));
+     tx(svg,m.l+(imax+0.5)*bw,Y(z[imax])-6,"score = "+z[imax].toFixed(1)+" at "+(BIN_LO+imax*BIN_W).toFixed(1)+" ord",{"text-anchor":imax>90?"end":"start",fill:"var(--ink)"})}
+   else{LINE_NAMES.forEach((n,j)=>tx(svg,m.l+(j+0.5)*bw,Hh-12,n,{"text-anchor":"middle"}));tx(svg,m.l+(imax+0.5)*bw,Y(z[imax])-6,"score = "+z[imax].toFixed(1),{"text-anchor":"middle",fill:"var(--ink)"})}}
+}
+["d-det","d-fault","d-amp","d-size","d-xf"].forEach(id=>document.getElementById(id).addEventListener("change",drawDet));
+document.getElementById("d-amp").addEventListener("input",()=>{document.getElementById("d-amp-o").textContent=(+document.getElementById("d-amp").value).toFixed(2)});
+drawDet();
+/* ---------- lab: CUSUM ---------- */
+let cseed=3;
+function drawCusum(){const k=+document.getElementById("u-k").value,h=+document.getElementById("u-h").value,drift=document.getElementById("u-drift").value==="1";
+  document.getElementById("u-k-o").textContent=k.toFixed(2);document.getElementById("u-h-o").textContent=h.toFixed(1);
+  const r=rng(cseed),n=200,u=[],c=[];let s=0,first=-1,fa=0,was=false;
+  for(let i=0;i<n;i++){let z=gauss(r);if(i>=140)z+=(i-140)*0.06;if(drift)z+=i*0.012;u.push(z);s=Math.max(0,s+z-k);c.push(s);
+    const al=s>h;if(al&&!was){if(i<140)fa++;else if(first<0)first=i}was=al}
+  const W=940,H=230,m={l:34,r:10,t:12,b:26},svg=frame("p-cusum",W,H),ymax=Math.max(h*1.4,Math.min(40,Math.max(...c)*1.05),5),ymin=-3.5,
+    X=i=>m.l+(W-m.l-m.r)*i/(n-1),Y=v=>m.t+(H-m.t-m.b)*(ymax-Math.min(ymax,v))/(ymax-ymin);
+  [0,5,10,15,20,30,40].filter(t=>t<=ymax).forEach(t=>{mk("line",{x1:m.l,x2:W-m.r,y1:Y(t),y2:Y(t),class:"ax"},svg);tx(svg,m.l-4,Y(t)+4,String(t),{"text-anchor":"end"})});
+  mk("line",{x1:X(140),x2:X(140),y1:m.t,y2:H-m.b,class:"mk-o"},svg);
+  u.forEach((v,i)=>mk("circle",{cx:X(i),cy:Y(v),r:2.2,class:"f-s1",opacity:".7"},svg));
+  mk("path",{d:path(c.map((v,i)=>[X(i),Y(v)])),fill:"none",stroke:"var(--s4)","stroke-width":2},svg);
+  mk("line",{x1:m.l,x2:W-m.r,y1:Y(h),y2:Y(h),class:"thr"},svg);
+  [0,50,100,140,200].forEach(i=>tx(svg,X(Math.min(i,n-1)),H-8,String(i),{"text-anchor":"middle"}));
+  document.getElementById("u-read").innerHTML=`<div>False alarm events before damage<b>${fa}</b></div><div>First alarm after damage<b>${first<0?"none":"recording "+first}</b></div>`+
+    `<div>Delay after damage start<b>${first<0?"—":(first-140)+" recordings"}</b></div>`}
+["u-k","u-h","u-drift"].forEach(id=>document.getElementById(id).addEventListener("input",drawCusum));
+document.getElementById("u-new").addEventListener("click",()=>{cseed++;drawCusum()});
+drawCusum();
+})();
+</script>
