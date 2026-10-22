@@ -99,5 +99,39 @@ Readings:
 | both fail | With these features, max-z against the unit's own baseline is already as good a comparator as 8 source datasets can teach. Track A closes. **This is a result, not a failure of the track** |
 | A2 passes and A1 does not | The order-aware structure (harmonics) is what transfers. That is checked by the post-hoc attention map, which is descriptive only |
 
-## 7. Results
-(to be filled by `scripts/analysis/p3_meta.py`)
+## 7. Results (2026-10-22): **both fail; max-z is already as good a comparator as 8 sources can teach**
+Run: `remote/box run p3meta` (second rental; one process per model × seed; 5622 s). Report:
+`outputs/p3/meta/report.md`. A0 parity held first (14/14, `outputs/p3/a0_report.md`).
+
+| held-out dataset | v1.1 AUC | A1 rank pool (5 seeds, sd) | A2 bin transformer (5 seeds, sd) |
+|---|---|---|---|
+| cwru | 0.951 | 0.958 (0.001) | 0.943 (0.011) |
+| pu | 0.899 | **0.839 (0.041)** | 0.823 (0.036) |
+| ottawa_2018 | 0.998 | 0.999 (0.000) | 0.936 (0.042) |
+| ottawa_2023 (own) | 0.971 | 0.987 (0.001) | 0.976 (0.012) |
+| mfpt | 0.996 | 0.985 (0.005) | **0.873 (0.113)** |
+| hust | 0.894 | **0.936 (0.002)** | 0.915 (0.014) |
+| xjtu_sy | 0.830 | 0.844 (0.001) | 0.805 (0.013) |
+| paderborn_ldm | 0.678 | 0.692 (0.005) | 0.622 (0.025) |
+| ims | 0.833 | 0.843 (0.006) | 0.778 (0.048) |
+| **gate** | | mean dAUC **+0.004** (need +0.02); worst pu −0.060; dFA worst −0.008 → **FAIL** | mean dAUC **−0.042**; worst mfpt −0.123; dFA worst +0.136 → **FAIL** |
+
+Reading (§6): **both fail**. With these features, max-z against the unit's own baseline is as good
+a comparator as eight source datasets can teach. **Track A closes.** This is a result, not a defect
+of the track.
+- **A1** stays close to v1.1, because it starts *as* v1.1 and moves only a little.
+  - It gains a little on 7 of 9 held-out sets: HUST +0.042, Ottawa 2023 +0.016, XJTU-SY / LDM +0.014,
+    IMS +0.010.
+  - It loses where it matters most: Paderborn −0.060, with a large seed spread (0.041). That is
+    the one set with real damage on several physical bearings.
+  - The "specialist" reading does not apply either: of the hard rows it helps HUST, LDM and IMS a
+    little and hurts Paderborn a lot.
+- **A2** overfits the sources. The order-aware transformer learns which bins matter on the training
+  bearings, and that does not carry to another bearing's orders. It loses on 7 of 9 sets and raises
+  worst-unit FA by 0.14.
+  - This is the same lesson as notes/12, one level up: *what* rose does not transfer, only *that
+    something rose against the unit's own baseline*.
+- Together with Track B (notes/31), the conclusion is that the gain is not in learning a better
+  comparison. The physics representation plus its nuisance invariance, plus a simple max-rise
+  rule against the unit's own baseline, is close to what this data supports.
+- A3 (synthetic-fault episodes) is **not run**. It was conditional on A1 or A2 showing a signal.

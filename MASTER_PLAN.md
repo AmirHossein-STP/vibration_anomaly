@@ -37,11 +37,22 @@ The pre-registered results are in notes/22–27:
 | 18 | **IMS final exam (frozen `e7c01a3`): NOT consistent with development** on the pre-registered readings (1.02 false trend events/day vs ≤ 1; the trend alarm is non-specific). Post hoc: the geometry-free *detection score* rises to 0.88–0.97 on all 4 failing bearings, and the six-line score does not |
 | 19 | deployment kit: data spec, inventory template, acceptance checklist, ISO 20816 L0 |
 
+**Phase 3 executed 2026-10-22: different angles** (owner: "totally different approaches, e.g.
+meta-learning"). Each track was pre-registered in notes/28–31 before it ran.
+
+| track | result |
+|---|---|
+| Step 0 | **Ferrara** (6 run-to-failure tests) and **KAIST** (1) sealed *by checksum* (`stage: pin`; nothing downloaded or seen). They are the next exam. IMS is now development data |
+| A, meta-learned comparison | Learning `f(window \| own healthy support)` across 8 datasets and testing on the 9th (5 seeds). **Both fail**: the rank pool +0.004 mean AUC (Paderborn −0.06), the bin transformer −0.042. Max-z against the own baseline is as good as the sources can teach (notes/29) |
+| B, foundation model (MOMENT-1) + own-baseline kNN | **Ranks faults at AUC ≈ 1.0 on 5/6 sets but cannot be thresholded** (worst-unit FA 0.78–1.00; Paderborn 0.73). The physics features' value is invariance to nuisance changes (notes/31) |
+| C, trigger as sequential test | **No trigger passes.** Conformal martingales (Ville threshold) give 3.7–7.1 false events/day on healthy IMS units: real healthy data is not exchangeable. Post hoc, the v1.1 CUSUM with h from *long healthy history* gives 1 event in 236 days and detects 4/4 IMS failures, so **the WP18 failure was the threshold, not the CUSUM** (notes/30) |
+
 **Open next:**
-- the trend trigger (a long, drifting baseline at a slow cadence);
-- a fresh unseen run-to-failure set to confirm a revised trigger (IMS is spent);
-- ball/cage coverage;
-- real machine data, still the only real test.
+- **The trend trigger's h, learned from accumulated healthy history** (notes/30 §5.1). Confirm on
+  Ferrara with h from tests E1..E(k−1) applied to E(k), with no peeking. This is the one Phase 3 lead.
+- Write the Ferrara/KAIST exam protocol from the published articles (notes/28 §2) before unsealing.
+- Ball/cage coverage.
+- Real machine data, still the only real test.
 
 Decisions recorded with the owner on 2026-10-15:
 
@@ -736,6 +747,10 @@ In `src/serving_core/services/bearing.py`, using the registry in
 - Kaggle as a runtime (it stays a data relay only).
 - Assuming where computation runs. The owner decides for every heavy step.
 - Research on the hydraulic rig, until real pump process data exists.
+- (Phase 3) Learning the detection comparison across datasets (notes/29), and generic
+  time-series embeddings as a detector across loads or units (notes/31). Both are closed.
+- (Phase 3) Conformal-martingale triggers with a theoretical threshold on vibration levels
+  (notes/30). Healthy levels are not exchangeable.
 
 ---
 
@@ -793,6 +808,8 @@ In `src/serving_core/services/bearing.py`, using the registry in
 | `notes/19_wp3_feature_v2.md` | Evidence: WP3 feature v2 (rejected; v1 stays) |
 | `notes/20_wp10_speed_from_vibration.md` | Evidence: WP10 speed estimator validation; the speed-signal requirement |
 | `notes/21_wp6_sensitivity_curve.md` | Evidence: WP6 synthetic-fault sensitivity curve (does not predict real detection) |
+| `notes/28_phase3_exam_sealed.md` | Phase 3: Ferrara + KAIST sealed by checksum (the next exam) |
+| `notes/29_p3_meta_learning.md`, `notes/30_p3_trigger.md`, `notes/31_p3_foundation_model.md` | Phase 3 evidence: meta-learning, trigger as sequential test, foundation-model embeddings |
 | `remote/README.md` | **How to use a rented server** (`remote/box`), the vault, the dataset registry |
 | `notes/11_gpu_server_runbook.md`, `ephemeral_server_manual.md` | History: the hand-run server setup |
 | `reports/turbomachinery_roadmap.html` | Non-technical summary (L0–L5). To be updated at WP11 |
