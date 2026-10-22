@@ -17,7 +17,8 @@ sys.path.insert(0, "src")
 sys.path.insert(0, str(Path(__file__).parent))
 from domain_adaptation.data.public_datasets import xjtu_bearings
 from wp5_cache import load_wp5
-from wp7_xjtu import CAL_MIN, ROOT, loo_cal_scores, rms_per_minute, zscores
+from domain_adaptation.method import LINES, cusum, ewma, fit_baseline, standardise
+from wp7_xjtu import CAL_MIN, ROOT, rms_per_minute
 
 HEALTHY = (21, 60)
 LONG_LIFE = 120
@@ -30,30 +31,23 @@ def standardised(df: pd.DataFrame, b, channel: int) -> dict[str, np.ndarray]:
     name = "horizontal" if channel == 0 else "vertical"
     f = df[(df.unit == b.bearing) & (df.channel == name)].sort_values("minute")
     cal = f[f.minute <= CAL_MIN]
-    s = zscores(cal, f).max(1)
-    c = loo_cal_scores(cal)
-    phys = (s - c.mean()) / (c.std(ddof=1) + 1e-12)
+    base = fit_baseline(cal[LINES].to_numpy(), cal.minute.to_numpy())    # method v1.0: leave one minute out
+    phys = standardise(base.score(f[LINES].to_numpy()), base.cal_scores)
     rms = rms_per_minute(b.path, channel)
-    r = (rms - rms[:CAL_MIN].mean()) / (rms[:CAL_MIN].std(ddof=1) + 1e-12)
+    r = standardise(rms, rms[:CAL_MIN])
     # notes/18 §6.2: kurtosis of the record's 1 s window (log, own baseline)
     lk = np.log(f.td_kurtosis.to_numpy())
-    kurt = (lk - lk[:CAL_MIN].mean()) / (lk[:CAL_MIN].std(ddof=1) + 1e-12)
+    kurt = standardise(lk, lk[:CAL_MIN])
     return {"phys": phys, "rms": r, "kurt": kurt}
 
 
 def statistic(u: np.ndarray, kind: str) -> np.ndarray:
     """Over minutes 21.. (index 20..); minutes 1-20 are NaN."""
-    out = np.full(len(u), np.nan)
-    state = 0.0
-    for i in range(CAL_MIN, len(u)):
-        if kind == "raw":
-            state = u[i]
-        elif kind == "ewma":
-            state = LAMBDA * u[i] + (1 - LAMBDA) * state
-        else:
-            state = max(0.0, state + u[i] - K)
-        out[i] = state
-    return out
+    if kind == "raw":
+        out = np.asarray(u, dtype=np.float64).copy()
+        out[:CAL_MIN] = np.nan
+        return out
+    return ewma(u, LAMBDA, CAL_MIN) if kind == "ewma" else cusum(u, K, CAL_MIN)
 
 
 def series(df, bearings, channel_mode: str) -> dict:

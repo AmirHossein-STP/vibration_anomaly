@@ -131,12 +131,29 @@ def resolve_url(src: dict) -> list[FileSpec]:
             for f in src["files"]]
 
 
+def resolve_hf_tree(src: dict) -> list[FileSpec]:
+    """A Hugging Face dataset repo: LFS files carry a sha256, small files a git blob sha1."""
+    rev = src.get("revision", "main")
+    tree = http_json(f"https://huggingface.co/api/datasets/{src['repo']}/tree/{rev}?recursive=true")
+    pat = re.compile(src["include"])
+    out = []
+    for e in tree:
+        if e.get("type") != "file" or not pat.search(e["path"]):
+            continue
+        lfs = e.get("lfs")
+        out.append(FileSpec(e["path"], f"https://huggingface.co/datasets/{src['repo']}/resolve/{rev}/"
+                            f"{urllib.parse.quote(e['path'])}", e.get("size"),
+                            f"sha256:{lfs['oid']}" if lfs else f"gitsha1:{e['oid']}"))
+    return out
+
+
 RESOLVERS = {
     "github_tree": resolve_github_tree,
     "mendeley": resolve_mendeley,
     "zenodo": resolve_zenodo,
     "mediafire_folder": resolve_mediafire_folder,
     "url": resolve_url,
+    "hf_tree": resolve_hf_tree,
 }
 
 MEDIAFIRE_DIRECT = re.compile(r'https?://download\d*\.mediafire\.com/[^"\'\s<>]+')
@@ -332,6 +349,55 @@ def record_condensed(ddir: Path, m: dict) -> None:
     }
 
 
+def fetch_stream(name: str, cfg: dict, ddir: Path, m: dict, src: dict, specs: list[FileSpec],
+                 scratch: Path, repo: Path, jobs: int) -> dict:
+    """stage: stream -- for sets larger than the vault. Files are grouped by
+    the registry's `group` regex. Each group is downloaded to the SSD,
+    checked, condensed to `condensed/<group>/` on the vault, and deleted;
+    the manifest is saved after every group, so an interrupted run resumes
+    at the first group not marked done."""
+    gre = re.compile(cfg["group"])
+    groups: dict[str, list[FileSpec]] = {}
+    for s in specs:
+        g = gre.search(s.name)
+        if g:
+            groups.setdefault(g.group(1), []).append(s)
+    m.setdefault("groups", {})
+    raw_root = scratch / name / cfg["version"] / "raw"
+    for g, gspecs in sorted(groups.items()):
+        out = ddir / "condensed" / g
+        if m["groups"].get(g) == "done" and out.is_dir():
+            print(f"  [{g}] done, skipping", flush=True)
+            continue
+        need = sum(s.size or 0 for s in gspecs)
+        require_space(scratch, need, f"{name}/{g} (raw on SSD)")
+        print(f"  [{g}] {len(gspecs)} files, {need / 1e9:.2f} GB", flush=True)
+        with ThreadPoolExecutor(max_workers=jobs) as pool:
+            futs = {pool.submit(download, s, raw_root / s.name): s for s in gspecs}
+            for fut in as_completed(futs):
+                m["raw"][futs[fut].name] = fut.result()      # raises on any failure: rerun resumes
+        gdir = raw_root / PurePosixPath(gspecs[0].name).parent
+        tmp = ddir / "condensed" / f"{g}.partial"
+        shutil.rmtree(tmp, ignore_errors=True)
+        cmd = [sys.executable, str(HERE / f"{cfg['condense']}.py"), "--raw-dir", str(gdir), "--out", str(tmp),
+               "--src", str(repo / "src")]
+        subprocess.run(cmd, check=True, cwd=repo)
+        shutil.rmtree(out, ignore_errors=True)
+        os.replace(tmp, out)
+        shutil.rmtree(gdir, ignore_errors=True)
+        m["groups"][g] = "done"
+        record_condensed(ddir, m)
+        save_manifest(ddir, m)
+        print(f"  [{g}] condensed -> {out}", flush=True)
+    m["status"] = "complete"
+    m["raw_on_vault"] = False
+    m["history"].append({"at": now(), "by": socket.gethostname(), "event": "complete (streamed)"})
+    save_manifest(ddir, m)
+    write_source_md(ddir, m)
+    print(f"{name}: complete -> {ddir}", flush=True)
+    return m
+
+
 def fetch(name: str, cfg: dict, vault: Path, scratch: Path, repo: Path, jobs: int,
           force: bool = False, keep_raw: bool = False) -> dict:
     ddir = dataset_dir(vault, name, cfg)
@@ -349,6 +415,9 @@ def fetch(name: str, cfg: dict, vault: Path, scratch: Path, repo: Path, jobs: in
     if len(set(names)) != len(names):
         raise FetchError(f"{name}: duplicate file names after layout={cfg.get('layout')}")
     m["source"] = src
+    if cfg["stage"] == "stream":
+        require_space(ddir.parent.parent.parent, int(cfg["expected_gb"] * 1e9), f"{name} (condensed)")
+        return fetch_stream(name, cfg, ddir, m, src, specs, scratch, repo, jobs)
 
     raw_dir = ddir / "raw" if cfg["stage"] == "vault" else scratch / name / cfg["version"] / "raw"
     if raw_dir.exists() and not os.access(raw_dir, os.W_OK):

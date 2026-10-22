@@ -31,13 +31,14 @@ sys.path.insert(0, str(Path(__file__).parent))
 from sklearn.metrics import roc_auc_score
 
 from domain_adaptation.data.public_datasets import LABEL_NAMES
+from domain_adaptation.method import LINES, default_groups, fit_baseline
 from domain_adaptation.features.envelope import FEATURE_NAMES
 from envelope_cache import load_cache
 from wp1_rescore import conformal_threshold, drift_report, fit_source
 from wp5_cache import load_wp5
 
 ALPHA = 0.10
-PEAKS = ["bpfo_h1", "bpfo_h2", "bpfo_h3", "bpfi_h1", "bpfi_h2", "bpfi_h3"]
+PEAKS = LINES
 RACE = (1, 2)
 FAULTY_LEVEL = 0.50          # bearing service `faulty` recording level (notes/14)
 
@@ -73,9 +74,12 @@ def crossfit_scores(cal: pd.DataFrame) -> np.ndarray:
 
 
 def physics_xf(cal: pd.DataFrame):
-    score, stats = physics(cal)
-    score.calibration = crossfit_scores(cal)
-    return score, stats
+    """Method v1.0 (src/domain_adaptation/method.py, notes/22): own baseline,
+    cross-fitted calibration. Numerically identical to physics() + crossfit_scores()."""
+    b = fit_baseline(cal[PEAKS].to_numpy(), default_groups(cal.recording.to_numpy(), cal.t0.to_numpy()))
+    score = lambda f: b.score(f[PEAKS].to_numpy())
+    score.calibration = b.cal_scores
+    return score, (b.mu, b.sd)
 
 
 def zmax_xf(cols: list[str]):

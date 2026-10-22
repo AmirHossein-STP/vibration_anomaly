@@ -51,9 +51,11 @@ def test_registry_entries_are_complete():
         for key in ("version", "role", "stage", "expected_gb", "sources", "license", "citation"):
             assert key in cfg, f"{name} lacks {key}"
         assert cfg["role"] in ("dev", "sealed")
-        assert cfg["stage"] in ("vault", "ssd")
+        assert cfg["stage"] in ("vault", "ssd", "stream")
         assert all(s["kind"] in fetch.RESOLVERS for s in cfg["sources"])
-        if cfg["stage"] == "ssd":
+        if cfg["stage"] == "stream":
+            assert cfg.get("group") and cfg.get("condense"), f"{name}: a stream needs a group regex and a condenser"
+        if cfg["stage"] in ("ssd", "stream"):
             assert cfg.get("condense"), f"{name}: an ssd-staged dataset must be condensed onto the vault"
             assert (DATASETS / f"{cfg['condense']}.py").is_file()
     assert reg["ims"]["role"] == "sealed"

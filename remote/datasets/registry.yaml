@@ -10,11 +10,15 @@
 #   zenodo            record id; checksum = md5
 #   mediafire_folder  folder key; checksum = sha256
 #   url               explicit list of {url, name}; no publisher checksum
+#   hf_tree           Hugging Face dataset repo + regex; checksum = LFS sha256 or git blob sha1
 #
 # `stage: vault`  files land directly in <vault>/datasets/<name>/<version>/raw
 # `stage: ssd`    files land in ~/work/scratch (the big ephemeral SSD), are
 #                 condensed into <vault>/.../condensed by `condense`, then
 #                 deleted -- used where raw would not fit in 32 GB
+# `stage: stream` larger than vault and SSD together: files are grouped by the
+#                 `group` regex; each group is downloaded to the SSD, condensed
+#                 onto the vault, deleted; resumable per group
 # `role: sealed`  downloaded and checksummed, never extracted (MASTER_PLAN §4.3)
 #
 # NOT reachable from the box (2026-10-22), do not add as sources:
@@ -108,6 +112,55 @@ datasets:
         repo: mathworks/RollingElementBearingFaultDiagnosis-Data
         ref: master
         include: '\.(mat|md|txt)$'
+
+  # --- Phase 2 (2026-10-22, owner-approved). UNSEEN until each WP's notes
+  # pre-registration is written: fetching does not look at signals or labels.
+
+  hust:
+    version: mendeley-cbv7jyx4p9-v3
+    role: dev
+    stage: vault
+    expected_gb: 0.75
+    license: "CC BY 4.0"
+    citation: "Thuan & Hong, HUST bearing: a practical dataset for ball bearing fault diagnosis, BMC Research Notes 16, 138 (2023)"
+    notes: "Five bearing types 6204-6208; healthy (N) and 6 defect types; 3 loads; 51.2 kHz. WP14 (notes/24)."
+    sources:
+      - kind: mendeley
+        dataset: cbv7jyx4p9
+        version: 3
+        include: '\.(mat|png)$'
+
+  paderborn_ldm:
+    version: hf-int16-repack-of-zenodo-10805042
+    role: dev
+    stage: stream
+    group: '^data/(B\d+)/'
+    expected_gb: 4.8        # condensed: both channels at 12 kHz, int16 on the original volt grid
+    license: "CC BY 4.0"
+    citation: "Aimiyekagbon, Paderborn University, Run-to-failure data set of ball bearings subjected to time-varying load and speed conditions, Zenodo 10.5281/zenodo.10805042; Javanmardi et al., PHME 2024"
+    notes: >-
+      17 run-to-failure bearings, time-varying load and speed, 128 kHz, measured speed
+      per record. The original Zenodo record is 152 GB of zipped .mat; the source used is
+      a lossless int16 repack (50 GB, Hugging Face Nounours777/Paderborn-bearing, decode
+      error < 1e-9 V per its meta.json). WP15 (notes/25).
+    sources:
+      - kind: hf_tree
+        repo: Nounours777/Paderborn-bearing
+        include: '^data/B\d+/'
+    condense: condense_ldm
+
+  femto:
+    version: nasa-s3-10-femto-bearing
+    role: dev
+    stage: vault
+    expected_gb: 1.2
+    license: "NASA PCoE data repository, public"
+    citation: "Nectoux et al., PRONOSTIA: an experimental platform for bearings accelerated degradation tests, IEEE PHM 2012"
+    notes: "17 run-to-failure bearings, 3 constant conditions, 0.1 s at 25.6 kHz every 10 s. Archive kept unextracted; WP16 (notes/26) extracts on the SSD."
+    sources:
+      - kind: url
+        files:
+          - {name: FEMTO_Bearing.zip, url: "https://phm-datasets.s3.amazonaws.com/NASA/10.+FEMTO+Bearing.zip", size: 1157035288}
 
   ims:
     version: nasa-legacy-ims-zip
