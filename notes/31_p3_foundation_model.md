@@ -43,5 +43,41 @@ healthy data (notes/16–17). Which part carried the transfer?
 | in between | Reported as is. Where it loses is read per dataset |
 | B-ctrl ≈ v1.1 while MOMENT loses | The gap is the representation, not the kNN rule |
 
-## 4. Results
-(to be filled by `scripts/analysis/p3_fm.py`)
+## 4. Results (2026-10-22): **in between**: it ranks faults superbly but cannot be thresholded
+Run: `remote/box run p3fm` (resumed on a second rental; the embeddings are cached per dataset).
+Report: `outputs/p3/fm/report.md`.
+
+| dataset | v1.1 AUC | MOMENT kNN AUC | B-ctrl (cosine kNN on geometry-free z) | v1.1 FA worst | MOMENT FA worst |
+|---|---|---|---|---|---|
+| cwru | 0.951 | **1.000** | 0.368 | 0.103 | **1.000** |
+| pu (4 conditions) | 0.899 | **0.732** | 0.385 | 0.467 | **1.000** |
+| ottawa_2018 | 0.998 | 1.000 | 0.520 | 0.278 | 0.200 |
+| ottawa_2023 (own) | 0.971 | 1.000 | 0.449 | 0.333 | 0.778 |
+| mfpt | 0.996 | 1.000 | 0.677 | 0.000 | 0.000 |
+| hust | 0.894 | 0.993 | 0.347 | 0.126 | 0.832 |
+| **mean** | 0.952 | 0.954 | 0.458 | | |
+
+Reading (§3): **in between**. The mean equals v1.1 (≥ v1.1 − 0.02 holds), but Paderborn loses 0.17,
+beyond the 0.10 allowance.
+
+- **Ranking vs calibration.** On 5 of 6 sets a generic, untrained time-series model, compared with
+  the unit's own healthy data, ranks faults above healthy windows almost perfectly. But the
+  threshold from the cross-fitted support does not hold: worst-unit FA is 0.78–1.00 on four sets.
+  - The embedding is extremely sensitive to *any* change: another load (CWRU, HUST folds hold out a
+    load), another physical bearing (Paderborn), or another stretch of the same recording (Ottawa
+    2023 own).
+  - Faults are simply further away than those nuisance changes are.
+- **Where it fails is the realistic case.** Paderborn is the only set whose held-out healthy windows
+  come from a *different physical bearing* than the support. There the nuisance distance competes
+  with the fault distance, and ranking drops to 0.73.
+- **So the answer to §1 is "both".** Own-baseline referencing makes even a generic representation
+  rank well. But only the physics representation is *invariant enough to nuisance changes* for a
+  calibrated threshold to hold. notes/12's spectrogram failure was a representation failure in this
+  sense: not blindness to faults, but sensitivity to everything else.
+- **B-ctrl is uninformative.** Cosine distance on z-scored bins is a poor rule (AUC 0.35–0.68,
+  below v1.1's max-z on every set). It shows the max-z *rule* matters for the physics features,
+  and it does not separate representation from rule as intended. Reported as pre-registered.
+- **Not shipped.** A possible later use, untested: change detection *on the same unit at the same
+  operating point* (the L1 layer for components with no physics model), where nuisance changes
+  are controlled by design. That would need its own pre-registration and a real-machine check.
+- Caveat: MOMENT's pretraining corpus was not checked for overlap with these sets.
