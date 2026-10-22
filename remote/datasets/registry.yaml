@@ -20,6 +20,10 @@
 #                 `group` regex; each group is downloaded to the SSD, condensed
 #                 onto the vault, deleted; resumable per group
 # `role: sealed`  downloaded and checksummed, never extracted (MASTER_PLAN §4.3)
+# `stage: pin`    sealed sets too big for the vault: only names, sizes and the
+#                 publisher's sha256 are recorded; `unseal` downloads them to the
+#                 SSD and refuses any file that differs. `exam` names the step
+#                 allowed to unseal (default WP11)
 #
 # NOT reachable from the box (2026-10-22), do not add as sources:
 #   Kaggle / Google Cloud Storage / Google Drive -- "service not available in
@@ -175,3 +179,41 @@ datasets:
           - name: IMS.zip
             url: "https://data.nasa.gov/docs/legacy/IMS.zip"       # 5.9 MB/s when up; timed out later the same day
             mirrors: ["https://phm-datasets.s3.amazonaws.com/NASA/4.+Bearings.zip"]  # PCoE bundle, 1.08 GB
+
+  # --- Phase 3 (2026-10-22): the confirmation exam for whatever Phase 3 freezes.
+  # IMS is spent. Pinned by checksum before anyone looked at a signal, a label or a readme.
+
+  ferrara:
+    version: mendeley-htk59pp5wx-v2+zz8hpyx939-v2
+    role: sealed
+    stage: pin
+    exam: P3-EXAM
+    expected_gb: 0.0
+    license: "CC BY-NC 4.0"
+    citation: "Gabrielli, Arpa, Battarra, Mucchi, Run-to-failure vibration dataset of self-aligning double-row ball bearings, Data in Brief 55, 110620 (2024); Mendeley 10.17632/htk59pp5wx.2 and 10.17632/zz8hpyx939.2"
+    notes: "Six accelerated run-to-failure tests (E1-E6), constant speed, radial load, one radial accelerometer. Two Mendeley records (parts 1 and 2), 12.1 GB of .7z."
+    sources:
+      - kind: mendeley
+        dataset: htk59pp5wx
+        version: 2
+        include: '\.(7z|pdf)$'
+    pin_extra:             # part 2, pinned together with part 1 (sources are alternatives, not parts)
+      - kind: mendeley
+        dataset: zz8hpyx939
+        version: 2
+        include: '\.(7z|pdf)$'
+
+  kaist_rtf:
+    version: mendeley-5hcdd3tdvb-v6
+    role: sealed
+    stage: pin
+    exam: P3-EXAM
+    expected_gb: 0.0
+    license: "CC BY 4.0"
+    citation: "Ball Bearing Vibration, and Temperature Run-to-Failure Dataset, Data in Brief (2024); Mendeley 10.17632/5hcdd3tdvb.6"
+    notes: "One NSK 6205 run to failure (128 h), 25.6 kHz, vibration and temperature, hourly files. 4.3 GB zip."
+    sources:
+      - kind: mendeley
+        dataset: 5hcdd3tdvb
+        version: 6
+        include: '\.zip$'

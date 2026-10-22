@@ -1,0 +1,37 @@
+{
+ "citation": "Ball Bearing Vibration, and Temperature Run-to-Failure Dataset, Data in Brief (2024); Mendeley 10.17632/5hcdd3tdvb.6",
+ "condensed": {},
+ "dataset": "kaist_rtf",
+ "history": [
+  {
+   "at": "2026-10-22T08:47:35Z",
+   "by": "payesh-20-947",
+   "event": "pinned and sealed"
+  }
+ ],
+ "license": "CC BY 4.0",
+ "notes": "One NSK 6205 run to failure (128 h), 25.6 kHz, vibration and temperature, hourly files. 4.3 GB zip.",
+ "pinned": true,
+ "raw": {
+  "Vibration_Bearing_RuntoFailure.zip": {
+   "publisher_checksum": "sha256:7deeafed7334ed18b4da552075ef73391c15bc6b206dcdf6c0c7ec3e4e2657c6",
+   "sha256": "7deeafed7334ed18b4da552075ef73391c15bc6b206dcdf6c0c7ec3e4e2657c6",
+   "size": 4325053806,
+   "url": "https://data.mendeley.com/public-files/datasets/5hcdd3tdvb/files/0a5cea77-da64-4658-8062-c33f4f68a5e2/file_downloaded"
+  }
+ },
+ "raw_on_vault": false,
+ "role": "sealed",
+ "sealed": true,
+ "source": [
+  {
+   "dataset": "5hcdd3tdvb",
+   "include": "\\.zip$",
+   "kind": "mendeley",
+   "version": 6
+  }
+ ],
+ "stage": "pin",
+ "status": "complete",
+ "version": "mendeley-5hcdd3tdvb-v6"
+}

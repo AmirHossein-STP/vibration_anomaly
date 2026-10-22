@@ -1,0 +1,85 @@
+{
+ "citation": "Gabrielli, Arpa, Battarra, Mucchi, Run-to-failure vibration dataset of self-aligning double-row ball bearings, Data in Brief 55, 110620 (2024); Mendeley 10.17632/htk59pp5wx.2 and 10.17632/zz8hpyx939.2",
+ "condensed": {},
+ "dataset": "ferrara",
+ "history": [
+  {
+   "at": "2026-10-22T08:47:34Z",
+   "by": "payesh-20-947",
+   "event": "pinned and sealed"
+  }
+ ],
+ "license": "CC BY-NC 4.0",
+ "notes": "Six accelerated run-to-failure tests (E1-E6), constant speed, radial load, one radial accelerometer. Two Mendeley records (parts 1 and 2), 12.1 GB of .7z.",
+ "pinned": true,
+ "raw": {
+  "E1.7z": {
+   "publisher_checksum": "sha256:27ff5d8477006f3dccb387a66670dd477cf490ee9fb3d365208a32cfb6e31c4f",
+   "sha256": "27ff5d8477006f3dccb387a66670dd477cf490ee9fb3d365208a32cfb6e31c4f",
+   "size": 4854915774,
+   "url": "https://data.mendeley.com/public-files/datasets/htk59pp5wx/files/ca8f967f-d6fa-4485-b8f5-dcd4604c3197/file_downloaded"
+  },
+  "E2.7z": {
+   "publisher_checksum": "sha256:478530924e230981909d8a174e2f34d14f21649ba5a2949ddb6e08630cb0f928",
+   "sha256": "478530924e230981909d8a174e2f34d14f21649ba5a2949ddb6e08630cb0f928",
+   "size": 1968021746,
+   "url": "https://data.mendeley.com/public-files/datasets/htk59pp5wx/files/2581a35b-fb59-43bf-9b96-7eaa770111b6/file_downloaded"
+  },
+  "E3.7z": {
+   "publisher_checksum": "sha256:dab8031c229b49da9472a44975d1baf3a0c8bcf6115d974459295a46670e5c82",
+   "sha256": "dab8031c229b49da9472a44975d1baf3a0c8bcf6115d974459295a46670e5c82",
+   "size": 2365092104,
+   "url": "https://data.mendeley.com/public-files/datasets/htk59pp5wx/files/24929eb9-ebd1-40e8-9bba-63a3eecab343/file_downloaded"
+  },
+  "E4.7z": {
+   "publisher_checksum": "sha256:ae7670c184a972a7c2bd3338298bafd647ac6abafdc9ff674caee789d0f9816c",
+   "sha256": "ae7670c184a972a7c2bd3338298bafd647ac6abafdc9ff674caee789d0f9816c",
+   "size": 659509193,
+   "url": "https://data.mendeley.com/public-files/datasets/zz8hpyx939/files/536f319e-f836-4ef2-b99a-8636d472a503/file_downloaded"
+  },
+  "E5.7z": {
+   "publisher_checksum": "sha256:783ef3dcf20be25ac9a854206489a93383b506b4cdb818befe2ed650ae757ddb",
+   "sha256": "783ef3dcf20be25ac9a854206489a93383b506b4cdb818befe2ed650ae757ddb",
+   "size": 1695371381,
+   "url": "https://data.mendeley.com/public-files/datasets/zz8hpyx939/files/9075c7c9-bcd1-4ee4-95c3-0033ae453ab4/file_downloaded"
+  },
+  "E6.7z": {
+   "publisher_checksum": "sha256:db9c90fe21c2ca1a87197c9bad6f6f98b91a280f0dcd7741173677617db964e9",
+   "sha256": "db9c90fe21c2ca1a87197c9bad6f6f98b91a280f0dcd7741173677617db964e9",
+   "size": 504308607,
+   "url": "https://data.mendeley.com/public-files/datasets/zz8hpyx939/files/c532cae8-9d6a-4c7d-b348-b9e45154c0de/file_downloaded"
+  },
+  "Readme_Part1_V2.pdf": {
+   "publisher_checksum": "sha256:8dab59faefba37b870a9ddb509e17b69440c87357fb0c501a841ebd9607d30ea",
+   "sha256": "8dab59faefba37b870a9ddb509e17b69440c87357fb0c501a841ebd9607d30ea",
+   "size": 185033,
+   "url": "https://data.mendeley.com/public-files/datasets/htk59pp5wx/files/d10cdaa2-907a-4860-9e97-8a9050ebeb18/file_downloaded"
+  },
+  "Readme_Part2_V2.pdf": {
+   "publisher_checksum": "sha256:f1e04d054edac0ffffcc5490cae007d83f6f009ac3853972a995c8912a4fa532",
+   "sha256": "f1e04d054edac0ffffcc5490cae007d83f6f009ac3853972a995c8912a4fa532",
+   "size": 188284,
+   "url": "https://data.mendeley.com/public-files/datasets/zz8hpyx939/files/0fe80801-0228-4772-8ee6-c184ab55188c/file_downloaded"
+  }
+ },
+ "raw_on_vault": false,
+ "role": "sealed",
+ "sealed": true,
+ "source": [
+  {
+   "dataset": "htk59pp5wx",
+   "include": "\\.(7z|pdf)$",
+   "kind": "mendeley",
+   "version": 2
+  },
+  {
+   "dataset": "zz8hpyx939",
+   "include": "\\.(7z|pdf)$",
+   "kind": "mendeley",
+   "version": 2
+  }
+ ],
+ "stage": "pin",
+ "status": "complete",
+ "version": "mendeley-htk59pp5wx-v2+zz8hpyx939-v2"
+}
