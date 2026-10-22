@@ -12,6 +12,7 @@ from test_serving_core import FS, faulty, healthy
 
 CONFIG = """fs_hz: 12000
 rpm: 900
+iso20816: {group: 2, foundation: rigid, signal_unit: g}
 bearing: {designation: "6203 (Paderborn KAt)"}
 units:
   pump_a: {bearing: {designation: "6203 (Paderborn KAt)"}}
@@ -65,6 +66,7 @@ def test_each_unit_gets_its_own_baseline_and_detector(fleet):
         assert bad["verdict"] in ("watch", "faulty")
     assert rows[("pump_a", "new_bad.npy")]["fault_type"] == "outer race"        # injected at BPFO
     assert "geometry unknown" in rows[("fan_b", "new_bad.npy")]["dominant"]       # no typing without geometry
+    assert rows[("pump_a", "new_ok.npy")]["iso_zone"] in ("A", "B", "C", "D")     # L0 runs when configured
 
 
 def test_unknown_unit_is_rejected_not_scored(fleet):

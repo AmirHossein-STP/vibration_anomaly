@@ -32,6 +32,7 @@ from domain_adaptation.bearings import FaultOrders, from_dims, from_factors, loo
 from domain_adaptation.data.transforms import resample_to_rate
 from domain_adaptation.features.envelope import BearingGeometry, envelope_order_features
 from domain_adaptation.features.geofree import BIN_CENTRES, BIN_NAMES, geofree_features
+from domain_adaptation.iso20816 import velocity_rms_mm_s, zone
 from domain_adaptation.method import (
     CPW_SES, CUSUM_K, HOP, LINES, METHOD_VERSION, OUTER, WIN, Baseline, default_groups, fit_baseline,
 )
@@ -133,7 +134,7 @@ class BearingService(Service):
     name = "bearing"
     description = f"Rolling-element bearing monitoring per unit, own healthy baseline (method v{METHOD_VERSION})."
     extra_columns = ["unit", "detector", "fault_type", "dominant", "rpm", "fs_hz", "threshold", "n_windows_flagged",
-                     "physics_z", "level_z", "cusum_physics", "cusum_level", "trend_alarm"]
+                     "physics_z", "level_z", "cusum_physics", "cusum_level", "trend_alarm", "iso_velocity_mm_s", "iso_zone"]
 
     def default_config(self) -> dict:
         return {
@@ -151,6 +152,9 @@ class BearingService(Service):
                             "min_recordings_warn": 3, "max_windows_per_file": 600},
             # notes/14: watch 0.40 keeps ~10% of healthy recordings at watch; faulty 0.50 ~5%.
             "verdict": {"watch_fraction": 0.40, "faulty_fraction": 0.5},
+            # L0 (ISO 20816-3): broadband velocity RMS zones A-D. Needs the machine group
+            # (1: 300 kW-50 MW, 2: 15-300 kW) and the acceleration unit of the files.
+            "iso20816": {"group": None, "foundation": "rigid", "signal_unit": None},
         }
 
     def validate_config(self, cfg: dict) -> list[str]:
@@ -170,6 +174,10 @@ class BearingService(Service):
         v = cfg["verdict"]
         if not 0 < v["watch_fraction"] < v["faulty_fraction"] <= 1:
             p.append("verdict: need 0 < watch_fraction < faulty_fraction <= 1")
+        iso = cfg["iso20816"]
+        if iso.get("group") not in (None, 1, 2) or iso.get("foundation") not in ("rigid", "flexible") \
+                or iso.get("signal_unit") not in (None, "g", "m/s2", "mm/s2"):
+            p.append("iso20816: group 1|2, foundation rigid|flexible, signal_unit g|m/s2|mm/s2")
         return p
 
     # ---- helpers -------------------------------------------------------
@@ -348,7 +356,13 @@ class BearingService(Service):
               "signal_key": cal.get("signal_key")}
         fs, rpm, key = self._file_params(path, ctx.config, unit, fb)
         check_speed(rpm, geom)
-        X, _, total, level = window_features(load_signal(path, key), fs, rpm, geom, cal["max_windows_per_file"])
+        signal = load_signal(path, key)
+        X, _, total, level = window_features(signal, fs, rpm, geom, cal["max_windows_per_file"])
+        iso = {**ctx.config["iso20816"], **(self._unit_cfg(ctx.config, unit).get("iso20816") or {})}
+        iso_v = iso_z = None
+        if iso.get("group") and iso.get("signal_unit"):
+            iso_v = round(velocity_rms_mm_s(signal, fs, iso["signal_unit"], rpm), 3)
+            iso_z = zone(iso_v, iso["group"], iso["foundation"])
         s = base.score(X)
         thr = ud["threshold"]
         flagged = s > thr
@@ -376,7 +390,8 @@ class BearingService(Service):
                  "flagged_fraction": round(frac, 4), "n_windows": int(len(s)), "message": msg, "rpm": rpm, "fs_hz": fs,
                  "threshold": thr, "n_windows_flagged": int(flagged.sum()), "fault_type": fault_type, "dominant": dominant,
                  "physics_z": round(pz, 3), "level_z": round(lz, 3), "cusum_physics": tr["cusum_physics"],
-                 "cusum_level": tr["cusum_level"], "trend_alarm": tr["trend_alarm"]}]
+                 "cusum_level": tr["cusum_level"], "trend_alarm": tr["trend_alarm"],
+                 "iso_velocity_mm_s": iso_v, "iso_zone": iso_z}]
 
     def doctor(self, layout, cfg):
         out = []
