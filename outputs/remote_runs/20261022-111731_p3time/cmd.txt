@@ -1,0 +1,1 @@
+bash -c time\ python3\ scripts/analysis/p3_meta.py\ --steps\ 100\ --seeds\ 0\ --models\ a2\ --jobs\ 1 

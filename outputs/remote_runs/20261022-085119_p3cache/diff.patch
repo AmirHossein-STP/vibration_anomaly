@@ -1,0 +1,207 @@
+diff --git a/remote/datasets/fetch.py b/remote/datasets/fetch.py
+index 87fd9f0..2c8fe4c 100755
+--- a/remote/datasets/fetch.py
++++ b/remote/datasets/fetch.py
+@@ -14,8 +14,13 @@ Commands:
+                               re-hash vault files against MANIFEST.json, and
+                               optionally against the manifests committed in git
+     rehash NAME               re-record the condensed/ files (after a manual add)
+-    unseal NAME --commit SHA --confirm WP11
++    unseal NAME --commit SHA --confirm EXAM
+                               extract a sealed archive onto the SSD, logged
++                              (EXAM is the registry's `exam` field, default WP11)
++
++`stage: pin` (sealed sets too large for the vault): fetch records each file's
++name, size and publisher sha256 and downloads nothing; unseal downloads onto
++the SSD and refuses any byte that differs from what was pinned.
+ 
+ Every file is checked against the publisher's checksum where the host offers
+ one (sha256 on Mendeley/MediaFire, md5 on Zenodo, git blob sha1 on GitHub),
+@@ -311,14 +316,41 @@ def resolve_sources(name: str, cfg: dict) -> tuple[dict, list[FileSpec]]:
+     raise FetchError(f"{name}: every source failed: {errors}")
+ 
+ 
+-def seal(ddir: Path, raw_dir: Path) -> None:
+-    for p in raw_dir.rglob("*"):
+-        if p.is_file():
+-            p.chmod(0o444)
+-    raw_dir.chmod(0o555)
++def exam_of(cfg: dict) -> str:
++    return cfg.get("exam", "WP11")
++
++
++def seal(ddir: Path, raw_dir: Path | None, exam: str = "WP11") -> None:
++    if raw_dir is not None:
++        for p in raw_dir.rglob("*"):
++            if p.is_file():
++                p.chmod(0o444)
++        raw_dir.chmod(0o555)
++    how = "" if raw_dir is not None else "Pinned by checksum only: nothing was downloaded.\n"
+     (ddir / "SEALED").write_text(
+-        "SEALED (MASTER_PLAN §4.3). Do not open, list the contents of, or score this data before WP11.\n"
+-        "Unsealing: fetch.py unseal <name> --commit <frozen method sha> --confirm WP11\n")
++        f"SEALED (MASTER_PLAN §4.3). Do not open, list the contents of, or score this data before {exam}.\n"
++        + how + f"Unsealing: fetch.py unseal <name> --commit <frozen method sha> --confirm {exam}\n")
++
++
++def pin(name: str, cfg: dict, ddir: Path, m: dict, specs: list[FileSpec]) -> dict:
++    """Record what the publisher serves, byte for byte, without downloading it."""
++    if cfg["role"] != "sealed":
++        raise FetchError(f"{name}: stage pin is only for sealed datasets")
++    for s in specs:
++        algo, _, hexd = (s.checksum or "").partition(":")
++        if algo != "sha256" or s.size is None:
++            raise FetchError(f"{name}: {s.name} has no publisher sha256 and size; cannot pin it")
++        m["raw"][s.name] = {"size": s.size, "sha256": hexd.lower(), "url": s.url, "publisher_checksum": s.checksum}
++    total = sum(s.size for s in specs)
++    print(f"  pinned {len(specs)} files, {total / 1e9:.2f} GB at the publisher; nothing downloaded", flush=True)
++    ddir.mkdir(parents=True, exist_ok=True)
++    seal(ddir, None, exam_of(cfg))
++    m.update(sealed=True, pinned=True, status="complete")
++    m["history"].append({"at": now(), "by": socket.gethostname(), "event": "pinned and sealed"})
++    save_manifest(ddir, m)
++    write_source_md(ddir, m)
++    print(f"{name}: pinned and sealed -> {ddir}", flush=True)
++    return m
+ 
+ 
+ def run_condenser(name: str, cfg: dict, ddir: Path, raw_dir: Path, scratch: Path, repo: Path) -> None:
+@@ -415,6 +447,11 @@ def fetch(name: str, cfg: dict, vault: Path, scratch: Path, repo: Path, jobs: in
+     if len(set(names)) != len(names):
+         raise FetchError(f"{name}: duplicate file names after layout={cfg.get('layout')}")
+     m["source"] = src
++    if cfg["stage"] == "pin":
++        for extra in cfg.get("pin_extra", []):  # a set published as several records
++            specs += RESOLVERS[extra["kind"]](extra)
++        m["source"] = [src, *cfg.get("pin_extra", [])]
++        return pin(name, cfg, ddir, m, specs)
+     if cfg["stage"] == "stream":
+         require_space(ddir.parent.parent.parent, int(cfg["expected_gb"] * 1e9), f"{name} (condensed)")
+         return fetch_stream(name, cfg, ddir, m, src, specs, scratch, repo, jobs)
+@@ -462,7 +499,7 @@ def fetch(name: str, cfg: dict, vault: Path, scratch: Path, repo: Path, jobs: in
+     save_manifest(ddir, m)
+ 
+     if cfg["role"] == "sealed":
+-        seal(ddir, raw_dir)
++        seal(ddir, raw_dir, exam_of(cfg))
+         m["sealed"] = True
+     if cfg.get("condense"):
+         run_condenser(name, cfg, ddir, raw_dir, scratch, repo)
+@@ -513,7 +550,8 @@ def verify(name: str, cfg: dict, vault: Path, quick: bool, against: Path | None)
+ 
+ 
+ def unseal(name: str, cfg: dict, vault: Path, scratch: Path, commit: str) -> None:
+-    """WP11 only. The vault copy stays sealed; an extracted copy goes to the SSD."""
++    """The exam only. The vault copy stays sealed; an extracted copy goes to the SSD.
++    A pinned set is downloaded here, and every file must match its pinned sha256."""
+     sys.path.insert(0, str(HERE))
+     from safe_extract import extract_zip
+ 
+@@ -521,9 +559,20 @@ def unseal(name: str, cfg: dict, vault: Path, scratch: Path, commit: str) -> Non
+     if not (ddir / "SEALED").is_file():
+         raise FetchError(f"{name} is not sealed")
+     dest = scratch / f"{name}_unsealed"
+-    for p in sorted((ddir / "raw").iterdir()):
++    m = load_manifest(ddir)
++    raw_dir = ddir / "raw"
++    if m.get("pinned"):
++        raw_dir = scratch / f"{name}_pinned_raw"
++        require_space(scratch, sum(r["size"] for r in m["raw"].values()), f"{name} (pinned raw on SSD)")
++        for rel, rec in m["raw"].items():
++            got = download(FileSpec(rel, rec["url"], rec["size"], f"sha256:{rec['sha256']}"), raw_dir / rel)
++            if got["sha256"] != rec["sha256"]:
++                raise FetchError(f"{name}: {rel} differs from the pinned sha256")
++    for p in sorted(raw_dir.iterdir()):
+         if p.suffix == ".zip":
+             extract_zip(p, dest / p.stem)
++        elif p.is_file():
++            print(f"  {p.name}: not a zip, left as is in {raw_dir} (extract with safe_extract)", flush=True)
+     with open(ddir / "UNSEAL_LOG", "a") as f:
+         f.write(f"{now()} unsealed by {socket.gethostname()} for frozen method commit {commit} -> {dest}\n")
+     print(f"unsealed copy at {dest} (logged in {ddir / 'UNSEAL_LOG'})")
+@@ -609,8 +658,9 @@ def main(argv: list[str] | None = None) -> int:
+         print(f"{args.name}: {len(m['condensed'])} condensed files recorded")
+         return 0
+     if args.cmd == "unseal":
+-        if args.confirm != "WP11":
+-            raise SystemExit("unsealing is for WP11 only: pass --confirm WP11")
++        exam = exam_of(registry[args.name])
++        if args.confirm != exam:
++            raise SystemExit(f"unsealing {args.name} is for {exam} only: pass --confirm {exam}")
+         unseal(args.name, registry[args.name], args.vault, args.scratch, args.commit)
+         return 0
+     return 2
+diff --git a/remote/datasets/registry.yaml b/remote/datasets/registry.yaml
+index ecf75f7..17c0f69 100644
+--- a/remote/datasets/registry.yaml
++++ b/remote/datasets/registry.yaml
+@@ -20,6 +20,10 @@
+ #                 `group` regex; each group is downloaded to the SSD, condensed
+ #                 onto the vault, deleted; resumable per group
+ # `role: sealed`  downloaded and checksummed, never extracted (MASTER_PLAN §4.3)
++# `stage: pin`    sealed sets too big for the vault: only names, sizes and the
++#                 publisher's sha256 are recorded; `unseal` downloads them to the
++#                 SSD and refuses any file that differs. `exam` names the step
++#                 allowed to unseal (default WP11)
+ #
+ # NOT reachable from the box (2026-10-22), do not add as sources:
+ #   Kaggle / Google Cloud Storage / Google Drive -- "service not available in
+@@ -175,3 +179,41 @@ datasets:
+           - name: IMS.zip
+             url: "https://data.nasa.gov/docs/legacy/IMS.zip"       # 5.9 MB/s when up; timed out later the same day
+             mirrors: ["https://phm-datasets.s3.amazonaws.com/NASA/4.+Bearings.zip"]  # PCoE bundle, 1.08 GB
++
++  # --- Phase 3 (2026-10-22): the confirmation exam for whatever Phase 3 freezes.
++  # IMS is spent. Pinned by checksum before anyone looked at a signal, a label or a readme.
++
++  ferrara:
++    version: mendeley-htk59pp5wx-v2+zz8hpyx939-v2
++    role: sealed
++    stage: pin
++    exam: P3-EXAM
++    expected_gb: 0.0
++    license: "CC BY-NC 4.0"
++    citation: "Gabrielli, Arpa, Battarra, Mucchi, Run-to-failure vibration dataset of self-aligning double-row ball bearings, Data in Brief 55, 110620 (2024); Mendeley 10.17632/htk59pp5wx.2 and 10.17632/zz8hpyx939.2"
++    notes: "Six accelerated run-to-failure tests (E1-E6), constant speed, radial load, one radial accelerometer. Two Mendeley records (parts 1 and 2), 12.1 GB of .7z."
++    sources:
++      - kind: mendeley
++        dataset: htk59pp5wx
++        version: 2
++        include: '\.(7z|pdf)$'
++    pin_extra:             # part 2, pinned together with part 1 (sources are alternatives, not parts)
++      - kind: mendeley
++        dataset: zz8hpyx939
++        version: 2
++        include: '\.(7z|pdf)$'
++
++  kaist_rtf:
++    version: mendeley-5hcdd3tdvb-v6
++    role: sealed
++    stage: pin
++    exam: P3-EXAM
++    expected_gb: 0.0
++    license: "CC BY 4.0"
++    citation: "Ball Bearing Vibration, and Temperature Run-to-Failure Dataset, Data in Brief (2024); Mendeley 10.17632/5hcdd3tdvb.6"
++    notes: "One NSK 6205 run to failure (128 h), 25.6 kHz, vibration and temperature, hourly files. 4.3 GB zip."
++    sources:
++      - kind: mendeley
++        dataset: 5hcdd3tdvb
++        version: 6
++        include: '\.zip$'
+untracked: papers/1-s2.0-S0952197621001421-am.pdf
+untracked: papers/142875.pdf
+untracked: papers/A_New_Multiple_Source_Domain_Adaptation_Fault_Diagnosis_Method_Between_Different_Rotating_Machines.pdf
+untracked: papers/ldm_upb_run_to_failure_description.pdf
+untracked: papers/xjtu_sy_dataset_interpretation_zh.pdf
+untracked: remote/datasets/manifests/ferrara.json
+untracked: remote/datasets/manifests/kaist_rtf.json
+untracked: reports/001_Internal Reports.docx
+untracked: reports/IRANYekanX_Fonts/IRANYekanX-Black.ttf
+untracked: reports/IRANYekanX_Fonts/IRANYekanX-Bold.ttf
+untracked: reports/IRANYekanX_Fonts/IRANYekanX-ExtraBlack.ttf
+untracked: reports/IRANYekanX_Fonts/IRANYekanX-ExtraBold.ttf
+untracked: reports/IRANYekanX_Fonts/IRANYekanX-Heavy.ttf
+untracked: reports/IRANYekanX_Fonts/IRANYekanX-Light.ttf
+untracked: reports/IRANYekanX_Fonts/IRANYekanX-Regular.ttf
+untracked: reports/R01_vibration_autoencoder_CWRU.pdf
+untracked: scripts/analysis/p3_ims_cache.py

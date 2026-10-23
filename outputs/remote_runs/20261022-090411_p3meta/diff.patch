@@ -1,0 +1,243 @@
+diff --git a/notes/30_p3_trigger.md b/notes/30_p3_trigger.md
+index 4192aa5..a6ca738 100644
+--- a/notes/30_p3_trigger.md
++++ b/notes/30_p3_trigger.md
+@@ -62,5 +62,48 @@ A trigger among T1–T3 **passes** if:
+ 
+ Confirmation of any candidate: the sealed Ferrara and KAIST sets (notes/28), once.
+ 
+-## 5. Results
+-(to be filled by `scripts/analysis/p3_trigger.py`)
++## 5. Results (2026-10-22): **no trigger passes**
++Run: `remote/box run p3trig`. Report: `outputs/p3/trigger/report.md`.
++
++| trigger | IMS, 8 non-failing units: false events/day (236 days observed) | failed units detected (of 53) | gate |
++|---|---|---|---|
++| T0 v1.1 CUSUM (h: FA budget 0, leave one unit out) | **0.01** (1 event) | 45 | reference |
++| T1 conformal martingale, fixed reference, Ville | 3.70 | 52 | fail (FA) |
++| T2 conformal martingale, sliding reference | 7.11 | 53 | fail (FA) |
++| T3 forecast-residual CUSUM | 0.01 | 43 | fail (detections) |
++| T4 fleet-relative (IMS only) | 0.01 | 2/4 on IMS | descriptive |
++
++Reading (§4): **none passes**. The pre-registered consequence is that the trend layer stays out of
++the product. Alarms come from the recording verdict, and the trade-off is reported.
++
++- **The conformal guarantee does not survive real healthy data.** Ville's bound assumes the records
++  are exchangeable. Healthy vibration levels are autocorrelated and drift, so the p-values pile up
++  near 0 and the martingale grows on healthy units: 3.7–7.1 events/day on IMS, 24–179/day on the
++  short false-alarm regions of the other sets.
++  - The sliding reference (T2) is *worse*, not better. Its B-record reference is shorter than the
++    autocorrelation of the level.
++  - Track C's "formal false-alarm control" idea is therefore refuted for this statistic, not just
++    weakened.
++- The forecast residual (T3) is as quiet as T0, but it absorbs part of the degradation. It misses
++  T1-B3 and T1-B4 on IMS.
++
++### 5.1 Post hoc (not part of the verdict): the WP18 exam failure was the threshold, not the CUSUM
++Under this note's rule (h from FA budget 0 over the *other units' long healthy history*), the v1.1
++CUSUM itself:
++- has **1 false event in 236 healthy days** on the 8 non-failing IMS units;
++- detects all 4 IMS failures, with leads of 25, 47, 88 and 180 h.
++
++In WP18 the same CUSUM gave 1.02 events/day, because the service set h from its 33 h calibration
++alone. So the trigger's form is fine. What it lacked was an h that reflects how far a healthy
++level wanders over weeks, and that can only be learned from weeks of healthy data: the unit's own,
++or its fleet's.
++- **Consequence for the product (a candidate, not a result):** the trend trigger starts disabled,
++  or with a deliberately high h. Its h is re-estimated from accumulated healthy history (fleet-wide
++  where units are identical), and alarms are enabled only after a minimum healthy duration.
++- Caveat: on IMS, h came from sibling bearings on the *same* rig and test. Whether a fleet's
++  history transfers between machines is untested.
++- It needs confirmation on data where h is learned only from the past. Ferrara (6 sequential tests on
++  one rig) allows exactly that: h from tests E1..E(k−1), applied to E(k).
++
++The FA/day numbers on XJTU-SY, LDM and FEMTO rest on 0.3–0.8 days of false-alarm region in total.
++One event there is 1.2–3 events/day, so they rank the triggers but are not usable rates.
+diff --git a/scripts/analysis/p3_meta.py b/scripts/analysis/p3_meta.py
+index b433811..4cdb30d 100644
+--- a/scripts/analysis/p3_meta.py
++++ b/scripts/analysis/p3_meta.py
+@@ -9,6 +9,7 @@ where the source datasets reward it.
+     A2  bin transformer over 135 tokens [z, mu, log sd, order code]       (set-conditioned)
+ 
+ Usage (box, after p3_episodes.py): python3 scripts/analysis/p3_meta.py [--models a1 a2] [--seeds 0 1 2 3 4]
++(one worker process per model x seed, --jobs at a time; the GPU is idle at these batch sizes)
+ Output: outputs/p3/meta/results.json, outputs/p3/meta/report.md
+ """
+ from __future__ import annotations
+@@ -16,6 +17,7 @@ from __future__ import annotations
+ import argparse
+ import json
+ import pickle
++import subprocess
+ import sys
+ import time
+ from pathlib import Path
+@@ -137,33 +139,58 @@ def gate(ref: dict, res: dict) -> dict:
+             "pass": bool(c1 >= GATE_MEAN and d_auc[worst] >= -GATE_LOSS and d_fa <= GATE_FA)}
+ 
+ 
++def run_one(m: str, seed: int, out_dir: Path) -> None:
++    """One model x seed over all 9 held-out datasets -> out_dir/runs/<m>_<seed>.json"""
++    torch.set_num_threads(1)
++    with open(OUT / "bank.pkl", "rb") as fh:
++        bank: dict[str, list[Fold]] = pickle.load(fh)
++    ref = json.loads((OUT / "a0_reference.json").read_text())
++    trainable = {d: [tensors(f) for f in fs if len(f.pos) and len(f.neg) + len(f.sup)] for d, fs in bank.items()}
++    res, t0 = {}, time.time()
++    for held in DATASETS:
++        train_sets = {d: v for d, v in trainable.items() if d != held}
++        assert held not in train_sets                       # leakage guard (notes/29 §2)
++        model = train(MODELS[m]().to(DEV), train_sets, seed * 100 + DATASETS.index(held))
++        res[held] = summary_per_fold(bank[held], {id(f): scorer(model, f) for f in bank[held]})
++    run = {"datasets": res, "gate": gate(ref, res), "seconds": time.time() - t0}
++    (out_dir / "runs").mkdir(parents=True, exist_ok=True)
++    (out_dir / "runs" / f"{m}_{seed}.json").write_text(json.dumps(run, indent=1, default=float))
++    g = run["gate"]
++    print(f"{m} seed {seed}: mean dAUC {g['mean_delta_auc']:+.3f}, worst {g['worst_dataset']} "
++          f"{g['worst_delta']:+.3f}, dFA_worst {g['delta_fa_worst']:+.3f} ({run['seconds']:.0f} s)", flush=True)
++
++
+ def main():
+     ap = argparse.ArgumentParser()
+     ap.add_argument("--models", nargs="*", default=list(MODELS))
+     ap.add_argument("--seeds", nargs="*", type=int, default=[0, 1, 2, 3, 4])
+     ap.add_argument("--steps", type=int, default=STEPS, help="smoke tests only; the result uses the default")
++    ap.add_argument("--jobs", type=int, default=8)
++    ap.add_argument("--worker", nargs=2, metavar=("MODEL", "SEED"))
+     a = ap.parse_args()
+     globals()["STEPS"] = a.steps
+-    with open(OUT / "bank.pkl", "rb") as fh:
+-        bank: dict[str, list[Fold]] = pickle.load(fh)
+-    ref = json.loads((OUT / "a0_reference.json").read_text())
+-    trainable = {d: [tensors(f) for f in fs if len(f.pos) and len(f.neg) + len(f.sup)] for d, fs in bank.items()}
+     out_dir = OUT / "meta"
+-    out_dir.mkdir(parents=True, exist_ok=True)
+-    results = {"steps": STEPS, "device": str(DEV), "runs": {}}
+-    for m in a.models:
+-        for seed in a.seeds:
+-            res, t0 = {}, time.time()
+-            for held in DATASETS:
+-                train_sets = {d: v for d, v in trainable.items() if d != held}
+-                assert held not in train_sets                       # leakage guard (notes/29 §2)
+-                model = train(MODELS[m]().to(DEV), train_sets, seed * 100 + DATASETS.index(held))
+-                res[held] = summary_per_fold(bank[held], {id(f): scorer(model, f) for f in bank[held]})
+-            results["runs"][f"{m}:{seed}"] = {"datasets": res, "gate": gate(ref, res), "seconds": time.time() - t0}
+-            g = results["runs"][f"{m}:{seed}"]["gate"]
+-            print(f"{m} seed {seed}: mean dAUC {g['mean_delta_auc']:+.3f}, worst {g['worst_dataset']} "
+-                  f"{g['worst_delta']:+.3f}, dFA_worst {g['delta_fa_worst']:+.3f} ({time.time() - t0:.0f} s)", flush=True)
+-            (out_dir / "results.json").write_text(json.dumps(results, indent=1, default=float))
++    if a.worker:
++        run_one(a.worker[0], int(a.worker[1]), out_dir)
++        return
++    todo = [(m, s) for m in a.models for s in a.seeds]
++    procs, failed = [], []
++    while todo or procs:
++        while todo and len(procs) < a.jobs:
++            m, s = todo.pop(0)
++            procs.append(((m, s), subprocess.Popen([sys.executable, __file__, "--steps", str(a.steps), "--worker", m, str(s)])))
++        time.sleep(5)
++        for p in [p for p in procs if p[1].poll() is not None]:
++            procs.remove(p)
++            if p[1].returncode:
++                failed.append(p[0])
++    if failed:
++        raise SystemExit(f"workers failed: {failed}")
++    ref = json.loads((OUT / "a0_reference.json").read_text())
++    results = {"steps": STEPS, "device": str(DEV),
++               "runs": {f"{m}:{s}": json.loads((out_dir / "runs" / f"{m}_{s}.json").read_text())
++                        for m in a.models for s in a.seeds}}
++    (out_dir / "results.json").write_text(json.dumps(results, indent=1, default=float))
+     report(ref, results, a.models, a.seeds, out_dir)
+ 
+ 
+untracked: outputs/p3/cache/ims_geofree.csv.gz
+untracked: outputs/p3/meta/report.md
+untracked: outputs/p3/meta/results.json
+untracked: outputs/p3/trigger/report.md
+untracked: outputs/p3/trigger/results.json
+untracked: outputs/remote_runs/20261022-084718_fetch-ferrara/cmd.txt
+untracked: outputs/remote_runs/20261022-084718_fetch-ferrara/diff.patch
+untracked: outputs/remote_runs/20261022-084718_fetch-ferrara/duration_s
+untracked: outputs/remote_runs/20261022-084718_fetch-ferrara/env.txt
+untracked: outputs/remote_runs/20261022-084718_fetch-ferrara/exit_code
+untracked: outputs/remote_runs/20261022-084718_fetch-ferrara/git.json
+untracked: outputs/remote_runs/20261022-084718_fetch-ferrara/log
+untracked: outputs/remote_runs/20261022-084718_fetch-ferrara/pid
+untracked: outputs/remote_runs/20261022-084733_fetch-ferrara/cmd.txt
+untracked: outputs/remote_runs/20261022-084733_fetch-ferrara/diff.patch
+untracked: outputs/remote_runs/20261022-084733_fetch-ferrara/duration_s
+untracked: outputs/remote_runs/20261022-084733_fetch-ferrara/env.txt
+untracked: outputs/remote_runs/20261022-084733_fetch-ferrara/exit_code
+untracked: outputs/remote_runs/20261022-084733_fetch-ferrara/git.json
+untracked: outputs/remote_runs/20261022-084733_fetch-ferrara/log
+untracked: outputs/remote_runs/20261022-084733_fetch-ferrara/pid
+untracked: outputs/remote_runs/20261022-084934_xjtugeo/cmd.txt
+untracked: outputs/remote_runs/20261022-084934_xjtugeo/diff.patch
+untracked: outputs/remote_runs/20261022-084934_xjtugeo/duration_s
+untracked: outputs/remote_runs/20261022-084934_xjtugeo/env.txt
+untracked: outputs/remote_runs/20261022-084934_xjtugeo/exit_code
+untracked: outputs/remote_runs/20261022-084934_xjtugeo/git.json
+untracked: outputs/remote_runs/20261022-084934_xjtugeo/log
+untracked: outputs/remote_runs/20261022-084934_xjtugeo/pid
+untracked: outputs/remote_runs/20261022-085119_p3cache/cmd.txt
+untracked: outputs/remote_runs/20261022-085119_p3cache/diff.patch
+untracked: outputs/remote_runs/20261022-085119_p3cache/duration_s
+untracked: outputs/remote_runs/20261022-085119_p3cache/env.txt
+untracked: outputs/remote_runs/20261022-085119_p3cache/exit_code
+untracked: outputs/remote_runs/20261022-085119_p3cache/git.json
+untracked: outputs/remote_runs/20261022-085119_p3cache/log
+untracked: outputs/remote_runs/20261022-085119_p3cache/pid
+untracked: outputs/remote_runs/20261022-085417_p3a0/cmd.txt
+untracked: outputs/remote_runs/20261022-085417_p3a0/diff.patch
+untracked: outputs/remote_runs/20261022-085417_p3a0/duration_s
+untracked: outputs/remote_runs/20261022-085417_p3a0/env.txt
+untracked: outputs/remote_runs/20261022-085417_p3a0/exit_code
+untracked: outputs/remote_runs/20261022-085417_p3a0/git.json
+untracked: outputs/remote_runs/20261022-085417_p3a0/log
+untracked: outputs/remote_runs/20261022-085417_p3a0/pid
+untracked: outputs/remote_runs/20261022-085604_p3a0/cmd.txt
+untracked: outputs/remote_runs/20261022-085604_p3a0/diff.patch
+untracked: outputs/remote_runs/20261022-085604_p3a0/duration_s
+untracked: outputs/remote_runs/20261022-085604_p3a0/env.txt
+untracked: outputs/remote_runs/20261022-085604_p3a0/exit_code
+untracked: outputs/remote_runs/20261022-085604_p3a0/git.json
+untracked: outputs/remote_runs/20261022-085604_p3a0/log
+untracked: outputs/remote_runs/20261022-085604_p3a0/pid
+untracked: outputs/remote_runs/20261022-085719_p3smoke/cmd.txt
+untracked: outputs/remote_runs/20261022-085719_p3smoke/diff.patch
+untracked: outputs/remote_runs/20261022-085719_p3smoke/duration_s
+untracked: outputs/remote_runs/20261022-085719_p3smoke/env.txt
+untracked: outputs/remote_runs/20261022-085719_p3smoke/exit_code
+untracked: outputs/remote_runs/20261022-085719_p3smoke/git.json
+untracked: outputs/remote_runs/20261022-085719_p3smoke/log
+untracked: outputs/remote_runs/20261022-085719_p3smoke/pid
+untracked: outputs/remote_runs/20261022-085944_p3meta/cmd.txt
+untracked: outputs/remote_runs/20261022-085944_p3meta/diff.patch
+untracked: outputs/remote_runs/20261022-085944_p3meta/env.txt
+untracked: outputs/remote_runs/20261022-085944_p3meta/git.json
+untracked: outputs/remote_runs/20261022-085944_p3meta/log
+untracked: outputs/remote_runs/20261022-085944_p3meta/pid
+untracked: outputs/remote_runs/20261022-090123_p3trig/cmd.txt
+untracked: outputs/remote_runs/20261022-090123_p3trig/diff.patch
+untracked: outputs/remote_runs/20261022-090123_p3trig/duration_s
+untracked: outputs/remote_runs/20261022-090123_p3trig/env.txt
+untracked: outputs/remote_runs/20261022-090123_p3trig/exit_code
+untracked: outputs/remote_runs/20261022-090123_p3trig/git.json
+untracked: outputs/remote_runs/20261022-090123_p3trig/log
+untracked: outputs/remote_runs/20261022-090123_p3trig/pid
+untracked: papers/1-s2.0-S0952197621001421-am.pdf
+untracked: papers/142875.pdf
+untracked: papers/A_New_Multiple_Source_Domain_Adaptation_Fault_Diagnosis_Method_Between_Different_Rotating_Machines.pdf
+untracked: papers/ldm_upb_run_to_failure_description.pdf
+untracked: papers/xjtu_sy_dataset_interpretation_zh.pdf
+untracked: reports/001_Internal Reports.docx
+untracked: reports/IRANYekanX_Fonts/IRANYekanX-Black.ttf
+untracked: reports/IRANYekanX_Fonts/IRANYekanX-Bold.ttf
+untracked: reports/IRANYekanX_Fonts/IRANYekanX-ExtraBlack.ttf
+untracked: reports/IRANYekanX_Fonts/IRANYekanX-ExtraBold.ttf
+untracked: reports/IRANYekanX_Fonts/IRANYekanX-Heavy.ttf
+untracked: reports/IRANYekanX_Fonts/IRANYekanX-Light.ttf
+untracked: reports/IRANYekanX_Fonts/IRANYekanX-Regular.ttf
+untracked: reports/R01_vibration_autoencoder_CWRU.pdf
+untracked: scripts/analysis/p3_trigger.py

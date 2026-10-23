@@ -91,3 +91,9 @@ outputs/wp10/*.csv.gz
 outputs/wp13/cache/
 outputs/phase2/cache/
 outputs/wp16/femto_records.csv.gz
+outputs/p3/cache/
+
+# Third-party material kept locally only: published papers (not ours to
+# redistribute) and the licensed IRANYekanX font used to build reports/*.docx.
+papers/
+reports/IRANYekanX_Fonts/

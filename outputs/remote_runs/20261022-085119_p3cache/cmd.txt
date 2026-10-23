@@ -1,0 +1,1 @@
+bash -c python3\ scripts/analysis/v2_cache.py\ --set\ geofree\ --datasets\ xjtu_sy\ --jobs\ 8\ \&\&\ python3\ scripts/analysis/p3_ims_cache.py\ --jobs\ 8 

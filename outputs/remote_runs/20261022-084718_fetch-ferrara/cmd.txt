@@ -1,0 +1,1 @@
+bash -c /home/homa/work/venv/bin/python\ -I\ ~/work/vibration_anomaly_detection/remote/datasets/fetch.py\ --vault\ /mnt/vault\ --scratch\ ~/work/scratch\ --repo\ ~/work/vibration_anomaly_detection\ fetch\ ferrara\ kaist_rtf 

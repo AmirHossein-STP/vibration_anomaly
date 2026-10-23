@@ -1,0 +1,1 @@
+bash -c /home/homa/work/venv_fm/bin/python\ scripts/analysis/p3_fm.py 

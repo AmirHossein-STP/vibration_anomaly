@@ -1,0 +1,1 @@
+bash -c UV=/mnt/vault/env/bin/uv\;\ \$UV\ venv\ ~/work/venv_fm\ --system-site-packages\ --python\ /usr/bin/python3\ \&\&\ \$UV\ pip\ install\ --python\ ~/work/venv_fm/bin/python\ -r\ remote/requirements-server.txt\ \&\&\ \$UV\ pip\ install\ --python\ ~/work/venv_fm/bin/python\ --no-deps\ -r\ remote/requirements-p3b.txt 

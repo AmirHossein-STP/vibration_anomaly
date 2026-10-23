@@ -1,0 +1,12 @@
+Traceback (most recent call last):
+  File "/home/homa/work/vibration_anomaly_detection/scripts/analysis/p3_episodes.py", line 221, in <module>
+    main()
+  File "/home/homa/work/vibration_anomaly_detection/scripts/analysis/p3_episodes.py", line 180, in main
+    bank = build()
+  File "/home/homa/work/vibration_anomaly_detection/scripts/analysis/p3_episodes.py", line 142, in build
+    df = load(d)
+  File "/home/homa/work/vibration_anomaly_detection/scripts/analysis/p3_episodes.py", line 80, in load
+    df = pd.read_csv(IMS_CACHE) if dataset == "ims" else load_v2(dataset, fset="geofree")
+  File "/home/homa/work/vibration_anomaly_detection/scripts/analysis/v2_cache.py", line 66, in load_v2
+    raise FileNotFoundError(f"{p} missing or stale: run scripts/analysis/v2_cache.py on the box")
+FileNotFoundError: outputs/wp13/cache/cwru_geofree_5c536beca6cb.csv.gz missing or stale: run scripts/analysis/v2_cache.py on the box
